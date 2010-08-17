@@ -25,35 +25,45 @@
 
 using namespace std;
 
+CPU::CPU(Video *v)
+{
+	init(v);
+}
+
 CPU::CPU(Video *v, Cartridge *c)
+{
+	init(v);
+	LoadCartridge(c);
+}
+
+void CPU::init(Video *v)
 {
 	cyclesLCD = 0;
 	this->v = v;
 	v->SetMem(this->GetPtrMemory());
-	LoadCartridge(c);
+	//this->log = new QueueLog(500000);
 	FillInstructionCycles();
 	FillInstructionCyclesCB();
-	this->log = new QueueLog(500000);
 }
+
 
 CPU::~CPU()
 {
-}
-
-void CPU::Run()
-{
-	Interpreter();
 }
 
 void CPU::Reset()
 {
 	ResetRegs();
 	ResetMem();
+	v->ClearScreen();
 }
 
-void CPU::Interpreter()
+void CPU::Run(unsigned long exitCycles)
 {
-	unsigned long numCycles = 0;
+	if (!this->c)
+		return;
+	
+	unsigned long actualCycles = 0;
 	BYTE OpCode = 0, NextOpcode = 0, lastOpCode = 0;
 
 	Instructions inst(this->GetPtrRegisters(), this->GetPtrMemory());
@@ -72,11 +82,9 @@ void CPU::Interpreter()
 		ssOpCode << ", ";
 		log->Enqueue(ssOpCode.str(), this->GetPtrRegisters(), "");*/
 		
-		numCycles++;
-		
         //Counter-=Cycles[OpCode];
 		if (!Get_Halt() && !Get_Stop())
-			
+		{
 			/*ssOpCode << " FF80 = " << hex << (int)memory[0xFF80] << " ";
 			log->Enqueue("", this->GetPtrRegisters(), ssOpCode.str());*/
 		
@@ -349,19 +357,30 @@ void CPU::Interpreter()
 					throw GBException(out.str());
 			}
 
-        if (OpCode == 0xCB)
-            lastCycles = instructionCyclesCB[NextOpcode];
-        else
-            lastCycles = instructionCyclesCB[OpCode];
+			if (OpCode == 0xCB)
+				lastCycles = instructionCyclesCB[NextOpcode];
+			else
+				lastCycles = instructionCycles[OpCode];
+		}
+		else
+		{
+			lastCycles = 8;
+		}
+
 
 		cyclesLCD += lastCycles;
 		cyclesTimer += lastCycles;
 		cyclesDIV += lastCycles;
 		cyclesPad += lastCycles;
+		actualCycles += lastCycles;
 
         CyclicTasks();
         Interruptions(&inst);
-	}
+		
+		if (actualCycles > exitCycles)
+			break;
+		
+	}//end for
 }
 
 
@@ -828,15 +847,13 @@ void CPU::CyclicTasks()
 {
 	UpdateStateLCD();
 	UpdateTimer();
-	if (cyclesPad > 110500)
-	{
-		int valueP1 = memory[P1];
-		int interrupt = onCheckKeyPad(&valueP1);
-		memory[P1] = valueP1;
-		if (interrupt)
-			memory[IF] = memory[IF] | 0x10;
-		cyclesPad = 0;
-	}
+}
+
+void CPU::UpdatePad()
+{
+	int interrupt = checkKeyboard(&memory[P1]);
+	if (interrupt)
+		memory[IF] = memory[IF] | 0x10;
 }
 
 void CPU::UpdateStateLCD()
@@ -906,7 +923,7 @@ void CPU::UpdateStateLCD()
                 cyclesLCD = 0;
             }
             break;
-        case (3):	//Cuando OAM y memoria de video se estan usando (Se esta pasando información al LCD)
+        case (3):	//Cuando OAM y memoria de video se estan usando (Se esta pasando informacion al LCD)
             if (cyclesLCD > MAX_LCD_MODE_3)
             {
 				//Poner a 00 el flag (bits 0-1) del modo 0.

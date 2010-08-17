@@ -39,14 +39,16 @@ private:
 	BYTE instructionCycles[0xFF];
 	BYTE instructionCyclesCB[0xFF];
 public:
+	CPU(Video *v);
 	CPU(Video *v, Cartridge *c);
 	~CPU();
 	
-	void Run();
+	void Run(unsigned long exitCycles);
+	void UpdatePad();
 	void Reset();
 	void SaveLog();
 private:
-	void Interpreter();
+	void init(Video *v);
 	void FillInstructionCycles();
 	void FillInstructionCyclesCB();
 	void OpCodeCB(Instructions * inst);

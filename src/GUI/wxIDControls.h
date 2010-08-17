@@ -15,14 +15,16 @@
  along with gbpablog.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef __SDLVIDEO_H__
-#define __SDLVIDEO_H__
+/*******************************************************************************
+ * Global Declarations
+ *******************************************************************************/
 
-void onVideoInit(int width, int height);
-void onVideoPreDraw();
-void onVideoPostDraw();
-void onVideoRefreshScreen();
-void onVideoDrawPixel(int color, int x, int y);
-void onVideoClose();
-
-#endif
+enum {
+    IDF_FRAME = wxID_HIGHEST + 1,
+    IDP_PANEL,
+	ID_LOAD,
+	ID_START,
+	ID_PAUSE,
+	ID_STOP,
+	ID_TIMER
+};

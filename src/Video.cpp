@@ -17,13 +17,14 @@
 
 #include "Video.h"
 #include <iostream>
-#include "sdlVideo.h"
+#include "GUI/wxSDLScreen.h"
 
 using namespace std;
 
-Video::Video(void)
+Video::Video(SDLScreen * screen)
 {
-	onVideoInit(SCREEN_W, SCREEN_H);
+	this->screen = screen;
+	//onVideoInit(SCREEN_W, SCREEN_H);
 }
 
 Video::~Video(void)
@@ -33,7 +34,7 @@ Video::~Video(void)
 
 void Video::Close()
 {
-	onVideoClose();
+	//onVideoClose();
 }
 
 void Video::SetMem(Memory *mem)
@@ -43,19 +44,24 @@ void Video::SetMem(Memory *mem)
 
 void Video::UpdateLine(BYTE y)
 {
-	onVideoPreDraw();
+	screen->onPreDraw();
 
 	OrderOAM(y);
 	UpdateBG(y);
 	UpdateWin(y);
 	UpdateOAM(y);
 
-	onVideoPostDraw();
+	screen->onPostDraw();
 }
 
 void Video::RefreshScreen()
 {
-	onVideoRefreshScreen();
+	screen->onRefreshScreen();
+}
+
+void Video::ClearScreen()
+{
+	screen->onClear();
 }
 
 void Video::UpdateBG(int y)
@@ -86,7 +92,7 @@ void Video::UpdateBG(int y)
 		//pintamos la linea de blanco
 		if (!BIT7(valueLCDC) || !BIT0(valueLCDC))
 		{
-			onVideoDrawPixel(3, x, y);
+			screen->onDrawPixel(3, x, y);
 			//DrawPixel(hideScreen, colors[0], x, y);
 			continue;
 		}
@@ -118,7 +124,7 @@ void Video::UpdateBG(int y)
 		indexColor = (((line[1] & (0x01 << pixX)) >> pixX) << 1) | ((line[0] & (0x01 << pixX)) >> pixX);
 		color = palette[indexColor];
 
-		onVideoDrawPixel(color, x, y);
+		screen->onDrawPixel(color, x, y);
 		indexColorsBGWnd[x][y] = indexColor;
 	}
 }
@@ -174,11 +180,11 @@ void Video::UpdateWin(int y)
 
 		BYTE pixX = (BYTE)abs((int)x_tile - 7);
 		//Un pixel lo componen 2 bits. Seleccionar la posicion del bit en los dos bytes (line[0] y line[1])
-		//Esto devolverá un numero de color que junto a la paleta de color nos dará el color requerido
+		//Esto devolvera un numero de color que junto a la paleta de color nos dara el color requerido
 		indexColor = (((line[1] & (0x01 << pixX)) >> pixX) << 1) | ((line[0] & (0x01 << pixX)) >> pixX);
 		color = palette[indexColor];
 
-		onVideoDrawPixel(color, x, y);
+		screen->onDrawPixel(color, x, y);
 		indexColorsBGWnd[x][y] = indexColor;
 	}
 }
@@ -270,7 +276,7 @@ void Video::UpdateOAM(int y)
 
 			int pixX = abs((int)xTile - 7);
 			//Un pixel lo componen 2 bits. Seleccionar la posicion del bit en los dos bytes (line[0] y line[1])
-			//Esto devolverá un numero de color que junto a la paleta de color nos dará el color requerido
+			//Esto devolvera un numero de color que junto a la paleta de color nos dara el color requerido
 			BYTE index = (((line[1] & (0x01 << pixX)) >> pixX) << 1) | ((line[0] & (0x01 << pixX)) >> pixX);
 
 			//El 0 es transparente (no pintar)
@@ -283,7 +289,7 @@ void Video::UpdateOAM(int y)
 					color = palette1[index];
 
 
-				onVideoDrawPixel(color, xSprite + countX, ySprite + countY);
+				screen->onDrawPixel(color, xSprite + countX, ySprite + countY);
 			}
 
 			countX++;
