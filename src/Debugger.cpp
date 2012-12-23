@@ -69,9 +69,63 @@ std::string Debugger::GetRegPC()
     return ToHex(cpu->Get_PC(), 4, '0');
 }
 
+std::string Debugger::GetMem(WORD start, WORD end)
+{
+    start &= 0xFFF0;
+    end = (end & 0xFFF0)+0x000F;
+    
+    stringstream ss;
+    WORD row = start;
+    while (row <= end)
+    {
+        ss << "0x";
+        AppendHex(ss, row, 4, '0');
+        ss << ": ";
+        for (int i=0x0; i<0xF; i++)
+        {
+            BYTE value = cpu->MemR(row+i);
+            AppendHex(ss, value, 2, '0');
+            ss << ' ';
+        }
+        
+        BYTE value = cpu->MemR(row+0xF);
+        AppendHex(ss, value, 2, '0');
+        if (row < end)
+            ss << '\n';
+        row += 0x10;
+    }
+    
+    return ss.str();
+}
+
+void Debugger::GetBG(BYTE *buffer)
+{
+    
+}
+
+void Debugger::GetWindow(BYTE *buffer)
+{
+    
+}
+
+void Debugger::GetTiles(BYTE *buffer)
+{
+    
+}
+
+void Debugger::Step()
+{
+    
+}
+
 std::string Debugger::ToHex(int value, int width, char fill)
 {
     stringstream ss;
     ss << setfill(fill) << setw(width) << uppercase << hex << value;
     return ss.str();
+}
+
+void Debugger::AppendHex(stringstream &ss, int value, int width, char fill)
+{
+    ss << setfill(fill) << setw(width) << uppercase << hex << (int)value;
 }

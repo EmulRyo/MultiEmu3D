@@ -39,6 +39,13 @@ public:
     std::string GetRegSP();
     std::string GetRegPC();
     
+    std::string GetMem(WORD start, WORD end);
+    void GetBG(BYTE *buffer);
+    void GetWindow(BYTE *buffer);
+    void GetTiles(BYTE *buffer);
+    
+    void Step();
+    
 private:
 	Sound *sound;
     Video *video;
@@ -46,6 +53,7 @@ private:
 	Cartridge *cartridge;
     
     std::string ToHex(int value, int width, char fill);
+    void AppendHex(std::stringstream &ss, int value, int width, char fill);
 };
 
 #endif
