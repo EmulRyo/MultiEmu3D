@@ -53,6 +53,7 @@ public:
 	void RefreshScreen();
 	void ClearScreen();
 	void UpdateLine(BYTE line);
+    void GetTile(BYTE *buffer, int widthSize, int tile, int bank);
 private:
 	void UpdateBG(int line);
 	void UpdateWin(int line);

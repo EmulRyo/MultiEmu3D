@@ -410,3 +410,42 @@ void Video::GetColorPalette(BYTE palette[4][3], int address)
         address += 2;
     }
 }
+
+void Video::GetTile(BYTE *buffer, int widthSize, int tile, int bank)
+{
+    int line[2];
+    
+    int addressTile = 0x8000;
+    if (colorMode)
+    {
+        addressTile += VRAM_OFFSET - 0x8000;
+        if (bank == 1)
+            addressTile += 0x2000;
+    }
+    else if (bank == 1)
+        return;
+    
+    addressTile += tile * 16;
+    
+    for (int y=0; y<8; y++)
+    {
+        for (int x=0; x<8; x++)
+        {
+            int addressLineTile = addressTile + (y * 2); //yTile * 2 porque cada linea de 1 tile ocupa 2 bytes
+            
+            line[0] = mem->memory[addressLineTile + 0];
+            line[1] = mem->memory[addressLineTile + 1];
+            
+            int pixX = ABS(x - 7);
+            //Un pixel lo componen 2 bits. Seleccionar la posicion del bit en los dos bytes (line[0] y line[1])
+            //Esto devolvera un numero de color que junto a la paleta de color nos dara el color requerido
+            int indexColor = (((line[1] & (1 << pixX)) >> pixX) << 1) | ((line[0] & (1 << pixX)) >> pixX);
+            
+            int offset = widthSize*y + x*3;
+            int gray = ABS(indexColor - 3) * 85;
+            buffer[offset + 0] = gray;
+            buffer[offset + 1] = gray;
+            buffer[offset + 2] = gray;
+        }
+    }
+}

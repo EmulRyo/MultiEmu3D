@@ -42,7 +42,7 @@ public:
     std::string GetMem(WORD start, WORD end);
     void GetBG(BYTE *buffer);
     void GetWindow(BYTE *buffer);
-    void GetTiles(BYTE *buffer);
+    void GetTiles(BYTE *buffer, int width, int height);
     
     void Step();
     

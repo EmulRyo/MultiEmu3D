@@ -108,9 +108,35 @@ void Debugger::GetWindow(BYTE *buffer)
     
 }
 
-void Debugger::GetTiles(BYTE *buffer)
+void Debugger::GetTiles(BYTE *buffer, int width, int height)
 {
+    int x, y, tile, slot;
+    BYTE *tmpBuffer;
+    int widthSize = width*3;
+    int tilesInX = width / 8;
+    int tilesInY = height / 8;
     
+    y = 0;
+    tile = 0;
+    slot = 0;
+    while ((y < tilesInY))
+    {
+        x = 0;
+        tmpBuffer = buffer + (widthSize*y*8);
+        while ((x < tilesInX) && (tile < 384))
+        {
+            video->GetTile(tmpBuffer, widthSize, tile, slot);
+            tmpBuffer += 8*3;
+            tile++;
+            if ((slot == 0) && (tile >= 384))
+            {
+                tile = 0;
+                slot = 1;
+            }
+            x++;
+        }
+        y++;
+    }
 }
 
 void Debugger::Step()
