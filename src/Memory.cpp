@@ -241,6 +241,16 @@ void Memory::MemW(WORD address, BYTE value)
 	memory[address] = value;
 }
 
+BYTE Memory::MemRVRam(WORD address, int slot)
+{
+    return memory[(address-0x8000) + VRAM_OFFSET + (slot*0x2000)];
+}
+
+BYTE Memory::MemRWRam(WORD address, int slot)
+{
+    return memory[(address-0xD000) + WRAM_OFFSET + (slot*0x1000)];
+}
+
 void Memory::OamDmaTransfer(BYTE address)
 {
 	BYTE i;

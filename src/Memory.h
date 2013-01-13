@@ -83,6 +83,8 @@ public:
         else
             return memory[address];
 	}
+    BYTE MemRVRam(WORD address, int slot);
+    BYTE MemRWRam(WORD address, int slot);
     void UpdateHDMA();
 	void SaveMemory(std::ofstream * file);
 	void LoadMemory(std::ifstream * file);

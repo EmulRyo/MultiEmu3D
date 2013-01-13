@@ -40,6 +40,7 @@ public:
     std::string GetRegPC();
     
     std::string GetMem(WORD start, WORD end);
+    std::string GetMemVRam(WORD start, WORD end, int slot);
     void GetBG(BYTE *buffer);
     void GetWindow(BYTE *buffer);
     void GetTiles(BYTE *buffer, int width, int height);

@@ -98,6 +98,35 @@ std::string Debugger::GetMem(WORD start, WORD end)
     return ss.str();
 }
 
+std::string Debugger::GetMemVRam(WORD start, WORD end, int slot)
+{
+    start &= 0xFFF0;
+    end = (end & 0xFFF0)+0x000F;
+    
+    stringstream ss;
+    WORD row = start;
+    while (row <= end)
+    {
+        ss << "0x";
+        AppendHex(ss, row, 4, '0');
+        ss << ": ";
+        for (int i=0x0; i<0xF; i++)
+        {
+            BYTE value = cpu->MemRVRam(row+i, slot);
+            AppendHex(ss, value, 2, '0');
+            ss << ' ';
+        }
+        
+        BYTE value = cpu->MemRVRam(row+0xF, slot);
+        AppendHex(ss, value, 2, '0');
+        if (row < end)
+            ss << '\n';
+        row += 0x10;
+    }
+    
+    return ss.str();
+}
+
 void Debugger::GetBG(BYTE *buffer)
 {
     
