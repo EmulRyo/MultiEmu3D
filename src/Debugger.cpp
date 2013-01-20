@@ -127,6 +127,46 @@ std::string Debugger::GetMemVRam(WORD start, WORD end, int slot)
     return ss.str();
 }
 
+std::string Debugger::GetMemPalette(int sprite, int number)
+{
+    int address = BGP_OFFSET;
+    stringstream ss;
+    
+    number &= 0x07;
+    if (sprite)
+        address = OBP_OFFSET;
+    
+    address += number*8;
+    
+    ss << "Palette " << number << ": ";
+    
+    for (int i=0; i<4; i++)
+    {
+        WORD *value = (WORD *)((void *)&cpu->memory[address]);
+        AppendHex(ss, *value, 4, '0');
+        if (i < 3)
+            ss << ", ";
+        else
+            ss << "\n";
+        address += 2;
+    }
+    
+    return ss.str();
+}
+
+void Debugger::GetColorPalette(int sprite, int number, BYTE palette[4][3])
+{
+    int address = BGP_OFFSET;
+    
+    number &= 0x07;
+    if (sprite)
+        address = OBP_OFFSET;
+    
+    address += number*8;
+    
+    video->GetColorPalette(palette, address);
+}
+
 void Debugger::GetBG(BYTE *buffer)
 {
     

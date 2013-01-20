@@ -41,9 +41,11 @@ public:
     
     std::string GetMem(WORD start, WORD end);
     std::string GetMemVRam(WORD start, WORD end, int slot);
+    std::string GetMemPalette(int sprite, int number);
     void GetBG(BYTE *buffer);
     void GetWindow(BYTE *buffer);
     void GetTiles(BYTE *buffer, int width, int height);
+    void GetColorPalette(int sprite, int number, BYTE palette[4][3]);
     
     void Step();
     
