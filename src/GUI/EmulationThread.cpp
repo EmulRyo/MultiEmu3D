@@ -24,6 +24,7 @@
 #include "../Video.h"
 #include "../CPU.h"
 #include "../Settings.h"
+#include "../Debugger.h"
 #include "EmulationThread.h"
 
 using namespace std;
@@ -36,6 +37,7 @@ EmulationThread::EmulationThread()
     video = new Video(NULL);
 	cpu = new CPU(video, sound);
 	cartridge = NULL;
+    debugger = NULL;
     
     ApplySettings();
     
@@ -69,6 +71,16 @@ void EmulationThread::SetState(enumEmuStates state)
 #endif
         cpu->Reset();
     }
+    
+    if (debugger && (state == Paused))
+    {
+        int width = 16*8;
+        int height = 48*8;
+        BYTE buffer[width*height*3];
+        debugger->GetTiles(buffer, width, height);
+        wxImage *img = new wxImage(width, height, buffer);
+        img->SaveFile("tiles.bmp");
+    }
 }
 
 enumEmuStates EmulationThread::GetState()
@@ -88,7 +100,35 @@ wxThread::ExitCode EmulationThread::Entry()
 		{
 			wxMutexLocker lock(*mutex);
 			if (emuState == Playing)
+            {
 			    cpu->ExecuteOneFrame();
+                if (debugger)
+                {
+                    //cout << debugger->GetMem(0xD600, 0xD60F);
+                    //cout << debugger->GetMemVRam(0x9600, 0x960F, 1);
+                    /*
+                    BYTE palette[4][3];
+                    cout << "BG\n";
+                    for (int i=0; i<8; i++)
+                    {
+                        cout << debugger->GetMemPalette(0, i);
+                        debugger->GetColorPalette(0, i, palette);
+                        for (int m=0; m<4; m++) {
+                            cout << (int)palette[m][0] << ", " << (int)palette[m][1] << ", " << (int)palette[m][2] << "\n";
+                        }
+                    }
+                    cout << "Sprite\n";
+                    for (int i=0; i<8; i++)
+                    {
+                        cout << debugger->GetMemPalette(1, i);
+                        debugger->GetColorPalette(1, i, palette);
+                        for (int m=0; m<4; m++) {
+                            cout << (int)palette[m][0] << ", " << (int)palette[m][1] << ", " << (int)palette[m][2] << "\n";
+                        }
+                    }
+                    */
+                }
+            }
 		} // Desbloquear el mutex
         
         long time = swFrame.Time();
@@ -153,6 +193,8 @@ bool EmulationThread::ChangeFile(wxString fileName)
         
         cpu->LoadCartridge(cartridge);
         cpu->Reset();
+        
+        debugger = new Debugger(sound, video, cpu, cartridge);
     }
     
     

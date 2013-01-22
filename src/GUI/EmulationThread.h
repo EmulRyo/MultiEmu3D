@@ -29,20 +29,8 @@ class CPU;
 class IGBScreenDrawable;
 class wxMutex;
 
-class EmulationThread : public wxThread {
-
-private:
-	Video * video;
-	Sound * sound;
-	Cartridge * cartridge;
-    CPU * cpu;
-    wxMutex * mutex;
-    wxStopWatch swFrame;
-    
-	enumEmuStates emuState;
-    
-    void LoadZip(const wxString zipPath, BYTE ** buffer, unsigned long * size);
-    
+class EmulationThread : public wxThread
+{
 public:
 	EmulationThread();
     ~EmulationThread();
@@ -59,6 +47,18 @@ public:
     enumEmuStates GetState();
     void SetState(enumEmuStates state);
     
+private:
+	Video * video;
+	Sound * sound;
+	Cartridge * cartridge;
+    CPU * cpu;
+    class Debugger * debugger;
+    wxMutex * mutex;
+    wxStopWatch swFrame;
+    
+	enumEmuStates emuState;
+    
+    void LoadZip(const wxString zipPath, BYTE ** buffer, unsigned long * size);
 };
 
 #endif
