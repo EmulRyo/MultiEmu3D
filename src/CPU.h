@@ -37,6 +37,12 @@ private:
 	WORD cyclesDIV;
 	WORD cyclesSerial;
 	int bitSerial;
+    
+    int lcdMode0;
+    int lcdMode1;
+    int lcdMode2;
+    int lcdMode3;
+    int cyclesFrame;
 	Video *v;
 #ifdef MAKEGBLOG
 	QueueLog *log;
@@ -55,6 +61,7 @@ public:
     BYTE TACChanged(BYTE newValue);
     BYTE DIVChanged(BYTE newValue);
     BYTE P1Changed(BYTE newValue);
+    void AddCycles(int cycles);
 	void Reset();
 #ifdef MAKEGBLOG
 	void SaveLog();
@@ -73,6 +80,7 @@ private:
 	void Interrupts(Instructions * inst);
 	void CheckLYC();
 	void OnEndFrame();
+    void ChangeSpeed();
 };
 
 #endif

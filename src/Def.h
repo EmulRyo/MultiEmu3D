@@ -35,10 +35,14 @@ typedef unsigned short WORD;
 #define GB_SCREEN_W 160
 #define GB_SCREEN_H 144
 
-#define MAX_LCD_MODE_0 204    //201-207
-#define MAX_LCD_MODE_1 456    //456 * 10 = 4560
-#define MAX_LCD_MODE_2 80     //77-83
-#define MAX_LCD_MODE_3 172    //169-175
+#define LCD_MODE_0 204    //201-207
+#define LCD_MODE_1 456    //456 * 10 = 4560
+#define LCD_MODE_2 80     //77-83
+#define LCD_MODE_3 172    //169-175
+
+#define HDMA_CYCLES 8
+
+#define FRAME_CYCLES    70224
 
 #define BIT0(value)	((value) & 0x01)
 #define BIT1(value)	((value) & 0x02)
@@ -95,6 +99,18 @@ typedef unsigned short WORD;
 #define OBP1	0xFF49
 #define WY		0xFF4A
 #define WX		0xFF4B
+#define KEY1    0xFF4D
+#define VBK     0xFF4F
+#define HDMA1   0xFF51
+#define HDMA2   0xFF52
+#define HDMA3   0xFF53
+#define HDMA4   0xFF54
+#define HDMA5   0xFF55
+#define BGPI    0xFF68
+#define BGPD    0xFF69
+#define OBPI    0xFF6A
+#define OBPD    0xFF6B
+#define SVBK    0xFF70
 #define IE		0xFFFF
 
 #endif
