@@ -18,27 +18,72 @@
 #include <iostream>
 #include <wx/cmdline.h>
 #include <wx/filename.h>
+#include <wx/log.h>
 #ifdef __WXMSW__
 #include <SDL.h>
 #endif
 #include "MainApp.h"
 #include "MainFrame.h"
+#include "SettingsDialog.h"
+#include "Settings.h"
 #include "../Def.h"
 
-
-IMPLEMENT_CLASS(MainApp, wxApp)
 IMPLEMENT_APP(MainApp)
 
 static const wxCmdLineEntryDesc g_cmdLineDesc[] =
 {
-	{ wxCMD_LINE_SWITCH, wxT("h"), wxT("help"), wxT("displays this help"), wxCMD_LINE_VAL_STRING, wxCMD_LINE_OPTION_HELP },
-	{ wxCMD_LINE_SWITCH, wxT("v"), wxT("version"), wxT("print version"), wxCMD_LINE_VAL_STRING, wxCMD_LINE_PARAM_OPTIONAL },
-	{ wxCMD_LINE_PARAM, NULL, NULL, wxT("input file"), wxCMD_LINE_VAL_STRING, wxCMD_LINE_PARAM_OPTIONAL },
+	{ wxCMD_LINE_SWITCH, "h", "help", "displays this help", wxCMD_LINE_VAL_STRING, wxCMD_LINE_OPTION_HELP },
+	{ wxCMD_LINE_SWITCH, "v", "version", "print version", wxCMD_LINE_VAL_STRING, wxCMD_LINE_PARAM_OPTIONAL },
+	{ wxCMD_LINE_PARAM, NULL, NULL, "input file", wxCMD_LINE_VAL_STRING, wxCMD_LINE_PARAM_OPTIONAL },
 	{ wxCMD_LINE_NONE, NULL, NULL, NULL, wxCMD_LINE_VAL_NONE, wxCMD_LINE_PARAM_OPTIONAL }
 };
 
-bool MainApp::OnInit() {
+void MainApp::ChangeLanguage(long language)
+{
+    wxLocale* locale;
+    
+    // load language if possible, fall back to english otherwise
+    if(wxLocale::IsAvailable(language))
+    {
+        locale = new wxLocale(language);
+        
+#ifdef __WXGTK__
+        // add locale search paths
+        locale->AddCatalogLookupPathPrefix(wxT("/usr"));
+        locale->AddCatalogLookupPathPrefix(wxT("/usr/local"));
+        wxStandardPaths* paths = (wxStandardPaths*) &wxStandardPaths::Get();
+        wxString prefix = paths->GetInstallPrefix();
+        locale->AddCatalogLookupPathPrefix( prefix );
+#elif __WXMSW__
+		locale->AddCatalogLookupPathPrefix(wxT("languages"));
+#endif
+        
+        locale->AddCatalog(APP_NAME);
+        
+        if(! locale->IsOk() )
+        {
+            std::cerr << "selected language is wrong" << std::endl;
+            delete locale;
+            locale = new wxLocale( wxLANGUAGE_ENGLISH );
+            language = wxLANGUAGE_ENGLISH;
+        }
+    }
+    else
+    {
+        std::cout << "The selected language is not supported by your system."
+        << "Try installing support for this language." << std::endl;
+        locale = new wxLocale( wxLANGUAGE_ENGLISH );
+        language = wxLANGUAGE_ENGLISH;
+    }
+    
+}
 
+bool MainApp::OnInit() {
+    Settings settings = SettingsLoadFromFile();
+	SettingsSetNewValues(settings);
+    
+    ChangeLanguage(settings.language);
+    
 	wxString cmdFilename = wxT("");
 	wxCmdLineParser cmdParser(g_cmdLineDesc, argc, argv);
 	int res;
@@ -84,7 +129,7 @@ bool MainApp::OnInit() {
     // create the MainFrame
     frame = new MainFrame(cmdFilename);
     frame->Centre();
-    frame->Show();
+    frame->Show(true);
 
     // Our MainFrame is the Top Window
     SetTopWindow(frame);

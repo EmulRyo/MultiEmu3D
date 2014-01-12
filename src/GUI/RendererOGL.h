@@ -25,30 +25,20 @@
 
 #include "wx/glcanvas.h"
 #include "RendererBase.h"
+#include "3D/Geo.h"
+#include "3D/Camera.h"
 
 #if wxUSE_GLCANVAS
 
+class MainFrame;
+
 class RendererOGL: public wxGLCanvas, public RendererBase {
-	DECLARE_CLASS(RendererOGL)
-	DECLARE_EVENT_TABLE()
-	
-private:
-    bool initialized;
-	wxWindow * windowParent;
-#ifndef __WXMAC__
-    wxGLContext * glContext;
-#endif
-    GLuint m_gllist;
-	float fov;
-	
-	void InitGL();
-    void SetGLContext();
-	
+
 public:
-    RendererOGL( wxWindow *parent, wxWindowID id = wxID_ANY,
-				 const wxPoint& pos = wxDefaultPosition,
-				 const wxSize& size = wxDefaultSize,
-				 long style = 0, const wxString& name = _T("OGLRenderer") );
+    RendererOGL( MainFrame *parent, wxWindowID id = wxID_ANY,
+                const wxPoint& pos = wxDefaultPosition,
+                const wxSize& size = wxDefaultSize,
+                long style = 0, const wxString& name = _T("OGLRenderer") );
     
     ~RendererOGL();
 	
@@ -56,8 +46,50 @@ public:
     void OnSize(wxSizeEvent&);
     void OnEraseBackground(wxEraseEvent&);
     void OnDoubleClick(wxMouseEvent&);
+    void OnKeyPressed(wxKeyEvent &);
+    void OnMouseLeftDown(wxMouseEvent &event);
+    void OnMouseLeftUp(wxMouseEvent &event);
+    void OnMouseRightDown(wxMouseEvent &event);
+    void OnMouseRightUp(wxMouseEvent &event);
+    void OnMouseMove(wxMouseEvent &event);
+    void OnMouseWheel(wxMouseEvent &event);
+    void OnChangeView();
 	
     void Render();
+	
+protected:
+	DECLARE_EVENT_TABLE()
+    
+private:
+    bool         m_initialized;
+	MainFrame   *m_parent;
+    wxGLContext *m_glContext;
+    GLuint       m_glList;
+    GLuint       m_textureID;
+	float        m_fov;
+    float        m_zNear;
+    float        m_zFar;
+    Camera       m_camera;
+    Camera       m_camera2D;
+    Camera       m_camera3D;
+    int          m_mouseOldX, m_mouseOldY;
+    int          m_mouseNewX, m_mouseNewY;
+    int          m_mouseWheel;
+    bool         m_mouseLeft, m_mouseRight;
+    bool         m_restoreTo2D;
+    bool         m_restoreTo3D;
+    float        m_filter;
+    float        m_minZ;
+    
+    Geo          m_geo;
+	
+	void InitGL();
+    void SetGLContext();
+    void SetPerspective();
+    void ScreenCreate();
+    void ScreenDraw();
+    void MoveCamera(Camera &cam);
+    bool RestoreTo(Camera &camSrc, Camera &camDst);
 };
 
 #endif // #if wxUSE_GLCANVAS

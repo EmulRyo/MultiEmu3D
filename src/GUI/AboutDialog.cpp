@@ -15,7 +15,10 @@
  along with DMGBoy.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <wx/wx.h>
+#include <wx/sizer.h>
+#include <wx/stattext.h>
+#include <wx/statbmp.h>
+#include <wx/button.h>
 #include <wx/hyperlink.h>   // hyperlink support
 #ifdef __WXMSW__
 #include "SDL.h"
@@ -44,13 +47,13 @@ AboutDialog::AboutDialog (wxWindow *parent)
     aboutinfo->Add (new wxStaticText(this, wxID_ANY, _("Version: ")));
     aboutinfo->Add (new wxStaticText(this, wxID_ANY, wxT(APP_VERSION)));
     aboutinfo->Add (new wxStaticText(this, wxID_ANY, _("Written by: ")));
-    aboutinfo->Add (new wxStaticText(this, wxID_ANY, wxT(APP_MAINT)));
+    aboutinfo->Add (new wxStaticText(this, wxID_ANY, wxString::FromUTF8(APP_MAINT)));
     aboutinfo->Add (new wxStaticText(this, wxID_ANY, _("Licence type: ")));
     aboutinfo->Add (new wxStaticText(this, wxID_ANY, wxT(APP_LICENCE)));
-    aboutinfo->Add (new wxStaticText(this, wxID_ANY, _("wxWidgets: ")));
+    aboutinfo->Add (new wxStaticText(this, wxID_ANY, "wxWidgets: "));
     aboutinfo->Add (new wxStaticText(this, wxID_ANY, wxVERSION_STRING));
 #ifdef __WXMSW__
-	aboutinfo->Add (new wxStaticText(this, wxID_ANY, _("SDL: ")));
+	aboutinfo->Add (new wxStaticText(this, wxID_ANY, "SDL: "));
     aboutinfo->Add (new wxStaticText(this, wxID_ANY, stringSDLVersion));
 #endif
 	aboutinfo->Add (new wxStaticText(this, wxID_ANY, _("Thanks to: ")));
@@ -67,7 +70,6 @@ AboutDialog::AboutDialog (wxWindow *parent)
     aboutpane->Add (new wxStaticBitmap (this, wxID_ANY, wxBitmap (gb64_xpm)),
                     0, wxRIGHT, 10);
     aboutpane->Add (aboutinfo, 0, wxEXPAND);
-    //aboutpane->Add (60, 0);
 
     // about complete
     wxBoxSizer *totalpane = new wxBoxSizer (wxVERTICAL);

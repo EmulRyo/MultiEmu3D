@@ -19,12 +19,13 @@
 #include <wx/wfstream.h>
 #include <wx/zipstrm.h>
 #include <wx/stdpaths.h>
+#include <wx/msgdlg.h>
 #include "../Pad.h"
 #include "../Sound.h"
 #include "../Video.h"
 #include "../CPU.h"
-#include "../Settings.h"
 #include "../Debugger.h"
+#include "Settings.h"
 #include "EmulationThread.h"
 
 using namespace std;
@@ -153,7 +154,7 @@ bool EmulationThread::ChangeFile(wxString fileName)
         
         if (!wxFileExists(fileName))
         {
-            wxMessageBox(wxT("The file:\n")+fileName+wxT("\ndoesn't exist"), wxT("Error"));
+            wxMessageBox(_("The file:\n")+fileName+_("\ndoesn't exist"), _("Error"));
             return false;
         }
         
@@ -167,7 +168,7 @@ bool EmulationThread::ChangeFile(wxString fileName)
         }
         else if (!fileLower.EndsWith(wxT(".gb")) && !fileLower.EndsWith(wxT(".gbc")))
         {
-            wxMessageBox(wxT("Only gb, gbc and zip files allowed!"), wxT("Error"));
+            wxMessageBox(_("Only gb, gbc and zip files allowed!"), _("Error"));
             return false;
         }
         
@@ -235,7 +236,7 @@ void EmulationThread::LoadZip(const wxString zipPath, BYTE ** buffer, unsigned l
 	}
     
 	// Archivo no encontrado
-	wxMessageBox(wxT("GameBoy rom not found in the file:\n")+zipPath, wxT("Error"));
+	wxMessageBox(_("GameBoy rom not found in the file:\n")+zipPath, _("Error"));
 	return;
 }
 

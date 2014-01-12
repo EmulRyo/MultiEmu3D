@@ -15,14 +15,23 @@
  along with DMGBoy.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include <iostream>
 #include <string>
+#include <math.h>
+#include <wx/toolbar.h>
 #include <wx/stdpaths.h>
 #include <wx/filename.h>
+#include <wx/msgdlg.h>
+#include <wx/menu.h>
+#include <wx/filedlg.h>
+#include <wx/button.h>
+#include <wx/settings.h>
+#include "MainApp.h"
 #include "MainFrame.h"
 #include "AboutDialog.h"
 #include "SettingsDialog.h"
 #include "IDControls.h"
-#include "../Settings.h"
+#include "Settings.h"
 #include "../GBException.h"
 #include "Xpm/open.xpm"
 #include "Xpm/play.xpm"
@@ -31,13 +40,12 @@
 #include "Xpm/recent.xpm"
 #include "Xpm/gb16.xpm"
 #include "Xpm/gb32.xpm"
+#include "Xpm/changeView.xpm"
 #include "RendererOGL.h"
 #include "RendererSW.h"
 #include "EmulationThread.h"
 
 using namespace std;
-
-IMPLEMENT_CLASS(MainFrame, wxFrame)
 
 BEGIN_EVENT_TABLE(MainFrame, wxFrame)
 EVT_MENU(wxID_EXIT, MainFrame::OnFileExit)
@@ -52,6 +60,7 @@ EVT_MENU(wxID_ABOUT, MainFrame::OnAbout)
 EVT_MENU(ID_START, MainFrame::OnPlay)
 EVT_MENU(ID_PAUSE, MainFrame::OnPause)
 EVT_MENU(ID_STOP, MainFrame::OnStop)
+EVT_MENU(ID_CHANGEVIEW, MainFrame::OnChangeView)
 EVT_MENU(ID_FULLSCREEN, MainFrame::OnFullScreen)
 EVT_UPDATE_UI( ID_START, MainFrame::OnPlayUpdateUI )
 EVT_UPDATE_UI( ID_PAUSE, MainFrame::OnPauseUpdateUI )
@@ -59,29 +68,28 @@ EVT_UPDATE_UI( ID_STOP, MainFrame::OnStopUpdateUI )
 EVT_UPDATE_UI( ID_FULLSCREEN, MainFrame::OnFullScreenUpdateUI )
 EVT_UPDATE_UI_RANGE(ID_LOADSTATE0, ID_LOADSTATE9, MainFrame::OnLoadStateUpdateUI)
 EVT_UPDATE_UI_RANGE(ID_SAVESTATE0, ID_SAVESTATE9, MainFrame::OnSaveStateUpdateUI)
-EVT_LEFT_DCLICK(MainFrame::OnDoubleClick)
 EVT_COMMAND(wxID_ANY, wxEVT_RENDERER_REFRESHSCREEN, MainFrame::OnRefreshScreen)
 EVT_TIMER(ID_TIMER, MainFrame::OnTimer)
 EVT_CLOSE(MainFrame::OnClose)
+EVT_SIZE(MainFrame::OnResize)
+EVT_MAXIMIZE(MainFrame::OnMaximize)
+EVT_MENU_RANGE(ID_LANG_ENGLISH, ID_LANG_SPANISH, MainFrame::OnChangeLanguage)
 END_EVENT_TABLE()
 
 MainFrame::MainFrame(wxString fileName)
 {
+	renderer = NULL;
+
     // Create the MainFrame
-#ifdef __WXGTK__
-    // En linux parece ser que no permitir modificar el tamaño del frame al usuario
-    // afecta a los posteriores redimensionados por codigo
     this->Create(0, ID_MAINFRAME, wxT(APP_NAME), wxDefaultPosition,
-           wxDefaultSize, wxMINIMIZE_BOX | wxMAXIMIZE_BOX | wxRESIZE_BORDER | wxSYSTEM_MENU | wxCAPTION | wxCLOSE_BOX);
-#else
-    this->Create(0, ID_MAINFRAME, wxT(APP_NAME), wxDefaultPosition,
-           wxDefaultSize, wxCAPTION | wxSYSTEM_MENU |
-           wxMINIMIZE_BOX | wxCLOSE_BOX | wxCLIP_CHILDREN);
-#endif
+           wxDefaultSize, wxDEFAULT_FRAME_STYLE);
+    
 	wxIconBundle * icons = new wxIconBundle(wxIcon(gb16_xpm));
 	icons->AddIcon(wxIcon(gb32_xpm));
 	this->SetIcons(*icons);
 
+    mainSizer = new wxBoxSizer(wxVERTICAL);
+    
     this->CreateMenuBar();
 	this->CreateToolBar();
 	
@@ -89,23 +97,20 @@ MainFrame::MainFrame(wxString fileName)
 
 	settingsDialog = new SettingsDialog(this);
 	settingsDialog->CentreOnScreen();
-	settingsDialog->LoadFromFile();
-	SettingsSetNewValues(settingsDialog->settings);
 	this->CreateRecentMenu(SettingsGetRecentRoms());
-	
+
     // create the emulation
     emulation = new EmulationThread();
     
     wxThreadError err = emulation->Create();
     if (err != wxTHREAD_NO_ERROR)
-        wxMessageBox( _("Couldn't create thread!") );
+        wxMessageBox("Couldn't create the thread!");
     
     err = emulation->Run();
     if (err != wxTHREAD_NO_ERROR)
-        wxMessageBox( _("Couldn't run thread!") );
+        wxMessageBox("Couldn't run the thread!");
     
     fullScreen = false;
-    renderer = NULL;
     ChangeRenderer();
     
 	if (fileName != wxT(""))
@@ -113,6 +118,8 @@ MainFrame::MainFrame(wxString fileName)
 		
     timer = new wxTimer(this, ID_TIMER);
 	timer->Start(16);
+    
+    SetSizerAndFit(mainSizer);
 }
 
 MainFrame::~MainFrame()
@@ -128,18 +135,18 @@ void MainFrame::CreateMenuBar()
 
     // create the file menu
     wxMenu *fileMenu = new wxMenu;
-	fileMenu->Append(wxID_OPEN, wxT("&Open\tCtrl+O"));
+	fileMenu->Append(wxID_OPEN, _("&Open")+wxT("\tCtrl+O"));
 	
 	recentMenuFile = new wxMenu;
 	recentMenuFile->AppendSeparator();
-	recentMenuFile->Append(ID_CLEAR_RECENT, wxT("Clear recent roms"));
-	fileMenu->AppendSubMenu(recentMenuFile, wxT("Open Recent"));
+	recentMenuFile->Append(ID_CLEAR_RECENT, _("Clear recent roms"));
+	fileMenu->AppendSubMenu(recentMenuFile, _("Open Recent"));
 	
 	// Se crea un wxMenu que se tratará exactamente igual que a recentMenuFile
 	// para poder tener uno en el menuBar y otro como popUp
 	recentMenuPopup = new wxMenu;
 	recentMenuPopup->AppendSeparator();
-	recentMenuPopup->Append(ID_CLEAR_RECENT, wxT("Clear recent roms"));
+	recentMenuPopup->Append(ID_CLEAR_RECENT, _("Clear recent roms"));
 	
 	wxMenu * loadMenuFile = new wxMenu;
 	wxMenu * saveMenuFile = new wxMenu;
@@ -154,31 +161,36 @@ void MainFrame::CreateMenuBar()
 		slotMenu << wxT("Slot ") << id << wxT("\tCtrl+") << id;
 		saveMenuFile->Append(ID_SAVESTATE0+id, slotMenu);
 	}
-	fileMenu->AppendSubMenu(loadMenuFile, wxT("Load State"));
-	fileMenu->AppendSubMenu(saveMenuFile, wxT("Save State"));
+	fileMenu->AppendSubMenu(loadMenuFile, _("Load State"));
+	fileMenu->AppendSubMenu(saveMenuFile, _("Save State"));
 	
-	fileMenu->Append(wxID_EXIT, wxT("E&xit"));
+	fileMenu->Append(wxID_EXIT, _("E&xit"));
 
     // add the file menu to the menu bar
-    mb->Append(fileMenu, wxT("&File"));
+    mb->Append(fileMenu, _("&File"));
 
 	// create the emulation menu
     wxMenu *emulationMenu = new wxMenu;
-	emulationMenu->Append(wxID_PREFERENCES, wxT("&Settings\tCtrl+E"));
-    emulationMenu->Append(ID_START, wxT("&Start\tCtrl+S"));
-	emulationMenu->Append(ID_PAUSE, wxT("&Pause\tCtrl+P"));
-	emulationMenu->Append(ID_STOP, wxT("S&top\tCtrl+T"));
-    emulationMenu->Append(ID_FULLSCREEN, wxT("&FullScreen\tCtrl+F"));
+	emulationMenu->Append(wxID_PREFERENCES, _("&Settings")+wxT("\tCtrl+E"));
+    emulationMenu->Append(ID_START, _("&Start")+wxT("\tCtrl+S"));
+	emulationMenu->Append(ID_PAUSE, _("&Pause")+wxT("\tCtrl+P"));
+	emulationMenu->Append(ID_STOP, _("S&top")+wxT("\tCtrl+T"));
+    emulationMenu->Append(ID_FULLSCREEN, _("&FullScreen")+wxT("\tCtrl+F"));
 
     // add the file menu to the menu bar
-    mb->Append(emulationMenu, wxT("&Emulation"));
+    mb->Append(emulationMenu, _("&Emulation"));
+    
+    wxMenu *languageMenu = new wxMenu;
+    languageMenu->Append(ID_LANG_ENGLISH, "English");
+    languageMenu->Append(ID_LANG_SPANISH,  wxString::FromUTF8("Español"));
+    mb->Append(languageMenu, _("&Language"));
 
     // create the help menu
     wxMenu *helpMenu = new wxMenu;
-    helpMenu->Append(wxID_ABOUT, wxT("&About"));
+    helpMenu->Append(wxID_ABOUT, _("&About"));
 
     // add the help menu to the menu bar
-    mb->Append(helpMenu, wxT("&Help"));
+    mb->Append(helpMenu, _("&Help"));
 
     // add the menu bar to the MainFrame
     this->SetMenuBar(mb);
@@ -186,31 +198,42 @@ void MainFrame::CreateMenuBar()
 
 void MainFrame::CreateToolBar()
 {
-
-	toolBar = new wxToolBar(this, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxTB_HORIZONTAL|wxNO_BORDER);
+    toolBar = new wxToolBar(this, wxID_ANY);
+    
+    //toolBar->AddStretchableSpace();
+    
 	wxBitmap bmpOpen(open_xpm);
-	toolBar->AddTool(wxID_OPEN, bmpOpen, wxT("Open"));
+	toolBar->AddTool(wxID_OPEN, _("Open"), bmpOpen);
 	
 	wxBitmap bmpRecent(recent_xpm);
-	toolBar->AddTool(ID_OPEN_RECENT, bmpRecent, wxT("Recent"));
+	toolBar->AddTool(ID_OPEN_RECENT, _("Recent"), bmpRecent);
 
 	toolBar->AddSeparator();
 
 	wxBitmap bmpPlay(play_xpm);
-	toolBar->AddTool(ID_START, bmpPlay, wxT("Start"));
+	toolBar->AddTool(ID_START, _("Start"), bmpPlay);
 
 	wxBitmap bmpPause(pause_xpm);
-	toolBar->AddTool(ID_PAUSE, bmpPause, wxT("Pause"));
+	toolBar->AddTool(ID_PAUSE, _("Pause"), bmpPause);
 
 	wxBitmap bmpStop(stop_xpm);
-	toolBar->AddTool(ID_STOP, bmpStop, wxT("Stop"));
+	toolBar->AddTool(ID_STOP, _("Stop"), bmpStop);
 	
 	toolBar->EnableTool(ID_START, false);
 	toolBar->EnableTool(ID_PAUSE, false);
 	toolBar->EnableTool(ID_STOP, false);
+    
+    toolBar->AddSeparator();
+    
+    wxBitmap bmpChangeView(changeView_xpm);
+	toolBar->AddTool(ID_CHANGEVIEW, _("Change View"), bmpChangeView);
 
-	toolBar->Realize();
-	this->SetToolBar(toolBar);
+    //toolBar->AddStretchableSpace();
+    
+	
+    //SetToolBar(toolBar);
+    toolBar->Realize();
+    mainSizer->Add(toolBar, 0, wxEXPAND);
 }
 
 void MainFrame::OnRecent(wxCommandEvent &event)
@@ -223,7 +246,7 @@ void MainFrame::OnFileOpen(wxCommandEvent &) {
 	enumEmuStates copyState = emulation->GetState();
     emulation->SetState(Paused);
 	
-	wxFileDialog* openDialog = new wxFileDialog(this, wxT("Choose a gameboy rom to open"), wxEmptyString, wxEmptyString,
+	wxFileDialog* openDialog = new wxFileDialog(this, _("Choose a gameboy rom to open"), wxEmptyString, wxEmptyString,
 												wxT("Gameboy roms (*.gb; *.gbc; *.zip)|*.gb;*.gbc;*.zip"),
 												wxFD_OPEN, wxDefaultPosition);
 
@@ -259,7 +282,7 @@ void MainFrame::OnLoadState(wxCommandEvent &event)
 	}
 	catch(GBException e)
 	{
-		wxMessageBox(wxString(e.what(), wxConvUTF8), wxT("Error"), wxICON_WARNING);
+		wxMessageBox(wxString(e.what(), wxConvUTF8), _("Error"), wxICON_WARNING);
 	}
 }
 
@@ -281,7 +304,7 @@ void MainFrame::OnSaveState(wxCommandEvent &event)
 	}
 	catch(GBException e)
 	{
-		wxMessageBox(wxString(e.what(), wxConvUTF8), wxT("Error"), wxICON_WARNING);
+		wxMessageBox(wxString(e.what(), wxConvUTF8), _("Error"), wxICON_WARNING);
 	}
 }
 
@@ -295,7 +318,8 @@ void MainFrame::OnClearRecent(wxCommandEvent &)
 	numRecentFiles = 0;
 	
 	this->RecentRomsToSettings();
-	settingsDialog->SaveToFile(true);
+    settingsDialog->Reload();
+    SettingsSaveToFile();
 }
 
 void MainFrame::ChangeFile(const wxString fileName)
@@ -378,7 +402,8 @@ void MainFrame::UpdateRecentMenu(wxString fileName)
 	}
 	
 	this->RecentRomsToSettings();
-	settingsDialog->SaveToFile(true);
+    settingsDialog->Reload();
+    SettingsSaveToFile();
 }
 
 
@@ -428,7 +453,7 @@ void MainFrame::OnSettings(wxCommandEvent &)
 
     if (settingsDialog->ShowModal() == wxID_OK)
 	{
-		SettingsSetNewValues(settingsDialog->settings);
+		settingsDialog->AcceptValues();
         if (SettingsGetRenderMethod() != typeRenderer)
         {
             ChangeRenderer();    
@@ -437,12 +462,6 @@ void MainFrame::OnSettings(wxCommandEvent &)
         if (renderer)
             renderer->ChangePalette(SettingsGetGreenScale());
         
-        if (!fullScreen)
-        {
-            if (renderer)
-                renderer->ChangeSize();
-            this->SetClientSize(GB_SCREEN_W*SettingsGetWindowZoom(), GB_SCREEN_H*SettingsGetWindowZoom());
-        }
 		emulation->ApplySettings();
 	}
 
@@ -455,7 +474,9 @@ void MainFrame::ChangeRenderer()
     
     if (renderer)
     {
-        ((wxWindow *)renderer->GetWinRenderer())->Destroy();
+        wxWindow *window = renderer->GetWinRenderer();
+        mainSizer->Detach(window);
+        window->Destroy();
     }
     
     if (typeRenderer == 0)
@@ -467,11 +488,10 @@ void MainFrame::ChangeRenderer()
         renderer = new RendererOGL(this);
     }
     
-    // Redimensionar el frame para que el dibujado se realize correctamente
-    this->SetClientSize(GB_SCREEN_W*SettingsGetWindowZoom()+1, GB_SCREEN_H*SettingsGetWindowZoom()+1);
-    this->SetClientSize(GB_SCREEN_W*SettingsGetWindowZoom(), GB_SCREEN_H*SettingsGetWindowZoom());
-    
     emulation->SetScreen(renderer);
+    
+    mainSizer->Add(renderer->GetWinRenderer(), 1, wxEXPAND);
+    mainSizer->Layout();
 }
 
 void MainFrame::OnFullScreen(wxCommandEvent &)
@@ -562,16 +582,86 @@ void MainFrame::ToggleFullScreen()
 {
     fullScreen = !fullScreen;
     ShowFullScreen(fullScreen, wxFULLSCREEN_ALL);
-    
-    if (!fullScreen)
-    {
-        renderer->ChangeSize();
-        this->SetClientSize(GB_SCREEN_W*SettingsGetWindowZoom(), GB_SCREEN_H*SettingsGetWindowZoom());
-    }
 }
 
 void MainFrame::OnTimer(wxTimerEvent &event)
 {
     renderer->OnRefreshScreen();
     emulation->UpdatePad();
+}
+
+void MainFrame::OnResize(wxSizeEvent &event)
+{
+#ifndef __WXMSW__
+    wxSize clientSize = this->GetClientSize();
+    wxSize imageSize = clientSize;
+    imageSize.y -= 24;
+    
+    float aspectRatio = (float)GB_SCREEN_W / GB_SCREEN_H;
+
+    int magneticBorder = 20;
+    int mod = imageSize.x % GB_SCREEN_W;
+    
+    if (mod < magneticBorder)
+        imageSize.x -= mod;
+    else if (mod > (GB_SCREEN_W-magneticBorder))
+        imageSize.x += (GB_SCREEN_W-mod);
+    
+    imageSize.y = imageSize.x / aspectRatio;
+    
+    if (imageSize.y > wxSystemSettings::GetMetric(wxSYS_SCREEN_Y)-(24+22))
+        imageSize.y = wxSystemSettings::GetMetric(wxSYS_SCREEN_Y)-(24+22);
+    
+    if (!IsFullScreen())
+        this->SetClientSize(wxSize(imageSize.x, imageSize.y+24));
+    
+    this->Layout();
+	if (renderer)
+		renderer->OnRefreshScreen();
+#else	
+	event.Skip();
+#endif
+}
+
+void MainFrame::OnMaximize(wxMaximizeEvent &event) {
+    static int width=160, height=190;
+    static bool maximized = false;
+    static int posX=0, posY=0;
+    
+    if (maximized) {
+        SetSize(width, height);
+        SetPosition(wxPoint(posX, posY));
+    }
+    else {
+        GetSize(&width, &height);
+        GetPosition(&posX, &posY);
+        event.Skip(true);
+    }
+    
+    maximized = !maximized;
+}
+
+void MainFrame::OnChangeLanguage(wxCommandEvent &event) {
+    int id = event.GetId();
+    
+    switch (id) {
+        case ID_LANG_ENGLISH:
+            SettingsSetLanguage(wxLANGUAGE_ENGLISH);
+            break;
+            
+        case ID_LANG_SPANISH:
+            SettingsSetLanguage(wxLANGUAGE_SPANISH);
+            break;
+            
+        default:
+            SettingsSetLanguage(wxLANGUAGE_ENGLISH);
+            break;
+    }
+    
+    SettingsSaveToFile();
+    wxMessageBox(_("The language will change the next time you restart the application"), _("Language"));
+}
+
+void MainFrame::OnChangeView(wxCommandEvent &event) {
+    renderer->OnChangeView();
 }

@@ -18,7 +18,6 @@
 #ifndef __BASERENDERER_H__
 #define __BASERENDERER_H__
 
-#include <wx/wx.h>
 #include <wx/dnd.h>
 #include "../Def.h"
 #include "../IGBScreenDrawable.h"
@@ -38,7 +37,6 @@ public:
     wxWindow * GetWinRenderer();
 	void SetWinRenderer(wxWindow * parent, wxWindow *renderer);
 	void CreateScreen();
-	void ChangeSize();
 	void ChangePalette(bool original);
 	
 	void OnClear();
@@ -47,6 +45,7 @@ public:
 	void OnPostDraw();
 	void OnDrawPixel(int idColor, int x, int y);
     void OnDrawPixel(BYTE r, BYTE g, BYTE b, int x, int y);
+    virtual void OnChangeView() = 0;
     
 protected:
 	BYTE * imgBuf1;

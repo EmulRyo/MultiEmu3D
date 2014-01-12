@@ -86,9 +86,9 @@ void Video::UpdateBG(int y)
 	valueLCDC = mem->memory[LCDC];
 	valueSCX = mem->memory[SCX];
 
-	display = BIT7(valueLCDC) && BIT0(valueLCDC);
+	display = BIT7(valueLCDC);
 	
-	//Si el LCD o Background desactivado
+	//Si el LCD desactivado
 	//pintamos la linea de blanco o negro
 	if (!display && screen)
 	{
@@ -120,6 +120,7 @@ void Video::UpdateBG(int y)
 	else if (yScrolled > 255)
 		yScrolled -= 256;
 	
+    pixel->y = y;
 	pixel->yTile = yScrolled % 8;
 	pixel->rowMap = (yScrolled/8 * 32);
 	
@@ -141,7 +142,6 @@ void Video::UpdateBG(int y)
             else
                 screen->OnDrawPixel(pixel->color, x, y);
         }
-		indexColorsBGWnd[x][y] = pixel->indexColor;
 	}
 }
 
@@ -197,13 +197,12 @@ void Video::UpdateWin(int y)
             else
                 screen->OnDrawPixel(pixel->color, x, y);
         }
-		indexColorsBGWnd[x][y] = pixel->indexColor;
 	}
 }
 
 inline void Video::GetColor(VideoPixel * p)
 {
-	int xTile, line[2], addressIdTile, addressTile, mapAttributes, yTile, idMapTile;
+	int xTile, line[2], addressIdTile, addressTile, mapAttributes, yTile, idMapTile, bgPriority;
     BYTE colorPalette[4][3];
 	
     idMapTile = p->rowMap + p->xScrolled/8;
@@ -219,6 +218,7 @@ inline void Video::GetColor(VideoPixel * p)
 		addressTile = 0x8000 + mem->memory[addressIdTile]*16;
 	}
     
+    bgPriority = 0;
     xTile = p->xScrolled % 8;
     yTile = p->yTile;
     if (colorMode)
@@ -232,6 +232,7 @@ inline void Video::GetColor(VideoPixel * p)
             xTile = ABS(xTile - 7);
         if (BIT6(mapAttributes))    // Flip y
             yTile = ABS(yTile - 7);
+        bgPriority = BIT7(mapAttributes);
         
         int numPalette = mapAttributes & 0x07;
         GetColorPalette(colorPalette, BGP_OFFSET + (numPalette*8));
@@ -254,11 +255,16 @@ inline void Video::GetColor(VideoPixel * p)
     }
     else
         p->color = p->palette[p->indexColor];
+    
+    if (bgPriority)
+        stateBGWnd[pixel->x][pixel->y] = -1;
+    else
+        stateBGWnd[pixel->x][pixel->y] = pixel->indexColor;
 }
 
 void Video::OrderOAM(int y)
 {
-	int ySprite, hSprite, address;
+	int ySprite, hSprite, address, numSprite;
 
 	orderedOAM.clear();
 
@@ -266,21 +272,45 @@ void Video::OrderOAM(int y)
 		return;
 
 	hSprite = BIT2(mem->memory[LCDC]) ? 16 : 8;
-
-	for(address=0xFE00; address<0xFEA0; address+=0x04)
+    
+    numSprite = 40;
+    for(address=0xFE9C; address>=0xFE00; address-=0x04)
 	{
 		ySprite = mem->memory[address];
 
 		ySprite -= 16;	//y en pantalla
 		if ((ySprite > y-hSprite) && (ySprite <= y))
-				orderedOAM.insert(pair<int, int>(mem->memory[address+1], address));
+        {
+            if (colorMode)
+                orderedOAM.insert(pair<int, int>(numSprite, address));
+            else
+                orderedOAM.insert(pair<int, int>(mem->memory[address+1], address));
+        }
+        numSprite--;
 	}
+    
+// Habilitar para permitir solo 10 tiles por linea (asi es como funciona en la realidad)
+#if (0)
+    int size = orderedOAM.size();
+    if (size > 10)
+    {
+        numSprite = 0;
+        multimap<int, int>::iterator it;
+        for (it=orderedOAM.begin(); it!=orderedOAM.end(); it++)
+        {
+            numSprite++;
+            if (numSprite > 10)
+                break;
+        }
+        orderedOAM.erase(it, orderedOAM.end());
+    }
+#endif
 }
 
 void Video::UpdateOAM(int y)
 {
 	int x, xSprite, numSpritesLine, xBeg;
-	int attrSprite, xTile, yTile, xFlip, yFlip, countX, countY, behind, mode16, ySprite;
+	int attrSprite, xTile, yTile, xFlip, yFlip, countX, countY, spritePriority, mode16, ySprite;
 	int addressSprite, tileNumber, addressTile;
 	int color;
 	int palette0[4], palette1[4];
@@ -295,17 +325,15 @@ void Video::UpdateOAM(int y)
 	GetDMGPalette(palette0, OBP0);
 	GetDMGPalette(palette1, OBP1);
 
-	multimap<int, int>::iterator it;
+	multimap<int, int>::reverse_iterator it;
 
 	numSpritesLine = 0;
 
-	for (it=orderedOAM.begin(); (it != orderedOAM.end()) && (numSpritesLine < 10); it++)
+	for (it=orderedOAM.rbegin(); it != orderedOAM.rend(); it++)
 	{
-		numSpritesLine++;
-
 		addressSprite = (*it).second;
-		ySprite = mem->memory[addressSprite] - 16;	//=mem->MemR(dirSprite + 0);
-		xSprite = (*it).first - 8;				//=mem->MemR(dirSprite + 1);
+		ySprite = mem->memory[addressSprite+0] - 16;
+		xSprite = mem->memory[addressSprite+1] - 8;
 		if (xSprite == -8)
 			continue;
 		tileNumber = mem->memory[addressSprite + 2];
@@ -316,7 +344,7 @@ void Video::UpdateOAM(int y)
 		addressTile = 0x8000 + tileNumber*16;
 		xFlip = BIT5(attrSprite);
 		yFlip = BIT6(attrSprite);
-		behind = BIT7(attrSprite);
+		spritePriority = BIT7(attrSprite);
         
         if (colorMode)
         {
@@ -356,9 +384,26 @@ void Video::UpdateOAM(int y)
 			//Un pixel lo componen 2 bits. Seleccionar la posicion del bit en los dos bytes (line[0] y line[1])
 			//Esto devolvera un numero de color que junto a la paleta de color nos dara el color requerido
 			BYTE index = (((line[1] & (1 << pixX)) >> pixX) << 1) | ((line[0] & (1 << pixX)) >> pixX);
-
+            
+            bool paintSprite = (BIT0(mem->memory[LCDC]) == 0);
+            if (!paintSprite) {
+                int bgColor = stateBGWnd[xSprite + countX][ySprite + countY];
+                bool bgPriority = (bgColor == -1);
+                if (bgPriority)
+                    paintSprite = false;
+                else {
+                    if (spritePriority) {
+                        if (bgColor == 0)
+                            paintSprite = true;
+                        else
+                            paintSprite = false;
+                    }
+                    else
+                        paintSprite = true;
+                }
+            }
 			//El 0 es transparente (no pintar)
-			if ((index) && ((!behind) || (!indexColorsBGWnd[xSprite + countX][ySprite + countY])))
+			if (paintSprite && (index > 0))
 			{
                 if (colorMode) {
                     BYTE r = colorPalette[index][0];
@@ -403,9 +448,11 @@ void Video::GetColorPalette(BYTE palette[4][3], int address)
         palette[i][1] = ((data2 & 0x03) << 3) | ((data1 & 0xE0) >> 5);
         palette[i][2] = (data2 & 0x7C) >> 2;
         
-        palette[i][0] = palette[i][0] * 255 / 0x1F;
-        palette[i][1] = palette[i][1] * 255 / 0x1F;
-        palette[i][2] = palette[i][2] * 255 / 0x1F;
+        // Como el valor va de 0 a 31 (1F), hay que convertirlo de 0 a 255
+        // para que sea mas eficiente lo hare de 0 a 248
+        palette[i][0] <<= 3;
+        palette[i][1] <<= 3;
+        palette[i][2] <<= 3;
         
         address += 2;
     }

@@ -15,10 +15,10 @@
  along with DMGBoy.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "../Def.h"
-#include "../Settings.h"
+#include "Settings.h"
 #include "MainFrame.h"
 #include "RendererBase.h"
+#include "../Def.h"
 
 DEFINE_EVENT_TYPE(wxEVT_RENDERER_REFRESHSCREEN)
 
@@ -47,7 +47,6 @@ RendererBase::RendererBase()
 	winRenderer = NULL;
     changed = false;
 	CreateScreen();
-	ChangeSize();
 }
 
 RendererBase::~RendererBase()
@@ -66,6 +65,7 @@ wxWindow * RendererBase::GetWinRenderer()
 
 void RendererBase::SetWinRenderer(wxWindow * parent, wxWindow *renderer)
 {
+    renderer->SetMinSize(wxSize(GB_SCREEN_W, GB_SCREEN_H));
 	this->winRenderer = renderer;
 	renderer->SetDropTarget(new DnDFile(parent));
     //renderer->SetCursor( wxCursor( wxCURSOR_BLANK ) ); 
@@ -86,17 +86,6 @@ void RendererBase::ChangePalette(bool original)
 		selPalette = 0;
 	else
 		selPalette = 1;
-}
-
-void RendererBase::ChangeSize()
-{
-	int zoom = SettingsGetWindowZoom();
-	
-	wxSize size(GB_SCREEN_W*zoom, GB_SCREEN_H*zoom);
-	if (winRenderer)
-	{
-		winRenderer->SetClientSize(size);
-	}
 }
 
 void RendererBase::OnClear()
@@ -121,12 +110,9 @@ void RendererBase::OnRefreshScreen()
 	{
 		if (wxThread::IsMain())
         {
-            if (changed)
-            {
-                winRenderer->Refresh(false);
-                winRenderer->Update();
-                changed = false;
-            }
+            winRenderer->Refresh(false);
+            winRenderer->Update();
+            changed = false;
         }
         else
             PageFlip();
