@@ -1,7 +1,25 @@
+/*
+ This file is part of DMGBoy.
+ 
+ DMGBoy is free software: you can redistribute it and/or modify
+ it under the terms of the GNU General Public License as published by
+ the Free Software Foundation, either version 3 of the License, or
+ (at your option) any later version.
+ 
+ DMGBoy is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ GNU General Public License for more details.
+ 
+ You should have received a copy of the GNU General Public License
+ along with DMGBoy.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <fstream>
+#include <wx/wx.h>
 
 #ifdef __WXMAC__
 #include <OpenGL/glu.h>
@@ -11,7 +29,7 @@
 
 #include "Geo.h"
 #include "wxImageLoader.h"
-#define MAXCHAR 4098
+#define MAXLINE 4096
 
 using namespace std;
 
@@ -31,7 +49,7 @@ bool strEndsWith(const char *str1, const char *str2) {
 }
 
 void ObjLoad(const char *filename, Geo &geo) {
-    char line[MAXCHAR], temp[MAXCHAR];
+    char line[MAXLINE], temp[MAXLINE];
     Vec3D vec3D;
     Vec2D vec2D;
     Face face;
@@ -40,7 +58,7 @@ void ObjLoad(const char *filename, Geo &geo) {
     FILE *file;
     
     if ((file = fopen(filename,"r"))){
-        while (fgets(line, MAXCHAR, file)){
+        while (fgets(line, MAXLINE, file)){
             if (!memcmp(line, "v ", 2)){
                     sscanf(line+1, "%f%f%f", &vec3D.x, &vec3D.y, &vec3D.z);
                     ArrayAdd(geo.vertices, &vec3D);
@@ -63,7 +81,7 @@ void ObjLoad(const char *filename, Geo &geo) {
                     geo.materials = MtlLoad(temp);
             }
             else if (!memcmp(line, "usemtl", 6)){
-                    memcpy(temp, line+7, MAXCHAR);
+                    memcpy(temp, line+7, MAXLINE);
                     temp[strlen(temp)-1] = '\0';
                     currentMat = MatGetID(geo.materials, temp);
             }
@@ -164,18 +182,20 @@ void SaveArray(ofstream *file, const Array &a) {
 }
 
 void SaveArrayIndices(ofstream *file, const Array &a) {
+    unsigned int i;
     unsigned int length = ArrayLength(a);
     file->write((char *)&length, sizeof(unsigned int));
-    for (int i=0; i<length; i++) {
+    for (i=0; i<length; i++) {
         const Array *indices = ArrayAtPtr<Array>(a, i);
         SaveArray(file, *indices);
     }
 }
 
 void SaveArrayMats(ofstream *file, const Array &a) {
+    unsigned int i;
     unsigned int length = ArrayLength(a);
     file->write((char *)&length, sizeof(unsigned int));
-    for (int i=0; i<length; i++) {
+    for (i=0; i<length; i++) {
         Material mat = ArrayAt<Material>(a, i);
         
         size_t nameLen = strlen(mat.name);
@@ -236,10 +256,11 @@ void LoadArray(ifstream *file, Array &a, size_t elementSize) {
 }
 
 void LoadArrayIndices(ifstream *file, Array &a) {
+    unsigned int i;
     unsigned int length;
     file->read((char *)&length, sizeof(unsigned int));
-    
-    for (int i=0; i<length; i++) {
+
+    for (i=0; i<length; i++) {
         Array indices = ArrayCreate<unsigned int>(1000);
         LoadArray(file, indices, sizeof(unsigned int));
         ArrayAdd(a, &indices);
@@ -247,10 +268,11 @@ void LoadArrayIndices(ifstream *file, Array &a) {
 }
 
 void LoadArrayMats(ifstream *file, Array &a) {
+    unsigned int i;
     unsigned int length;
     file->read((char *)&length, sizeof(unsigned int));
-    
-    for (int i=0; i<length; i++) {
+
+    for (i=0; i<length; i++) {
         Material mat;
         
         size_t nameLen = 0;
@@ -363,6 +385,8 @@ void CreateIndexedBuffers(const Array &inVertices, const Array &inNormals, const
 }
 
 void GeoFillVBOBuffers(Geo &geo, Array &outVertices, Array &outNormals, Array &outTexCoords, Array &outIndices) {
+    unsigned long i;
+
     glGenBuffers(1, &geo.vboVertices);
     glBindBuffer(GL_ARRAY_BUFFER, geo.vboVertices);
     glBufferData(GL_ARRAY_BUFFER, ArrayBytes(outVertices), ArrayPtr(outVertices), GL_STATIC_DRAW);
@@ -379,7 +403,7 @@ void GeoFillVBOBuffers(Geo &geo, Array &outVertices, Array &outNormals, Array &o
     geo.numIndices = ArrayCreate<unsigned int>(10);
     geo.vboIndices = (GLuint *) malloc(sizeof(GLuint) * ArrayLength(outIndices));
     glGenBuffers(ArrayLength(outIndices), geo.vboIndices);
-    for (int i=0; i<ArrayLength(outIndices); i++) {
+    for (i=0; i<ArrayLength(outIndices); i++) {
         Array indices = ArrayAt<Array>(outIndices, i);
         unsigned int length = ArrayLength(indices);
         ArrayAdd(geo.numIndices, &length);
@@ -390,7 +414,9 @@ void GeoFillVBOBuffers(Geo &geo, Array &outVertices, Array &outNormals, Array &o
 }
 
 void GeoClearVBOArrays(Array &outVertices, Array &outNormals, Array &outTexCoords, Array &outIndices) {
-    for (int i=0; i<ArrayLength(outIndices); i++) {
+    unsigned long i;
+
+    for (i=0; i<ArrayLength(outIndices); i++) {
         Array indices = ArrayAt<Array>(outIndices, i);
         ArrayClear(indices);
     }
@@ -401,11 +427,13 @@ void GeoClearVBOArrays(Array &outVertices, Array &outNormals, Array &outTexCoord
 }
 
 void GeoCreateVBO(Geo &geo) {
+    unsigned long i;
+
     Array outVertices = ArrayCreate<Vec3D>(300);
     Array outNormals  = ArrayCreate<Vec3D>(300);
     Array outTexCoords = ArrayCreate<Vec2D>(300);
     Array outIndices = ArrayCreate<Array>(10);
-    for (int i=0; i<ArrayLength(geo.materials); i++) {
+    for (i=0; i<ArrayLength(geo.materials); i++) {
         Array indices = ArrayCreate<unsigned int>(1000);
         ArrayAdd(outIndices, &indices);
     }
@@ -417,6 +445,8 @@ void GeoCreateVBO(Geo &geo) {
 }
 
 void DrawVBO(const Geo &geo) {
+    unsigned long i;
+
     glEnableClientState(GL_VERTEX_ARRAY);
     glEnableClientState(GL_NORMAL_ARRAY);
     glEnableClientState(GL_TEXTURE_COORD_ARRAY);
@@ -429,8 +459,8 @@ void DrawVBO(const Geo &geo) {
     
     glBindBuffer(GL_ARRAY_BUFFER, geo.vboTexCoords);
     glTexCoordPointer(2, GL_FLOAT, 0, 0);
-    
-    for (int i=0; i<ArrayLength(geo.numIndices); i++) {
+
+    for (i=0; i<ArrayLength(geo.numIndices); i++) {
         MatApply(ArrayAt<Material>(geo.materials, i));
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, geo.vboIndices[i]);
         unsigned int numIndices = ArrayAt<unsigned int>(geo.numIndices, i);
@@ -520,7 +550,7 @@ Material MatCreate(const char *name){
 }     
 
 int MatGetID(const Array &materials, char *name){
-    int i,j,res;
+    unsigned int i,j,res;
     const Material *m = ArrayPtr<Material>(materials);
     
     res = 0;
@@ -536,7 +566,7 @@ int MatGetID(const Array &materials, char *name){
 Array MtlLoad(const char* filename){
     //Esta funcion lee el fichero de materiales especificado y rellena un array
     //con todos los materiales encontrados, una vez hecho esto retorna el array
-    char line[MAXCHAR], *copy;
+    char line[MAXLINE], *copy;
     Array materials = ArrayCreate<Material>(5);
     Material m;
     int initial = 0;
@@ -544,7 +574,7 @@ Array MtlLoad(const char* filename){
     FILE *file;
     
     if ((file = fopen(filename, "r"))){
-        while (fgets(line, MAXCHAR, file)){ //Mientras queden lineas sigue leyendo
+        while (fgets(line, MAXLINE, file)){ //Mientras queden lineas sigue leyendo
             if (!strchr(line, '#')){
                 if (!memcmp(line, "newmtl", 6)){ //Si es la palabra newmtl, entonces...
                     //anyadir el material anterior (menos la primera vez)
@@ -615,9 +645,9 @@ void LoadTextures(Array &materials){
 
 unsigned int LoadTexture(const char* fileName){
     int imageWidth, imageHeight, textureWidth, textureHeight;
-    
-    return LoadImage(fileName, &imageWidth, &imageHeight, &textureWidth, &textureHeight);
-}    
+
+    return LoadImage(wxString(fileName, *wxConvCurrent), &imageWidth, &imageHeight, &textureWidth, &textureHeight);
+}
 
 void MatApply(const Material &mat) {
     
