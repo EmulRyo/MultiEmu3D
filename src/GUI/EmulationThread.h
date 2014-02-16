@@ -27,6 +27,7 @@ class Cartridge;
 class Video;
 class Sound;
 class CPU;
+class Debugger;
 class IGBScreenDrawable;
 class wxMutex;
 
@@ -44,17 +45,18 @@ public:
     void ApplySettings();
     void SetScreen(IGBScreenDrawable * screen);
     void UpdatePad();
+    Debugger *GetDebugger();
     
     enumEmuStates GetState();
     void SetState(enumEmuStates state);
     
 private:
-	Video * video;
-	Sound * sound;
-	Cartridge * cartridge;
-    CPU * cpu;
-    class Debugger * debugger;
-    wxMutex * mutex;
+	Video *video;
+	Sound *sound;
+	Cartridge *cartridge;
+    CPU *cpu;
+    Debugger *debugger;
+    wxMutex *mutex;
     wxStopWatch swFrame;
     
 	enumEmuStates emuState;

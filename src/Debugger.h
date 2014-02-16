@@ -19,6 +19,7 @@
 #define __DEBUGGER_H__
 
 #include "string"
+#include "Def.h"
 
 class Sound;
 class Video;
@@ -39,6 +40,8 @@ public:
     std::string GetRegSP();
     std::string GetRegPC();
     
+    std::string GetRegs();
+    
     std::string GetMem(WORD start, WORD end);
     std::string GetMemVRam(WORD start, WORD end, int slot);
     std::string GetMemPalette(int sprite, int number);
@@ -48,6 +51,7 @@ public:
     void GetColorPalette(int sprite, int number, BYTE palette[4][3]);
     
     void Step();
+    void ExecuteOneFrame();
     
 private:
 	Sound *sound;

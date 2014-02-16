@@ -47,6 +47,7 @@
 		6E88103918392B9C00E5F636 /* gb.3di in CopyFiles */ = {isa = PBXBuildFile; fileRef = 6E88103618390F1700E5F636 /* gb.3di */; };
 		6EAFD344172C03EC0089D6D0 /* DMGBoy.icns in Resources */ = {isa = PBXBuildFile; fileRef = 6E20575F120589BF00079331 /* DMGBoy.icns */; };
 		6EE5987C17CCB0EE008B5A91 /* Camera.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 6EE5987A17CCB0EE008B5A91 /* Camera.cpp */; };
+		6EF404E518AFE5F3006A0FDC /* DebuggerDialog.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 6EF404E318AFE5F3006A0FDC /* DebuggerDialog.cpp */; };
 		6EFA5C0517895CCF00DD9E94 /* Settings.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 6EFA5C0317895CCF00DD9E94 /* Settings.cpp */; };
 /* End PBXBuildFile section */
 
@@ -160,6 +161,8 @@
 		6EDDDE7412EA037200BFB26A /* InputTextCtrl.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = InputTextCtrl.cpp; sourceTree = "<group>"; };
 		6EE5987A17CCB0EE008B5A91 /* Camera.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Camera.cpp; path = ../../../src/GUI/3D/Camera.cpp; sourceTree = "<group>"; };
 		6EE5987B17CCB0EE008B5A91 /* Camera.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Camera.h; path = ../../../src/GUI/3D/Camera.h; sourceTree = "<group>"; };
+		6EF404E318AFE5F3006A0FDC /* DebuggerDialog.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = DebuggerDialog.cpp; sourceTree = "<group>"; };
+		6EF404E418AFE5F3006A0FDC /* DebuggerDialog.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DebuggerDialog.h; sourceTree = "<group>"; };
 		6EFA5275126354F2000E541D /* ToDo.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = ToDo.txt; path = ../../../src/ToDo.txt; sourceTree = SOURCE_ROOT; };
 		6EFA5C0317895CCF00DD9E94 /* Settings.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Settings.cpp; sourceTree = "<group>"; };
 		6EFA5C0417895CCF00DD9E94 /* Settings.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Settings.h; sourceTree = "<group>"; };
@@ -243,6 +246,8 @@
 			isa = PBXGroup;
 			children = (
 				6E23C6BE11D7CA0C0043AF47 /* IDControls.h */,
+				6EF404E418AFE5F3006A0FDC /* DebuggerDialog.h */,
+				6EF404E318AFE5F3006A0FDC /* DebuggerDialog.cpp */,
 				6EBF280D146746D100F2D9F8 /* EmulationThread.h */,
 				6EBF280C146746D100F2D9F8 /* EmulationThread.cpp */,
 				6E23C6C011D7CA0C0043AF47 /* MainApp.h */,
@@ -463,6 +468,7 @@
 				6E4755641719970B00602FE1 /* Sound.cpp in Sources */,
 				6E4755661719970B00602FE1 /* SoundPortaudio.cpp in Sources */,
 				6EFA5C0517895CCF00DD9E94 /* Settings.cpp in Sources */,
+				6EF404E518AFE5F3006A0FDC /* DebuggerDialog.cpp in Sources */,
 				6E2B3ED417C13BD80066D9C6 /* Array.cpp in Sources */,
 				6E2B3ED517C13BD80066D9C6 /* Geo.cpp in Sources */,
 				6E2B3EDA17C14B6E0066D9C6 /* wxImageLoader.cpp in Sources */,

@@ -30,6 +30,7 @@
 #include "MainFrame.h"
 #include "AboutDialog.h"
 #include "SettingsDialog.h"
+#include "DebuggerDialog.h"
 #include "IDControls.h"
 #include "Settings.h"
 #include "../GBException.h"
@@ -60,6 +61,7 @@ EVT_MENU(wxID_ABOUT, MainFrame::OnAbout)
 EVT_MENU(ID_START, MainFrame::OnPlay)
 EVT_MENU(ID_PAUSE, MainFrame::OnPause)
 EVT_MENU(ID_STOP, MainFrame::OnStop)
+EVT_MENU(ID_DEBUG, MainFrame::OnDebug)
 EVT_MENU(ID_CHANGEVIEW, MainFrame::OnChangeView)
 EVT_MENU(ID_FULLSCREEN, MainFrame::OnFullScreen)
 EVT_UPDATE_UI( ID_START, MainFrame::OnPlayUpdateUI )
@@ -179,6 +181,8 @@ void MainFrame::CreateMenuBar()
     pauseName += wxT("\tCtrl+P");
     wxString stopName = _("S&top");
     stopName += wxT("\tCtrl+T");
+    wxString debugName = _("&Debug");
+    debugName += wxT("\tCtrl+D");
     wxString fullscreenName = _("&FullScreen");
     fullscreenName += wxT("\tCtrl+F");
 
@@ -188,6 +192,7 @@ void MainFrame::CreateMenuBar()
     emulationMenu->Append(ID_START, startName);
 	emulationMenu->Append(ID_PAUSE, pauseName);
 	emulationMenu->Append(ID_STOP, stopName);
+    emulationMenu->Append(ID_DEBUG, debugName);
     emulationMenu->Append(ID_FULLSCREEN, fullscreenName);
 
     // add the file menu to the menu bar
@@ -677,4 +682,10 @@ void MainFrame::OnChangeLanguage(wxCommandEvent &event) {
 
 void MainFrame::OnChangeView(wxCommandEvent &event) {
     renderer->OnChangeView();
+}
+
+void MainFrame::OnDebug(wxCommandEvent &event) {
+    DebuggerDialog debugger(this, emulation->GetDebugger());
+    
+    debugger.ShowModal();
 }

@@ -121,7 +121,7 @@ void CPU::ResetGlobalVariables()
 	cyclesTimer = 0;
 	cyclesDIV = 0;
 	cyclesSerial = 0;
-	frameCompleted = false;
+	exitFromMainLoop = false;
 	VBlankIntPending = false;
     newInterrupt = false;
     colorMode = false;
@@ -149,25 +149,25 @@ void CPU::Reset()
 	}
 }
 
-void CPU::ExecuteOneFrame()
+void CPU::ExecuteOneFrame() {
+    Execute(cyclesFrame);
+}
+
+void CPU::Execute(int cyclesToExecute)
 {
 	if (!this->c)
 		return;
 	
-	actualCycles = 0;
+    int cycles = 0;
 	BYTE OpCode = 0, NextOpcode = 0, lastOpCode = 0;
 
 	Instructions inst(this->GetPtrRegisters(), this->GetPtrMemory());
-	
-	frameCompleted = false;
-	
-	//UpdatePad();
 
 #ifdef MAKEGBLOG
 	log->Enqueue("\n\nStartFrame", NULL, "");
 #endif
 
-    while (!frameCompleted)
+    while (cycles < cyclesToExecute)
     {
 		numInstructions++;
 		lastOpCode = OpCode;
@@ -479,16 +479,16 @@ void CPU::ExecuteOneFrame()
         }
         
         int tmpCycles = lastCycles;
-		actualCycles += lastCycles;
         
         UpdateStateLCD(lastCycles);
 		UpdateTimer(lastCycles);
 		UpdateSerial(lastCycles);
         Interrupts(&inst);
         
+        cycles += lastCycles;
         lastCycles -= tmpCycles;
 		
-	}//end for
+	}//end while
 }
 
 
@@ -1096,7 +1096,7 @@ void CPU::OnEndFrame()
 	v->RefreshScreen();
 	if (s)
 		s->EndFrame();
-	frameCompleted = true;
+	exitFromMainLoop = true;
 }
 
 void CPU::ChangeSpeed()

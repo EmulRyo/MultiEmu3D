@@ -69,6 +69,19 @@ std::string Debugger::GetRegPC()
     return ToHex(cpu->Get_PC(), 4, '0');
 }
 
+std::string Debugger::GetRegs()
+{
+    string regs;
+    regs += "AF: " + GetRegAF() + "\n";
+    regs += "BC: " + GetRegBC() + "\n";
+    regs += "DE: " + GetRegDE() + "\n";
+    regs += "HL: " + GetRegHL() + "\n";
+    regs += "PC: " + GetRegPC() + "\n";
+    regs += "SP: " + GetRegSP();
+    
+    return regs;
+}
+
 std::string Debugger::GetMem(WORD start, WORD end)
 {
     start &= 0xFFF0;
@@ -210,7 +223,11 @@ void Debugger::GetTiles(BYTE *buffer, int width, int height)
 
 void Debugger::Step()
 {
-    
+    cpu->Execute(1);
+}
+
+void Debugger::ExecuteOneFrame() {
+    cpu->ExecuteOneFrame();
 }
 
 std::string Debugger::ToHex(int value, int width, char fill)

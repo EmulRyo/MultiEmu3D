@@ -22,14 +22,18 @@
  * Global Declarations
  *******************************************************************************/
 
+#include <wx/wx.h>
+
 enum {
     ID_MAINFRAME = wxID_HIGHEST + 1,
+    ID_DEBUGGERDIALOG,
     ID_MAINPANEL,
 	ID_LOAD,
 	ID_START,
 	ID_PAUSE,
 	ID_STOP,
     ID_CHANGEVIEW,
+    ID_DEBUG,
     ID_FULLSCREEN,
 	ID_TIMER,
 	ID_OPEN_RECENT,
@@ -82,6 +86,9 @@ enum {
 	ID_TEXTCTRL_B,
 	ID_TEXTCTRL_SELECT,
 	ID_TEXTCTRL_START,
+    
+    ID_STEP,
+    ID_ONEFRAME,
     
     ID_LANG_ENGLISH,
     ID_LANG_SPANISH
