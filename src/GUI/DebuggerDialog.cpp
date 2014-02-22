@@ -23,6 +23,7 @@
 using namespace std;
 
 BEGIN_EVENT_TABLE(DebuggerDialog, wxDialog)
+EVT_MENU(ID_RESET, DebuggerDialog::OnReset)
 EVT_MENU(ID_STEP, DebuggerDialog::OnStep)
 EVT_MENU(ID_ONEFRAME, DebuggerDialog::OnOneFrame)
 END_EVENT_TABLE()
@@ -37,7 +38,7 @@ DebuggerDialog::DebuggerDialog(wxWindow *parent, Debugger *debugger)
     m_mainSizer = new wxBoxSizer(wxVERTICAL);
     
     CreateToolBar();
-    m_regsCtrl = new wxTextCtrl(this, -1, wxEmptyString, wxDefaultPosition, wxSize(640, 480), wxTE_MULTILINE | wxTE_READONLY);
+    m_regsCtrl = new wxTextCtrl(this, -1, wxEmptyString, wxDefaultPosition, wxSize(80, 100), wxTE_MULTILINE | wxTE_READONLY);
     wxFont* tmpFont = new wxFont(12, wxTELETYPE, wxNORMAL, wxNORMAL);
     m_regsCtrl->SetFont(*tmpFont);
     m_regsCtrl->SetValue(m_debugger->GetRegs());
@@ -56,6 +57,7 @@ void DebuggerDialog::CreateToolBar()
     wxToolBar *toolBar = new wxToolBar(this, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxTB_HORIZONTAL | wxTB_TEXT | wxTB_NOICONS);
     
     wxBitmap bmpPlay(play_xpm);
+    toolBar->AddTool(ID_RESET, _("Reset"), bmpPlay);
 	toolBar->AddTool(ID_STEP, _("Step"), bmpPlay);
     toolBar->AddTool(ID_ONEFRAME, _("One frame"), bmpPlay);
     
@@ -63,12 +65,21 @@ void DebuggerDialog::CreateToolBar()
     m_mainSizer->Add(toolBar, 0, wxEXPAND);
 }
 
+void DebuggerDialog::UpdateUI() {
+    m_regsCtrl->SetValue(m_debugger->GetRegs());
+}
+
+void DebuggerDialog::OnReset(wxCommandEvent &event) {
+    m_debugger->Reset();
+    UpdateUI();
+}
+
 void DebuggerDialog::OnStep(wxCommandEvent &event) {
     m_debugger->Step();
-    m_regsCtrl->SetValue(m_debugger->GetRegs());
+    UpdateUI();
 }
 
 void DebuggerDialog::OnOneFrame(wxCommandEvent &event) {
     m_debugger->ExecuteOneFrame();
-    m_regsCtrl->SetValue(m_debugger->GetRegs());
+    UpdateUI();
 }

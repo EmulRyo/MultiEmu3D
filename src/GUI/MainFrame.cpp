@@ -70,7 +70,6 @@ EVT_UPDATE_UI( ID_STOP, MainFrame::OnStopUpdateUI )
 EVT_UPDATE_UI( ID_FULLSCREEN, MainFrame::OnFullScreenUpdateUI )
 EVT_UPDATE_UI_RANGE(ID_LOADSTATE0, ID_LOADSTATE9, MainFrame::OnLoadStateUpdateUI)
 EVT_UPDATE_UI_RANGE(ID_SAVESTATE0, ID_SAVESTATE9, MainFrame::OnSaveStateUpdateUI)
-EVT_COMMAND(wxID_ANY, wxEVT_RENDERER_REFRESHSCREEN, MainFrame::OnRefreshScreen)
 EVT_TIMER(ID_TIMER, MainFrame::OnTimer)
 EVT_CLOSE(MainFrame::OnClose)
 EVT_SIZE(MainFrame::OnResize)
@@ -591,11 +590,6 @@ void MainFrame::OnDoubleClick(wxMouseEvent &event)
     event.Skip();
 }
 
-void MainFrame::OnRefreshScreen(wxCommandEvent& event)
-{
-    renderer->OnRefreshScreen();
-}
-
 void MainFrame::ToggleFullScreen()
 {
     fullScreen = !fullScreen;
@@ -604,7 +598,7 @@ void MainFrame::ToggleFullScreen()
 
 void MainFrame::OnTimer(wxTimerEvent &event)
 {
-    renderer->OnRefreshScreen();
+    renderer->OnRefreshRealScreen();
     emulation->UpdatePad();
 }
 
@@ -635,7 +629,7 @@ void MainFrame::OnResize(wxSizeEvent &event)
     
     this->Layout();
 	if (renderer)
-		renderer->OnRefreshScreen();
+		renderer->OnRefreshRealScreen();
 #else	
 	event.Skip();
 #endif
@@ -687,5 +681,8 @@ void MainFrame::OnChangeView(wxCommandEvent &event) {
 void MainFrame::OnDebug(wxCommandEvent &event) {
     DebuggerDialog debugger(this, emulation->GetDebugger());
     
+    enumEmuStates state = emulation->GetState();
+    emulation->SetState(Paused);
     debugger.ShowModal();
+    emulation->SetState(state);
 }

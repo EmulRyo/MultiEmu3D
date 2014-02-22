@@ -44,6 +44,8 @@ private:
     wxTextCtrl *m_regsCtrl;
     
     void CreateToolBar();
+    void UpdateUI();
+    void OnReset(wxCommandEvent &);
     void OnStep(wxCommandEvent &);
     void OnOneFrame(wxCommandEvent &);
 };

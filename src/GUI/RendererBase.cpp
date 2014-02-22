@@ -45,7 +45,6 @@ RendererBase::RendererBase()
     frontBuffer = NULL;
     backBuffer = NULL;
 	winRenderer = NULL;
-    changed = false;
 	CreateScreen();
 }
 
@@ -101,22 +100,20 @@ void RendererBase::PageFlip()
     BYTE * aux = frontBuffer;
     frontBuffer = backBuffer;
     backBuffer = aux;
-    changed = true;
 }
 
-void RendererBase::OnRefreshScreen()
+//Cuando se actualiza la pantalla de la gameboy
+void RendererBase::OnRefreshGBScreen()
 {
-	if (winRenderer)
-	{
-		if (wxThread::IsMain())
-        {
-            winRenderer->Refresh(false);
-            winRenderer->Update();
-            changed = false;
-        }
-        else
-            PageFlip();
-	}
+	PageFlip();
+}
+
+//Cuando se actualiza la pantalla del PC
+void RendererBase::OnRefreshRealScreen() {
+    if (winRenderer) {
+        winRenderer->Refresh(false);
+        winRenderer->Update();
+    }
 }
 
 void RendererBase::OnPreDraw()

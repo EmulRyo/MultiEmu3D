@@ -68,7 +68,7 @@ void Video::UpdateLine(BYTE y)
 void Video::RefreshScreen()
 {
     if (screen)
-        screen->OnRefreshScreen();
+        screen->OnRefreshGBScreen();
 }
 
 void Video::ClearScreen()

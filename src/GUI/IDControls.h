@@ -87,6 +87,7 @@ enum {
 	ID_TEXTCTRL_SELECT,
 	ID_TEXTCTRL_START,
     
+    ID_RESET,
     ID_STEP,
     ID_ONEFRAME,
     

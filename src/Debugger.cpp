@@ -221,8 +221,11 @@ void Debugger::GetTiles(BYTE *buffer, int width, int height)
     }
 }
 
-void Debugger::Step()
-{
+void Debugger::Reset() {
+    cpu->Reset();
+}
+
+void Debugger::Step() {
     cpu->Execute(1);
 }
 
