@@ -40,13 +40,13 @@ protected:
     
 private:
     Debugger *m_debugger;
-    wxSizer *m_mainSizer;
     wxTextCtrl *m_regsCtrl;
+    wxTextCtrl *m_memCtrl;
     
     void CreateToolBar();
     void UpdateUI();
     void OnReset(wxCommandEvent &);
-    void OnStep(wxCommandEvent &);
+    void OnStepInto(wxCommandEvent &);
     void OnOneFrame(wxCommandEvent &);
 };
 

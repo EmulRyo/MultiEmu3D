@@ -103,7 +103,7 @@ std::string Debugger::GetMem(WORD start, WORD end)
         
         BYTE value = cpu->MemR(row+0xF);
         AppendHex(ss, value, 2, '0');
-        if (row < end)
+        if (row < (end & 0xFFF0))
             ss << '\n';
         row += 0x10;
     }
@@ -225,7 +225,7 @@ void Debugger::Reset() {
     cpu->Reset();
 }
 
-void Debugger::Step() {
+void Debugger::StepInto() {
     cpu->Execute(1);
 }
 

@@ -51,7 +51,7 @@ public:
     void GetColorPalette(int sprite, int number, BYTE palette[4][3]);
     
     void Reset();
-    void Step();
+    void StepInto();
     void ExecuteOneFrame();
     
 private:
