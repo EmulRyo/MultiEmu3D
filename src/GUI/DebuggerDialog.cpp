@@ -22,9 +22,10 @@
 using namespace std;
 
 BEGIN_EVENT_TABLE(DebuggerDialog, wxDialog)
-EVT_BUTTON(ID_DEBUGRESET, DebuggerDialog::OnReset)
-EVT_BUTTON(ID_DEBUGSTEPINTO, DebuggerDialog::OnStepInto)
-EVT_BUTTON(ID_DEBUGONEFRAME, DebuggerDialog::OnOneFrame)
+EVT_BUTTON(ID_DEBUG_RESET, DebuggerDialog::OnReset)
+EVT_BUTTON(ID_DEBUG_STEPINTO, DebuggerDialog::OnStepInto)
+EVT_BUTTON(ID_DEBUG_ONEFRAME, DebuggerDialog::OnOneFrame)
+EVT_TEXT(ID_DEBUG_MEMADDRESS, DebuggerDialog::OnMemAddressChange)
 END_EVENT_TABLE()
 
 DebuggerDialog::DebuggerDialog(wxWindow *parent, Debugger *debugger)
@@ -34,17 +35,17 @@ DebuggerDialog::DebuggerDialog(wxWindow *parent, Debugger *debugger)
     
     m_debugger = debugger;
     
-    wxButton *resetButton = new wxButton(this, ID_DEBUGRESET, wxT("Reset"));
-    wxButton *stepIntoButton = new wxButton(this, ID_DEBUGSTEPINTO, wxT("Step Into"));
-    wxButton *oneFrameButton = new wxButton(this, ID_DEBUGONEFRAME, wxT("One frame"));
-    resetButton->SetToolTip("Reset (Ctrl+R)");
+    wxButton *resetButton = new wxButton(this, ID_DEBUG_RESET, wxT("Reset"));
+    wxButton *stepIntoButton = new wxButton(this, ID_DEBUG_STEPINTO, wxT("Step Into"));
+    wxButton *oneFrameButton = new wxButton(this, ID_DEBUG_ONEFRAME, wxT("One frame"));
+    resetButton->SetToolTip("Reset (Cmd/Ctrl+R)");
     stepIntoButton->SetToolTip("Step Into (F7)");
-    oneFrameButton->SetToolTip("One frame (Ctrl+O)");
+    oneFrameButton->SetToolTip("One frame (Cmd/Ctrl+O)");
     
     wxAcceleratorEntry entries[3];
-    entries[0].Set(wxACCEL_CTRL, (int) 'R', ID_DEBUGRESET);
-    entries[1].Set(wxACCEL_NORMAL, WXK_F7, ID_DEBUGSTEPINTO);
-    entries[2].Set(wxACCEL_CTRL, (int) 'O', ID_DEBUGONEFRAME);
+    entries[0].Set(wxACCEL_CTRL, (int) 'R', ID_DEBUG_RESET);
+    entries[1].Set(wxACCEL_NORMAL, WXK_F7, ID_DEBUG_STEPINTO);
+    entries[2].Set(wxACCEL_CTRL, (int) 'O', ID_DEBUG_ONEFRAME);
     wxAcceleratorTable accel(3, entries);
     SetAcceleratorTable(accel);
     
@@ -54,12 +55,18 @@ DebuggerDialog::DebuggerDialog(wxWindow *parent, Debugger *debugger)
     
     m_regsCtrl = new wxTextCtrl(this, -1, wxEmptyString, wxDefaultPosition, wxSize(80, 90), wxTE_MULTILINE | wxTE_READONLY);
     m_regsCtrl->SetFont(*tmpFont);
-    m_regsCtrl->SetValue(m_debugger->GetRegs());
+    
+    wxTextValidator *validator = new wxTextValidator(wxFILTER_INCLUDE_CHAR_LIST);
+    validator->SetCharIncludes(wxT("0123456789ABCDEFabcdef"));
     
     wxStaticText *memText = new wxStaticText(this, -1, wxT("Memory:"));
+    m_addressMemCtrl = new wxTextCtrl(this, ID_DEBUG_MEMADDRESS, wxEmptyString, wxDefaultPosition, wxSize(40, 20), 0, *validator);
+    m_addressMemCtrl->SetFont(*tmpFont);
+    m_addressMemCtrl->SetValue(wxT("0000"));
+    m_addressMemCtrl->SetMaxLength(4);
+    
     m_memCtrl = new wxTextCtrl(this, -1, wxEmptyString, wxDefaultPosition, wxSize(420, 90), wxTE_MULTILINE | wxTE_READONLY);
     m_memCtrl->SetFont(*tmpFont);
-    m_memCtrl->SetValue(m_debugger->GetMem(0x0000, 0x005F));
     
     wxSizer *buttonsSizer = new wxBoxSizer(wxHORIZONTAL);
     buttonsSizer->Add(resetButton);
@@ -73,6 +80,7 @@ DebuggerDialog::DebuggerDialog(wxWindow *parent, Debugger *debugger)
     
     wxSizer *memSizer = new wxBoxSizer(wxVERTICAL);
     memSizer->Add(memText, 0, wxBOTTOM, 5);
+    memSizer->Add(m_addressMemCtrl, 0, wxBOTTOM, 5);
     memSizer->Add(m_memCtrl);
     
     wxSizer *mainSizer = new wxBoxSizer(wxVERTICAL);
@@ -81,6 +89,8 @@ DebuggerDialog::DebuggerDialog(wxWindow *parent, Debugger *debugger)
     mainSizer->Add(memSizer, 0, wxALL, 5);
     
     SetSizerAndFit(mainSizer);
+    
+    UpdateUI();
 }
 
 DebuggerDialog::~DebuggerDialog()
@@ -90,7 +100,14 @@ DebuggerDialog::~DebuggerDialog()
 
 void DebuggerDialog::UpdateUI() {
     m_regsCtrl->SetValue(m_debugger->GetRegs());
-    m_memCtrl->SetValue(m_debugger->GetMem(0x0000, 0x005F));
+    wxString address = m_addressMemCtrl->GetValue();
+    long value;
+    if(address.ToLong(&value, 16)) {
+        value = value & 0xFFF0;
+        if (value > 0xFFA0)
+            value = 0xFFA0;
+        m_memCtrl->SetValue(m_debugger->GetMem(value, (value + 0x5F)));
+    }
 }
 
 void DebuggerDialog::OnReset(wxCommandEvent &event) {
@@ -105,5 +122,16 @@ void DebuggerDialog::OnStepInto(wxCommandEvent &event) {
 
 void DebuggerDialog::OnOneFrame(wxCommandEvent &event) {
     m_debugger->ExecuteOneFrame();
+    UpdateUI();
+}
+
+void DebuggerDialog::OnMemAddressChange(wxCommandEvent &event) {
+    if(!m_addressMemCtrl->IsModified())
+        return;
+    
+    long insertionPoint = m_addressMemCtrl->GetInsertionPoint();
+    wxString address = m_addressMemCtrl->GetValue().Upper();
+    m_addressMemCtrl->ChangeValue(address);
+    m_addressMemCtrl->SetInsertionPoint(insertionPoint);
     UpdateUI();
 }

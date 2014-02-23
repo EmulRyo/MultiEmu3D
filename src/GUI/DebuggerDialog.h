@@ -41,6 +41,7 @@ protected:
 private:
     Debugger *m_debugger;
     wxTextCtrl *m_regsCtrl;
+    wxTextCtrl *m_addressMemCtrl;
     wxTextCtrl *m_memCtrl;
     
     void CreateToolBar();
@@ -48,6 +49,7 @@ private:
     void OnReset(wxCommandEvent &);
     void OnStepInto(wxCommandEvent &);
     void OnOneFrame(wxCommandEvent &);
+    void OnMemAddressChange(wxCommandEvent &);
 };
 
 #endif

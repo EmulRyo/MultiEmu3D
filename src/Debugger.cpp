@@ -88,7 +88,7 @@ std::string Debugger::GetMem(WORD start, WORD end)
     end = (end & 0xFFF0)+0x000F;
     
     stringstream ss;
-    WORD row = start;
+    unsigned int row = start;
     while (row <= end)
     {
         ss << "0x";

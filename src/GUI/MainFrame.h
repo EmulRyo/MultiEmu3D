@@ -92,6 +92,7 @@ private:
 	void OnPlayUpdateUI(wxUpdateUIEvent& event);
 	void OnPauseUpdateUI(wxUpdateUIEvent& event);
 	void OnStopUpdateUI(wxUpdateUIEvent& event);
+    void OnDebugUpdateUI(wxUpdateUIEvent& event);
 	void OnLoadStateUpdateUI(wxUpdateUIEvent& event);
 	void OnSaveStateUpdateUI(wxUpdateUIEvent& event);
     void OnFullScreenUpdateUI(wxUpdateUIEvent& event);

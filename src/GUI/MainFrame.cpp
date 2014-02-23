@@ -68,6 +68,7 @@ EVT_UPDATE_UI( ID_START, MainFrame::OnPlayUpdateUI )
 EVT_UPDATE_UI( ID_PAUSE, MainFrame::OnPauseUpdateUI )
 EVT_UPDATE_UI( ID_STOP, MainFrame::OnStopUpdateUI )
 EVT_UPDATE_UI( ID_FULLSCREEN, MainFrame::OnFullScreenUpdateUI )
+EVT_UPDATE_UI( ID_DEBUG, MainFrame::OnDebugUpdateUI )
 EVT_UPDATE_UI_RANGE(ID_LOADSTATE0, ID_LOADSTATE9, MainFrame::OnLoadStateUpdateUI)
 EVT_UPDATE_UI_RANGE(ID_SAVESTATE0, ID_SAVESTATE9, MainFrame::OnSaveStateUpdateUI)
 EVT_TIMER(ID_TIMER, MainFrame::OnTimer)
@@ -563,6 +564,11 @@ void MainFrame::OnStopUpdateUI(wxUpdateUIEvent& event)
 		event.Enable(true);
 }
 
+void MainFrame::OnDebugUpdateUI(wxUpdateUIEvent& event) {
+    bool enabled = (emulation->GetState() != NotStartedYet);
+    event.Enable(enabled);
+}
+
 void MainFrame::OnLoadStateUpdateUI(wxUpdateUIEvent& event)
 {
 	if ((emulation->GetState() == Stopped)||(emulation->GetState() == NotStartedYet))
@@ -679,10 +685,8 @@ void MainFrame::OnChangeView(wxCommandEvent &event) {
 }
 
 void MainFrame::OnDebug(wxCommandEvent &event) {
-    DebuggerDialog debugger(this, emulation->GetDebugger());
-    
-    enumEmuStates state = emulation->GetState();
     emulation->SetState(Paused);
+    
+    DebuggerDialog debugger(this, emulation->GetDebugger());
     debugger.ShowModal();
-    emulation->SetState(state);
 }
