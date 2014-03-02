@@ -49,6 +49,8 @@ public:
     void GetWindow(BYTE *buffer);
     void GetTiles(BYTE *buffer, int width, int height);
     void GetColorPalette(int sprite, int number, BYTE palette[4][3]);
+    std::string Disassemble(WORD start, int numInstructions);
+    std::string Disassemble(int numInstructions);
     
     void Reset();
     void StepInto();

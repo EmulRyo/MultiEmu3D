@@ -56,6 +56,11 @@ DebuggerDialog::DebuggerDialog(wxWindow *parent, Debugger *debugger)
     m_regsCtrl = new wxTextCtrl(this, -1, wxEmptyString, wxDefaultPosition, wxSize(80, 90), wxTE_MULTILINE | wxTE_READONLY);
     m_regsCtrl->SetFont(*tmpFont);
     
+    wxStaticText *disassemblerText = new wxStaticText(this, -1, wxT("Disassembler:"));
+    
+    m_disassemblerCtrl = new wxTextCtrl(this, -1, wxEmptyString, wxDefaultPosition, wxSize(200, 90), wxTE_MULTILINE | wxTE_READONLY);
+    m_disassemblerCtrl->SetFont(*tmpFont);
+    
     wxTextValidator *validator = new wxTextValidator(wxFILTER_INCLUDE_CHAR_LIST);
     validator->SetCharIncludes(wxT("0123456789ABCDEFabcdef"));
     
@@ -78,6 +83,14 @@ DebuggerDialog::DebuggerDialog(wxWindow *parent, Debugger *debugger)
     regsSizer->Add(regsText, 0, wxBOTTOM, 5);
     regsSizer->Add(m_regsCtrl);
     
+    wxSizer *disassemblerSizer = new wxBoxSizer(wxVERTICAL);
+    disassemblerSizer->Add(disassemblerText, 0, wxBOTTOM, 5);
+    disassemblerSizer->Add(m_disassemblerCtrl);
+    
+    wxSizer *horizontalSizer = new wxBoxSizer(wxHORIZONTAL);
+    horizontalSizer->Add(regsSizer);
+    horizontalSizer->Add(disassemblerSizer, 0, wxLEFT, 5);
+    
     wxSizer *memSizer = new wxBoxSizer(wxVERTICAL);
     memSizer->Add(memText, 0, wxBOTTOM, 5);
     memSizer->Add(m_addressMemCtrl, 0, wxBOTTOM, 5);
@@ -85,7 +98,7 @@ DebuggerDialog::DebuggerDialog(wxWindow *parent, Debugger *debugger)
     
     wxSizer *mainSizer = new wxBoxSizer(wxVERTICAL);
     mainSizer->Add(buttonsSizer, 0, wxALL, 5);
-    mainSizer->Add(regsSizer, 0, wxALL, 5);
+    mainSizer->Add(horizontalSizer, 0, wxALL, 5);
     mainSizer->Add(memSizer, 0, wxALL, 5);
     
     SetSizerAndFit(mainSizer);
@@ -100,6 +113,7 @@ DebuggerDialog::~DebuggerDialog()
 
 void DebuggerDialog::UpdateUI() {
     m_regsCtrl->SetValue(m_debugger->GetRegs());
+    
     wxString address = m_addressMemCtrl->GetValue();
     long value;
     if(address.ToLong(&value, 16)) {
@@ -108,6 +122,8 @@ void DebuggerDialog::UpdateUI() {
             value = 0xFFA0;
         m_memCtrl->SetValue(m_debugger->GetMem(value, (value + 0x5F)));
     }
+    
+    m_disassemblerCtrl->SetValue(m_debugger->Disassemble(6));
 }
 
 void DebuggerDialog::OnReset(wxCommandEvent &event) {

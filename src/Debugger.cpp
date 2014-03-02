@@ -22,6 +22,7 @@
 #include "Video.h"
 #include "CPU.h"
 #include "Cartridge.h"
+#include "InstructionsDef.h"
 #include "Debugger.h"
 
 using namespace std;
@@ -111,13 +112,47 @@ std::string Debugger::GetMem(WORD start, WORD end)
     return ss.str();
 }
 
+std::string Debugger::Disassemble(WORD start, int numInstructions) {
+    stringstream ss;
+    
+    int processed = 0;
+    unsigned int address = start;
+    while ((processed < numInstructions) && (address <= 0xFFFF))
+    {
+        ss << "0x";
+        AppendHex(ss, address, 4, '0');
+        ss << ": ";
+        BYTE opcode = cpu->MemR(address);
+        if (opcode != 0xCB) {
+            ss << GetInstructionName(opcode);
+            address += GetInstructionLength(opcode);
+        }
+        else {
+            opcode = cpu->MemR(address+1);
+            ss << GetInstructionCBName(opcode);
+            address += 2;
+        }
+        
+        processed++;
+        
+        if (processed < numInstructions)
+            ss << '\n';
+    }
+    
+    return ss.str();
+}
+
+std::string Debugger::Disassemble(int numInstructions) {
+    return Disassemble(cpu->Get_PC(), numInstructions);
+}
+
 std::string Debugger::GetMemVRam(WORD start, WORD end, int slot)
 {
     start &= 0xFFF0;
     end = (end & 0xFFF0)+0x000F;
     
     stringstream ss;
-    WORD row = start;
+    unsigned int row = start;
     while (row <= end)
     {
         ss << "0x";

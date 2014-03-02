@@ -43,6 +43,7 @@ private:
     wxTextCtrl *m_regsCtrl;
     wxTextCtrl *m_addressMemCtrl;
     wxTextCtrl *m_memCtrl;
+    wxTextCtrl *m_disassemblerCtrl;
     
     void CreateToolBar();
     void UpdateUI();
