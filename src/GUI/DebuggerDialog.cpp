@@ -15,6 +15,8 @@
  along with DMGBoy.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include <wx/listctrl.h>
+#include <wx/imaglist.h>
 #include "IDControls.h"
 #include "DebuggerDialog.h"
 #include "../Debugger.h"
@@ -51,27 +53,36 @@ DebuggerDialog::DebuggerDialog(wxWindow *parent, Debugger *debugger)
     
     wxStaticText *regsText = new wxStaticText(this, -1, wxT("Registers:"));
     
-    wxFont* tmpFont = new wxFont(12, wxTELETYPE, wxNORMAL, wxNORMAL);
+    m_font = new wxFont(12, wxTELETYPE, wxNORMAL, wxNORMAL);
     
     m_regsCtrl = new wxTextCtrl(this, -1, wxEmptyString, wxDefaultPosition, wxSize(80, 90), wxTE_MULTILINE | wxTE_READONLY);
-    m_regsCtrl->SetFont(*tmpFont);
+    m_regsCtrl->SetFont(*m_font);
     
+    // --- Dissassembler ---
     wxStaticText *disassemblerText = new wxStaticText(this, -1, wxT("Disassembler:"));
     
-    m_disassemblerCtrl = new wxTextCtrl(this, -1, wxEmptyString, wxDefaultPosition, wxSize(200, 90), wxTE_MULTILINE | wxTE_READONLY);
-    m_disassemblerCtrl->SetFont(*tmpFont);
+    m_disassemblerView = new wxListView(this, wxID_ANY, wxDefaultPosition, wxSize(294, 132), wxLC_REPORT);
+    
+    m_disassemblerView->InsertColumn (0, "");
+    m_disassemblerView->SetColumnWidth (0, 20);
+    m_disassemblerView->InsertColumn (1, "Address");
+    m_disassemblerView->SetColumnWidth (1, 52);
+    m_disassemblerView->InsertColumn (2, "Name");
+    m_disassemblerView->SetColumnWidth (2, 120);
+    m_disassemblerView->InsertColumn (3, "Data");
+    m_disassemblerView->SetColumnWidth (3, 80);
     
     wxTextValidator *validator = new wxTextValidator(wxFILTER_INCLUDE_CHAR_LIST);
     validator->SetCharIncludes(wxT("0123456789ABCDEFabcdef"));
     
     wxStaticText *memText = new wxStaticText(this, -1, wxT("Memory:"));
     m_addressMemCtrl = new wxTextCtrl(this, ID_DEBUG_MEMADDRESS, wxEmptyString, wxDefaultPosition, wxSize(40, 20), 0, *validator);
-    m_addressMemCtrl->SetFont(*tmpFont);
+    m_addressMemCtrl->SetFont(*m_font);
     m_addressMemCtrl->SetValue(wxT("0000"));
     m_addressMemCtrl->SetMaxLength(4);
     
     m_memCtrl = new wxTextCtrl(this, -1, wxEmptyString, wxDefaultPosition, wxSize(420, 90), wxTE_MULTILINE | wxTE_READONLY);
-    m_memCtrl->SetFont(*tmpFont);
+    m_memCtrl->SetFont(*m_font);
     
     wxSizer *buttonsSizer = new wxBoxSizer(wxHORIZONTAL);
     buttonsSizer->Add(resetButton);
@@ -85,7 +96,7 @@ DebuggerDialog::DebuggerDialog(wxWindow *parent, Debugger *debugger)
     
     wxSizer *disassemblerSizer = new wxBoxSizer(wxVERTICAL);
     disassemblerSizer->Add(disassemblerText, 0, wxBOTTOM, 5);
-    disassemblerSizer->Add(m_disassemblerCtrl);
+    disassemblerSizer->Add(m_disassemblerView);
     
     wxSizer *horizontalSizer = new wxBoxSizer(wxHORIZONTAL);
     horizontalSizer->Add(regsSizer);
@@ -123,7 +134,33 @@ void DebuggerDialog::UpdateUI() {
         m_memCtrl->SetValue(m_debugger->GetMem(value, (value + 0x5F)));
     }
     
-    m_disassemblerCtrl->SetValue(m_debugger->Disassemble(6));
+    UpdateDissassembler();
+}
+
+void DebuggerDialog::UpdateDissassembler() {
+    WORD currentAddress, nextAddress;
+    string address, name, data;
+    
+    m_debugger->DisassembleNext(currentAddress, nextAddress, name, data);
+    
+    m_disassemblerView->DeleteAllItems();
+    for (int i=0; i<6; i++) {
+        address = m_debugger->ToHex(currentAddress, 4, '0');
+        
+        m_disassemblerView->InsertItem(i, "");
+        //m_disassemblerView->SetItemColumnImage(i, 0, 0);
+        m_disassemblerView->SetItem(i, 1, address);
+        m_disassemblerView->SetItem(i, 2, name);
+        m_disassemblerView->SetItem(i, 3, data);
+        m_disassemblerView->SetItemFont(i, *m_font);
+        
+        if (nextAddress < currentAddress)
+            break;
+        else {
+            currentAddress = nextAddress;
+            m_debugger->DisassembleOne(currentAddress, nextAddress, name, data);
+        }
+    }
 }
 
 void DebuggerDialog::OnReset(wxCommandEvent &event) {

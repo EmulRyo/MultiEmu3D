@@ -51,19 +51,21 @@ public:
     void GetColorPalette(int sprite, int number, BYTE palette[4][3]);
     std::string Disassemble(WORD start, int numInstructions);
     std::string Disassemble(int numInstructions);
+    void DisassembleNext(WORD &currentAddress, WORD &nextAddress, std::string &name, std::string &data);
+    void DisassembleOne(WORD address, WORD &nextAddress, std::string &name, std::string &data);
     
     void Reset();
     void StepInto();
     void ExecuteOneFrame();
+    
+    std::string ToHex(int value, int width, char fill);
+    void AppendHex(std::stringstream &ss, int value, int width, char fill);
     
 private:
 	Sound *sound;
     Video *video;
 	CPU *cpu;
 	Cartridge *cartridge;
-    
-    std::string ToHex(int value, int width, char fill);
-    void AppendHex(std::stringstream &ss, int value, int width, char fill);
 };
 
 #endif

@@ -146,6 +146,38 @@ std::string Debugger::Disassemble(int numInstructions) {
     return Disassemble(cpu->Get_PC(), numInstructions);
 }
 
+void Debugger::DisassembleNext(WORD &currentAddress, WORD &nextAddress, std::string &name, std::string &data) {
+    currentAddress = cpu->Get_PC();
+    DisassembleOne(currentAddress, nextAddress, name, data);
+}
+
+void Debugger::DisassembleOne(WORD address, WORD &nextAddress, std::string &name, std::string &data) {
+    stringstream ss1, ss2;
+    
+    int length = 0;
+    BYTE opcode = cpu->MemR(address);
+    if (opcode != 0xCB) {
+        ss1 << GetInstructionName(opcode);
+        length += GetInstructionLength(opcode);
+    }
+    else {
+        opcode = cpu->MemR(address+1);
+        ss1 << GetInstructionCBName(opcode);
+        length += 2;
+    }
+    
+    for (int i=0; i<length; i++) {
+        WORD nextData = cpu->MemR(address + i);
+        AppendHex(ss2, nextData, 2, '0');
+        if (i < length-1)
+            ss2 << " ";
+    }
+    
+    name = ss1.str();
+    data = ss2.str();
+    nextAddress = address + length;
+}
+
 std::string Debugger::GetMemVRam(WORD start, WORD end, int slot)
 {
     start &= 0xFFF0;

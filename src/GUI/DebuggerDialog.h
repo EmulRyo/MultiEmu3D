@@ -21,6 +21,7 @@
 #include <wx/wx.h>
 
 class Debugger;
+class wxListView;
 
 /*******************************************************************************
  // DebuggerDialog Class
@@ -43,10 +44,12 @@ private:
     wxTextCtrl *m_regsCtrl;
     wxTextCtrl *m_addressMemCtrl;
     wxTextCtrl *m_memCtrl;
-    wxTextCtrl *m_disassemblerCtrl;
+    wxListView *m_disassemblerView;
+    wxFont* m_font;
     
     void CreateToolBar();
     void UpdateUI();
+    void UpdateDissassembler();
     void OnReset(wxCommandEvent &);
     void OnStepInto(wxCommandEvent &);
     void OnOneFrame(wxCommandEvent &);
