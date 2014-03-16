@@ -25,6 +25,7 @@ class Sound;
 class Video;
 class CPU;
 class Cartridge;
+class BreakpointNode;
 
 class Debugger
 {
@@ -58,14 +59,22 @@ public:
     void StepInto();
     void ExecuteOneFrame();
     
+    void AddBreakpoint(WORD address);
+    void DelBreakpoint(WORD address);
+    
     std::string ToHex(int value, int width, char fill);
     void AppendHex(std::stringstream &ss, int value, int width, char fill);
     
 private:
-	Sound *sound;
-    Video *video;
-	CPU *cpu;
-	Cartridge *cartridge;
+	Sound *m_sound;
+    Video *m_video;
+	CPU   *m_cpu;
+	Cartridge *m_cartridge;
+    BreakpointNode *m_firstBreakpoint;
+    BreakpointNode *m_lastBreakpoint;
+    
+    BreakpointNode *GetBreakpointNode(WORD address);
+    void ClearBreakpoints();
 };
 
 #endif

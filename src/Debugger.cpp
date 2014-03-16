@@ -27,47 +27,54 @@
 
 using namespace std;
 
+struct BreakpointNode {
+    WORD value;
+    BreakpointNode *prev;
+    BreakpointNode *next;
+};
+
 Debugger::Debugger(Sound *sound, Video *video, CPU *cpu, Cartridge *cartridge)
 {
-    this->sound = sound;
-    this->video = video;
-	this->cpu = cpu;
-	this->cartridge = cartridge;
+    m_sound = sound;
+    m_video = video;
+	m_cpu = cpu;
+	m_cartridge = cartridge;
+    m_firstBreakpoint = NULL;
 }
 
 Debugger::~Debugger()
 {
-	
+	ClearBreakpoints();
 }
 
 std::string Debugger::GetRegAF()
 {
-    return ToHex(cpu->Get_AF(), 4, '0');
+    return ToHex(m_cpu->Get_AF(), 4, '0');
 }
 
 std::string Debugger::GetRegBC()
 {
-    return ToHex(cpu->Get_BC(), 4, '0');
+    return ToHex(m_cpu->Get_BC(), 4, '0');
 }
 
 std::string Debugger::GetRegDE()
 {
-    return ToHex(cpu->Get_BC(), 4, '0');
+    return ToHex(m_cpu->Get_BC(), 4, '0');
 }
 
 std::string Debugger::GetRegHL()
 {
-    return ToHex(cpu->Get_HL(), 4, '0');
+    return ToHex(m_cpu->Get_HL(), 4, '0');
 }
 
 std::string Debugger::GetRegSP()
 {
-    return ToHex(cpu->Get_SP(), 4, '0');
+    return ToHex(m_cpu->Get_SP(), 4, '0');
 }
 
 std::string Debugger::GetRegPC()
 {
-    return ToHex(cpu->Get_PC(), 4, '0');
+    return ToHex(m_cpu->Get_PC(), 4, '0');
 }
 
 std::string Debugger::GetRegs()
@@ -97,12 +104,12 @@ std::string Debugger::GetMem(WORD start, WORD end)
         ss << ": ";
         for (int i=0x0; i<0xF; i++)
         {
-            BYTE value = cpu->MemR(row+i);
+            BYTE value = m_cpu->MemR(row+i);
             AppendHex(ss, value, 2, '0');
             ss << ' ';
         }
         
-        BYTE value = cpu->MemR(row+0xF);
+        BYTE value = m_cpu->MemR(row+0xF);
         AppendHex(ss, value, 2, '0');
         if (row < (end & 0xFFF0))
             ss << '\n';
@@ -122,13 +129,13 @@ std::string Debugger::Disassemble(WORD start, int numInstructions) {
         ss << "0x";
         AppendHex(ss, address, 4, '0');
         ss << ": ";
-        BYTE opcode = cpu->MemR(address);
+        BYTE opcode = m_cpu->MemR(address);
         if (opcode != 0xCB) {
             ss << GetInstructionName(opcode);
             address += GetInstructionLength(opcode);
         }
         else {
-            opcode = cpu->MemR(address+1);
+            opcode = m_cpu->MemR(address+1);
             ss << GetInstructionCBName(opcode);
             address += 2;
         }
@@ -143,11 +150,11 @@ std::string Debugger::Disassemble(WORD start, int numInstructions) {
 }
 
 std::string Debugger::Disassemble(int numInstructions) {
-    return Disassemble(cpu->Get_PC(), numInstructions);
+    return Disassemble(m_cpu->Get_PC(), numInstructions);
 }
 
 void Debugger::DisassembleNext(WORD &currentAddress, WORD &nextAddress, std::string &name, std::string &data) {
-    currentAddress = cpu->Get_PC();
+    currentAddress = m_cpu->Get_PC();
     DisassembleOne(currentAddress, nextAddress, name, data);
 }
 
@@ -155,19 +162,19 @@ void Debugger::DisassembleOne(WORD address, WORD &nextAddress, std::string &name
     stringstream ss1, ss2;
     
     int length = 0;
-    BYTE opcode = cpu->MemR(address);
+    BYTE opcode = m_cpu->MemR(address);
     if (opcode != 0xCB) {
         ss1 << GetInstructionName(opcode);
         length += GetInstructionLength(opcode);
     }
     else {
-        opcode = cpu->MemR(address+1);
+        opcode = m_cpu->MemR(address+1);
         ss1 << GetInstructionCBName(opcode);
         length += 2;
     }
     
     for (int i=0; i<length; i++) {
-        WORD nextData = cpu->MemR(address + i);
+        WORD nextData = m_cpu->MemR(address + i);
         AppendHex(ss2, nextData, 2, '0');
         if (i < length-1)
             ss2 << " ";
@@ -192,12 +199,12 @@ std::string Debugger::GetMemVRam(WORD start, WORD end, int slot)
         ss << ": ";
         for (int i=0x0; i<0xF; i++)
         {
-            BYTE value = cpu->MemRVRam(row+i, slot);
+            BYTE value = m_cpu->MemRVRam(row+i, slot);
             AppendHex(ss, value, 2, '0');
             ss << ' ';
         }
         
-        BYTE value = cpu->MemRVRam(row+0xF, slot);
+        BYTE value = m_cpu->MemRVRam(row+0xF, slot);
         AppendHex(ss, value, 2, '0');
         if (row < end)
             ss << '\n';
@@ -222,7 +229,7 @@ std::string Debugger::GetMemPalette(int sprite, int number)
     
     for (int i=0; i<4; i++)
     {
-        WORD *value = (WORD *)((void *)&cpu->memory[address]);
+        WORD *value = (WORD *)((void *)&m_cpu->memory[address]);
         AppendHex(ss, *value, 4, '0');
         if (i < 3)
             ss << ", ";
@@ -244,7 +251,7 @@ void Debugger::GetColorPalette(int sprite, int number, BYTE palette[4][3])
     
     address += number*8;
     
-    video->GetColorPalette(palette, address);
+    m_video->GetColorPalette(palette, address);
 }
 
 void Debugger::GetBG(BYTE *buffer)
@@ -274,7 +281,7 @@ void Debugger::GetTiles(BYTE *buffer, int width, int height)
         tmpBuffer = buffer + (widthSize*y*8);
         while ((x < tilesInX) && (tile < 384))
         {
-            video->GetTile(tmpBuffer, widthSize, tile, slot);
+            m_video->GetTile(tmpBuffer, widthSize, tile, slot);
             tmpBuffer += 8*3;
             tile++;
             if ((slot == 0) && (tile >= 384))
@@ -289,15 +296,19 @@ void Debugger::GetTiles(BYTE *buffer, int width, int height)
 }
 
 void Debugger::Reset() {
-    cpu->Reset();
+    m_cpu->Reset();
 }
 
 void Debugger::StepInto() {
-    cpu->Execute(1);
+    m_cpu->Execute(1);
 }
 
 void Debugger::ExecuteOneFrame() {
-    cpu->ExecuteOneFrame();
+    for (int i=0; i<FRAME_CYCLES; i++) {
+        m_cpu->Execute(1);
+        if (GetBreakpointNode(m_cpu->Get_PC()))
+            break;
+    }
 }
 
 std::string Debugger::ToHex(int value, int width, char fill)
@@ -310,4 +321,59 @@ std::string Debugger::ToHex(int value, int width, char fill)
 void Debugger::AppendHex(stringstream &ss, int value, int width, char fill)
 {
     ss << setfill(fill) << setw(width) << uppercase << hex << (int)value;
+}
+
+void Debugger::AddBreakpoint(WORD address) {
+    if (GetBreakpointNode(address))
+        return;
+    
+    BreakpointNode *node = new BreakpointNode;
+    node->value = address;
+    node->prev = m_lastBreakpoint;
+    node->next = NULL;
+    if (m_firstBreakpoint == NULL)
+        m_firstBreakpoint = node;
+    m_lastBreakpoint = node;
+}
+
+void Debugger::DelBreakpoint(WORD address) {
+    BreakpointNode *node = GetBreakpointNode(address);
+    if (node) {
+        if (node->prev)
+            node->prev->next = node->next;
+        if (node->next)
+            node->next->prev = node->prev;
+        if (m_firstBreakpoint == node)
+            m_firstBreakpoint = node->next;
+        if (m_lastBreakpoint == node)
+            m_lastBreakpoint = node->prev;
+        
+        delete node;
+    }
+}
+
+BreakpointNode *Debugger::GetBreakpointNode(WORD address) {
+    BreakpointNode *node = m_firstBreakpoint;
+    while (node) {
+        if (node->value == address)
+            return node;
+        
+        node = node->next;
+    }
+    
+    return NULL;
+}
+
+void Debugger::ClearBreakpoints() {
+    BreakpointNode *node = m_firstBreakpoint;
+    BreakpointNode *next;
+    
+    while (node) {
+        next = node->next;
+        delete node;
+        node = next;
+    }
+    
+    m_firstBreakpoint = NULL;
+    m_lastBreakpoint  = NULL;
 }
