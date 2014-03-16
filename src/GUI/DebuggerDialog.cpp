@@ -21,6 +21,10 @@
 #include "DebuggerDialog.h"
 #include "../Debugger.h"
 
+#include "Xpm/currentRow.xpm"
+#include "Xpm/breakPoint.xpm"
+#include "Xpm/currentBreak.xpm"
+
 using namespace std;
 
 BEGIN_EVENT_TABLE(DebuggerDialog, wxDialog)
@@ -55,16 +59,28 @@ DebuggerDialog::DebuggerDialog(wxWindow *parent, Debugger *debugger)
     
     m_font = new wxFont(12, wxTELETYPE, wxNORMAL, wxNORMAL);
     
-    m_regsCtrl = new wxTextCtrl(this, -1, wxEmptyString, wxDefaultPosition, wxSize(80, 90), wxTE_MULTILINE | wxTE_READONLY);
-    m_regsCtrl->SetFont(*m_font);
+    m_regsView = new wxListView(this, wxID_ANY, wxDefaultPosition, wxSize(80, 132), wxLC_REPORT);
+    m_regsView->InsertColumn (0, "Reg");
+    m_regsView->SetColumnWidth (0, 30);
+    m_regsView->InsertColumn (1, "Value");
+    m_regsView->SetColumnWidth (1, 40);
     
     // --- Dissassembler ---
     wxStaticText *disassemblerText = new wxStaticText(this, -1, wxT("Disassembler:"));
     
     m_disassemblerView = new wxListView(this, wxID_ANY, wxDefaultPosition, wxSize(294, 132), wxLC_REPORT);
     
+    wxImageList *imageList = new wxImageList(16, 14);
+    wxBitmap bmpCurrentRow(currentRow_xpm);
+    imageList->Add(bmpCurrentRow);
+    wxBitmap bmpBreakpoint(breakPoint_xpm);
+    imageList->Add(bmpBreakpoint);
+    wxBitmap bmpCurrentBreak(currentBreak_xpm);
+    imageList->Add(bmpCurrentBreak);
+    m_disassemblerView->SetImageList(imageList, wxIMAGE_LIST_SMALL);
+    
     m_disassemblerView->InsertColumn (0, "");
-    m_disassemblerView->SetColumnWidth (0, 20);
+    m_disassemblerView->SetColumnWidth (0, 24);
     m_disassemblerView->InsertColumn (1, "Address");
     m_disassemblerView->SetColumnWidth (1, 52);
     m_disassemblerView->InsertColumn (2, "Name");
@@ -92,7 +108,7 @@ DebuggerDialog::DebuggerDialog(wxWindow *parent, Debugger *debugger)
     
     wxSizer *regsSizer = new wxBoxSizer(wxVERTICAL);
     regsSizer->Add(regsText, 0, wxBOTTOM, 5);
-    regsSizer->Add(m_regsCtrl);
+    regsSizer->Add(m_regsView);
     
     wxSizer *disassemblerSizer = new wxBoxSizer(wxVERTICAL);
     disassemblerSizer->Add(disassemblerText, 0, wxBOTTOM, 5);
@@ -123,7 +139,7 @@ DebuggerDialog::~DebuggerDialog()
 }
 
 void DebuggerDialog::UpdateUI() {
-    m_regsCtrl->SetValue(m_debugger->GetRegs());
+    UpdateRegisters();
     
     wxString address = m_addressMemCtrl->GetValue();
     long value;
@@ -137,6 +153,40 @@ void DebuggerDialog::UpdateUI() {
     UpdateDissassembler();
 }
 
+void DebuggerDialog::UpdateRegisters() {
+    m_regsView->DeleteAllItems();
+    
+    m_regsView->InsertItem(0, "");
+    m_regsView->SetItem(0, 0, "AF");
+    m_regsView->SetItem(0, 1, m_debugger->GetRegAF());
+    m_regsView->SetItemFont(0, *m_font);
+    
+    m_regsView->InsertItem(1, "");
+    m_regsView->SetItem(1, 0, "BC");
+    m_regsView->SetItem(1, 1, m_debugger->GetRegBC());
+    m_regsView->SetItemFont(1, *m_font);
+    
+    m_regsView->InsertItem(2, "");
+    m_regsView->SetItem(2, 0, "DE");
+    m_regsView->SetItem(2, 1, m_debugger->GetRegDE());
+    m_regsView->SetItemFont(2, *m_font);
+    
+    m_regsView->InsertItem(3, "");
+    m_regsView->SetItem(3, 0, "HL");
+    m_regsView->SetItem(3, 1, m_debugger->GetRegHL());
+    m_regsView->SetItemFont(3, *m_font);
+    
+    m_regsView->InsertItem(4, "");
+    m_regsView->SetItem(4, 0, "PC");
+    m_regsView->SetItem(4, 1, m_debugger->GetRegPC());
+    m_regsView->SetItemFont(4, *m_font);
+    
+    m_regsView->InsertItem(5, "");
+    m_regsView->SetItem(5, 0, "SP");
+    m_regsView->SetItem(5, 1, m_debugger->GetRegSP());
+    m_regsView->SetItemFont(5, *m_font);
+}
+
 void DebuggerDialog::UpdateDissassembler() {
     WORD currentAddress, nextAddress;
     string address, name, data;
@@ -148,7 +198,8 @@ void DebuggerDialog::UpdateDissassembler() {
         address = m_debugger->ToHex(currentAddress, 4, '0');
         
         m_disassemblerView->InsertItem(i, "");
-        //m_disassemblerView->SetItemColumnImage(i, 0, 0);
+        if (i == 0)
+            m_disassemblerView->SetItemColumnImage(i, 0, 0);
         m_disassemblerView->SetItem(i, 1, address);
         m_disassemblerView->SetItem(i, 2, name);
         m_disassemblerView->SetItem(i, 3, data);

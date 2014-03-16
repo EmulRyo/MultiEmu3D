@@ -41,7 +41,7 @@ protected:
     
 private:
     Debugger *m_debugger;
-    wxTextCtrl *m_regsCtrl;
+    wxListView *m_regsView;
     wxTextCtrl *m_addressMemCtrl;
     wxTextCtrl *m_memCtrl;
     wxListView *m_disassemblerView;
@@ -49,6 +49,7 @@ private:
     
     void CreateToolBar();
     void UpdateUI();
+    void UpdateRegisters();
     void UpdateDissassembler();
     void OnReset(wxCommandEvent &);
     void OnStepInto(wxCommandEvent &);
