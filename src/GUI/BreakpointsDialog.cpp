@@ -101,8 +101,8 @@ void BreakpointsDialog::OnAddBreakpoint(wxCommandEvent &) {
     if(address.ToLong(&value, 16)) {
         value = value & 0xFFFF;
         m_debugger->AddBreakpoint(value);
+        UpdateUI();
     }
-    UpdateUI();
 }
 
 void BreakpointsDialog::OnDelBreakpoint(wxCommandEvent &) {

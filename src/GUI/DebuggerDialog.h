@@ -19,6 +19,7 @@
 #define __DEBUGGERDIALOG_H__
 
 #include <wx/wx.h>
+#include <wx/listctrl.h>
 
 class Debugger;
 class wxListView;
@@ -56,6 +57,7 @@ private:
     void OnOneFrame(wxCommandEvent &);
     void OnBreakpoints(wxCommandEvent &);
     void OnMemAddressChange(wxCommandEvent &);
+    void OnActivated(wxListEvent &);
 };
 
 #endif

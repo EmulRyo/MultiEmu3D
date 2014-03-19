@@ -34,6 +34,7 @@ EVT_BUTTON(ID_DEBUG_STEPINTO, DebuggerDialog::OnStepInto)
 EVT_BUTTON(ID_DEBUG_ONEFRAME, DebuggerDialog::OnOneFrame)
 EVT_BUTTON(ID_DEBUG_BREAKPOINTS, DebuggerDialog::OnBreakpoints)
 EVT_TEXT(ID_DEBUG_MEMADDRESS, DebuggerDialog::OnMemAddressChange)
+EVT_LIST_ITEM_ACTIVATED(ID_DEBUG_DISASSEMBLER, DebuggerDialog::OnActivated)
 END_EVENT_TABLE()
 
 DebuggerDialog::DebuggerDialog(wxWindow *parent, Debugger *debugger)
@@ -81,7 +82,7 @@ DebuggerDialog::DebuggerDialog(wxWindow *parent, Debugger *debugger)
     // --- Dissassembler ---
     wxStaticText *disassemblerText = new wxStaticText(this, -1, wxT("Disassembler:"));
     
-    m_disassemblerView = new wxListView(this, wxID_ANY, wxDefaultPosition, wxSize(294, 132), wxLC_REPORT);
+    m_disassemblerView = new wxListView(this, ID_DEBUG_DISASSEMBLER, wxDefaultPosition, wxSize(294, 132), wxLC_REPORT);
     
     wxImageList *imageList = new wxImageList(16, 14);
     wxBitmap bmpCurrentRow(currentRow_xpm);
@@ -266,4 +267,18 @@ void DebuggerDialog::OnMemAddressChange(wxCommandEvent &event) {
     m_addressMemCtrl->ChangeValue(address);
     m_addressMemCtrl->SetInsertionPoint(insertionPoint);
     UpdateUI();
+}
+
+void DebuggerDialog::OnActivated(wxListEvent &event) {
+    long index = event.GetIndex();
+    wxString address = m_disassemblerView->GetItemText(index, 1);
+    long value;
+    if(address.ToLong(&value, 16)) {
+        value = value & 0xFFFF;
+        if (m_debugger->HasBreakpoint(value))
+            m_debugger->DelBreakpoint(value);
+        else
+            m_debugger->AddBreakpoint(value);
+        UpdateDissassembler();
+    }
 }

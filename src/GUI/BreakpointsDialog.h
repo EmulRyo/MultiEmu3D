@@ -15,8 +15,8 @@
  along with DMGBoy.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef __BREAKPOINTS_H__
-#define __BREAKPOINTS_H__
+#ifndef __BREAKPOINTSDIALOG_H__
+#define __BREAKPOINTSDIALOG_H__
 
 #include <wx/wx.h>
 
