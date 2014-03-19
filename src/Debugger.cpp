@@ -40,6 +40,7 @@ Debugger::Debugger(Sound *sound, Video *video, CPU *cpu, Cartridge *cartridge)
 	m_cpu = cpu;
 	m_cartridge = cartridge;
     m_firstBreakpoint = NULL;
+    m_lastBreakpoint = NULL;
 }
 
 Debugger::~Debugger()
@@ -331,6 +332,8 @@ void Debugger::AddBreakpoint(WORD address) {
     node->value = address;
     node->prev = m_lastBreakpoint;
     node->next = NULL;
+    if (m_lastBreakpoint)
+        m_lastBreakpoint->next = node;
     if (m_firstBreakpoint == NULL)
         m_firstBreakpoint = node;
     m_lastBreakpoint = node;
@@ -350,6 +353,37 @@ void Debugger::DelBreakpoint(WORD address) {
         
         delete node;
     }
+}
+
+int Debugger::GetNumBreakpoints() {
+    int count = 0;
+    BreakpointNode *node = m_firstBreakpoint;
+    
+    while (node) {
+        count++;
+        node = node->next;
+    }
+    
+    return count;
+}
+
+WORD Debugger::GetBreakpoint(int i) {
+    int count = 0;
+    WORD value = 0;
+    BreakpointNode *node = m_firstBreakpoint;
+    
+    while (node) {
+        if (count == i)
+            value = node->value;
+        count++;
+        node = node->next;
+    }
+    
+    return value;
+}
+
+bool Debugger::HasBreakpoint(WORD address) {
+    return GetBreakpointNode(address) ? true : false;
 }
 
 BreakpointNode *Debugger::GetBreakpointNode(WORD address) {

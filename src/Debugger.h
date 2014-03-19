@@ -61,6 +61,9 @@ public:
     
     void AddBreakpoint(WORD address);
     void DelBreakpoint(WORD address);
+    bool HasBreakpoint(WORD address);
+    int  GetNumBreakpoints();
+    WORD GetBreakpoint(int i);
     
     std::string ToHex(int value, int width, char fill);
     void AppendHex(std::stringstream &ss, int value, int width, char fill);

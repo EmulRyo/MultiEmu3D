@@ -15,8 +15,8 @@
  along with DMGBoy.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef __DEBUGGERDIALOG_H__
-#define __DEBUGGERDIALOG_H__
+#ifndef __BREAKPOINTS_H__
+#define __BREAKPOINTS_H__
 
 #include <wx/wx.h>
 
@@ -24,38 +24,29 @@ class Debugger;
 class wxListView;
 
 /*******************************************************************************
- // DebuggerDialog Class
+ // BreakpointsDialog Class
  *******************************************************************************/
 
-class DebuggerDialog : public wxDialog {
+class BreakpointsDialog : public wxDialog {
 public:
 	
-    /**
-     * Creates a new DebuggerDialog.
-     */
-    DebuggerDialog(wxWindow *parent, Debugger *debugger);
-	~DebuggerDialog();
+    BreakpointsDialog(wxWindow *parent, Debugger *debugger);
+	~BreakpointsDialog();
     
 protected:
 	DECLARE_EVENT_TABLE()
     
 private:
     Debugger *m_debugger;
-    wxListView *m_regsView;
-    wxTextCtrl *m_addressMemCtrl;
-    wxTextCtrl *m_memCtrl;
-    wxListView *m_disassemblerView;
-    wxFont* m_font;
+    wxFont *m_font;
+    wxListView *m_breakpointsView;
+    wxTextCtrl *m_addressCtrl;
     
-    void CreateToolBar();
     void UpdateUI();
-    void UpdateRegisters();
-    void UpdateDissassembler();
-    void OnReset(wxCommandEvent &);
-    void OnStepInto(wxCommandEvent &);
-    void OnOneFrame(wxCommandEvent &);
-    void OnBreakpoints(wxCommandEvent &);
-    void OnMemAddressChange(wxCommandEvent &);
+    
+    void OnItemSelected(wxListEvent &);
+    void OnAddBreakpoint(wxCommandEvent &);
+    void OnDelBreakpoint(wxCommandEvent &);
 };
 
 #endif
