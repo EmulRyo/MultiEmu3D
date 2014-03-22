@@ -24,6 +24,7 @@
 #include "Video.h"
 #include "Pad.h"
 #include "GBException.h"
+#include "InstructionsDef.h"
 
 #ifdef MAKEGBLOG
 	#include "Log.h"
@@ -31,62 +32,6 @@
 
 using namespace std;
 
-const BYTE instructionCycles[] = {
-    1, 3, 2, 2, 1, 1, 2, 1, 5, 2, 2, 2, 1, 1, 2, 1,
-    0, 3, 2, 2, 1, 1, 2, 1, 3, 2, 2, 2, 1, 1, 2, 1,
-    2, 3, 2, 2, 1, 1, 2, 1, 2, 2, 2, 2, 1, 1, 2, 1,
-    2, 3, 2, 2, 3, 3, 3, 1, 2, 2, 2, 2, 1, 1, 2, 1,
-    1, 1, 1, 1, 1, 1, 2, 1, 1, 1, 1, 1, 1, 1, 2, 1,
-    1, 1, 1, 1, 1, 1, 2, 1, 1, 1, 1, 1, 1, 1, 2, 1,
-    1, 1, 1, 1, 1, 1, 2, 1, 1, 1, 1, 1, 1, 1, 2, 1,
-    2, 2, 2, 2, 2, 2, 2, 2, 1, 1, 1, 1, 1, 1, 2, 1,
-    1, 1, 1, 1, 1, 1, 2, 1, 1, 1, 1, 1, 1, 1, 2, 1,
-    1, 1, 1, 1, 1, 1, 2, 1, 1, 1, 1, 1, 1, 1, 2, 1,
-    1, 1, 1, 1, 1, 1, 2, 1, 1, 1, 1, 1, 1, 1, 2, 1,
-    1, 1, 1, 1, 1, 1, 2, 1, 1, 1, 1, 1, 1, 1, 2, 1,
-    2, 3, 3, 4, 3, 4, 2, 4, 2, 4, 3, 0, 3, 6, 2, 4,
-    2, 3, 3, 0, 3, 4, 2, 4, 2, 4, 3, 0, 3, 0, 2, 4,
-    3, 3, 2, 0, 0, 4, 2, 4, 4, 1, 4, 0, 0, 0, 2, 4,
-    3, 3, 2, 1, 0, 4, 2, 4, 3, 2, 4, 1, 0, 0, 2, 4
-};
-
-const BYTE instructionCondicionalCycles[] = {
-    1, 3, 2, 2, 1, 1, 2, 1, 5, 2, 2, 2, 1, 1, 2, 1,
-    0, 3, 2, 2, 1, 1, 2, 1, 3, 2, 2, 2, 1, 1, 2, 1,
-    3, 3, 2, 2, 1, 1, 2, 1, 3, 2, 2, 2, 1, 1, 2, 1,
-    3, 3, 2, 2, 3, 3, 3, 1, 3, 2, 2, 2, 1, 1, 2, 1,
-    1, 1, 1, 1, 1, 1, 2, 1, 1, 1, 1, 1, 1, 1, 2, 1,
-    1, 1, 1, 1, 1, 1, 2, 1, 1, 1, 1, 1, 1, 1, 2, 1,
-    1, 1, 1, 1, 1, 1, 2, 1, 1, 1, 1, 1, 1, 1, 2, 1,
-    2, 2, 2, 2, 2, 2, 0, 2, 1, 1, 1, 1, 1, 1, 2, 1,
-    1, 1, 1, 1, 1, 1, 2, 1, 1, 1, 1, 1, 1, 1, 2, 1,
-    1, 1, 1, 1, 1, 1, 2, 1, 1, 1, 1, 1, 1, 1, 2, 1,
-    1, 1, 1, 1, 1, 1, 2, 1, 1, 1, 1, 1, 1, 1, 2, 1,
-    1, 1, 1, 1, 1, 1, 2, 1, 1, 1, 1, 1, 1, 1, 2, 1,
-    5, 3, 4, 4, 6, 4, 2, 4, 5, 4, 4, 0, 6, 6, 2, 4,
-    5, 3, 4, 0, 6, 4, 2, 4, 5, 4, 4, 0, 6, 0, 2, 4,
-    3, 3, 2, 0, 0, 4, 2, 4, 4, 1, 4, 0, 0, 0, 2, 4,
-    3, 3, 2, 1, 0, 4, 2, 4, 3, 2, 4, 1, 0, 0, 2, 4
-};
-
-const BYTE instructionCyclesCB[] = {
-    2, 2, 2, 2, 2, 2, 4, 2, 2, 2, 2, 2, 2, 2, 4, 2,
-    2, 2, 2, 2, 2, 2, 4, 2, 2, 2, 2, 2, 2, 2, 4, 2,
-    2, 2, 2, 2, 2, 2, 4, 2, 2, 2, 2, 2, 2, 2, 4, 2,
-    2, 2, 2, 2, 2, 2, 4, 2, 2, 2, 2, 2, 2, 2, 4, 2,
-    2, 2, 2, 2, 2, 2, 3, 2, 2, 2, 2, 2, 2, 2, 3, 2,
-    2, 2, 2, 2, 2, 2, 3, 2, 2, 2, 2, 2, 2, 2, 3, 2,
-    2, 2, 2, 2, 2, 2, 3, 2, 2, 2, 2, 2, 2, 2, 3, 2,
-    2, 2, 2, 2, 2, 2, 3, 2, 2, 2, 2, 2, 2, 2, 3, 2,
-    2, 2, 2, 2, 2, 2, 4, 2, 2, 2, 2, 2, 2, 2, 4, 2,
-    2, 2, 2, 2, 2, 2, 4, 2, 2, 2, 2, 2, 2, 2, 4, 2,
-    2, 2, 2, 2, 2, 2, 4, 2, 2, 2, 2, 2, 2, 2, 4, 2,
-    2, 2, 2, 2, 2, 2, 4, 2, 2, 2, 2, 2, 2, 2, 4, 2,
-    2, 2, 2, 2, 2, 2, 4, 2, 2, 2, 2, 2, 2, 2, 4, 2,
-    2, 2, 2, 2, 2, 2, 4, 2, 2, 2, 2, 2, 2, 2, 4, 2,
-    2, 2, 2, 2, 2, 2, 4, 2, 2, 2, 2, 2, 2, 2, 4, 2,
-    2, 2, 2, 2, 2, 2, 4, 2, 2, 2, 2, 2, 2, 2, 4, 2
-};
 
 CPU::CPU(Video *v, Sound * s): Memory(this, s)
 {
@@ -121,7 +66,7 @@ void CPU::ResetGlobalVariables()
 	cyclesTimer = 0;
 	cyclesDIV = 0;
 	cyclesSerial = 0;
-	frameCompleted = false;
+	exitFromMainLoop = false;
 	VBlankIntPending = false;
     newInterrupt = false;
     colorMode = false;
@@ -149,25 +94,25 @@ void CPU::Reset()
 	}
 }
 
-void CPU::ExecuteOneFrame()
+void CPU::ExecuteOneFrame() {
+    Execute(cyclesFrame);
+}
+
+void CPU::Execute(int cyclesToExecute)
 {
 	if (!this->c)
 		return;
 	
-	actualCycles = 0;
+    int cycles = 0;
 	BYTE OpCode = 0, NextOpcode = 0, lastOpCode = 0;
 
 	Instructions inst(this->GetPtrRegisters(), this->GetPtrMemory());
-	
-	frameCompleted = false;
-	
-	//UpdatePad();
 
 #ifdef MAKEGBLOG
 	log->Enqueue("\n\nStartFrame", NULL, "");
 #endif
 
-    while (!frameCompleted)
+    while (cycles < cyclesToExecute)
     {
 		numInstructions++;
 		lastOpCode = OpCode;
@@ -463,14 +408,14 @@ void CPU::ExecuteOneFrame()
 		} // end if (!Get_Halt())
         
         if (OpCode == 0xCB)
-            lastCycles += instructionCyclesCB[NextOpcode]*4;
+            lastCycles += GetInstructionCyclesCB(NextOpcode)*4;
         else if (Get_ConditionalTaken())
         {
-            lastCycles += instructionCondicionalCycles[OpCode]*4;
+            lastCycles += GetInstructionCondicionalCycles(OpCode)*4;
             Set_ConditionalTaken(false);
         }
         else
-            lastCycles = instructionCycles[OpCode]*4;
+            lastCycles = GetInstructionCycles(OpCode)*4;
         
         if (newInterrupt)
         {
@@ -479,16 +424,16 @@ void CPU::ExecuteOneFrame()
         }
         
         int tmpCycles = lastCycles;
-		actualCycles += lastCycles;
         
         UpdateStateLCD(lastCycles);
 		UpdateTimer(lastCycles);
 		UpdateSerial(lastCycles);
         Interrupts(&inst);
         
+        cycles += lastCycles;
         lastCycles -= tmpCycles;
 		
-	}//end for
+	}//end while
 }
 
 
@@ -1096,7 +1041,7 @@ void CPU::OnEndFrame()
 	v->RefreshScreen();
 	if (s)
 		s->EndFrame();
-	frameCompleted = true;
+	exitFromMainLoop = true;
 }
 
 void CPU::ChangeSpeed()

@@ -55,6 +55,8 @@ public:
 	void RefreshScreen();
 	void ClearScreen();
 	void UpdateLine(BYTE line);
+    void GetTile(BYTE *buffer, int widthSize, int tile, int bank);
+    void GetColorPalette(BYTE palette[4][3], int address);
 private:
 	void UpdateBG(int line);
 	void UpdateWin(int line);
@@ -62,7 +64,6 @@ private:
 	void UpdateOAM(int line);
 	inline void GetColor(VideoPixel * p);
 	void GetDMGPalette(int * palette, int dir);
-    void GetColorPalette(BYTE palette[4][3], int address);
 };
 
 #endif

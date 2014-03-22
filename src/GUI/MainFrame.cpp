@@ -30,6 +30,7 @@
 #include "MainFrame.h"
 #include "AboutDialog.h"
 #include "SettingsDialog.h"
+#include "DebuggerDialog.h"
 #include "IDControls.h"
 #include "Settings.h"
 #include "../GBException.h"
@@ -60,15 +61,16 @@ EVT_MENU(wxID_ABOUT, MainFrame::OnAbout)
 EVT_MENU(ID_START, MainFrame::OnPlay)
 EVT_MENU(ID_PAUSE, MainFrame::OnPause)
 EVT_MENU(ID_STOP, MainFrame::OnStop)
+EVT_MENU(ID_DEBUG, MainFrame::OnDebug)
 EVT_MENU(ID_CHANGEVIEW, MainFrame::OnChangeView)
 EVT_MENU(ID_FULLSCREEN, MainFrame::OnFullScreen)
 EVT_UPDATE_UI( ID_START, MainFrame::OnPlayUpdateUI )
 EVT_UPDATE_UI( ID_PAUSE, MainFrame::OnPauseUpdateUI )
 EVT_UPDATE_UI( ID_STOP, MainFrame::OnStopUpdateUI )
 EVT_UPDATE_UI( ID_FULLSCREEN, MainFrame::OnFullScreenUpdateUI )
+EVT_UPDATE_UI( ID_DEBUG, MainFrame::OnDebugUpdateUI )
 EVT_UPDATE_UI_RANGE(ID_LOADSTATE0, ID_LOADSTATE9, MainFrame::OnLoadStateUpdateUI)
 EVT_UPDATE_UI_RANGE(ID_SAVESTATE0, ID_SAVESTATE9, MainFrame::OnSaveStateUpdateUI)
-EVT_COMMAND(wxID_ANY, wxEVT_RENDERER_REFRESHSCREEN, MainFrame::OnRefreshScreen)
 EVT_TIMER(ID_TIMER, MainFrame::OnTimer)
 EVT_CLOSE(MainFrame::OnClose)
 EVT_SIZE(MainFrame::OnResize)
@@ -179,6 +181,8 @@ void MainFrame::CreateMenuBar()
     pauseName += wxT("\tCtrl+P");
     wxString stopName = _("S&top");
     stopName += wxT("\tCtrl+T");
+    wxString debugName = _("&Debug");
+    debugName += wxT("\tCtrl+D");
     wxString fullscreenName = _("&FullScreen");
     fullscreenName += wxT("\tCtrl+F");
 
@@ -188,6 +192,7 @@ void MainFrame::CreateMenuBar()
     emulationMenu->Append(ID_START, startName);
 	emulationMenu->Append(ID_PAUSE, pauseName);
 	emulationMenu->Append(ID_STOP, stopName);
+    emulationMenu->Append(ID_DEBUG, debugName);
     emulationMenu->Append(ID_FULLSCREEN, fullscreenName);
 
     // add the file menu to the menu bar
@@ -559,6 +564,11 @@ void MainFrame::OnStopUpdateUI(wxUpdateUIEvent& event)
 		event.Enable(true);
 }
 
+void MainFrame::OnDebugUpdateUI(wxUpdateUIEvent& event) {
+    bool enabled = (emulation->GetState() != NotStartedYet);
+    event.Enable(enabled);
+}
+
 void MainFrame::OnLoadStateUpdateUI(wxUpdateUIEvent& event)
 {
 	if ((emulation->GetState() == Stopped)||(emulation->GetState() == NotStartedYet))
@@ -586,11 +596,6 @@ void MainFrame::OnDoubleClick(wxMouseEvent &event)
     event.Skip();
 }
 
-void MainFrame::OnRefreshScreen(wxCommandEvent& event)
-{
-    renderer->OnRefreshScreen();
-}
-
 void MainFrame::ToggleFullScreen()
 {
     fullScreen = !fullScreen;
@@ -599,7 +604,7 @@ void MainFrame::ToggleFullScreen()
 
 void MainFrame::OnTimer(wxTimerEvent &event)
 {
-    renderer->OnRefreshScreen();
+    renderer->OnRefreshRealScreen();
     emulation->UpdatePad();
 }
 
@@ -630,7 +635,7 @@ void MainFrame::OnResize(wxSizeEvent &event)
     
     this->Layout();
 	if (renderer)
-		renderer->OnRefreshScreen();
+		renderer->OnRefreshRealScreen();
 #else	
 	event.Skip();
 #endif
@@ -677,4 +682,11 @@ void MainFrame::OnChangeLanguage(wxCommandEvent &event) {
 
 void MainFrame::OnChangeView(wxCommandEvent &event) {
     renderer->OnChangeView();
+}
+
+void MainFrame::OnDebug(wxCommandEvent &event) {
+    emulation->SetState(Paused);
+    
+    DebuggerDialog debugger(this, emulation->GetDebugger());
+    debugger.ShowModal();
 }

@@ -24,6 +24,7 @@
 #include "../Sound.h"
 #include "../Video.h"
 #include "../CPU.h"
+#include "../Debugger.h"
 #include "Settings.h"
 #include "EmulationThread.h"
 
@@ -37,6 +38,7 @@ EmulationThread::EmulationThread()
     video = new Video(NULL);
 	cpu = new CPU(video, sound);
 	cartridge = NULL;
+    debugger = new Debugger(sound, video, cpu, cartridge);
     
     ApplySettings();
     
@@ -85,11 +87,12 @@ wxThread::ExitCode EmulationThread::Entry()
         // Deberia ser 16 pero con ese valor en linux el sonido se entrecorta
         
         swFrame.Start();
-        
 		{
 			wxMutexLocker lock(*mutex);
 			if (emuState == Playing)
+            {
 			    cpu->ExecuteOneFrame();
+            }
 		} // Desbloquear el mutex
         
         long time = swFrame.Time();
@@ -154,6 +157,8 @@ bool EmulationThread::ChangeFile(wxString fileName)
         
         cpu->LoadCartridge(cartridge);
         cpu->Reset();
+        
+        debugger = new Debugger(sound, video, cpu, cartridge);
     }
     
     
@@ -235,4 +240,8 @@ void EmulationThread::UpdatePad()
     {
         cpu->UpdatePad();
     }
+}
+
+Debugger *EmulationThread::GetDebugger() {
+    return debugger;
 }

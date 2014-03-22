@@ -30,7 +30,6 @@ class CPU: public Registers, public Memory
 {
 private:
 	unsigned long numInstructions;
-	unsigned long actualCycles;
 	BYTE lastCycles;
 	int cyclesLCD;
 	WORD cyclesTimer;
@@ -47,7 +46,7 @@ private:
 #ifdef MAKEGBLOG
 	QueueLog *log;
 #endif
-	bool frameCompleted;
+	bool exitFromMainLoop;
 	bool VBlankIntPending;
     bool newInterrupt;
 public:
@@ -55,6 +54,7 @@ public:
 	CPU(Video *v, Cartridge *c, Sound * s);
 	~CPU();
 	
+    void Execute(int cyclesToExecute);
 	void ExecuteOneFrame();
 	void UpdatePad();
     void OnWriteLCDC(BYTE value);

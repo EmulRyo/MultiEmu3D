@@ -40,7 +40,8 @@ public:
 	void ChangePalette(bool original);
 	
 	void OnClear();
-	void OnRefreshScreen();
+	void OnRefreshGBScreen();
+    void OnRefreshRealScreen();
 	void OnPreDraw();
 	void OnPostDraw();
 	void OnDrawPixel(int idColor, int x, int y);
@@ -56,7 +57,6 @@ protected:
 private:
 	wxWindow * winRenderer;
 	int  selPalette;
-    bool changed;
     
     void PageFlip();
 };

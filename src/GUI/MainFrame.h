@@ -87,10 +87,12 @@ private:
 	void OnPlay(wxCommandEvent &);
 	void OnPause(wxCommandEvent &);
 	void OnStop(wxCommandEvent &);
+    void OnDebug(wxCommandEvent &);
     void OnChangeView(wxCommandEvent &event);
 	void OnPlayUpdateUI(wxUpdateUIEvent& event);
 	void OnPauseUpdateUI(wxUpdateUIEvent& event);
 	void OnStopUpdateUI(wxUpdateUIEvent& event);
+    void OnDebugUpdateUI(wxUpdateUIEvent& event);
 	void OnLoadStateUpdateUI(wxUpdateUIEvent& event);
 	void OnSaveStateUpdateUI(wxUpdateUIEvent& event);
     void OnFullScreenUpdateUI(wxUpdateUIEvent& event);
