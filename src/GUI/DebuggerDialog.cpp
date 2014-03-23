@@ -73,16 +73,16 @@ DebuggerDialog::DebuggerDialog(wxWindow *parent, Debugger *debugger)
     
     m_font = new wxFont(12, wxTELETYPE, wxNORMAL, wxNORMAL);
     
-    m_regsView = new wxListView(this, wxID_ANY, wxDefaultPosition, wxSize(80, 132), wxLC_REPORT);
-    m_regsView->InsertColumn (0, "Reg");
-    m_regsView->SetColumnWidth (0, 30);
+    m_regsView = new wxListView(this, wxID_ANY, wxDefaultPosition, wxSize(82, 132), wxLC_REPORT);
+    m_regsView->InsertColumn (0, "Name");
+    m_regsView->SetColumnWidth (0, 41);
     m_regsView->InsertColumn (1, "Value");
-    m_regsView->SetColumnWidth (1, 40);
+    m_regsView->SetColumnWidth (1, 41);
     
     // --- Dissassembler ---
     wxStaticText *disassemblerText = new wxStaticText(this, -1, wxT("Disassembler:"));
     
-    m_disassemblerView = new wxListView(this, ID_DEBUG_DISASSEMBLER, wxDefaultPosition, wxSize(294, 132), wxLC_REPORT);
+    m_disassemblerView = new wxListView(this, ID_DEBUG_DISASSEMBLER, wxDefaultPosition, wxSize(298, 132), wxLC_REPORT);
     
     wxImageList *imageList = new wxImageList(16, 14);
     wxBitmap bmpCurrentRow(currentRow_xpm);
@@ -94,13 +94,31 @@ DebuggerDialog::DebuggerDialog(wxWindow *parent, Debugger *debugger)
     m_disassemblerView->SetImageList(imageList, wxIMAGE_LIST_SMALL);
     
     m_disassemblerView->InsertColumn (0, "");
-    m_disassemblerView->SetColumnWidth (0, 24);
+    m_disassemblerView->SetColumnWidth (0, 26);
     m_disassemblerView->InsertColumn (1, "Address");
     m_disassemblerView->SetColumnWidth (1, 52);
     m_disassemblerView->InsertColumn (2, "Name");
-    m_disassemblerView->SetColumnWidth (2, 120);
+    m_disassemblerView->SetColumnWidth (2, 130);
     m_disassemblerView->InsertColumn (3, "Data");
-    m_disassemblerView->SetColumnWidth (3, 80);
+    m_disassemblerView->SetColumnWidth (3, 90);
+    
+    wxStaticText *videoText = new wxStaticText(this, -1, wxT("Video registers:"));
+    m_videoView = new wxListView(this, wxID_ANY, wxDefaultPosition, wxSize(130, 340), wxLC_REPORT);
+    m_videoView->InsertColumn (0, "Name");
+    m_videoView->SetColumnWidth (0, 44);
+    m_videoView->InsertColumn (1, "Address");
+    m_videoView->SetColumnWidth (1, 49);
+    m_videoView->InsertColumn (2, "Value");
+    m_videoView->SetColumnWidth (2, 37);
+    
+    wxStaticText *othersText = new wxStaticText(this, -1, wxT("Other registers:"));
+    m_othersView = new wxListView(this, wxID_ANY, wxDefaultPosition, wxSize(130, 340), wxLC_REPORT);
+    m_othersView->InsertColumn (0, "Name");
+    m_othersView->SetColumnWidth (0, 44);
+    m_othersView->InsertColumn (1, "Address");
+    m_othersView->SetColumnWidth (1, 49);
+    m_othersView->InsertColumn (2, "Value");
+    m_othersView->SetColumnWidth (2, 37);
     
     wxTextValidator *validator = new wxTextValidator(wxFILTER_INCLUDE_CHAR_LIST);
     validator->SetCharIncludes(wxT("0123456789ABCDEFabcdef"));
@@ -111,7 +129,7 @@ DebuggerDialog::DebuggerDialog(wxWindow *parent, Debugger *debugger)
     m_addressMemCtrl->SetValue(wxT("0000"));
     m_addressMemCtrl->SetMaxLength(4);
     
-    m_memCtrl = new wxTextCtrl(this, -1, wxEmptyString, wxDefaultPosition, wxSize(420, 90), wxTE_MULTILINE | wxTE_READONLY);
+    m_memCtrl = new wxTextCtrl(this, -1, wxEmptyString, wxDefaultPosition, wxSize(400, 148), wxTE_MULTILINE | wxTE_READONLY);
     m_memCtrl->SetFont(*m_font);
     
     wxSizer *buttonsSizer = new wxBoxSizer(wxHORIZONTAL);
@@ -119,8 +137,8 @@ DebuggerDialog::DebuggerDialog(wxWindow *parent, Debugger *debugger)
     buttonsSizer->AddSpacer(5);
     buttonsSizer->Add(stepIntoButton, 0, wxLEFT, 2);
     buttonsSizer->Add(oneFrameButton, 0, wxLEFT, 2);
-    buttonsSizer->AddSpacer(5);
-    buttonsSizer->Add(breakpointsButton, 0, wxLEFT, 2);
+    buttonsSizer->AddStretchSpacer();
+    buttonsSizer->Add(breakpointsButton);
     
     wxSizer *regsSizer = new wxBoxSizer(wxVERTICAL);
     regsSizer->Add(regsText, 0, wxBOTTOM, 5);
@@ -130,19 +148,37 @@ DebuggerDialog::DebuggerDialog(wxWindow *parent, Debugger *debugger)
     disassemblerSizer->Add(disassemblerText, 0, wxBOTTOM, 5);
     disassemblerSizer->Add(m_disassemblerView);
     
-    wxSizer *horizontalSizer = new wxBoxSizer(wxHORIZONTAL);
-    horizontalSizer->Add(regsSizer);
-    horizontalSizer->Add(disassemblerSizer, 0, wxLEFT, 5);
+    wxSizer *RegsPlusDisSizer = new wxBoxSizer(wxHORIZONTAL);
+    RegsPlusDisSizer->Add(regsSizer);
+    RegsPlusDisSizer->AddStretchSpacer();
+    RegsPlusDisSizer->Add(disassemblerSizer);
     
     wxSizer *memSizer = new wxBoxSizer(wxVERTICAL);
     memSizer->Add(memText, 0, wxBOTTOM, 5);
     memSizer->Add(m_addressMemCtrl, 0, wxBOTTOM, 5);
     memSizer->Add(m_memCtrl);
     
+    wxSizer *leftSizer = new wxBoxSizer(wxVERTICAL);
+    leftSizer->Add(RegsPlusDisSizer, 0, wxEXPAND);
+    leftSizer->AddStretchSpacer();
+    leftSizer->Add(memSizer, 0, wxTOP, 10);
+    
+    wxSizer *videoSizer = new wxBoxSizer(wxVERTICAL);
+    videoSizer->Add(videoText, 0, wxBOTTOM, 5);
+    videoSizer->Add(m_videoView);
+    
+    wxSizer *othersSizer = new wxBoxSizer(wxVERTICAL);
+    othersSizer->Add(othersText, 0, wxBOTTOM, 5);
+    othersSizer->Add(m_othersView);
+    
+    wxSizer *hSizer = new wxBoxSizer(wxHORIZONTAL);
+    hSizer->Add(leftSizer, 0, wxEXPAND);
+    hSizer->Add(videoSizer, 0, wxLEFT, 10);
+    hSizer->Add(othersSizer, 0, wxLEFT, 10);
+    
     wxSizer *mainSizer = new wxBoxSizer(wxVERTICAL);
-    mainSizer->Add(buttonsSizer, 0, wxALL, 5);
-    mainSizer->Add(horizontalSizer, 0, wxALL, 5);
-    mainSizer->Add(memSizer, 0, wxALL, 5);
+    mainSizer->Add(buttonsSizer, 0, wxEXPAND|wxALL, 10);
+    mainSizer->Add(hSizer, 0, wxALL, 10);
     
     SetSizerAndFit(mainSizer);
     
@@ -156,51 +192,72 @@ DebuggerDialog::~DebuggerDialog()
 
 void DebuggerDialog::UpdateUI() {
     UpdateRegisters();
-    
+    UpdateMemory();
+    UpdateDissassembler();
+    UpdateVideoRegs();
+    UpdateOtherRegs();
+}
+
+void DebuggerDialog::UpdateMemory() {
     wxString address = m_addressMemCtrl->GetValue();
     long value;
     if(address.ToLong(&value, 16)) {
         value = value & 0xFFF0;
-        if (value > 0xFFA0)
-            value = 0xFFA0;
-        m_memCtrl->SetValue(m_debugger->GetMem(value, (value + 0x5F)));
+        int numLines = 10;
+        WORD maxStart = 0x10000 - (0x10*numLines);
+        if (value > maxStart)
+            value = maxStart;
+        m_memCtrl->SetValue(m_debugger->GetMem(value, (value + (0x10*numLines)-1)));
     }
-    
-    UpdateDissassembler();
 }
 
 void DebuggerDialog::UpdateRegisters() {
+    const char *names[] = { "AF", "BC", "DE", "HL", "PC", "SP" };
+    
     m_regsView->DeleteAllItems();
     
-    m_regsView->InsertItem(0, "");
-    m_regsView->SetItem(0, 0, "AF");
+    for (int i=0; i<6; i++) {
+        m_regsView->InsertItem(i, "");
+        m_regsView->SetItem(i, 0, names[i]);
+        m_regsView->SetItemFont(i, *m_font);
+    }
+    
     m_regsView->SetItem(0, 1, m_debugger->GetRegAF());
-    m_regsView->SetItemFont(0, *m_font);
-    
-    m_regsView->InsertItem(1, "");
-    m_regsView->SetItem(1, 0, "BC");
     m_regsView->SetItem(1, 1, m_debugger->GetRegBC());
-    m_regsView->SetItemFont(1, *m_font);
-    
-    m_regsView->InsertItem(2, "");
-    m_regsView->SetItem(2, 0, "DE");
     m_regsView->SetItem(2, 1, m_debugger->GetRegDE());
-    m_regsView->SetItemFont(2, *m_font);
-    
-    m_regsView->InsertItem(3, "");
-    m_regsView->SetItem(3, 0, "HL");
     m_regsView->SetItem(3, 1, m_debugger->GetRegHL());
-    m_regsView->SetItemFont(3, *m_font);
-    
-    m_regsView->InsertItem(4, "");
-    m_regsView->SetItem(4, 0, "PC");
     m_regsView->SetItem(4, 1, m_debugger->GetRegPC());
-    m_regsView->SetItemFont(4, *m_font);
-    
-    m_regsView->InsertItem(5, "");
-    m_regsView->SetItem(5, 0, "SP");
     m_regsView->SetItem(5, 1, m_debugger->GetRegSP());
-    m_regsView->SetItemFont(5, *m_font);
+}
+
+void DebuggerDialog::UpdateVideoRegs() {
+    const char *names[]    = { "LCDC", "STAT", "SCY", "SCX", "LY", "LYC", "DMA", "BGP", "OBP0", "OBP1", "WY", "WX", "BGPI", "BGPD", "OBPI", "OBPD" };
+    const WORD addresses[] = {  LCDC,   STAT,   SCY,   SCX,   LY,   LYC,   DMA,   BGP,   OBP0,   OBP1,   WY,   WX,   BGPI,   BGPD,   OBPI,   OBPD  };
+    
+    m_videoView->DeleteAllItems();
+    
+    for (int i=0; i<16; i++) {
+        m_videoView->InsertItem(i, "");
+        m_videoView->SetItem(i, 0, names[i]);
+        m_videoView->SetItem(i, 1, m_debugger->ToHex(addresses[i], 4, '0'));
+        m_videoView->SetItem(i, 2, m_debugger->GetMem(addresses[i]));
+        m_videoView->SetItemFont(i, *m_font);
+    }
+}
+
+void DebuggerDialog::UpdateOtherRegs() {
+    const char *names[]    = { "P1", "SB", "SC", "DIV", "TIMA", "TMA", "TAC", "KEY1", "VBK", "HDMA1", "HDMA2", "HDMA3", "HDMA4", "HDMA5", "SVBK", "IF", "IE" };
+    const WORD addresses[] = {  P1,   SB,   SC,   DIV,   TIMA,   TMA,   TAC,   KEY1,   VBK,   HDMA1,   HDMA2,   HDMA3,   HDMA4,   HDMA5,   SVBK,   IF,   IE  };
+    
+    m_othersView->DeleteAllItems();
+    
+    for (int i=0; i<17; i++) {
+        m_othersView->InsertItem(i, "");
+        m_othersView->SetItem(i, 0, names[i]);
+        m_othersView->SetItem(i, 1, m_debugger->ToHex(addresses[i], 4, '0'));
+        m_othersView->SetItem(i, 2, m_debugger->GetMem(addresses[i]));
+        m_othersView->SetItemFont(i, *m_font);
+    }
 }
 
 void DebuggerDialog::UpdateDissassembler() {

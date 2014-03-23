@@ -91,6 +91,14 @@ std::string Debugger::GetRegs()
     return regs;
 }
 
+std::string Debugger::GetMem(WORD address) {
+    stringstream ss;
+    
+    BYTE value = m_cpu->MemR(address);
+    AppendHex(ss, value, 2, '0');
+    return ss.str();
+}
+
 std::string Debugger::GetMem(WORD start, WORD end)
 {
     start &= 0xFFF0;
@@ -100,7 +108,6 @@ std::string Debugger::GetMem(WORD start, WORD end)
     unsigned int row = start;
     while (row <= end)
     {
-        ss << "0x";
         AppendHex(ss, row, 4, '0');
         ss << ": ";
         for (int i=0x0; i<0xF; i++)

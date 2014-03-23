@@ -45,13 +45,18 @@ private:
     wxListView *m_regsView;
     wxTextCtrl *m_addressMemCtrl;
     wxTextCtrl *m_memCtrl;
+    wxListView *m_videoView;
+    wxListView *m_othersView;
     wxListView *m_disassemblerView;
     wxFont* m_font;
     
     void CreateToolBar();
     void UpdateUI();
     void UpdateRegisters();
+    void UpdateMemory();
     void UpdateDissassembler();
+    void UpdateVideoRegs();
+    void UpdateOtherRegs();
     void OnReset(wxCommandEvent &);
     void OnStepInto(wxCommandEvent &);
     void OnOneFrame(wxCommandEvent &);

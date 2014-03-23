@@ -43,6 +43,7 @@ public:
     
     std::string GetRegs();
     
+    std::string GetMem(WORD address);
     std::string GetMem(WORD start, WORD end);
     std::string GetMemVRam(WORD start, WORD end, int slot);
     std::string GetMemPalette(int sprite, int number);
