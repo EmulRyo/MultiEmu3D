@@ -60,7 +60,7 @@ std::string Debugger::GetRegBC()
 
 std::string Debugger::GetRegDE()
 {
-    return ToHex(m_cpu->Get_BC(), 4, '0');
+    return ToHex(m_cpu->Get_DE(), 4, '0');
 }
 
 std::string Debugger::GetRegHL()

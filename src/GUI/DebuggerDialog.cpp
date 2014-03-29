@@ -203,16 +203,18 @@ void DebuggerDialog::UpdateMemory() {
     long value;
     if(address.ToLong(&value, 16)) {
         value = value & 0xFFF0;
-        int numLines = 10;
+        int numLines = 9;
         WORD maxStart = 0x10000 - (0x10*numLines);
         if (value > maxStart)
             value = maxStart;
-        m_memCtrl->SetValue(m_debugger->GetMem(value, (value + (0x10*numLines)-1)));
+        string mem = "      00 01 02 03 04 05 06 07 08 09 0A 0B 0C 0D 0E 0F\n";
+        mem += m_debugger->GetMem(value, (value + (0x10*numLines)-1));
+        m_memCtrl->SetValue(mem);
     }
 }
 
 void DebuggerDialog::UpdateRegisters() {
-    const char *names[] = { "AF", "BC", "DE", "HL", "PC", "SP" };
+    const char *names[] = { "PC", "AF", "BC", "DE", "HL", "SP" };
     
     m_regsView->DeleteAllItems();
     
@@ -222,11 +224,11 @@ void DebuggerDialog::UpdateRegisters() {
         m_regsView->SetItemFont(i, *m_font);
     }
     
-    m_regsView->SetItem(0, 1, m_debugger->GetRegAF());
-    m_regsView->SetItem(1, 1, m_debugger->GetRegBC());
-    m_regsView->SetItem(2, 1, m_debugger->GetRegDE());
-    m_regsView->SetItem(3, 1, m_debugger->GetRegHL());
-    m_regsView->SetItem(4, 1, m_debugger->GetRegPC());
+    m_regsView->SetItem(0, 1, m_debugger->GetRegPC());
+    m_regsView->SetItem(1, 1, m_debugger->GetRegAF());
+    m_regsView->SetItem(2, 1, m_debugger->GetRegBC());
+    m_regsView->SetItem(3, 1, m_debugger->GetRegDE());
+    m_regsView->SetItem(4, 1, m_debugger->GetRegHL());
     m_regsView->SetItem(5, 1, m_debugger->GetRegSP());
 }
 
