@@ -54,8 +54,8 @@ public:
 	CPU(Video *v, Cartridge *c, Sound * s);
 	~CPU();
 	
-    void Execute(int cyclesToExecute);
-	void ExecuteOneFrame();
+    int Execute(int cyclesToExecute);
+	int ExecuteOneFrame();
 	void UpdatePad();
     void OnWriteLCDC(BYTE value);
     BYTE TACChanged(BYTE newValue);

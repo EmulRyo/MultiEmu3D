@@ -312,8 +312,9 @@ void Debugger::StepInto() {
 }
 
 void Debugger::ExecuteOneFrame() {
-    for (int i=0; i<FRAME_CYCLES; i++) {
-        m_cpu->Execute(1);
+    int cycles = 0;
+    while(cycles < FRAME_CYCLES) {
+        cycles += m_cpu->Execute(1);
         if (GetBreakpointNode(m_cpu->Get_PC()))
             break;
     }

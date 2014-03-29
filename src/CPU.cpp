@@ -94,14 +94,14 @@ void CPU::Reset()
 	}
 }
 
-void CPU::ExecuteOneFrame() {
-    Execute(cyclesFrame);
+int CPU::ExecuteOneFrame() {
+    return Execute(cyclesFrame);
 }
 
-void CPU::Execute(int cyclesToExecute)
+int CPU::Execute(int cyclesToExecute)
 {
 	if (!this->c)
-		return;
+		return 0;
 	
     int cycles = 0;
 	BYTE OpCode = 0, NextOpcode = 0, lastOpCode = 0;
@@ -434,6 +434,8 @@ void CPU::Execute(int cyclesToExecute)
         lastCycles -= tmpCycles;
 		
 	}//end while
+    
+    return cycles;
 }
 
 
