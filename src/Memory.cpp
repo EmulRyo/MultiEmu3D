@@ -170,8 +170,7 @@ void Memory::MemW(WORD address, BYTE value)
                 cpu->OnWriteLCDC(value);
                 return;
             case VBK:
-                if (colorMode)
-                {
+                if (colorMode) {
                     //if (!hdmaActive)   // Si no esta activo el HDMA
                     //{
                         value &= 0x01;
@@ -181,19 +180,14 @@ void Memory::MemW(WORD address, BYTE value)
                 break;
             case HDMA5:
                 if (colorMode)
-                {
                     VRamDmaTransfer(value);
-                }
                 break;
             case KEY1:
                 if (colorMode)
-                {
                     value = ((memory[KEY1] & 0x80) | (value & 0x01));
-                }
                 break;
             case SVBK:
-                if (colorMode)
-                {
+                if (colorMode) {
                     value &= 0x07;
                     if (value == 0)
                         value = 1;
@@ -202,13 +196,10 @@ void Memory::MemW(WORD address, BYTE value)
                 break;
             case BGPI:
                 if (colorMode)
-                {
                     value &= 0xBF;
-                }
                 break;
             case BGPD:
-                if (colorMode)
-                {
+                if (colorMode) {
                     BYTE index = memory[BGPI] & 0x3F;
                     memory[BGP_OFFSET + index] = value;
                     
@@ -218,13 +209,10 @@ void Memory::MemW(WORD address, BYTE value)
                 break;
             case OBPI:
                 if (colorMode)
-                {
                     value &= 0xBF;
-                }
                 break;
             case OBPD:
-                if (colorMode)
-                {
+                if (colorMode) {
                     BYTE index = memory[OBPI] & 0x3F;
                     memory[OBP_OFFSET + index] = value;
                     

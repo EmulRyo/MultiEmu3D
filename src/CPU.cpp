@@ -1048,7 +1048,8 @@ void CPU::OnEndFrame()
 
 void CPU::ChangeSpeed()
 {
-    if (colorMode)
+    // Si se ha pedido un cambio de velocidad
+    if (colorMode && (memory[KEY1] & 0x01))
     {
         // Se cambia a la velocidad contraria a la que estamos
         if (memory[KEY1] & 0x80) {
