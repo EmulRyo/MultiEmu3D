@@ -32,6 +32,7 @@ BEGIN_EVENT_TABLE(DebuggerDialog, wxDialog)
 EVT_BUTTON(ID_DEBUG_RESET, DebuggerDialog::OnReset)
 EVT_BUTTON(ID_DEBUG_STEPINTO, DebuggerDialog::OnStepInto)
 EVT_BUTTON(ID_DEBUG_ONEFRAME, DebuggerDialog::OnOneFrame)
+EVT_BUTTON(ID_DEBUG_ONESECOND, DebuggerDialog::OnOneSecond)
 EVT_BUTTON(ID_DEBUG_BREAKPOINTS, DebuggerDialog::OnBreakpoints)
 EVT_TEXT(ID_DEBUG_MEMADDRESS, DebuggerDialog::OnMemAddressChange)
 EVT_LIST_ITEM_ACTIVATED(ID_DEBUG_DISASSEMBLER, DebuggerDialog::OnActivated)
@@ -46,27 +47,31 @@ DebuggerDialog::DebuggerDialog(wxWindow *parent, Debugger *debugger)
     
     wxButton *resetButton = new wxButton(this, ID_DEBUG_RESET, wxT("Reset"));
     wxButton *stepIntoButton = new wxButton(this, ID_DEBUG_STEPINTO, wxT("Step Into"));
-    wxButton *oneFrameButton = new wxButton(this, ID_DEBUG_ONEFRAME, wxT("One frame"));
+    wxButton *oneFrameButton = new wxButton(this, ID_DEBUG_ONEFRAME, wxT("Run one frame"));
+    wxButton *oneSecondButton = new wxButton(this, ID_DEBUG_ONESECOND, wxT("Run one second"));
     wxButton *breakpointsButton = new wxButton(this, ID_DEBUG_BREAKPOINTS, wxT("Breakpoints"));
     
     stepIntoButton->SetToolTip("Step Into (F7)");
 #ifdef __WXMAC__
     resetButton->SetToolTip("Reset (Cmd+R)");
-    oneFrameButton->SetToolTip("One frame (Cmd+O)");
+    oneFrameButton->SetToolTip("Run one frame (Cmd+O)");
+    oneSecondButton->SetToolTip("Run one second (F9)");
     breakpointsButton->SetToolTip("Breakpoints (Cmd+B)");
 #else
     resetButton->SetToolTip("Reset (Ctrl+R)");
-    oneFrameButton->SetToolTip("One frame (Ctrl+O)");
+    oneFrameButton->SetToolTip("Run one frame (Ctrl+O)");
+    oneSecondButton->SetToolTip("Run one second (F9)");
     breakpointsButton->SetToolTip("Breakpoints (Ctrl+B)");
 #endif
     
     
-    wxAcceleratorEntry entries[4];
+    wxAcceleratorEntry entries[5];
     entries[0].Set(wxACCEL_CTRL, (int) 'R', ID_DEBUG_RESET);
     entries[1].Set(wxACCEL_NORMAL, WXK_F7, ID_DEBUG_STEPINTO);
     entries[2].Set(wxACCEL_CTRL, (int) 'O', ID_DEBUG_ONEFRAME);
-    entries[3].Set(wxACCEL_CTRL, (int) 'B', ID_DEBUG_BREAKPOINTS);
-    wxAcceleratorTable accel(4, entries);
+    entries[3].Set(wxACCEL_NORMAL, WXK_F9, ID_DEBUG_ONESECOND);
+    entries[4].Set(wxACCEL_CTRL, (int) 'B', ID_DEBUG_BREAKPOINTS);
+    wxAcceleratorTable accel(5, entries);
     SetAcceleratorTable(accel);
     
     wxStaticText *regsText = new wxStaticText(this, -1, wxT("Registers:"));
@@ -137,6 +142,7 @@ DebuggerDialog::DebuggerDialog(wxWindow *parent, Debugger *debugger)
     buttonsSizer->AddSpacer(5);
     buttonsSizer->Add(stepIntoButton, 0, wxLEFT, 2);
     buttonsSizer->Add(oneFrameButton, 0, wxLEFT, 2);
+    buttonsSizer->Add(oneSecondButton, 0, wxLEFT, 2);
     buttonsSizer->AddStretchSpacer();
     buttonsSizer->Add(breakpointsButton);
     
@@ -308,6 +314,15 @@ void DebuggerDialog::OnStepInto(wxCommandEvent &event) {
 
 void DebuggerDialog::OnOneFrame(wxCommandEvent &event) {
     m_debugger->ExecuteOneFrame();
+    UpdateUI();
+}
+
+void DebuggerDialog::OnOneSecond(wxCommandEvent &event) {
+    for (int i=0; i<60; i++) {
+        if (!m_debugger->ExecuteOneFrame())
+            break;
+    }
+    
     UpdateUI();
 }
 

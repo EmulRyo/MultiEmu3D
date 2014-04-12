@@ -311,13 +311,14 @@ void Debugger::StepInto() {
     m_cpu->Execute(1);
 }
 
-void Debugger::ExecuteOneFrame() {
+bool Debugger::ExecuteOneFrame() {
     int cycles = 0;
     while(cycles < FRAME_CYCLES) {
         cycles += m_cpu->Execute(1);
         if (GetBreakpointNode(m_cpu->Get_PC()))
-            break;
+            return false;
     }
+    return true;
 }
 
 std::string Debugger::ToHex(int value, int width, char fill)

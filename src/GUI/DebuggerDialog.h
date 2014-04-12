@@ -60,6 +60,7 @@ private:
     void OnReset(wxCommandEvent &);
     void OnStepInto(wxCommandEvent &);
     void OnOneFrame(wxCommandEvent &);
+    void OnOneSecond(wxCommandEvent &);
     void OnBreakpoints(wxCommandEvent &);
     void OnMemAddressChange(wxCommandEvent &);
     void OnActivated(wxListEvent &);

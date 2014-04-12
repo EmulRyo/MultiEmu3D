@@ -58,7 +58,7 @@ public:
     
     void Reset();
     void StepInto();
-    void ExecuteOneFrame();
+    bool ExecuteOneFrame();
     
     void AddBreakpoint(WORD address);
     void DelBreakpoint(WORD address);

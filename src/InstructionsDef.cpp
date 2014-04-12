@@ -304,7 +304,7 @@ const char* instructionsName[] = {
     "CALL NZ,nn",
     "PUSH BC",
     "ADD A,n",
-    "RST",
+    "RST 0x00",
     "RET Z",
     "RET",
     "JP Z,nn",
