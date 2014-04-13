@@ -27,7 +27,7 @@
 #include "InstructionsDef.h"
 
 #ifdef MAKEGBLOG
-	#include "Log.h"
+#include "Log.h"
 #endif
 
 using namespace std;
@@ -66,7 +66,6 @@ void CPU::ResetGlobalVariables()
 	cyclesTimer = 0;
 	cyclesDIV = 0;
 	cyclesSerial = 0;
-	exitFromMainLoop = false;
 	VBlankIntPending = false;
     newInterrupt = false;
     colorMode = false;
@@ -747,16 +746,13 @@ void CPU::OnWriteLCDC(BYTE value)
         memory[LY] = 0;
         // Poner a 00 el flag (bits 0-1) del modo 2.
         memory[STAT] = memory[STAT] & ~0x03;
-        
+    }
+    else if (!lastScreenOn && screenOn) {
         CheckLYC();
-        
-        cyclesLCD = 0;
     }
-    else if (!lastScreenOn && screenOn)
-    {
-        cyclesLCD = 0;
-    }
+
     
+    cyclesLCD = 0;
     memory[LCDC] = value;
 }
 
@@ -783,7 +779,7 @@ void CPU::UpdateStateLCDOn()
     
     switch (mode)
     {
-        case (0):	// Durante H-Blank
+        case (0):	// Si se ha terminado H-Blank
             if (cyclesLCD >= lcdMode0)
             {
 				memory[LY]++;
@@ -795,6 +791,7 @@ void CPU::UpdateStateLCDOn()
                     // Poner a 01 el flag (bits 0-1) del modo 1.
 					memory[STAT] = (memory[STAT] & ~0x03) | 0x01;
 					VBlankIntPending = true;
+                    OnEndFrame();
                 }
                 else // Sino, cambiamos al modo 2
                 {
@@ -805,11 +802,6 @@ void CPU::UpdateStateLCDOn()
 					if (BIT5(memory[STAT]))
                         SetIntFlag(1);
                 }
-                
-                if (colorMode)
-                    UpdateHDMA();
-				
-				v->UpdateLine(memory[LY]-1);
             }
             break;
         case (1):	// Durante V-Blank
@@ -832,9 +824,18 @@ void CPU::UpdateStateLCDOn()
             {
 				cyclesLCD -= lcdMode1;
 				
-                // Si hemos llegado al final
-                if (memory[LY] == 153)
-                {
+                // La linea 153 dura 8 ciclos
+                if (memory[LY] == 152) {
+                    memory[LY]++;
+                    cyclesLCD += lcdMode1-4; // Comprobar doble velocidad?
+                    CheckLYC();
+                }
+                else if (memory[LY] == 153) {
+                    memory[LY] = 0;
+                    cyclesLCD += 4; // Comprobar doble velocidad?
+                    CheckLYC();
+                }
+                else if (memory[LY] == 0) {
                     memory[LY] = 0;
                     // Poner a 10 el flag (bits 0-1) del modo 2.
 					memory[STAT] = (memory[STAT] & ~0x03) | 0x02;
@@ -842,13 +843,11 @@ void CPU::UpdateStateLCDOn()
 					// en 0xFF0F. Bit 1, flag de interrupcion de LCD STAT
 					if (BIT5(memory[STAT]))
                         SetIntFlag(1);
-					
-					OnEndFrame();
                 }
-                else
+                else {
                     memory[LY]++;
-				
-				CheckLYC();
+                    CheckLYC();
+                }
             }
             break;
         case (2):	// Cuando OAM se esta usando
@@ -864,13 +863,18 @@ void CPU::UpdateStateLCDOn()
             if (cyclesLCD >= lcdMode3)
             {
 				cyclesLCD -= lcdMode3;
-				
+                
 				// Poner a 00 el flag (bits 0-1) del modo 0.
 				memory[STAT] &= ~0x03;
 				// Si interrupcion H-Blank habilitada, marcar peticion de interrupcion
 				// en 0xFF0F. Bit 1, flag de interrupcion de LCD STAT
 				if (BIT3(memory[STAT]))
                     SetIntFlag(1);
+                
+                if (colorMode)
+                    UpdateHDMA();
+                
+                v->UpdateLine(memory[LY]);
             }
             break;
 	}
@@ -947,6 +951,7 @@ void CPU::Interrupts(Instructions * inst)
 	{
 		Set_PC(0x40);
 		memory[IF] &= ~0x01;
+        VBlankIntPending = false;
 	}
 	else if (BIT1(interrupts))	//LCD-Stat
 	{
@@ -1038,12 +1043,26 @@ BYTE CPU::P1Changed(BYTE newValue)
     return newValue;
 }
 
+void CPU::StatChanged(BYTE newValue) {
+    memory[STAT] = (newValue & ~0x07) | (memory[STAT] & 0x07);
+    
+    if (BIT5(memory[STAT]) && ((memory[STAT] & 0x11) == 2))
+        SetIntFlag(1);
+    
+    if (BIT4(memory[STAT]) && ((memory[STAT] & 0x11) == 1))
+        SetIntFlag(1);
+    
+    if (BIT3(memory[STAT]) && ((memory[STAT] & 0x11) == 0))
+        SetIntFlag(1);
+    
+    CheckLYC();
+}
+
 void CPU::OnEndFrame()
 {
 	v->RefreshScreen();
 	if (s)
 		s->EndFrame();
-	exitFromMainLoop = true;
 }
 
 void CPU::ChangeSpeed()

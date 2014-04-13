@@ -46,7 +46,6 @@ private:
 #ifdef MAKEGBLOG
 	QueueLog *log;
 #endif
-	bool exitFromMainLoop;
 	bool VBlankIntPending;
     bool newInterrupt;
 public:
@@ -61,7 +60,9 @@ public:
     BYTE TACChanged(BYTE newValue);
     BYTE DIVChanged(BYTE newValue);
     BYTE P1Changed(BYTE newValue);
+    void StatChanged(BYTE newValue);
     void AddCycles(int cycles);
+    void CheckLYC();
 	void Reset();
 #ifdef MAKEGBLOG
 	void SaveLog();
@@ -78,7 +79,6 @@ private:
 	void UpdateSerial(int cycles);
     void SetIntFlag(int bit);
 	void Interrupts(Instructions * inst);
-	void CheckLYC();
 	void OnEndFrame();
     void ChangeSpeed();
 };

@@ -49,7 +49,7 @@ void Memory::ResetMem()
 
 	memory[TIMA] = 0x00;
     memory[TMA]  = 0x00;
-    memory[TAC]  = 0x00;
+    memory[TAC]  = 0xF8;
 	
 	memory[NR10]  = 0x80;
 	memory[NR11]  = 0xBF;
@@ -93,17 +93,18 @@ void Memory::ResetMem()
 	}
 	
     memory[LCDC] = 0x91;
+    memory[STAT] = 0x01;
     memory[SCY]  = 0x00;
     memory[SCX]  = 0x00;
+    memory[LY]   = 0x90;
     memory[LYC]  = 0x00;
     memory[BGP]  = 0xFC;
     memory[OBP0] = 0xFF;
     memory[OBP1] = 0xFF;
     memory[WY]   = 0x00;
     memory[WX]   = 0x00;
+    memory[IF]   = 0xE1;
     memory[IE]   = 0x00;
-	
-	memory[STAT] = 0x05;
     
     if (colorMode)
     {
@@ -158,11 +159,16 @@ void Memory::MemW(WORD address, BYTE value)
                 value = cpu->TACChanged(value);
                 break;
 			case STAT:
-                value = (value & ~0x07) | (memory[STAT] & 0x07);
-                break;
+                cpu->StatChanged(value);
+                return;
 			case LY:
-                value = 0;
-                break;
+                memory[LY] = 0;
+                cpu->CheckLYC();
+                return;
+            case LYC:
+                memory[LYC] = value;
+                cpu->CheckLYC();
+                return;
 			case DIV:
                 value = cpu->DIVChanged(value);
                 break;
