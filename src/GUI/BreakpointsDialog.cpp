@@ -46,7 +46,11 @@ BreakpointsDialog::BreakpointsDialog(wxWindow *parent, Debugger *debugger)
     wxTextValidator *validator = new wxTextValidator(wxFILTER_INCLUDE_CHAR_LIST);
     validator->SetCharIncludes(wxT("0123456789ABCDEFabcdef"));
     
+#ifdef __WXMSW__
+	m_font = new wxFont(8, wxTELETYPE, wxNORMAL, wxNORMAL);
+#else
     m_font = new wxFont(12, wxTELETYPE, wxNORMAL, wxNORMAL);
+#endif
     
     wxStaticText *addressText = new wxStaticText(this, -1, wxT("Address:"));
     m_addressCtrl = new wxTextCtrl(this, ID_BREAK_ADDRESS, wxEmptyString, wxDefaultPosition, wxSize(40, 20), 0, *validator);

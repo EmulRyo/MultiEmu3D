@@ -414,7 +414,7 @@ int CPU::Execute(int cyclesToExecute)
             Set_ConditionalTaken(false);
         }
         else
-            lastCycles = GetInstructionCycles(OpCode)*4;
+            lastCycles += GetInstructionCycles(OpCode)*4;
         
         if (newInterrupt)
         {

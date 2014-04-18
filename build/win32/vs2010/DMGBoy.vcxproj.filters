@@ -142,6 +142,18 @@
     <ClInclude Include="..\..\..\src\GUI\3D\wxImageLoader.h">
       <Filter>3D</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\src\Debugger.h">
+      <Filter>HW</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\InstructionsDef.h">
+      <Filter>HW</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\GUI\BreakpointsDialog.h">
+      <Filter>GUI</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\GUI\DebuggerDialog.h">
+      <Filter>GUI</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\src\Cartridge.cpp">
@@ -245,6 +257,18 @@
     </ClCompile>
     <ClCompile Include="..\..\..\src\GUI\3D\glew-1.10.0\src\glew.c">
       <Filter>3D\GLEW</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\Debugger.cpp">
+      <Filter>HW</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\InstructionsDef.cpp">
+      <Filter>HW</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\GUI\BreakpointsDialog.cpp">
+      <Filter>GUI</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\GUI\DebuggerDialog.cpp">
+      <Filter>GUI</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

@@ -76,7 +76,11 @@ DebuggerDialog::DebuggerDialog(wxWindow *parent, Debugger *debugger)
     
     wxStaticText *regsText = new wxStaticText(this, -1, wxT("Registers:"));
     
+#ifdef __WXMSW__
+	m_font = new wxFont(8, wxTELETYPE, wxNORMAL, wxNORMAL);
+#else
     m_font = new wxFont(12, wxTELETYPE, wxNORMAL, wxNORMAL);
+#endif
     
     m_regsView = new wxListView(this, wxID_ANY, wxDefaultPosition, wxSize(82, 132), wxLC_REPORT);
     m_regsView->InsertColumn (0, "Name");
@@ -287,6 +291,8 @@ void DebuggerDialog::UpdateDissassembler() {
         }
         else if (m_debugger->HasBreakpoint(currentAddress))
             m_disassemblerView->SetItemColumnImage(i, 0, 1);
+		else
+			m_disassemblerView->SetItemColumnImage(i, 0, -1);
             
         m_disassemblerView->SetItem(i, 1, address);
         m_disassemblerView->SetItem(i, 2, name);
