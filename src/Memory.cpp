@@ -186,7 +186,7 @@ void Memory::MemW(WORD address, BYTE value)
                 break;
             case HDMA5:
                 if (colorMode)
-                    VRamDmaTransfer(value);
+                    value = VRamDmaTransfer(value);
                 break;
             case KEY1:
                 if (colorMode)
@@ -253,14 +253,14 @@ void Memory::OamDmaTransfer(BYTE address)
 		MemWNoCheck(0xFE00 + i, MemR((address << 8) + i));
 }
 
-void Memory::VRamDmaTransfer(BYTE value)
+BYTE Memory::VRamDmaTransfer(BYTE value)
 {
     WORD mode = value & 0x80;
     
     if (hdmaActive && mode == 0)    // Se quiere parar el hdma manualmente
     {
         hdmaActive = false;
-        memory[HDMA5] |= 0x80;  // Se pone a 1 el bit 7
+        value = memory[HDMA5] | 0x80;  // Se pone a 1 el bit 7
     }
     else
     {
@@ -279,7 +279,7 @@ void Memory::VRamDmaTransfer(BYTE value)
             memory[HDMA2] = srcEnd & 0xF0;
             memory[HDMA3] = dstEnd >> 8;
             memory[HDMA4] = dstEnd & 0xF0;
-            memory[HDMA5] = 0xFF; // Se especifica que se ha terminado la copia
+            value = 0xFF; // Se especifica que se ha terminado la copia
             
             if (memory[KEY1] & 0x80)
                 cpu->AddCycles(HDMA_CYCLES*length/0x10*2);
@@ -291,9 +291,11 @@ void Memory::VRamDmaTransfer(BYTE value)
         else
         {
             hdmaActive = true;
-            memory[HDMA5] = value & 0x7F;  // Se pone a 0 el bit 7
+            value = value & 0x7F;  // Se pone a 0 el bit 7
         }
     }
+    
+    return value;
 }
 
 void Memory::UpdateHDMA()

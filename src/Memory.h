@@ -49,7 +49,7 @@ private:
     BYTE *wRam;
     BYTE *vRam;
 	void OamDmaTransfer(BYTE direction);
-    void VRamDmaTransfer(BYTE value);
+    BYTE VRamDmaTransfer(BYTE value);
 public:
 	BYTE memory[SIZE_MEM];
 public:
