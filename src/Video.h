@@ -41,9 +41,7 @@ private:
 	Memory *mem;
     bool colorMode;
 	std::multimap<int, int> orderedOAM;	//posicion x, dir. memoria
-    //  -1 = BGWnd attribute = 1
-    // >=0 = BGWnd attribute = 0 (indica el color del pixel)
-	int stateBGWnd[GB_SCREEN_W][GB_SCREEN_H];
+	bool priorityBGWnd[GB_SCREEN_W][GB_SCREEN_H]; // Aqui se almacena la prioridad de pintado de BG y Window
 	IGBScreenDrawable * screen;
 	VideoPixel * pixel;
 public:
@@ -64,6 +62,7 @@ private:
 	void UpdateOAM(int line);
 	inline void GetColor(VideoPixel * p);
 	void GetDMGPalette(int * palette, int dir);
+    bool ObjAboveBG(BYTE oamBit7, int x, int y);
 };
 
 #endif

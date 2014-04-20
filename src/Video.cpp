@@ -256,10 +256,10 @@ inline void Video::GetColor(VideoPixel * p)
     else
         p->color = p->palette[p->indexColor];
     
-    if (bgPriority)
-        stateBGWnd[pixel->x][pixel->y] = -1;
+    if (bgPriority && (pixel->indexColor > 0))
+        priorityBGWnd[pixel->x][pixel->y] = true;
     else
-        stateBGWnd[pixel->x][pixel->y] = pixel->indexColor;
+        priorityBGWnd[pixel->x][pixel->y] = false;
 }
 
 void Video::OrderOAM(int y)
@@ -385,23 +385,8 @@ void Video::UpdateOAM(int y)
 			//Esto devolvera un numero de color que junto a la paleta de color nos dara el color requerido
 			BYTE index = (((line[1] & (1 << pixX)) >> pixX) << 1) | ((line[0] & (1 << pixX)) >> pixX);
             
-            bool paintSprite = (BIT0(mem->memory[LCDC]) == 0);
-            if (!paintSprite) {
-                int bgColor = stateBGWnd[xSprite + countX][ySprite + countY];
-                bool bgPriority = (bgColor == -1);
-                if (bgPriority)
-                    paintSprite = false;
-                else {
-                    if (spritePriority) {
-                        if (bgColor == 0)
-                            paintSprite = true;
-                        else
-                            paintSprite = false;
-                    }
-                    else
-                        paintSprite = true;
-                }
-            }
+            bool paintSprite = ObjAboveBG(spritePriority, xSprite + countX, ySprite + countY);
+            
 			//El 0 es transparente (no pintar)
 			if (paintSprite && (index > 0))
 			{
@@ -425,6 +410,24 @@ void Video::UpdateOAM(int y)
 			countX++;
 		}
 	}
+}
+
+// Decide qué se pinta por encima, si el sprite o el background/window
+// Hay 3 sitios que lo deciden (en este orden):
+// 1 - LCDC Bit 0
+// 2 - BG Map Attribute Bit 7 *
+// 3 - OAM Attribute Bit 7
+// * El valor de BG Map Attr está almacenado en priorityBGWnd
+bool Video::ObjAboveBG(BYTE oamBit7, int x, int y) {
+    bool paintSprite = (BIT0(mem->memory[LCDC]) == 0);
+    if (!paintSprite) {
+        if (priorityBGWnd[x][y])
+            paintSprite = false;
+        else
+            paintSprite = oamBit7 ? false : true;
+    }
+    
+    return paintSprite;
 }
 
 void Video::GetDMGPalette(int * palette, int dir)
