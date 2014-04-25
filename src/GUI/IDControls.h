@@ -101,7 +101,8 @@ enum {
     ID_BREAK_ADDRESS,
     
     ID_LANG_ENGLISH,
-    ID_LANG_SPANISH
+    ID_LANG_SPANISH,
+    ID_LANG_FRENCH
 };
 
 #endif

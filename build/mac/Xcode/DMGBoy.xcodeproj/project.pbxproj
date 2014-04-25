@@ -16,7 +16,6 @@
 		6E2B3ED417C13BD80066D9C6 /* Array.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 6E2B3ED017C13BD80066D9C6 /* Array.cpp */; };
 		6E2B3ED517C13BD80066D9C6 /* Geo.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 6E2B3ED217C13BD80066D9C6 /* Geo.cpp */; };
 		6E2B3EDA17C14B6E0066D9C6 /* wxImageLoader.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 6E2B3ED917C14B6E0066D9C6 /* wxImageLoader.cpp */; };
-		6E41039C175A41CF00B5D091 /* dmgboy.mo in CopyFiles */ = {isa = PBXBuildFile; fileRef = 6E41039B175A41CF00B5D091 /* dmgboy.mo */; };
 		6E4754F51719936000602FE1 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6E4754F41719936000602FE1 /* Cocoa.framework */; };
 		6E47553A1719970B00602FE1 /* EmulationThread.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 6EBF280C146746D100F2D9F8 /* EmulationThread.cpp */; };
 		6E47553C1719970B00602FE1 /* MainApp.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 6E23C6BF11D7CA0C0043AF47 /* MainApp.cpp */; };
@@ -45,6 +44,8 @@
 		6E47556A1719977500602FE1 /* Gb_Oscs.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 6E2C363B1334CB3900BE7D7B /* Gb_Oscs.cpp */; };
 		6E47556B1719977500602FE1 /* Multi_Buffer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 6E2C363D1334CB3900BE7D7B /* Multi_Buffer.cpp */; };
 		6E51B4B218BFCBFE00954A03 /* InstructionsDef.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 6E51B4B018BFCBFD00954A03 /* InstructionsDef.cpp */; };
+		6E81E465190AE64200725E92 /* dmgboy.mo in CopyFiles */ = {isa = PBXBuildFile; fileRef = 6E81E460190AE57D00725E92 /* dmgboy.mo */; };
+		6E81E466190AE65500725E92 /* dmgboy.mo in CopyFiles */ = {isa = PBXBuildFile; fileRef = 6E41039B175A41CF00B5D091 /* dmgboy.mo */; };
 		6E88103918392B9C00E5F636 /* gb.3di in CopyFiles */ = {isa = PBXBuildFile; fileRef = 6E88103618390F1700E5F636 /* gb.3di */; };
 		6E90991018D8D822005DF1C1 /* BreakpointsDialog.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 6E90990E18D8D822005DF1C1 /* BreakpointsDialog.cpp */; };
 		6EAFD344172C03EC0089D6D0 /* DMGBoy.icns in Resources */ = {isa = PBXBuildFile; fileRef = 6E20575F120589BF00079331 /* DMGBoy.icns */; };
@@ -71,7 +72,17 @@
 			dstPath = es.lproj;
 			dstSubfolderSpec = 7;
 			files = (
-				6E41039C175A41CF00B5D091 /* dmgboy.mo in CopyFiles */,
+				6E81E466190AE65500725E92 /* dmgboy.mo in CopyFiles */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		6E81E464190AE62B00725E92 /* CopyFiles */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = fr.lproj;
+			dstSubfolderSpec = 7;
+			files = (
+				6E81E465190AE64200725E92 /* dmgboy.mo in CopyFiles */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -152,6 +163,7 @@
 		6E4754F41719936000602FE1 /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = System/Library/Frameworks/Cocoa.framework; sourceTree = SDKROOT; };
 		6E51B4B018BFCBFD00954A03 /* InstructionsDef.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = InstructionsDef.cpp; path = ../../../src/InstructionsDef.cpp; sourceTree = "<group>"; };
 		6E51B4B118BFCBFE00954A03 /* InstructionsDef.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = InstructionsDef.h; path = ../../../src/InstructionsDef.h; sourceTree = "<group>"; };
+		6E81E460190AE57D00725E92 /* dmgboy.mo */ = {isa = PBXFileReference; lastKnownFileType = file; name = dmgboy.mo; path = ../../languages/fr/dmgboy.mo; sourceTree = "<group>"; };
 		6E88103618390F1700E5F636 /* gb.3di */ = {isa = PBXFileReference; lastKnownFileType = file; name = gb.3di; path = ../../../src/GUI/3D/gb.3di; sourceTree = "<group>"; };
 		6E90990E18D8D822005DF1C1 /* BreakpointsDialog.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = BreakpointsDialog.cpp; sourceTree = "<group>"; };
 		6E90990F18D8D822005DF1C1 /* BreakpointsDialog.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BreakpointsDialog.h; sourceTree = "<group>"; };
@@ -379,9 +391,26 @@
 		6E41039D175A423900B5D091 /* Languages */ = {
 			isa = PBXGroup;
 			children = (
-				6E41039B175A41CF00B5D091 /* dmgboy.mo */,
+				6E81E462190AE5AD00725E92 /* es */,
+				6E81E463190AE5BC00725E92 /* fr */,
 			);
 			name = Languages;
+			sourceTree = "<group>";
+		};
+		6E81E462190AE5AD00725E92 /* es */ = {
+			isa = PBXGroup;
+			children = (
+				6E41039B175A41CF00B5D091 /* dmgboy.mo */,
+			);
+			name = es;
+			sourceTree = "<group>";
+		};
+		6E81E463190AE5BC00725E92 /* fr */ = {
+			isa = PBXGroup;
+			children = (
+				6E81E460190AE57D00725E92 /* dmgboy.mo */,
+			);
+			name = fr;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -396,6 +425,7 @@
 				6E4754F01719936000602FE1 /* Frameworks */,
 				6E41039A175A419500B5D091 /* CopyFiles */,
 				6E0F405D17DC78CE0061C894 /* CopyFiles */,
+				6E81E464190AE62B00725E92 /* CopyFiles */,
 			);
 			buildRules = (
 			);

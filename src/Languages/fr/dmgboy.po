@@ -1,0 +1,261 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: DMGBoy 2.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2014-04-21 18:47+0200\n"
+"PO-Revision-Date: 2014-04-25 21:37+0100\n"
+"Last-Translator: Pablo <pablogasco@gmail.com>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: Poedit 1.6.4\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+"Language: fr_FR\n"
+
+#: ../GUI/EmulationThread.cpp:120
+msgid ""
+"\n"
+"doesn't exist"
+msgstr ""
+"\n"
+"n´existe pas "
+
+#: ../GUI/MainFrame.cpp:208
+msgid "&About"
+msgstr "Sur"
+
+#: ../GUI/MainFrame.cpp:184
+msgid "&Debug"
+msgstr "Debugger"
+
+#: ../GUI/MainFrame.cpp:199
+msgid "&Emulation"
+msgstr "Émulation"
+
+#: ../GUI/MainFrame.cpp:174
+msgid "&File"
+msgstr "Fichier"
+
+#: ../GUI/MainFrame.cpp:186
+msgid "&FullScreen"
+msgstr "Plein écran"
+
+#: ../GUI/MainFrame.cpp:211
+msgid "&Help"
+msgstr "Aide"
+
+#: ../GUI/MainFrame.cpp:204
+msgid "&Language"
+msgstr "Langue"
+
+#: ../GUI/MainFrame.cpp:140
+msgid "&Open"
+msgstr "Ouvrir"
+
+#: ../GUI/MainFrame.cpp:180
+msgid "&Pause"
+msgstr "Pause"
+
+#: ../GUI/MainFrame.cpp:176
+msgid "&Settings"
+msgstr "Réglages"
+
+#: ../GUI/MainFrame.cpp:178
+msgid "&Start"
+msgstr "Démarrer"
+
+#: ../GUI/SettingsDialog.cpp:242
+msgid "A:"
+msgstr "A:"
+
+#: ../GUI/AboutDialog.cpp:32 ../GUI/AboutDialog.cpp:37
+msgid "About ..."
+msgstr "Sur..."
+
+#: ../GUI/AboutDialog.cpp:60
+msgid "Authors of Pan Docs"
+msgstr "Auteurs des Pan Docs"
+
+#: ../GUI/SettingsDialog.cpp:245
+msgid "B:"
+msgstr "B:"
+
+#: ../GUI/MainFrame.cpp:247
+msgid "Change View"
+msgstr "Changer de vision"
+
+#: ../GUI/MainFrame.cpp:267
+msgid "Choose a gameboy rom to open"
+msgstr "Choisir un gameboy rom à ouvrir"
+
+#: ../GUI/MainFrame.cpp:146 ../GUI/MainFrame.cpp:153
+msgid "Clear recent roms"
+msgstr "Nettoyer roms récent"
+
+#: ../GUI/SettingsDialog.cpp:162
+msgid "DMG color palette:"
+msgstr "Palette couleur DMG"
+
+#: ../GUI/SettingsDialog.cpp:233
+msgid "Down:"
+msgstr "En bas"
+
+#: ../GUI/MainFrame.cpp:171
+msgid "E&xit"
+msgstr "Sortir"
+
+#: ../GUI/SettingsDialog.cpp:200
+msgid "Enabled:"
+msgstr "Activé"
+
+#: ../GUI/EmulationThread.cpp:120 ../GUI/EmulationThread.cpp:134
+#: ../GUI/EmulationThread.cpp:202 ../GUI/MainFrame.cpp:303
+#: ../GUI/MainFrame.cpp:325
+msgid "Error"
+msgstr "Erreur"
+
+#: ../GUI/EmulationThread.cpp:202
+msgid "GameBoy rom not found in the file:\n"
+msgstr "Gameboy rom non trouvé dans le fichier:\n"
+
+#: ../GUI/SettingsDialog.cpp:164
+msgid "Grayscale"
+msgstr "Graduation gris"
+
+#: ../GUI/SettingsDialog.cpp:165
+msgid "Greenscale"
+msgstr "Graduation vert"
+
+#: ../GUI/SettingsDialog.cpp:54
+msgid "Input"
+msgstr "Entrée"
+
+#: ../GUI/MainFrame.cpp:680
+msgid "Language"
+msgstr "Langue"
+
+#: ../GUI/SettingsDialog.cpp:236
+msgid "Left:"
+msgstr "Gauche:"
+
+#: ../GUI/AboutDialog.cpp:51
+msgid "Licence type: "
+msgstr "Type de licence"
+
+#: ../GUI/MainFrame.cpp:168
+msgid "Load State"
+msgstr "Charger l'état"
+
+#: ../GUI/AboutDialog.cpp:87
+msgid "OK"
+msgstr "Ok"
+
+#: ../GUI/EmulationThread.cpp:134
+msgid "Only gb, gbc and zip files allowed!"
+msgstr "Seulement fichiers gb, gbc et zip autorisés!"
+
+#: ../GUI/MainFrame.cpp:224
+msgid "Open"
+msgstr "Ouvir"
+
+#: ../GUI/MainFrame.cpp:147
+msgid "Open Recent"
+msgstr "Ouvrir recent"
+
+#: ../GUI/SettingsDialog.cpp:156
+msgid "OpenGL (Faster)"
+msgstr "OuvrirGL (plus vite)"
+
+#: ../GUI/MainFrame.cpp:235
+msgid "Pause"
+msgstr "Pause"
+
+#: ../GUI/SettingsDialog.cpp:42
+msgid "Preferences"
+msgstr "Préférences"
+
+#: ../GUI/MainFrame.cpp:227
+msgid "Recent"
+msgstr "Récent"
+
+#: ../GUI/SettingsDialog.cpp:153
+msgid "Render method:"
+msgstr "Rendre méthode"
+
+#: ../GUI/SettingsDialog.cpp:239
+msgid "Right:"
+msgstr "Droite:"
+
+#: ../GUI/MainFrame.cpp:182
+msgid "S&top"
+msgstr "Arrêt"
+
+#: ../GUI/SettingsDialog.cpp:204
+msgid "Sample Rate:"
+msgstr "Taux d´échantillon"
+
+#: ../GUI/MainFrame.cpp:169
+msgid "Save State"
+msgstr "Sauvegarder l'état"
+
+#: ../GUI/SettingsDialog.cpp:248
+msgid "Select:"
+msgstr "Select:"
+
+#: ../GUI/SettingsDialog.cpp:155
+msgid "Software (Slower)"
+msgstr "Logiciel (plus lent)"
+
+#: ../GUI/SettingsDialog.cpp:53
+msgid "Sound"
+msgstr "Son"
+
+#: ../GUI/MainFrame.cpp:232
+msgid "Start"
+msgstr "Démarrer"
+
+#: ../GUI/SettingsDialog.cpp:251
+msgid "Start:"
+msgstr "Start:"
+
+#: ../GUI/MainFrame.cpp:238
+msgid "Stop"
+msgstr "Arrêt"
+
+#: ../GUI/AboutDialog.cpp:59
+msgid "Thanks to: "
+msgstr "Merci à:"
+
+#: ../GUI/EmulationThread.cpp:120
+msgid "The file:\n"
+msgstr "Le fichier:\n"
+
+#: ../GUI/MainFrame.cpp:680
+msgid "The language will change the next time you restart the application"
+msgstr "La langue changera la prochaine fois que vous démarrerez l'application"
+
+#: ../GUI/SettingsDialog.cpp:230
+msgid "Up:"
+msgstr "En haut:"
+
+#: ../GUI/AboutDialog.cpp:47
+msgid "Version: "
+msgstr "Version:"
+
+#: ../GUI/SettingsDialog.cpp:52
+msgid "Video"
+msgstr "Vidéo"
+
+#: ../GUI/SettingsDialog.cpp:170
+msgid "Window size:"
+msgstr "Taille de fenêtre"
+
+#: ../GUI/AboutDialog.cpp:49
+msgid "Written by: "
+msgstr "Écrit par:"
