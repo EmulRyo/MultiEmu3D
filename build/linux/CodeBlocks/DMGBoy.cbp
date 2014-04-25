@@ -51,6 +51,12 @@
 		<Unit filename="../../../src/Cartridge.h">
 			<Option virtualFolder="HW/" />
 		</Unit>
+		<Unit filename="../../../src/Debugger.cpp">
+			<Option virtualFolder="HW/" />
+		</Unit>
+		<Unit filename="../../../src/Debugger.h">
+			<Option virtualFolder="HW/" />
+		</Unit>
 		<Unit filename="../../../src/Def.h">
 			<Option virtualFolder="HW/" />
 		</Unit>
@@ -88,6 +94,18 @@
 			<Option virtualFolder="GUI/" />
 		</Unit>
 		<Unit filename="../../../src/GUI/AboutDialog.h">
+			<Option virtualFolder="GUI/" />
+		</Unit>
+		<Unit filename="../../../src/GUI/BreakpointsDialog.cpp">
+			<Option virtualFolder="GUI/" />
+		</Unit>
+		<Unit filename="../../../src/GUI/BreakpointsDialog.h">
+			<Option virtualFolder="GUI/" />
+		</Unit>
+		<Unit filename="../../../src/GUI/DebuggerDialog.cpp">
+			<Option virtualFolder="GUI/" />
+		</Unit>
+		<Unit filename="../../../src/GUI/DebuggerDialog.h">
 			<Option virtualFolder="GUI/" />
 		</Unit>
 		<Unit filename="../../../src/GUI/EmulationThread.cpp">
@@ -205,6 +223,12 @@
 			<Option virtualFolder="HW/" />
 		</Unit>
 		<Unit filename="../../../src/Instructions.h">
+			<Option virtualFolder="HW/" />
+		</Unit>
+		<Unit filename="../../../src/InstructionsDef.cpp">
+			<Option virtualFolder="HW/" />
+		</Unit>
+		<Unit filename="../../../src/InstructionsDef.h">
 			<Option virtualFolder="HW/" />
 		</Unit>
 		<Unit filename="../../../src/Log.cpp">

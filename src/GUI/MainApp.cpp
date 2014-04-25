@@ -32,15 +32,6 @@
 
 IMPLEMENT_APP(MainApp)
 
-#ifdef __WXGTK__
-static const wxCmdLineEntryDesc g_cmdLineDesc[] =
-{
-	{ wxCMD_LINE_SWITCH, wxT("h"), wxT("help"), wxT("displays this help"), wxCMD_LINE_VAL_STRING, wxCMD_LINE_OPTION_HELP },
-	{ wxCMD_LINE_SWITCH, wxT("v"), wxT("version"), wxT("print version"), wxCMD_LINE_VAL_STRING, wxCMD_LINE_PARAM_OPTIONAL },
-	{ wxCMD_LINE_PARAM, NULL, NULL, wxT("input file"), wxCMD_LINE_VAL_STRING, wxCMD_LINE_PARAM_OPTIONAL },
-	{ wxCMD_LINE_NONE, NULL, NULL, NULL, wxCMD_LINE_VAL_NONE, wxCMD_LINE_PARAM_OPTIONAL }
-};
-#else
 static const wxCmdLineEntryDesc g_cmdLineDesc[] =
 {
 	{ wxCMD_LINE_SWITCH, "h", "help", "displays this help", wxCMD_LINE_VAL_STRING, wxCMD_LINE_OPTION_HELP },
@@ -48,7 +39,6 @@ static const wxCmdLineEntryDesc g_cmdLineDesc[] =
 	{ wxCMD_LINE_PARAM, NULL, NULL, "input file", wxCMD_LINE_VAL_STRING, wxCMD_LINE_PARAM_OPTIONAL },
 	{ wxCMD_LINE_NONE, NULL, NULL, NULL, wxCMD_LINE_VAL_NONE, wxCMD_LINE_PARAM_OPTIONAL }
 };
-#endif
 
 void MainApp::ChangeLanguage(long language)
 {
