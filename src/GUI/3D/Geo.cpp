@@ -104,16 +104,20 @@ void File3diLoad(const char *filename, Geo &geo) {
     GeoClearVBOArrays(vertices, normals, texCoords, indices);
 }
 
-Geo GeoLoad(const char *filename) {
-    char extension[] = ".3di";
-    
-    Geo geo;
+void GeoInit(Geo &geo) {
     geo.vboIndices = NULL;
     geo.vertices   = ArrayCreate<Vec3D>(500);
     geo.normals    = ArrayCreate<Vec3D>(500);
     geo.texCoords  = ArrayCreate<Vec2D>(500);
     geo.faces      = ArrayCreate<Face>(300);
     geo.materials  = ArrayCreate<Material>(10);
+}
+
+Geo GeoLoad(const char *filename) {
+    char extension[] = ".3di";
+    
+    Geo geo;
+    GeoInit(geo);
     
     if (strEndsWith(filename, extension)) {
         File3diLoad(filename, geo);
@@ -124,6 +128,13 @@ Geo GeoLoad(const char *filename) {
     LoadTextures(geo.materials);
     
     return geo;
+}
+
+bool GeoLoaded(Geo &geo) {
+    if ((ArrayLength(geo.vertices) > 0) || (geo.vboIndices != NULL))
+        return true;
+    else
+        return false;
 }
 
 Array GetFace(char *line){

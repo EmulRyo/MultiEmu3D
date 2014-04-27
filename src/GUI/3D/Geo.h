@@ -65,8 +65,10 @@ typedef struct{
     int illum;
 }Material;
 
+void   GeoInit(Geo &geo);
 // Esta funcion ha de ser llamada una vez el contexto de OpenGL este inicializado
 Geo    GeoLoad(const char *filename);
+bool   GeoLoaded(Geo &geo);
 void   GeoScale(Geo &geo, float s);
 void   GeoClear(Geo &geo);
 void   GeoDraw(const Geo &geo);

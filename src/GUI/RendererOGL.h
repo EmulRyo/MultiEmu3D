@@ -90,6 +90,7 @@ private:
     void ScreenDraw();
     void MoveCamera(Camera &cam);
     bool RestoreTo(Camera &camSrc, Camera &camDst);
+    void TryToLoad();
 };
 
 #endif // #if wxUSE_GLCANVAS

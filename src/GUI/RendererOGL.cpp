@@ -83,6 +83,7 @@ RendererOGL::RendererOGL(MainFrame *parent, wxWindowID id,
     m_mouseLeft = m_mouseRight = false;
     m_restoreTo2D = m_restoreTo3D = false;
     m_filter = 0.1f;
+    GeoInit(m_geo);
     
     float h = 42.75f;
     float radFov = m_fov * PI / 180.0f;
@@ -167,14 +168,17 @@ void RendererOGL::InitGL()
 	wxStandardPaths::Get().DontIgnoreAppSubDir();
 #endif
 	wxString dir = wxStandardPaths::Get().GetResourcesDir();
-    wxSetWorkingDirectory(dir);
+    if (wxDirExists(dir))
+        wxSetWorkingDirectory(dir);
+    TryToLoad();
+    wxSetWorkingDirectory(cwd);
+}
 
+void RendererOGL::TryToLoad() {
     if (wxFileExists(wxT("gb.3di")))
         m_geo = GeoLoad("gb.3di");
     else if (wxFileExists(wxT("gb.obj")))
         m_geo = GeoLoad("gb.obj");
-
-    wxSetWorkingDirectory(cwd);
 }
 
 void RendererOGL::SetPerspective() {
@@ -343,7 +347,7 @@ void RendererOGL::Render()
     MoveCamera(m_camera);
     m_camera.Apply();
     
-    if (!m_camera.IsEqualTo(m_camera2D, 0.01f))
+    if (GeoLoaded(m_geo) && !m_camera.IsEqualTo(m_camera2D, 0.01f))
         GeoDraw(m_geo);
     ScreenDraw();
 	
