@@ -1,6 +1,6 @@
 /* XPM */
 const static char * play_xpm[] = {
-"16 16 9 1",
+"16 17 9 1",
 " 	c None",
 ".	c #FFFFFF",
 "+	c #000000",
@@ -25,4 +25,5 @@ const static char * play_xpm[] = {
 ".+++&+..        ",
 ".+++..          ",
 ".+..            ",
-"..              "};
+"..              ",
+"                "};

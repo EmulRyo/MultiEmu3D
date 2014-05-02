@@ -218,39 +218,36 @@ void MainFrame::CreateMenuBar()
 void MainFrame::CreateToolBar()
 {
     toolBar = new wxToolBar(this, wxID_ANY);
-    
-    //toolBar->AddStretchableSpace();
+    toolBar->SetToolBitmapSize(wxSize(16, 16));
     
 	wxBitmap bmpOpen(open_xpm);
-	toolBar->AddTool(wxID_OPEN, _("Open"), bmpOpen);
+	toolBar->AddTool(wxID_OPEN, _("Open"), bmpOpen, _("Open"));
 	
 	wxBitmap bmpRecent(recent_xpm);
-	toolBar->AddTool(ID_OPEN_RECENT, _("Recent"), bmpRecent);
+	toolBar->AddTool(ID_OPEN_RECENT, _("Recent"), bmpRecent, _("Recent"));
 
-	toolBar->AddSeparator();
+    toolBar->AddStretchableSpace();
+	//toolBar->AddSeparator();
 
 	wxBitmap bmpPlay(play_xpm);
-	toolBar->AddTool(ID_START, _("Start"), bmpPlay);
+	toolBar->AddTool(ID_START, _("Start"), bmpPlay, _("Start"));
 
 	wxBitmap bmpPause(pause_xpm);
-	toolBar->AddTool(ID_PAUSE, _("Pause"), bmpPause);
+	toolBar->AddTool(ID_PAUSE, _("Pause"), bmpPause, _("Pause"));
 
 	wxBitmap bmpStop(stop_xpm);
-	toolBar->AddTool(ID_STOP, _("Stop"), bmpStop);
+	toolBar->AddTool(ID_STOP, _("Stop"), bmpStop, _("Stop"));
 	
 	toolBar->EnableTool(ID_START, false);
 	toolBar->EnableTool(ID_PAUSE, false);
 	toolBar->EnableTool(ID_STOP, false);
     
-    toolBar->AddSeparator();
+    //toolBar->AddSeparator();
+    toolBar->AddStretchableSpace();
     
     wxBitmap bmpChangeView(changeView_xpm);
-	toolBar->AddTool(ID_CHANGEVIEW, _("Change View"), bmpChangeView);
-
-    //toolBar->AddStretchableSpace();
-    
+	toolBar->AddTool(ID_CHANGEVIEW, _("Change View"), bmpChangeView, _("Change View"));
 	
-    //SetToolBar(toolBar);
     toolBar->Realize();
     mainSizer->Add(toolBar, 0, wxEXPAND);
 }
@@ -612,9 +609,11 @@ void MainFrame::OnTimer(wxTimerEvent &event)
 void MainFrame::OnResize(wxSizeEvent &event)
 {
 #ifndef __WXMSW__
+    wxSize toolBarSize = toolBar->GetSize();
     wxSize clientSize = this->GetClientSize();
     wxSize imageSize = clientSize;
-    imageSize.y -= 24;
+    imageSize.y -= toolBarSize.y;
+    int titleBarHeight = 22;
     
     float aspectRatio = (float)GB_SCREEN_W / GB_SCREEN_H;
 
@@ -628,11 +627,13 @@ void MainFrame::OnResize(wxSizeEvent &event)
     
     imageSize.y = imageSize.x / aspectRatio;
     
-    if (imageSize.y > wxSystemSettings::GetMetric(wxSYS_SCREEN_Y)-(24+22))
-        imageSize.y = wxSystemSettings::GetMetric(wxSYS_SCREEN_Y)-(24+22);
+    int maxHeight = wxSystemSettings::GetMetric(wxSYS_SCREEN_Y)-(toolBarSize.y+titleBarHeight);
+    
+    if (imageSize.y > maxHeight)
+        imageSize.y = maxHeight;
     
     if (!IsFullScreen())
-        this->SetClientSize(wxSize(imageSize.x, imageSize.y+24));
+        this->SetClientSize(wxSize(imageSize.x, imageSize.y+toolBarSize.y));
     
     this->Layout();
 	if (renderer)
