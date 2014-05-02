@@ -102,7 +102,8 @@ enum {
     
     ID_LANG_ENGLISH,
     ID_LANG_SPANISH,
-    ID_LANG_FRENCH
+    ID_LANG_FRENCH,
+    ID_LANG_GREEK
 };
 
 #endif

@@ -75,7 +75,7 @@ EVT_TIMER(ID_TIMER, MainFrame::OnTimer)
 EVT_CLOSE(MainFrame::OnClose)
 EVT_SIZE(MainFrame::OnResize)
 EVT_MAXIMIZE(MainFrame::OnMaximize)
-EVT_MENU_RANGE(ID_LANG_ENGLISH, ID_LANG_FRENCH, MainFrame::OnChangeLanguage)
+EVT_MENU_RANGE(ID_LANG_ENGLISH, ID_LANG_GREEK, MainFrame::OnChangeLanguage)
 END_EVENT_TABLE()
 
 MainFrame::MainFrame(wxString fileName)
@@ -202,6 +202,7 @@ void MainFrame::CreateMenuBar()
     languageMenu->Append(ID_LANG_ENGLISH, wxT("English"));
     languageMenu->Append(ID_LANG_SPANISH,  wxString::FromUTF8("Español"));
     languageMenu->Append(ID_LANG_FRENCH,  wxString::FromUTF8("Français"));
+    languageMenu->Append(ID_LANG_GREEK,  wxString::FromUTF8("Greek"));
     mb->Append(languageMenu, _("&Language"));
 
     // create the help menu
@@ -675,6 +676,10 @@ void MainFrame::OnChangeLanguage(wxCommandEvent &event) {
             
         case ID_LANG_FRENCH:
             SettingsSetLanguage(wxLANGUAGE_FRENCH);
+            break;
+            
+        case ID_LANG_GREEK:
+            SettingsSetLanguage(wxLANGUAGE_GREEK);
             break;
             
         default:

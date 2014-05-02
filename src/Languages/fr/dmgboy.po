@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: DMGBoy 2.0\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2014-04-21 18:47+0200\n"
-"PO-Revision-Date: 2014-04-25 21:37+0100\n"
+"PO-Revision-Date: 2014-04-29 19:58+0100\n"
 "Last-Translator: Pablo <pablogasco@gmail.com>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
@@ -32,7 +32,7 @@ msgstr "Sur"
 
 #: ../GUI/MainFrame.cpp:184
 msgid "&Debug"
-msgstr "Debugger"
+msgstr "Déboguer"
 
 #: ../GUI/MainFrame.cpp:199
 msgid "&Emulation"
@@ -198,7 +198,7 @@ msgstr "Arrêt"
 
 #: ../GUI/SettingsDialog.cpp:204
 msgid "Sample Rate:"
-msgstr "Taux d´échantillon"
+msgstr "Fréquence d'échantillonnage"
 
 #: ../GUI/MainFrame.cpp:169
 msgid "Save State"

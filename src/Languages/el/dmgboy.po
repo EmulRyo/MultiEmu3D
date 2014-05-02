@@ -3,183 +3,186 @@
 # This file is distributed under the same license as the PACKAGE package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
 #
-#, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: PACKAGE VERSION\n"
+"Project-Id-Version: DMGBoy 2.0\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2014-04-21 18:47+0200\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"PO-Revision-Date: 2014-04-29 22:15+0100\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
-"Language: \n"
+"Language: el\n"
 "MIME-Version: 1.0\n"
-"Content-Type: text/plain; charset=CHARSET\n"
+"Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Generator: Poedit 1.6.5\n"
 
 #: ../GUI/EmulationThread.cpp:120
 msgid ""
 "\n"
 "doesn't exist"
 msgstr ""
+"\n"
+"δεν υπάρχει"
 
 #: ../GUI/MainFrame.cpp:208
 msgid "&About"
-msgstr ""
+msgstr "&Σχετικά"
 
 #: ../GUI/MainFrame.cpp:184
 msgid "&Debug"
-msgstr ""
+msgstr "&Αποσφαλμάτωση"
 
 #: ../GUI/MainFrame.cpp:199
 msgid "&Emulation"
-msgstr ""
+msgstr "&Εξομοίωση"
 
 #: ../GUI/MainFrame.cpp:174
 msgid "&File"
-msgstr ""
+msgstr "&Αρχείο"
 
 #: ../GUI/MainFrame.cpp:186
 msgid "&FullScreen"
-msgstr ""
+msgstr "&Πλήρης-οθόνη"
 
 #: ../GUI/MainFrame.cpp:211
 msgid "&Help"
-msgstr ""
+msgstr "&Βοήθεια"
 
 #: ../GUI/MainFrame.cpp:204
 msgid "&Language"
-msgstr ""
+msgstr "&Γλώσσα"
 
 #: ../GUI/MainFrame.cpp:140
 msgid "&Open"
-msgstr ""
+msgstr "&Άνοιγμα"
 
 #: ../GUI/MainFrame.cpp:180
 msgid "&Pause"
-msgstr ""
+msgstr "&Παύση"
 
 #: ../GUI/MainFrame.cpp:176
 msgid "&Settings"
-msgstr ""
+msgstr "&Ρυθμίσεις"
 
 #: ../GUI/MainFrame.cpp:178
 msgid "&Start"
-msgstr ""
+msgstr "&Εκκίνηση"
 
 #: ../GUI/SettingsDialog.cpp:242
 msgid "A:"
-msgstr ""
+msgstr "A:"
 
 #: ../GUI/AboutDialog.cpp:32 ../GUI/AboutDialog.cpp:37
 msgid "About ..."
-msgstr ""
+msgstr "Σχετικά  ..."
 
 #: ../GUI/AboutDialog.cpp:60
 msgid "Authors of Pan Docs"
-msgstr ""
+msgstr "Συντάκτες του Pan Docs"
 
 #: ../GUI/SettingsDialog.cpp:245
 msgid "B:"
-msgstr ""
+msgstr "A:"
 
 #: ../GUI/MainFrame.cpp:247
 msgid "Change View"
-msgstr ""
+msgstr "Αλλαγή Προβολής"
 
 #: ../GUI/MainFrame.cpp:267
 msgid "Choose a gameboy rom to open"
-msgstr ""
+msgstr "Επιλογή ενός gameboy rom για άνοιγμα"
 
 #: ../GUI/MainFrame.cpp:146 ../GUI/MainFrame.cpp:153
 msgid "Clear recent roms"
-msgstr ""
+msgstr "Καθαρισμό πρόσφατων roms"
 
 #: ../GUI/SettingsDialog.cpp:162
 msgid "DMG color palette:"
-msgstr ""
+msgstr "DMG παλέτα χρωμάτων:"
 
 #: ../GUI/SettingsDialog.cpp:233
 msgid "Down:"
-msgstr ""
+msgstr "Κάτω:"
 
 #: ../GUI/MainFrame.cpp:171
 msgid "E&xit"
-msgstr ""
+msgstr "Έ&ξοδος"
 
 #: ../GUI/SettingsDialog.cpp:200
 msgid "Enabled:"
-msgstr ""
+msgstr "Ενεργοποιημένo:"
 
 #: ../GUI/EmulationThread.cpp:120 ../GUI/EmulationThread.cpp:134
 #: ../GUI/EmulationThread.cpp:202 ../GUI/MainFrame.cpp:303
 #: ../GUI/MainFrame.cpp:325
 msgid "Error"
-msgstr ""
+msgstr "Σφάλμα"
 
 #: ../GUI/EmulationThread.cpp:202
 msgid "GameBoy rom not found in the file:\n"
-msgstr ""
+msgstr "To GameBoy rom δεν βρέθηκε στο αρχείο:\n"
 
 #: ../GUI/SettingsDialog.cpp:164
 msgid "Grayscale"
-msgstr ""
+msgstr "Διαβαθμίσεις του γκρι"
 
 #: ../GUI/SettingsDialog.cpp:165
 msgid "Greenscale"
-msgstr ""
+msgstr "Διαβαθμίσεις του πράσινου"
 
 #: ../GUI/SettingsDialog.cpp:54
 msgid "Input"
-msgstr ""
+msgstr "Είσοδος"
 
 #: ../GUI/MainFrame.cpp:680
 msgid "Language"
-msgstr ""
+msgstr "Γλώσσα "
 
 #: ../GUI/SettingsDialog.cpp:236
 msgid "Left:"
-msgstr ""
+msgstr "Αριστερά"
 
 #: ../GUI/AboutDialog.cpp:51
 msgid "Licence type: "
-msgstr ""
+msgstr "Τύπος άδειας:"
 
 #: ../GUI/MainFrame.cpp:168
 msgid "Load State"
-msgstr ""
+msgstr "Φόρτωση Κατάστασης"
 
 #: ../GUI/AboutDialog.cpp:87
 msgid "OK"
-msgstr ""
+msgstr "ΟΚ"
 
 #: ../GUI/EmulationThread.cpp:134
 msgid "Only gb, gbc and zip files allowed!"
-msgstr ""
+msgstr "Επιτρέπονται μόνο αρχεία gb, gbc and zip!"
 
 #: ../GUI/MainFrame.cpp:224
 msgid "Open"
-msgstr ""
+msgstr "Άνοιγμα"
 
 #: ../GUI/MainFrame.cpp:147
 msgid "Open Recent"
-msgstr ""
+msgstr "Άνοιγμα Πρόσφατων"
 
 #: ../GUI/SettingsDialog.cpp:156
 msgid "OpenGL (Faster)"
-msgstr ""
+msgstr "OpenGL (Γρηγορότερο)"
 
 #: ../GUI/MainFrame.cpp:235
 msgid "Pause"
-msgstr ""
+msgstr "Παύση"
 
 #: ../GUI/SettingsDialog.cpp:42
 msgid "Preferences"
-msgstr ""
+msgstr "Επιλογές"
 
 #: ../GUI/MainFrame.cpp:227
 msgid "Recent"
-msgstr ""
+msgstr "Πρόσφατα"
 
 #: ../GUI/SettingsDialog.cpp:153
 msgid "Render method:"
@@ -187,72 +190,73 @@ msgstr ""
 
 #: ../GUI/SettingsDialog.cpp:239
 msgid "Right:"
-msgstr ""
+msgstr "Δεξιά"
 
 #: ../GUI/MainFrame.cpp:182
 msgid "S&top"
-msgstr ""
+msgstr "Δ&ιακοπή"
 
 #: ../GUI/SettingsDialog.cpp:204
 msgid "Sample Rate:"
-msgstr ""
+msgstr "Ρυθμός Δειγματοληψίας:"
 
 #: ../GUI/MainFrame.cpp:169
 msgid "Save State"
-msgstr ""
+msgstr "Αποθήκευση Κατάστασης"
 
 #: ../GUI/SettingsDialog.cpp:248
 msgid "Select:"
-msgstr ""
+msgstr "Επιλογή:"
 
 #: ../GUI/SettingsDialog.cpp:155
 msgid "Software (Slower)"
-msgstr ""
+msgstr "Λογισμικό(Βραδύτερο)"
 
 #: ../GUI/SettingsDialog.cpp:53
 msgid "Sound"
-msgstr ""
+msgstr "Ήχος"
 
 #: ../GUI/MainFrame.cpp:232
 msgid "Start"
-msgstr ""
+msgstr "Εκκίνηση"
 
 #: ../GUI/SettingsDialog.cpp:251
 msgid "Start:"
-msgstr ""
+msgstr "Εκκίνηση:"
 
 #: ../GUI/MainFrame.cpp:238
 msgid "Stop"
-msgstr ""
+msgstr "Διακοπή"
 
 #: ../GUI/AboutDialog.cpp:59
 msgid "Thanks to: "
-msgstr ""
+msgstr "Ευχαριστούμε τους:"
 
 #: ../GUI/EmulationThread.cpp:120
 msgid "The file:\n"
-msgstr ""
+msgstr "Το αρχείο:\n"
 
 #: ../GUI/MainFrame.cpp:680
 msgid "The language will change the next time you restart the application"
 msgstr ""
+"Η γλώσσα θα αλλάξει την επόμενη φορά που θα κάνετε επανεκκίνηση της εφαρμογής"
 
 #: ../GUI/SettingsDialog.cpp:230
 msgid "Up:"
-msgstr ""
+msgstr "Πάνω:"
 
 #: ../GUI/AboutDialog.cpp:47
 msgid "Version: "
-msgstr ""
+msgstr "Έκδοση:"
 
 #: ../GUI/SettingsDialog.cpp:52
 msgid "Video"
-msgstr ""
+msgstr "Βίντεο"
 
 #: ../GUI/SettingsDialog.cpp:170
 msgid "Window size:"
-msgstr ""
+msgstr "Μέγεθος παραθύρου:"
 
 #: ../GUI/AboutDialog.cpp:49
 msgid "Written by: "
-msgstr ""
+msgstr "Συντάχθηκε απο:"

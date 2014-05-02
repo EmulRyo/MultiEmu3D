@@ -46,6 +46,7 @@
 		6E51B4B218BFCBFE00954A03 /* InstructionsDef.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 6E51B4B018BFCBFD00954A03 /* InstructionsDef.cpp */; };
 		6E81E465190AE64200725E92 /* dmgboy.mo in CopyFiles */ = {isa = PBXBuildFile; fileRef = 6E81E460190AE57D00725E92 /* dmgboy.mo */; };
 		6E81E466190AE65500725E92 /* dmgboy.mo in CopyFiles */ = {isa = PBXBuildFile; fileRef = 6E41039B175A41CF00B5D091 /* dmgboy.mo */; };
+		6E81E4691914011900725E92 /* dmgboy.mo in CopyFiles */ = {isa = PBXBuildFile; fileRef = 6E81E4681914011900725E92 /* dmgboy.mo */; };
 		6E88103918392B9C00E5F636 /* gb.3di in CopyFiles */ = {isa = PBXBuildFile; fileRef = 6E88103618390F1700E5F636 /* gb.3di */; };
 		6E90991018D8D822005DF1C1 /* BreakpointsDialog.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 6E90990E18D8D822005DF1C1 /* BreakpointsDialog.cpp */; };
 		6EAFD344172C03EC0089D6D0 /* DMGBoy.icns in Resources */ = {isa = PBXBuildFile; fileRef = 6E20575F120589BF00079331 /* DMGBoy.icns */; };
@@ -83,6 +84,16 @@
 			dstSubfolderSpec = 7;
 			files = (
 				6E81E465190AE64200725E92 /* dmgboy.mo in CopyFiles */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		6E81E4671913FF5A00725E92 /* CopyFiles */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = el.lproj;
+			dstSubfolderSpec = 7;
+			files = (
+				6E81E4691914011900725E92 /* dmgboy.mo in CopyFiles */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -164,6 +175,7 @@
 		6E51B4B018BFCBFD00954A03 /* InstructionsDef.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = InstructionsDef.cpp; path = ../../../src/InstructionsDef.cpp; sourceTree = "<group>"; };
 		6E51B4B118BFCBFE00954A03 /* InstructionsDef.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = InstructionsDef.h; path = ../../../src/InstructionsDef.h; sourceTree = "<group>"; };
 		6E81E460190AE57D00725E92 /* dmgboy.mo */ = {isa = PBXFileReference; lastKnownFileType = file; name = dmgboy.mo; path = ../../languages/fr/dmgboy.mo; sourceTree = "<group>"; };
+		6E81E4681914011900725E92 /* dmgboy.mo */ = {isa = PBXFileReference; lastKnownFileType = file; name = dmgboy.mo; path = ../../languages/el/dmgboy.mo; sourceTree = "<group>"; };
 		6E88103618390F1700E5F636 /* gb.3di */ = {isa = PBXFileReference; lastKnownFileType = file; name = gb.3di; path = ../../../src/GUI/3D/gb.3di; sourceTree = "<group>"; };
 		6E90990E18D8D822005DF1C1 /* BreakpointsDialog.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = BreakpointsDialog.cpp; sourceTree = "<group>"; };
 		6E90990F18D8D822005DF1C1 /* BreakpointsDialog.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BreakpointsDialog.h; sourceTree = "<group>"; };
@@ -393,6 +405,7 @@
 			children = (
 				6E81E462190AE5AD00725E92 /* es */,
 				6E81E463190AE5BC00725E92 /* fr */,
+				6E81E46A1914013900725E92 /* el */,
 			);
 			name = Languages;
 			sourceTree = "<group>";
@@ -413,6 +426,14 @@
 			name = fr;
 			sourceTree = "<group>";
 		};
+		6E81E46A1914013900725E92 /* el */ = {
+			isa = PBXGroup;
+			children = (
+				6E81E4681914011900725E92 /* dmgboy.mo */,
+			);
+			name = el;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -426,6 +447,7 @@
 				6E41039A175A419500B5D091 /* CopyFiles */,
 				6E0F405D17DC78CE0061C894 /* CopyFiles */,
 				6E81E464190AE62B00725E92 /* CopyFiles */,
+				6E81E4671913FF5A00725E92 /* CopyFiles */,
 			);
 			buildRules = (
 			);
