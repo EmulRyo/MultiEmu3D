@@ -202,7 +202,7 @@ void MainFrame::CreateMenuBar()
     languageMenu->Append(ID_LANG_ENGLISH, wxT("English"));
     languageMenu->Append(ID_LANG_SPANISH,  wxString::FromUTF8("Español"));
     languageMenu->Append(ID_LANG_FRENCH,  wxString::FromUTF8("Français"));
-    languageMenu->Append(ID_LANG_GREEK,  wxString::FromUTF8("Greek"));
+    languageMenu->Append(ID_LANG_GREEK,  wxString::FromUTF8("Ελληνικά"));
     mb->Append(languageMenu, _("&Language"));
 
     // create the help menu
@@ -220,6 +220,7 @@ void MainFrame::CreateToolBar()
 {
     toolBar = new wxToolBar(this, wxID_ANY);
     toolBar->SetToolBitmapSize(wxSize(16, 16));
+    toolBar->SetMinSize(wxSize(GB_SCREEN_W, 25));
     
 	wxBitmap bmpOpen(open_xpm);
 	toolBar->AddTool(wxID_OPEN, _("Open"), bmpOpen, _("Open"));
@@ -228,7 +229,6 @@ void MainFrame::CreateToolBar()
 	toolBar->AddTool(ID_OPEN_RECENT, _("Recent"), bmpRecent, _("Recent"));
 
     toolBar->AddStretchableSpace();
-	//toolBar->AddSeparator();
 
 	wxBitmap bmpPlay(play_xpm);
 	toolBar->AddTool(ID_START, _("Start"), bmpPlay, _("Start"));
@@ -243,7 +243,6 @@ void MainFrame::CreateToolBar()
 	toolBar->EnableTool(ID_PAUSE, false);
 	toolBar->EnableTool(ID_STOP, false);
     
-    //toolBar->AddSeparator();
     toolBar->AddStretchableSpace();
     
     wxBitmap bmpChangeView(changeView_xpm);
