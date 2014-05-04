@@ -22,8 +22,6 @@
 #include "../Def.h"
 #include "../IGBScreenDrawable.h"
 
-DECLARE_EVENT_TYPE(wxEVT_RENDERER_REFRESHSCREEN, -1)
-
 /*******************************************************************************
  * RendererBase Class
  *******************************************************************************/

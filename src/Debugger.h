@@ -25,7 +25,7 @@ class Sound;
 class Video;
 class CPU;
 class Cartridge;
-class BreakpointNode;
+struct BreakpointNode;
 
 class Debugger
 {

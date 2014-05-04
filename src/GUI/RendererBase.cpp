@@ -20,8 +20,6 @@
 #include "RendererBase.h"
 #include "../Def.h"
 
-DEFINE_EVENT_TYPE(wxEVT_RENDERER_REFRESHSCREEN)
-
 static BYTE palettes[][4][3] =
 {
 	{
