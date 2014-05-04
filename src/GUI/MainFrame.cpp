@@ -81,6 +81,7 @@ END_EVENT_TABLE()
 MainFrame::MainFrame(wxString fileName)
 {
 	renderer = NULL;
+    toolBar = NULL;
 
     // Create the MainFrame
     this->Create(0, ID_MAINFRAME, wxT(APP_NAME), wxDefaultPosition,
@@ -608,7 +609,9 @@ void MainFrame::OnTimer(wxTimerEvent &event)
 
 void MainFrame::OnResize(wxSizeEvent &event)
 {
-#ifndef __WXMSW__
+    if (!toolBar)
+        return;
+    
     wxSize toolBarSize = toolBar->GetSize();
     wxSize clientSize = this->GetClientSize();
     wxSize imageSize = clientSize;
@@ -638,9 +641,6 @@ void MainFrame::OnResize(wxSizeEvent &event)
     this->Layout();
 	if (renderer)
 		renderer->OnRefreshRealScreen();
-#else	
-	event.Skip();
-#endif
 }
 
 void MainFrame::OnMaximize(wxMaximizeEvent &event) {
