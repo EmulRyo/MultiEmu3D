@@ -78,11 +78,15 @@ DebuggerDialog::DebuggerDialog(wxWindow *parent, Debugger *debugger)
     
 #ifdef __WXMSW__
 	m_font = new wxFont(8, wxTELETYPE, wxNORMAL, wxNORMAL);
+    int height1 = 152;
+    int height2 = 360;
 #else
     m_font = new wxFont(12, wxTELETYPE, wxNORMAL, wxNORMAL);
+    int height1 = 132;
+    int height2 = 340;
 #endif
     
-    m_regsView = new wxListView(this, wxID_ANY, wxDefaultPosition, wxSize(82, 132), wxLC_REPORT);
+    m_regsView = new wxListView(this, wxID_ANY, wxDefaultPosition, wxSize(82, height1), wxLC_REPORT);
     m_regsView->InsertColumn (0, "Name");
     m_regsView->SetColumnWidth (0, 41);
     m_regsView->InsertColumn (1, "Value");
@@ -91,7 +95,7 @@ DebuggerDialog::DebuggerDialog(wxWindow *parent, Debugger *debugger)
     // --- Dissassembler ---
     wxStaticText *disassemblerText = new wxStaticText(this, -1, wxT("Disassembler:"));
     
-    m_disassemblerView = new wxListView(this, ID_DEBUG_DISASSEMBLER, wxDefaultPosition, wxSize(298, 132), wxLC_REPORT);
+    m_disassemblerView = new wxListView(this, ID_DEBUG_DISASSEMBLER, wxDefaultPosition, wxSize(298, height1), wxLC_REPORT);
     
     wxImageList *imageList = new wxImageList(16, 14);
     wxBitmap bmpCurrentRow(currentRow_xpm);
@@ -112,7 +116,7 @@ DebuggerDialog::DebuggerDialog(wxWindow *parent, Debugger *debugger)
     m_disassemblerView->SetColumnWidth (3, 90);
     
     wxStaticText *videoText = new wxStaticText(this, -1, wxT("Video registers:"));
-    m_videoView = new wxListView(this, wxID_ANY, wxDefaultPosition, wxSize(130, 340), wxLC_REPORT);
+    m_videoView = new wxListView(this, wxID_ANY, wxDefaultPosition, wxSize(130, height2), wxLC_REPORT);
     m_videoView->InsertColumn (0, "Name");
     m_videoView->SetColumnWidth (0, 44);
     m_videoView->InsertColumn (1, "Address");
@@ -121,7 +125,7 @@ DebuggerDialog::DebuggerDialog(wxWindow *parent, Debugger *debugger)
     m_videoView->SetColumnWidth (2, 37);
     
     wxStaticText *othersText = new wxStaticText(this, -1, wxT("Other registers:"));
-    m_othersView = new wxListView(this, wxID_ANY, wxDefaultPosition, wxSize(130, 340), wxLC_REPORT);
+    m_othersView = new wxListView(this, wxID_ANY, wxDefaultPosition, wxSize(130, height2), wxLC_REPORT);
     m_othersView->InsertColumn (0, "Name");
     m_othersView->SetColumnWidth (0, 44);
     m_othersView->InsertColumn (1, "Address");
