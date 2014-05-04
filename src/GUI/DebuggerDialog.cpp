@@ -80,7 +80,13 @@ DebuggerDialog::DebuggerDialog(wxWindow *parent, Debugger *debugger)
 	m_font = new wxFont(8, wxTELETYPE, wxNORMAL, wxNORMAL);
     int height1 = 152;
     int height2 = 360;
-#else
+#endif
+#ifdef __WXGTK__
+	m_font = new wxFont(8, wxTELETYPE, wxNORMAL, wxNORMAL);
+    int height1 = 166;
+    int height2 = 420;
+#endif
+#ifdef __WXMAC__
     m_font = new wxFont(12, wxTELETYPE, wxNORMAL, wxNORMAL);
     int height1 = 132;
     int height2 = 340;
