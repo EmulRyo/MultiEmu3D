@@ -2,7 +2,7 @@
 
 ; HM NIS Edit Wizard helper defines
 !define PRODUCT_NAME "DMGBoy"
-!define PRODUCT_VERSION "1.0"
+!define PRODUCT_VERSION "2.0"
 !define PRODUCT_PUBLISHER "Pablo Gasco"
 !define PRODUCT_WEB_SITE "http://code.google.com/p/dmgboy/"
 !define PRODUCT_DIR_REGKEY "Software\Microsoft\Windows\CurrentVersion\App Paths\DMGBoy.exe"
@@ -57,7 +57,11 @@
 !insertmacro MUI_LANGUAGE "Italian"
 !insertmacro MUI_LANGUAGE "Japanese"
 !insertmacro MUI_LANGUAGE "Korean"
+!insertmacro MUI_LANGUAGE "Portuguese"
+!insertmacro MUI_LANGUAGE "Russian"
+!insertmacro MUI_LANGUAGE "SimpChinese"
 !insertmacro MUI_LANGUAGE "Spanish"
+!insertmacro MUI_LANGUAGE "TradChinese"
 
 ; MUI end ------
 
@@ -84,6 +88,13 @@ Section "Principal" SEC01
   SetOutPath "$INSTDIR"
   SetOverwrite ifnewer
   File "..\win32\vs2010\SDL.dll"
+  File "..\win32\vs2010\Release\wxbase30u_vc100.dll"
+  File "..\win32\vs2010\Release\wxmsw30u_adv_vc100.dll"
+  File "..\win32\vs2010\Release\wxmsw30u_core_vc100.dll"
+  File "..\win32\vs2010\Release\wxmsw30u_gl_vc100.dll"
+  File "..\win32\vs2010\Release\gb.3di"
+  File "..\win32\vs2010\Release\gb.jpg"
+  File /r "..\languages"
   File "..\win32\vs2010\Release\DMGBoy.exe"
   SetShellVarContext all
   CreateDirectory "$SMPROGRAMS\DMGBoy"
@@ -118,6 +129,13 @@ Section Uninstall
   Delete "$INSTDIR\${PRODUCT_NAME}.url"
   Delete "$INSTDIR\uninst.exe"
   Delete "$INSTDIR\DMGBoy.exe"
+  Delete "$INSTDIR\wxbase30u_vc100.dll"
+  Delete "$INSTDIR\wxmsw30u_adv_vc100.dll"
+  Delete "$INSTDIR\wxmsw30u_core_vc100.dll"
+  Delete "$INSTDIR\wxmsw30u_gl_vc100.dll"
+  Delete "$INSTDIR\gb.3di"
+  Delete "$INSTDIR\gb.jpg"
+  RMDir /r "$INSTDIR\languages"
   Delete "$INSTDIR\SDL.dll"
 
   SetShellVarContext all
