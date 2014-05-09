@@ -167,7 +167,11 @@ void RendererOGL::InitGL()
 #ifdef __WXMSW__
 	wxStandardPaths::Get().DontIgnoreAppSubDir();
 #endif
+#ifndef __WXGTK__
 	wxString dir = wxStandardPaths::Get().GetResourcesDir();
+#else
+    wxString dir("/usr/share/DMGBoy");
+#endif
     if (wxDirExists(dir))
         wxSetWorkingDirectory(dir);
     TryToLoad();

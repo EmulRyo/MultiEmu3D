@@ -56,11 +56,12 @@ void MainApp::ChangeLanguage(long language)
         wxStandardPaths* paths = (wxStandardPaths*) &wxStandardPaths::Get();
         wxString prefix = paths->GetInstallPrefix();
         locale->AddCatalogLookupPathPrefix( prefix );
+        locale->AddCatalogLookupPathPrefix(wxString("/usr/share/")+wxString(APP_NAME)+wxString("/languages"));
 #elif __WXMSW__
 		locale->AddCatalogLookupPathPrefix(wxT("languages"));
 #endif
 
-        locale->AddCatalog(wxT(APP_NAME));
+        locale->AddCatalog(wxString(APP_NAME).Lower());
 
         if(! locale->IsOk() )
         {
