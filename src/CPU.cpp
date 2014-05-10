@@ -880,7 +880,7 @@ void CPU::UpdateStateLCDOn()
 	}
 }
 
-inline void CPU::CheckLYC()
+void CPU::CheckLYC()
 {
 	if (memory[LY] == memory[LYC])
 	{
