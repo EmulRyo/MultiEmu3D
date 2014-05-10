@@ -37,6 +37,6 @@ translation and the .mo is a binary file and is the one that really translates
 the application. So you can replace an existing .mo to try your new translation.
 Once installed the application, each .mo is in a folder with a language code as
 the name. These are the places where they are:
-Windows: "Languages" directory inside the install path.
+Windows: "languages" directory inside the install path.
 Linux: /usr/share/DMGBoy/languages
 Mac: DMGBoy.app/Contents/Resources
