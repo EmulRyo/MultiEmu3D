@@ -421,10 +421,14 @@ void Video::UpdateOAM(int y)
 bool Video::ObjAboveBG(BYTE oamBit7, int x, int y) {
     bool paintSprite = (BIT0(mem->memory[LCDC]) == 0);
     if (!paintSprite) {
-        if (priorityBGWnd[x][y])
-            paintSprite = false;
+        if (colorMode) {
+            if (priorityBGWnd[x][y])
+                paintSprite = false;
+            else
+                paintSprite = oamBit7 ? false : true;
+        }
         else
-            paintSprite = oamBit7 ? false : true;
+            paintSprite = true;
     }
     
     return paintSprite;
