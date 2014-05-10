@@ -7,7 +7,7 @@
  * Updated wxWidgets to version 3
  * Fixed instruction DAA
  * Improved the LCDC states
- * Improved instructions timing
+ * Improved the timing of the instructions
 
 *DMGBoy 1.0* (2012-10-19)
  * Added a OpenGL renderer. This decrease the use of the cpu when the size of the window is bigger than 1. 
