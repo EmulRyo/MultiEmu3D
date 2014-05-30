@@ -33,6 +33,7 @@ private:
 	unsigned long _romSize;
 	std::string _name;
 	bool _isLoaded;
+    bool _hasRTC;
 	BYTE * _memCartridge;
 
 	BYTE (*ptrRead)(WORD);
@@ -51,8 +52,6 @@ public:
 
 	inline BYTE Read(WORD direction) { return ptrRead(direction); };
 	inline void Write(WORD direction, BYTE value) { ptrWrite(direction, value); };
-	
-	void Print(int beg, int end);
 	
 	void SaveMBC(std::ofstream * file);
 	void LoadMBC(std::ifstream * file);

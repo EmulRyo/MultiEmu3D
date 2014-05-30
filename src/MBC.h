@@ -24,7 +24,7 @@
 void InitMBCNone(std::string nameROM, BYTE * memCartridge, int romSize);
 void InitMBC1(std::string, BYTE * memCartridge, int romSize, int ramHeaderSize);
 void InitMBC2(std::string, BYTE * memCartridge, int romSize);
-void InitMBC3(std::string, BYTE * memCartridge, int romSize, int ramHeaderSize);
+void InitMBC3(std::string, BYTE * memCartridge, int romSize, int ramHeaderSize, bool hasRTC);
 void InitMBC5(std::string, BYTE * memCartridge, int romSize, int ramHeaderSize);
 void DestroyMBC();
 

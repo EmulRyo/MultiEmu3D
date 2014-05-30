@@ -19,6 +19,7 @@
 #include <iostream>
 #include <sstream>
 #include "GBException.h"
+#include "RTC.h"
 #include "MBC.h"
 using namespace std;
 
@@ -35,6 +36,8 @@ static int _numRomBanks = 2;
 static int _ramBank = 0;
 static int _ramSize = 0;	//Bytes
 static int _ramEnabled = 0;
+
+RTC *_rtc = NULL;
 
 static string _romName = "";
 static string _pathBatteries = "";
@@ -94,7 +97,7 @@ void InitMBC2(string romName, BYTE * memCartridge, int romSize)
 	MBCLoadRam();
 }
 
-void InitMBC3(string romName, BYTE * memCartridge, int romSize, int ramHeaderSize)
+void InitMBC3(string romName, BYTE * memCartridge, int romSize, int ramHeaderSize, bool hasRTC)
 {
 	InitMBC(romName, memCartridge, romSize);
 
@@ -108,6 +111,11 @@ void InitMBC3(string romName, BYTE * memCartridge, int romSize, int ramHeaderSiz
 	if (_ramSize)
 		_memRamMBC = new BYTE[_ramSize];
 	_ptrRamMBC = _memRamMBC;
+    
+    if (_rtc)
+        delete _rtc;
+    if (hasRTC)
+        _rtc = new RTC();
 	
 	MBCLoadRam();
 }
@@ -263,11 +271,11 @@ void MBC3Write(WORD address, BYTE value)
 	switch (msAddr) {
 		case 0x0:
 		case 0x1:
-			//Habilitar/Deshabilitar RAM
+			//Habilitar/Deshabilitar RAM y RTC
 			int lastRamEnabled;
 			lastRamEnabled = _ramEnabled;
 			_ramEnabled = ((value & 0x0F) == 0x0A);
-			if ((lastRamEnabled) && (!_ramEnabled))
+			if ((_memMode == 0) && (lastRamEnabled) && (!_ramEnabled))
 				MBCSaveRam();
 			break;
 		case 0x2:
@@ -287,21 +295,27 @@ void MBC3Write(WORD address, BYTE value)
 				_ptrRamMBC = _memRamMBC + _ramBank * 0x2000;
 				_memMode = 0;
 			}
-			else if ((value >= 0x08) && (value <=0x0C))	//Seleccionar RTC
+			else if ((_rtc) && (value >= 0x08) && (value <=0x0C))	//Seleccionar RTC
 			{
 				_memMode = 1;
-				//throw GBException("RTC no implementado");
+                _rtc->RegSelect(value - 8);
 			}
 			break;
 		case 0x6:
 		case 0x7:
-			//RTC
+            if ((_rtc) && (_ramEnabled) && (_memMode == 1))
+                _rtc->SetLatchData(value);
 			break;
 		case 0xA:
 		case 0xB:
 			//Intenta escribir en RAM
-			if (_ramEnabled && (_memMode == 0))
-				_ptrRamMBC[address - 0xA000] = value;
+			if (_ramEnabled) {
+                if (_memMode == 0)
+                    _ptrRamMBC[address - 0xA000] = value;
+                else
+                    _rtc->RegWrite(value);
+            }
+            
 		default:
 			break;
 	}
@@ -315,8 +329,12 @@ BYTE MBC3Read(WORD address)
 		return _ptrCartridge[address - 0x4000];
 	else if ((address >=0xA000) && (address < 0xC000))
 	{
-		if ((_memMode == 0) && (_ramEnabled))
-			return _ptrRamMBC[address - 0xA000];
+		if (_ramEnabled) {
+            if (_memMode == 0)
+                return _ptrRamMBC[address - 0xA000];
+            else
+                return _rtc->RegRead();
+        }
 	}
 
 	return 0;
@@ -384,14 +402,28 @@ void MBCLoadRam()
 	
 	if (file)
 	{
+        file.seekg (0, file.end);
+        streampos length = file.tellg();
+        file.seekg (0, file.beg);
+        
 		file.read((char *)_memRamMBC, _ramSize);
+        
+        if (_rtc) {
+            streampos pos = file.tellg();
+            if (pos < length) {
+                char rtcData[48];
+                file.read(rtcData, 48);
+                _rtc->SetFileData((int *)rtcData);
+            }
+        }
+        
 		file.close();
 	}
 }
 
 void MBCSaveRam()
 {
-	if (_ramSize == 0)
+    if (_ramSize == 0)
 		return;
 	
 	stringstream fileName;
@@ -401,6 +433,11 @@ void MBCSaveRam()
 	if (file)
 	{
 		file.write((char *)_memRamMBC, _ramSize);
+        if (_rtc) {
+            char rtcData[48];
+            _rtc->GetFileData((int *)rtcData);
+            file.write(rtcData, 48);
+        }
 		file.close();
 	}
 }

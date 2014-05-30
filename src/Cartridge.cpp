@@ -88,6 +88,7 @@ void Cartridge::CheckCartridge(string batteriesPath)
 	_name = string((char *)&_memCartridge[CART_NAME], 16);
 	
 	CheckRomSize((int)_memCartridge[CART_ROM_SIZE], _romSize);
+    _hasRTC = false;
 	
 	switch(_memCartridge[CART_TYPE])
 	{
@@ -117,12 +118,13 @@ void Cartridge::CheckCartridge(string batteriesPath)
 			 case 0x0D: mbc = MMM01; break;	//ROM+MMM01+SRAM+BATT*/
 		case 0x0F:						//ROM+MBC3+TIMER+BATT
 		case 0x10:						//ROM+MBC3+TIMER+RAM+BATT
+            _hasRTC = true;
 		case 0x11:						//ROM+MBC3
 		case 0x12:						//ROM+MBC3+RAM
 		case 0x13:						//ROM+MBC3+RAM+BATT
 			ptrRead = &MBC3Read;
 			ptrWrite = &MBC3Write;
-			InitMBC3(_name, _memCartridge, _romSize, _memCartridge[CART_RAM_SIZE]);
+			InitMBC3(_name, _memCartridge, _romSize, _memCartridge[CART_RAM_SIZE], _hasRTC);
 			break;
 		case 0x19:						//ROM+MBC5
 		case 0x1A:						//ROM+MBC5+RAM
