@@ -18,6 +18,7 @@
 
 #include <ctime>
 #include <stdio.h>
+#include <fstream>
 #include "RTC.h"
 
 #define RTC_S   0
@@ -29,6 +30,8 @@
 #define DAY_H        0x01
 #define HALT         0x40
 #define DAY_OVERFLOW 0x80
+
+using namespace std;
 
 RTC::RTC() {
     for (int i=0; i<5; i++) {
@@ -143,4 +146,20 @@ void RTC::GetFileData(int *data) {
     
     data[10] = now;
     data[11] = 0;
+}
+
+void RTC::SaveState(ofstream *file) {
+    file->write((char *)m_latchedRegs,  sizeof(int)*5);
+    file->write((char *)&m_selectedReg, sizeof(int));
+    file->write((char *)&m_latchData,   sizeof(int));
+    file->write((char *)m_refRegs,      sizeof(int)*5);
+    file->write((char *)&m_refTime,     sizeof(time_t));
+}
+
+void RTC::LoadState(ifstream *file) {
+    file->read((char *)m_latchedRegs,  sizeof(int)*5);
+    file->read((char *)&m_selectedReg, sizeof(int));
+    file->read((char *)&m_latchData,   sizeof(int));
+    file->read((char *)m_refRegs,      sizeof(int)*5);
+    file->read((char *)&m_refTime,     sizeof(time_t));
 }

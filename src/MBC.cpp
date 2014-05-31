@@ -456,6 +456,8 @@ void MBCSaveState(ofstream * file)
 	file->write((char *)&_ramSize, sizeof(int));
 	file->write((char *)&_ramEnabled, sizeof(int));
 	file->write((char *)_memRamMBC, _ramSize);
+    if (_rtc)
+        _rtc->SaveState(file);
 }
 
 void MBCLoadState(ifstream * file)
@@ -469,6 +471,8 @@ void MBCLoadState(ifstream * file)
 	file->read((char *)_memRamMBC, _ramSize);
 	_ptrCartridge = _memCartridge + _romBank * 0x4000;
 	_ptrRamMBC = _memRamMBC + _ramBank * 0x2000;
+    if (_rtc)
+        _rtc->LoadState(file);
 }
 
 /*
