@@ -239,16 +239,16 @@ wxPanel* SettingsDialog::CreateInputSettingsPage(wxWindow* parent)
 	wxStaticText * rightLabel = new wxStaticText(panel, wxID_ANY, _("Right:"));
 	InputTextCtrl * rightTextCtrl = new InputTextCtrl(panel, ID_TEXTCTRL_RIGHT);
 	
-	wxStaticText * aLabel = new wxStaticText(panel, wxID_ANY, _("A:"));
+	wxStaticText * aLabel = new wxStaticText(panel, wxID_ANY, wxT("A:"));
 	InputTextCtrl * aTextCtrl = new InputTextCtrl(panel, ID_TEXTCTRL_A);
 	
-	wxStaticText * bLabel = new wxStaticText(panel, wxID_ANY, _("B:"));
+	wxStaticText * bLabel = new wxStaticText(panel, wxID_ANY, wxT("B:"));
 	InputTextCtrl * bTextCtrl = new InputTextCtrl(panel, ID_TEXTCTRL_B);
 	
-	wxStaticText * selectLabel = new wxStaticText(panel, wxID_ANY, _("Select:"));
+	wxStaticText * selectLabel = new wxStaticText(panel, wxID_ANY, wxT("Select:"));
 	InputTextCtrl * selectTextCtrl = new InputTextCtrl(panel, ID_TEXTCTRL_SELECT);
 	
-	wxStaticText * startLabel = new wxStaticText(panel, wxID_ANY, _("Start:"));
+	wxStaticText * startLabel = new wxStaticText(panel, wxID_ANY, wxT("Start:"));
 	InputTextCtrl * startTextCtrl = new InputTextCtrl(panel, ID_TEXTCTRL_START);
 	
 	wxFlexGridSizer *grid = new wxFlexGridSizer(2, 3, 5);

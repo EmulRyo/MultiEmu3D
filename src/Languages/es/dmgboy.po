@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: DMGBoy 2.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2014-04-21 18:47+0200\n"
-"PO-Revision-Date: 2014-04-29 19:45+0100\n"
+"POT-Creation-Date: 2014-06-01 15:29+0200\n"
+"PO-Revision-Date: 2014-06-01 15:30+0100\n"
 "Last-Translator: Pablo <pablogasco@gmail.com>\n"
 "Language-Team: Pablo <address@domain.com>\n"
 "Language: es\n"
@@ -25,53 +25,49 @@ msgstr ""
 "\n"
 "no existe"
 
-#: ../GUI/MainFrame.cpp:208
+#: ../GUI/MainFrame.cpp:213
 msgid "&About"
 msgstr "Acerca de"
 
-#: ../GUI/MainFrame.cpp:184
+#: ../GUI/MainFrame.cpp:185
 msgid "&Debug"
 msgstr "Depurar"
 
-#: ../GUI/MainFrame.cpp:199
+#: ../GUI/MainFrame.cpp:200
 msgid "&Emulation"
 msgstr "Emulación"
 
-#: ../GUI/MainFrame.cpp:174
+#: ../GUI/MainFrame.cpp:175
 msgid "&File"
 msgstr "Archivo"
 
-#: ../GUI/MainFrame.cpp:186
+#: ../GUI/MainFrame.cpp:187
 msgid "&FullScreen"
 msgstr "Pantalla completa"
 
-#: ../GUI/MainFrame.cpp:211
+#: ../GUI/MainFrame.cpp:216
 msgid "&Help"
 msgstr "Ayuda"
 
-#: ../GUI/MainFrame.cpp:204
+#: ../GUI/MainFrame.cpp:209
 msgid "&Language"
 msgstr "Idioma"
 
-#: ../GUI/MainFrame.cpp:140
+#: ../GUI/MainFrame.cpp:141
 msgid "&Open"
 msgstr "Abrir"
 
-#: ../GUI/MainFrame.cpp:180
+#: ../GUI/MainFrame.cpp:181
 msgid "&Pause"
 msgstr "Pausar"
 
-#: ../GUI/MainFrame.cpp:176
+#: ../GUI/MainFrame.cpp:177
 msgid "&Settings"
 msgstr "Configuración"
 
-#: ../GUI/MainFrame.cpp:178
+#: ../GUI/MainFrame.cpp:179
 msgid "&Start"
 msgstr "Empezar"
-
-#: ../GUI/SettingsDialog.cpp:242
-msgid "A:"
-msgstr "A:"
 
 #: ../GUI/AboutDialog.cpp:32 ../GUI/AboutDialog.cpp:37
 msgid "About ..."
@@ -81,19 +77,15 @@ msgstr "Acerca de ..."
 msgid "Authors of Pan Docs"
 msgstr "Autores de Pan Docs"
 
-#: ../GUI/SettingsDialog.cpp:245
-msgid "B:"
-msgstr "B:"
-
-#: ../GUI/MainFrame.cpp:247
+#: ../GUI/MainFrame.cpp:252
 msgid "Change View"
 msgstr "Cambiar vista"
 
-#: ../GUI/MainFrame.cpp:267
+#: ../GUI/MainFrame.cpp:268
 msgid "Choose a gameboy rom to open"
 msgstr "Escoge una rom de gameboy a abrir"
 
-#: ../GUI/MainFrame.cpp:146 ../GUI/MainFrame.cpp:153
+#: ../GUI/MainFrame.cpp:147 ../GUI/MainFrame.cpp:154
 msgid "Clear recent roms"
 msgstr "Limpiar juegos recientes"
 
@@ -105,7 +97,7 @@ msgstr "Paleta de color en DMG:"
 msgid "Down:"
 msgstr "Abajo:"
 
-#: ../GUI/MainFrame.cpp:171
+#: ../GUI/MainFrame.cpp:172
 msgid "E&xit"
 msgstr "Salir"
 
@@ -114,8 +106,8 @@ msgid "Enabled:"
 msgstr "Habilitado:"
 
 #: ../GUI/EmulationThread.cpp:120 ../GUI/EmulationThread.cpp:134
-#: ../GUI/EmulationThread.cpp:202 ../GUI/MainFrame.cpp:303
-#: ../GUI/MainFrame.cpp:325
+#: ../GUI/EmulationThread.cpp:202 ../GUI/MainFrame.cpp:304
+#: ../GUI/MainFrame.cpp:326
 msgid "Error"
 msgstr "Error"
 
@@ -135,7 +127,7 @@ msgstr "Escala de verdes"
 msgid "Input"
 msgstr "Entrada"
 
-#: ../GUI/MainFrame.cpp:680
+#: ../GUI/MainFrame.cpp:700
 msgid "Language"
 msgstr "Idioma"
 
@@ -147,7 +139,7 @@ msgstr "Izquierda:"
 msgid "Licence type: "
 msgstr "Tipo de licencia:"
 
-#: ../GUI/MainFrame.cpp:168
+#: ../GUI/MainFrame.cpp:169
 msgid "Load State"
 msgstr "Cargar estado"
 
@@ -159,11 +151,11 @@ msgstr "OK"
 msgid "Only gb, gbc and zip files allowed!"
 msgstr "Solo archivos gb, gbc y zip están permitidos"
 
-#: ../GUI/MainFrame.cpp:224
+#: ../GUI/MainFrame.cpp:229
 msgid "Open"
 msgstr "Abrir"
 
-#: ../GUI/MainFrame.cpp:147
+#: ../GUI/MainFrame.cpp:148
 msgid "Open Recent"
 msgstr "Abrir reciente"
 
@@ -171,7 +163,7 @@ msgstr "Abrir reciente"
 msgid "OpenGL (Faster)"
 msgstr "OpenGL (Más rápido)"
 
-#: ../GUI/MainFrame.cpp:235
+#: ../GUI/MainFrame.cpp:240
 msgid "Pause"
 msgstr "Pausar"
 
@@ -179,7 +171,7 @@ msgstr "Pausar"
 msgid "Preferences"
 msgstr "Preferencias"
 
-#: ../GUI/MainFrame.cpp:227
+#: ../GUI/MainFrame.cpp:232
 msgid "Recent"
 msgstr "Reciente"
 
@@ -191,7 +183,7 @@ msgstr "Método de renderizado:"
 msgid "Right:"
 msgstr "Derecha:"
 
-#: ../GUI/MainFrame.cpp:182
+#: ../GUI/MainFrame.cpp:183
 msgid "S&top"
 msgstr "Parar"
 
@@ -199,13 +191,9 @@ msgstr "Parar"
 msgid "Sample Rate:"
 msgstr "Frecuencia de muestreo:"
 
-#: ../GUI/MainFrame.cpp:169
+#: ../GUI/MainFrame.cpp:170
 msgid "Save State"
 msgstr "Guardar estado"
-
-#: ../GUI/SettingsDialog.cpp:248
-msgid "Select:"
-msgstr "Select:"
 
 #: ../GUI/SettingsDialog.cpp:155
 msgid "Software (Slower)"
@@ -215,17 +203,17 @@ msgstr "Software (Más lento)"
 msgid "Sound"
 msgstr "Sonido"
 
-#: ../GUI/MainFrame.cpp:232
+#: ../GUI/MainFrame.cpp:237
 msgid "Start"
 msgstr "Empezar"
 
-#: ../GUI/SettingsDialog.cpp:251
-msgid "Start:"
-msgstr "Start:"
-
-#: ../GUI/MainFrame.cpp:238
+#: ../GUI/MainFrame.cpp:243
 msgid "Stop"
 msgstr "Parar"
+
+#: ../GUI/MainFrame.cpp:203
+msgid "System"
+msgstr "Sistema"
 
 #: ../GUI/AboutDialog.cpp:59
 msgid "Thanks to: "
@@ -235,7 +223,7 @@ msgstr "Gracias a:"
 msgid "The file:\n"
 msgstr "El archivo:\n"
 
-#: ../GUI/MainFrame.cpp:680
+#: ../GUI/MainFrame.cpp:700
 msgid "The language will change the next time you restart the application"
 msgstr "El idioma cambiará la próxima vez que arranques la aplicación"
 
@@ -258,6 +246,18 @@ msgstr "Tamaño de ventana:"
 #: ../GUI/AboutDialog.cpp:49
 msgid "Written by: "
 msgstr "Escrito por:"
+
+#~ msgid "A:"
+#~ msgstr "A:"
+
+#~ msgid "B:"
+#~ msgstr "B:"
+
+#~ msgid "Select:"
+#~ msgstr "Select:"
+
+#~ msgid "Start:"
+#~ msgstr "Start:"
 
 #~ msgid "English"
 #~ msgstr "Inglés"

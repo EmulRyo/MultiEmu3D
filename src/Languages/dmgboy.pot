@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2014-04-21 18:47+0200\n"
+"POT-Creation-Date: 2014-06-01 15:29+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -23,52 +23,48 @@ msgid ""
 "doesn't exist"
 msgstr ""
 
-#: ../GUI/MainFrame.cpp:208
+#: ../GUI/MainFrame.cpp:213
 msgid "&About"
 msgstr ""
 
-#: ../GUI/MainFrame.cpp:184
+#: ../GUI/MainFrame.cpp:185
 msgid "&Debug"
 msgstr ""
 
-#: ../GUI/MainFrame.cpp:199
+#: ../GUI/MainFrame.cpp:200
 msgid "&Emulation"
 msgstr ""
 
-#: ../GUI/MainFrame.cpp:174
+#: ../GUI/MainFrame.cpp:175
 msgid "&File"
 msgstr ""
 
-#: ../GUI/MainFrame.cpp:186
+#: ../GUI/MainFrame.cpp:187
 msgid "&FullScreen"
 msgstr ""
 
-#: ../GUI/MainFrame.cpp:211
+#: ../GUI/MainFrame.cpp:216
 msgid "&Help"
 msgstr ""
 
-#: ../GUI/MainFrame.cpp:204
+#: ../GUI/MainFrame.cpp:209
 msgid "&Language"
 msgstr ""
 
-#: ../GUI/MainFrame.cpp:140
+#: ../GUI/MainFrame.cpp:141
 msgid "&Open"
 msgstr ""
 
-#: ../GUI/MainFrame.cpp:180
+#: ../GUI/MainFrame.cpp:181
 msgid "&Pause"
 msgstr ""
 
-#: ../GUI/MainFrame.cpp:176
+#: ../GUI/MainFrame.cpp:177
 msgid "&Settings"
 msgstr ""
 
-#: ../GUI/MainFrame.cpp:178
+#: ../GUI/MainFrame.cpp:179
 msgid "&Start"
-msgstr ""
-
-#: ../GUI/SettingsDialog.cpp:242
-msgid "A:"
 msgstr ""
 
 #: ../GUI/AboutDialog.cpp:32 ../GUI/AboutDialog.cpp:37
@@ -79,19 +75,15 @@ msgstr ""
 msgid "Authors of Pan Docs"
 msgstr ""
 
-#: ../GUI/SettingsDialog.cpp:245
-msgid "B:"
-msgstr ""
-
-#: ../GUI/MainFrame.cpp:247
+#: ../GUI/MainFrame.cpp:252
 msgid "Change View"
 msgstr ""
 
-#: ../GUI/MainFrame.cpp:267
+#: ../GUI/MainFrame.cpp:268
 msgid "Choose a gameboy rom to open"
 msgstr ""
 
-#: ../GUI/MainFrame.cpp:146 ../GUI/MainFrame.cpp:153
+#: ../GUI/MainFrame.cpp:147 ../GUI/MainFrame.cpp:154
 msgid "Clear recent roms"
 msgstr ""
 
@@ -103,7 +95,7 @@ msgstr ""
 msgid "Down:"
 msgstr ""
 
-#: ../GUI/MainFrame.cpp:171
+#: ../GUI/MainFrame.cpp:172
 msgid "E&xit"
 msgstr ""
 
@@ -112,8 +104,8 @@ msgid "Enabled:"
 msgstr ""
 
 #: ../GUI/EmulationThread.cpp:120 ../GUI/EmulationThread.cpp:134
-#: ../GUI/EmulationThread.cpp:202 ../GUI/MainFrame.cpp:303
-#: ../GUI/MainFrame.cpp:325
+#: ../GUI/EmulationThread.cpp:202 ../GUI/MainFrame.cpp:304
+#: ../GUI/MainFrame.cpp:326
 msgid "Error"
 msgstr ""
 
@@ -133,7 +125,7 @@ msgstr ""
 msgid "Input"
 msgstr ""
 
-#: ../GUI/MainFrame.cpp:680
+#: ../GUI/MainFrame.cpp:700
 msgid "Language"
 msgstr ""
 
@@ -145,7 +137,7 @@ msgstr ""
 msgid "Licence type: "
 msgstr ""
 
-#: ../GUI/MainFrame.cpp:168
+#: ../GUI/MainFrame.cpp:169
 msgid "Load State"
 msgstr ""
 
@@ -157,11 +149,11 @@ msgstr ""
 msgid "Only gb, gbc and zip files allowed!"
 msgstr ""
 
-#: ../GUI/MainFrame.cpp:224
+#: ../GUI/MainFrame.cpp:229
 msgid "Open"
 msgstr ""
 
-#: ../GUI/MainFrame.cpp:147
+#: ../GUI/MainFrame.cpp:148
 msgid "Open Recent"
 msgstr ""
 
@@ -169,7 +161,7 @@ msgstr ""
 msgid "OpenGL (Faster)"
 msgstr ""
 
-#: ../GUI/MainFrame.cpp:235
+#: ../GUI/MainFrame.cpp:240
 msgid "Pause"
 msgstr ""
 
@@ -177,7 +169,7 @@ msgstr ""
 msgid "Preferences"
 msgstr ""
 
-#: ../GUI/MainFrame.cpp:227
+#: ../GUI/MainFrame.cpp:232
 msgid "Recent"
 msgstr ""
 
@@ -189,7 +181,7 @@ msgstr ""
 msgid "Right:"
 msgstr ""
 
-#: ../GUI/MainFrame.cpp:182
+#: ../GUI/MainFrame.cpp:183
 msgid "S&top"
 msgstr ""
 
@@ -197,12 +189,8 @@ msgstr ""
 msgid "Sample Rate:"
 msgstr ""
 
-#: ../GUI/MainFrame.cpp:169
+#: ../GUI/MainFrame.cpp:170
 msgid "Save State"
-msgstr ""
-
-#: ../GUI/SettingsDialog.cpp:248
-msgid "Select:"
 msgstr ""
 
 #: ../GUI/SettingsDialog.cpp:155
@@ -213,16 +201,16 @@ msgstr ""
 msgid "Sound"
 msgstr ""
 
-#: ../GUI/MainFrame.cpp:232
+#: ../GUI/MainFrame.cpp:237
 msgid "Start"
 msgstr ""
 
-#: ../GUI/SettingsDialog.cpp:251
-msgid "Start:"
+#: ../GUI/MainFrame.cpp:243
+msgid "Stop"
 msgstr ""
 
-#: ../GUI/MainFrame.cpp:238
-msgid "Stop"
+#: ../GUI/MainFrame.cpp:203
+msgid "System"
 msgstr ""
 
 #: ../GUI/AboutDialog.cpp:59
@@ -233,7 +221,7 @@ msgstr ""
 msgid "The file:\n"
 msgstr ""
 
-#: ../GUI/MainFrame.cpp:680
+#: ../GUI/MainFrame.cpp:700
 msgid "The language will change the next time you restart the application"
 msgstr ""
 
