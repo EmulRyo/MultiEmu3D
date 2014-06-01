@@ -33,25 +33,26 @@
 using namespace std;
 
 
-CPU::CPU(Video *v, Sound *s): Memory(this, s)
+CPU::CPU(Video *v, Pad *p, Sound *s): Memory(this, s)
 {
-	Init(v);
+	Init(v, p);
 }
 
-CPU::CPU(Video *v, Cartridge *c, Sound *s): Memory(this, s)
+CPU::CPU(Video *v, Pad *p, Cartridge *c, Sound *s): Memory(this, s)
 {
     LoadCartridge(c);
-	Init(v);
+	Init(v, p);
 }
 
-void CPU::Init(Video *v)
+void CPU::Init(Video *v, Pad *p)
 {
     m_v = v;
+    m_p = p;
 	v->SetMem(this->GetPtrMemory());
 	ResetGlobalVariables();
 	
 #ifdef MAKEGBLOG
-	this->log = new QueueLog(1000000);
+	m_log = new QueueLog(1000000);
 #endif
 }
 
@@ -730,9 +731,9 @@ void CPU::OpCodeCB(Instructions * inst)
     }
 }
 
-void CPU::UpdatePad()
+void CPU::UpdatePad(bool buttonsState[8])
 {
-	int interrupt = PadCheckKeyboard(&memory[P1]);
+	int interrupt = m_p->SetButtonsState(buttonsState, &memory[P1]);
 	if (interrupt)
         SetIntFlag(4);
 }
@@ -1034,7 +1035,7 @@ BYTE CPU::P1Changed(BYTE newValue)
 {
     BYTE oldP1 = memory[P1];
     newValue = (newValue & 0xF0) | (oldP1 & ~0xF0);
-    newValue = PadUpdateInput(newValue);
+    newValue = m_p->Update(newValue);
     if ((newValue != oldP1) && ((newValue & 0x0F) != 0x0F))
     {
         //Debe producir una interrupcion

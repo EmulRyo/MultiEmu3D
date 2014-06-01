@@ -26,6 +26,7 @@ enum enumEmuStates { NotStartedYet, Stopped, Paused, Playing };
 class Cartridge;
 class Video;
 class Sound;
+class Pad;
 class CPU;
 class Debugger;
 class IGBScreenDrawable;
@@ -53,15 +54,18 @@ public:
 private:
 	Video *video;
 	Sound *sound;
+    Pad *pad;
 	Cartridge *cartridge;
     CPU *cpu;
     Debugger *debugger;
     wxMutex *mutex;
     wxStopWatch swFrame;
+    wxKeyCode keysUsed[8];
     
 	enumEmuStates emuState;
     
     void LoadZip(const wxString zipPath, BYTE ** buffer, unsigned long * size);
+    void PadSetKeys(int* keys);
 };
 
 #endif

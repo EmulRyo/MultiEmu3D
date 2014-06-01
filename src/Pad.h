@@ -20,10 +20,15 @@
 
 #include "Def.h"
 
-enum e_gbpad { gbUP, gbDOWN, gbLEFT, gbRIGHT, gbA, gbB, gbSELECT, gbSTART };
-
-void PadSetKeys(int * keys);
-int PadCheckKeyboard(BYTE * valueP1);
-BYTE PadUpdateInput(BYTE valueP1);
+class Pad {
+public:
+    Pad();
+    
+    int  SetButtonsState(bool buttonsState[8], BYTE *valueP1);
+    BYTE Update(BYTE valueP1);
+    
+private:
+    bool m_buttonsState[8];
+};
 
 #endif

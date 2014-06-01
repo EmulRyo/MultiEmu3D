@@ -24,6 +24,7 @@
 #include "../Sound.h"
 #include "../Video.h"
 #include "../CPU.h"
+#include "../Pad.h"
 #include "../Debugger.h"
 #include "Settings.h"
 #include "EmulationThread.h"
@@ -36,9 +37,19 @@ EmulationThread::EmulationThread()
     
 	sound = new Sound();
     video = new Video(NULL);
-	cpu = new CPU(video, sound);
+    pad = new Pad();
+	cpu = new CPU(video, pad, sound);
 	cartridge = NULL;
     debugger = new Debugger(sound, video, cpu, cartridge);
+    
+    keysUsed[0] = WXK_UP;
+    keysUsed[1] = WXK_DOWN;
+    keysUsed[2] = WXK_LEFT;
+    keysUsed[3] = WXK_RIGHT;
+    keysUsed[4] = (wxKeyCode)'A';
+    keysUsed[5] = (wxKeyCode)'S';
+    keysUsed[6] = WXK_SHIFT;
+    keysUsed[7] = WXK_RETURN;
     
     ApplySettings();
     
@@ -50,6 +61,7 @@ EmulationThread::~EmulationThread() {
 	delete cpu;
 	delete video;
 	delete sound;
+    delete pad;
 	if (cartridge)
 		delete cartridge;
 }
@@ -238,10 +250,19 @@ void EmulationThread::UpdatePad()
     //wxMutexLocker lock(*mutex);
     if (emuState == Playing)
     {
-        cpu->UpdatePad();
+        bool buttonsState[8];
+        for (int i=0; i<8; i++)
+            buttonsState[i] = wxGetKeyState(keysUsed[i]);
+        cpu->UpdatePad(buttonsState);
     }
 }
 
 Debugger *EmulationThread::GetDebugger() {
     return debugger;
+}
+
+void EmulationThread::PadSetKeys(int* keys)
+{
+	for (int i=0; i<8; i++)
+		keysUsed[i] = (wxKeyCode)keys[i];
 }

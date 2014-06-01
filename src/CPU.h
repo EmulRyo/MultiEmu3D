@@ -25,6 +25,7 @@ class QueueLog;
 class Video;
 class Instructions;
 class Cartridge;
+class Pad;
 
 class CPU: public Registers, public Memory
 {
@@ -43,19 +44,20 @@ private:
     int m_lcdMode3;
     int m_cyclesFrame;
 	Video *m_v;
+    Pad *m_p;
 #ifdef MAKEGBLOG
 	QueueLog *m_log;
 #endif
 	bool m_VBlankIntPending;
     bool m_newInterrupt;
 public:
-	CPU(Video *v, Sound *s);
-	CPU(Video *v, Cartridge *c, Sound *s);
+	CPU(Video *v, Pad *p, Sound *s);
+	CPU(Video *v, Pad *p, Cartridge *c, Sound *s);
 	~CPU();
 	
     int  Execute(int cyclesToExecute);
 	int  ExecuteOneFrame();
-	void UpdatePad();
+	void UpdatePad(bool buttonsState[8]);
     void OnWriteLCDC(BYTE value);
     BYTE TACChanged(BYTE newValue);
     BYTE DIVChanged(BYTE newValue);
@@ -70,7 +72,7 @@ public:
 	void SaveState(std::string saveDirectory, int numSlot);
 	void LoadState(std::string loadDirectory, int numSlot);
 private:
-	void Init(Video *v);
+	void Init(Video *v, Pad *p);
     void ResetGlobalVariables();
 	void OpCodeCB(Instructions *inst);
 	void UpdateStateLCD(int cycles);

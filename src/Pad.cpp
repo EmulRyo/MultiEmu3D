@@ -15,55 +15,58 @@
  along with DMGBoy.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <wx/defs.h>
-#include <wx/utils.h>
-#include <iostream>
-#include "GBException.h"
 #include "Pad.h"
-using namespace std;
 
-static wxKeyCode keysUsed[] = { WXK_UP, WXK_DOWN, WXK_LEFT, WXK_RIGHT, (wxKeyCode)'A', (wxKeyCode)'S', WXK_SHIFT, WXK_RETURN };
+enum e_gbpad { UP, DOWN, LEFT, RIGHT, A, B, SELECT, START };
 
-static BYTE gbPadState[8];
-
-void PadSetKeys(int * keys)
-{
-	for (int i=0; i<8; i++)
-		keysUsed[i] = (wxKeyCode)keys[i];
+Pad::Pad() {
+    for (int i=0; i<8; i++)
+        m_buttonsState[i] = false;
 }
 
-BYTE PadUpdateInput(BYTE valueP1)
+BYTE Pad::Update(BYTE valueP1)
 {
-	if(!BIT5(valueP1))
-		return ((valueP1 & 0xF0) |
-			(!gbPadState[gbSTART] << 3) | (!gbPadState[gbSELECT] << 2) | (!gbPadState[gbB] << 1) | (!gbPadState[gbA]));
-
-	if(!BIT4(valueP1))
-		return ((valueP1 & 0xF0) |
-			(!gbPadState[gbDOWN] << 3) | (!gbPadState[gbUP] << 2) | (!gbPadState[gbLEFT] << 1) | (!gbPadState[gbRIGHT]));
-
-	//Desactivar los botones
-	return 0xFF;
+    BYTE newValue = 0;
+    
+	if(!BIT5(valueP1)) {
+        BYTE start  = (m_buttonsState[START]  ? 0 : 1) << 3;
+        BYTE select = (m_buttonsState[SELECT] ? 0 : 1) << 2;
+        BYTE b      = (m_buttonsState[B]      ? 0 : 1) << 1;
+        BYTE a      = (m_buttonsState[A]      ? 0 : 1);
+		newValue = start | select | b | a;
+    }
+    else if(!BIT4(valueP1)) {
+        BYTE down  = (m_buttonsState[DOWN]  ? 0 : 1) << 3;
+        BYTE up    = (m_buttonsState[UP]    ? 0 : 1) << 2;
+        BYTE left  = (m_buttonsState[LEFT]  ? 0 : 1) << 1;
+        BYTE right = (m_buttonsState[RIGHT] ? 0 : 1);
+		newValue = down | up | left | right;
+    }
+    else {
+        //Desactivar los botones
+        newValue = 0x0F;
+    }
+	return ((valueP1 & 0xF0) | newValue);
 }
 
-// Devuelve 1 cuando se ha pulsado una tecla
+// Devuelve 1 cuando se ha pulsado un botón
 // 0 en caso contrario
-int PadCheckKeyboard(BYTE * valueP1)
+int Pad::SetButtonsState(bool buttonsState[8], BYTE *valueP1)
 {
 	
 	int interrupt = 0;
 	
 	for (int i=0; i<8; i++)
 	{
-		if ((gbPadState[i] == 0) && (wxGetKeyState(keysUsed[i]) == true))
+		if ((m_buttonsState[i] == 0) && (buttonsState[i] == true))
 		{
 			interrupt = 1;
 		}
 		
-		gbPadState[i] = wxGetKeyState(keysUsed[i]);
+		m_buttonsState[i] = buttonsState[i];
 	}
 	
-	*valueP1 = PadUpdateInput(*valueP1);
+	*valueP1 = Update(*valueP1);
 	
 	return interrupt;
 }
