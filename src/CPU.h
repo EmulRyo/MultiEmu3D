@@ -29,32 +29,32 @@ class Cartridge;
 class CPU: public Registers, public Memory
 {
 private:
-	unsigned long numInstructions;
-	BYTE lastCycles;
-	int cyclesLCD;
-	WORD cyclesTimer;
-	WORD cyclesDIV;
-	WORD cyclesSerial;
-	int bitSerial;
+	unsigned long m_numInstructions;
+	BYTE m_lastCycles;
+	int  m_cyclesLCD;
+	WORD m_cyclesTimer;
+	WORD m_cyclesDIV;
+	WORD m_cyclesSerial;
+	int  m_bitSerial;
     
-    int lcdMode0;
-    int lcdMode1;
-    int lcdMode2;
-    int lcdMode3;
-    int cyclesFrame;
-	Video *v;
+    int m_lcdMode0;
+    int m_lcdMode1;
+    int m_lcdMode2;
+    int m_lcdMode3;
+    int m_cyclesFrame;
+	Video *m_v;
 #ifdef MAKEGBLOG
-	QueueLog *log;
+	QueueLog *m_log;
 #endif
-	bool VBlankIntPending;
-    bool newInterrupt;
+	bool m_VBlankIntPending;
+    bool m_newInterrupt;
 public:
-	CPU(Video *v, Sound * s);
-	CPU(Video *v, Cartridge *c, Sound * s);
+	CPU(Video *v, Sound *s);
+	CPU(Video *v, Cartridge *c, Sound *s);
 	~CPU();
 	
-    int Execute(int cyclesToExecute);
-	int ExecuteOneFrame();
+    int  Execute(int cyclesToExecute);
+	int  ExecuteOneFrame();
 	void UpdatePad();
     void OnWriteLCDC(BYTE value);
     BYTE TACChanged(BYTE newValue);
@@ -72,7 +72,7 @@ public:
 private:
 	void Init(Video *v);
     void ResetGlobalVariables();
-	void OpCodeCB(Instructions * inst);
+	void OpCodeCB(Instructions *inst);
 	void UpdateStateLCD(int cycles);
     void UpdateStateLCDOn();
 	void UpdateTimer(int cycles);

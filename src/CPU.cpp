@@ -33,12 +33,12 @@
 using namespace std;
 
 
-CPU::CPU(Video *v, Sound * s): Memory(this, s)
+CPU::CPU(Video *v, Sound *s): Memory(this, s)
 {
 	Init(v);
 }
 
-CPU::CPU(Video *v, Cartridge *c, Sound * s): Memory(this, s)
+CPU::CPU(Video *v, Cartridge *c, Sound *s): Memory(this, s)
 {
     LoadCartridge(c);
 	Init(v);
@@ -46,7 +46,7 @@ CPU::CPU(Video *v, Cartridge *c, Sound * s): Memory(this, s)
 
 void CPU::Init(Video *v)
 {
-    this->v = v;
+    m_v = v;
 	v->SetMem(this->GetPtrMemory());
 	ResetGlobalVariables();
 	
@@ -60,24 +60,24 @@ CPU::~CPU() {}
 
 void CPU::ResetGlobalVariables()
 {
-    numInstructions = 0;
-    cyclesLCD = 0;
-	bitSerial = -1;
-	cyclesTimer = 0;
-	cyclesDIV = 0;
-	cyclesSerial = 0;
-	VBlankIntPending = false;
-    newInterrupt = false;
-    colorMode = false;
-    if (c && ((MemR(CART_COLOR) == 0x80) || (MemR(CART_COLOR) == 0xC0)))
-        colorMode = true;
-    v->SetColorMode(colorMode);
+    m_numInstructions = 0;
+    m_cyclesLCD = 0;
+	m_bitSerial = -1;
+	m_cyclesTimer = 0;
+	m_cyclesDIV = 0;
+	m_cyclesSerial = 0;
+	m_VBlankIntPending = false;
+    m_newInterrupt = false;
+    m_colorMode = false;
+    if (m_c && ((MemR(CART_COLOR) == 0x80) || (MemR(CART_COLOR) == 0xC0)))
+        m_colorMode = true;
+    m_v->SetColorMode(m_colorMode);
     
-    lcdMode0 = LCD_MODE_0;
-    lcdMode1 = LCD_MODE_1;
-    lcdMode2 = LCD_MODE_2;
-    lcdMode3 = LCD_MODE_3;
-    cyclesFrame = FRAME_CYCLES;
+    m_lcdMode0 = LCD_MODE_0;
+    m_lcdMode1 = LCD_MODE_1;
+    m_lcdMode2 = LCD_MODE_2;
+    m_lcdMode3 = LCD_MODE_3;
+    m_cyclesFrame = FRAME_CYCLES;
 }
 
 void CPU::Reset()
@@ -85,21 +85,21 @@ void CPU::Reset()
     ResetGlobalVariables();
 	ResetRegs();
 	ResetMem();
-	v->ClearScreen();
-	if (s && (s->GetEnabled()))
+	m_v->ClearScreen();
+	if (m_s && (m_s->GetEnabled()))
 	{
-		s->Stop();
-		s->Start();
+		m_s->Stop();
+		m_s->Start();
 	}
 }
 
 int CPU::ExecuteOneFrame() {
-    return Execute(cyclesFrame);
+    return Execute(m_cyclesFrame);
 }
 
 int CPU::Execute(int cyclesToExecute)
 {
-	if (!this->c)
+	if (!m_c)
 		return 0;
 	
     int cycles = 0;
@@ -113,10 +113,10 @@ int CPU::Execute(int cyclesToExecute)
 
     while (cycles < cyclesToExecute)
     {
-		numInstructions++;
+		m_numInstructions++;
 		lastOpCode = OpCode;
-		OpCode = MemR(Get_PC());
-        NextOpcode = MemR(Get_PC() + 1);
+		OpCode = MemR(GetPC());
+        NextOpcode = MemR(GetPC() + 1);
 		
 #ifdef MAKEGBLOG
 		stringstream ssOpCode;
@@ -129,7 +129,7 @@ int CPU::Execute(int cyclesToExecute)
 		log->Enqueue(ssOpCode.str(), this->GetPtrRegisters(), "");
 #endif
 		
-		if (!Get_Halt())
+		if (!GetHalt())
 		{
 			switch(OpCode)
 			{
@@ -404,33 +404,33 @@ int CPU::Execute(int cyclesToExecute)
                     
 			} // end switch
             
-		} // end if (!Get_Halt())
+		} // end if (!GetHalt())
         
         if (OpCode == 0xCB)
-            lastCycles += GetInstructionCyclesCB(NextOpcode)*4;
-        else if (Get_ConditionalTaken())
+            m_lastCycles += GetInstructionCyclesCB(NextOpcode)*4;
+        else if (GetConditionalTaken())
         {
-            lastCycles += GetInstructionCondicionalCycles(OpCode)*4;
-            Set_ConditionalTaken(false);
+            m_lastCycles += GetInstructionCondicionalCycles(OpCode)*4;
+            SetConditionalTaken(false);
         }
         else
-            lastCycles += GetInstructionCycles(OpCode)*4;
+            m_lastCycles += GetInstructionCycles(OpCode)*4;
         
-        if (newInterrupt)
+        if (m_newInterrupt)
         {
-            lastCycles += 20;
-            newInterrupt = false;
+            m_lastCycles += 20;
+            m_newInterrupt = false;
         }
         
-        int tmpCycles = lastCycles;
+        int tmpCycles = m_lastCycles;
         
-        UpdateStateLCD(lastCycles);
-		UpdateTimer(lastCycles);
-		UpdateSerial(lastCycles);
+        UpdateStateLCD(m_lastCycles);
+		UpdateTimer(m_lastCycles);
+		UpdateSerial(m_lastCycles);
         Interrupts(&inst);
         
-        cycles += lastCycles;
-        lastCycles -= tmpCycles;
+        cycles += m_lastCycles;
+        m_lastCycles -= tmpCycles;
 		
 	}//end while
     
@@ -443,7 +443,7 @@ void CPU::OpCodeCB(Instructions * inst)
 {
     BYTE OpCode;
 
-    OpCode = MemR(Get_PC() + 1);
+    OpCode = MemR(GetPC() + 1);
 
     switch (OpCode)
     {
@@ -752,23 +752,23 @@ void CPU::OnWriteLCDC(BYTE value)
     }
 
     
-    cyclesLCD = 0;
+    m_cyclesLCD = 0;
     memory[LCDC] = value;
 }
 
 void CPU::UpdateStateLCD(int cycles)
 {
-    cyclesLCD += cycles;
+    m_cyclesLCD += cycles;
     
 	BYTE screenOn = BIT7(memory[LCDC]);
     if (screenOn)
         UpdateStateLCDOn();
     else
     {
-        if (cyclesLCD > cyclesFrame)
+        if (m_cyclesLCD > m_cyclesFrame)
         {
             OnEndFrame();
-            cyclesLCD -= cyclesFrame;
+            m_cyclesLCD -= m_cyclesFrame;
         }
     }
 }
@@ -780,17 +780,17 @@ void CPU::UpdateStateLCDOn()
     switch (mode)
     {
         case (0):	// Si se ha terminado H-Blank
-            if (cyclesLCD >= lcdMode0)
+            if (m_cyclesLCD >= m_lcdMode0)
             {
 				memory[LY]++;
 				CheckLYC();
-                cyclesLCD -= lcdMode0;
+                m_cyclesLCD -= m_lcdMode0;
 				
                 if (memory[LY] == 144) // Si estamos en la linea 144, cambiamos al modo 1 (V-Blank)
                 {
                     // Poner a 01 el flag (bits 0-1) del modo 1.
 					memory[STAT] = (memory[STAT] & ~0x03) | 0x01;
-					VBlankIntPending = true;
+					m_VBlankIntPending = true;
                     OnEndFrame();
                 }
                 else // Sino, cambiamos al modo 2
@@ -809,7 +809,7 @@ void CPU::UpdateStateLCDOn()
 			// (Algunos juegos con VBlank activado en IE, hacen la comprobacion
 			// SCY == 144. Sin este retraso, antes de la interrupcion SCY = 143 y
 			// despues SCY > 144. Con lo que nunca se cumple la condicion)
-			if ((VBlankIntPending) && (cyclesLCD >= 24))
+			if ((m_VBlankIntPending) && (m_cyclesLCD >= 24))
 			{
 				// Interrupcion V-Blank
                 SetIntFlag(0);
@@ -817,22 +817,22 @@ void CPU::UpdateStateLCDOn()
                 // en 0xFF0F. Bit 1, flag de interrupcion de LCD STAT.
                 if (BIT4(memory[STAT]))
                     SetIntFlag(1);
-				VBlankIntPending = false;
+				m_VBlankIntPending = false;
 			}
 			
-            if (cyclesLCD >= lcdMode1)
+            if (m_cyclesLCD >= m_lcdMode1)
             {
-				cyclesLCD -= lcdMode1;
+				m_cyclesLCD -= m_lcdMode1;
 				
                 // La linea 153 dura 8 ciclos
                 if (memory[LY] == 152) {
                     memory[LY]++;
-                    cyclesLCD += lcdMode1-4; // Comprobar doble velocidad?
+                    m_cyclesLCD += m_lcdMode1-4; // Comprobar doble velocidad?
                     CheckLYC();
                 }
                 else if (memory[LY] == 153) {
                     memory[LY] = 0;
-                    cyclesLCD += 4; // Comprobar doble velocidad?
+                    m_cyclesLCD += 4; // Comprobar doble velocidad?
                     CheckLYC();
                 }
                 else if (memory[LY] == 0) {
@@ -851,18 +851,18 @@ void CPU::UpdateStateLCDOn()
             }
             break;
         case (2):	// Cuando OAM se esta usando
-            if (cyclesLCD >= lcdMode2)
+            if (m_cyclesLCD >= m_lcdMode2)
             {
-				cyclesLCD -= lcdMode2;
+				m_cyclesLCD -= m_lcdMode2;
 				
 				// Poner a 11 el flag (bits 0-1) del modo 3.
 				memory[STAT] = (memory[STAT] & ~0x03) | 0x03;
             }
             break;
         case (3):	// Cuando OAM y memoria de video se estan usando (Se esta pasando informacion al LCD)
-            if (cyclesLCD >= lcdMode3)
+            if (m_cyclesLCD >= m_lcdMode3)
             {
-				cyclesLCD -= lcdMode3;
+				m_cyclesLCD -= m_lcdMode3;
                 
 				// Poner a 00 el flag (bits 0-1) del modo 0.
 				memory[STAT] &= ~0x03;
@@ -871,10 +871,10 @@ void CPU::UpdateStateLCDOn()
 				if (BIT3(memory[STAT]))
                     SetIntFlag(1);
                 
-                if (colorMode)
+                if (m_colorMode)
                     UpdateHDMA();
                 
-                v->UpdateLine(memory[LY]);
+                m_v->UpdateLine(memory[LY]);
             }
             break;
 	}
@@ -896,30 +896,30 @@ inline void CPU::UpdateSerial(int cycles)
 {
     if (BIT7(memory[SC]) && BIT0(memory[SC]))
 	{
-        cyclesSerial += cycles;
+        m_cyclesSerial += cycles;
         
-		if (bitSerial < 0)
+		if (m_bitSerial < 0)
 		{
-			bitSerial = 0;
-			cyclesSerial = 0;
+			m_bitSerial = 0;
+			m_cyclesSerial = 0;
 			return;
 		}
 		
-		if (cyclesSerial >= 512)
+		if (m_cyclesSerial >= 512)
 		{
-			if (bitSerial > 7)
+			if (m_bitSerial > 7)
 			{
 				memory[SC] &= 0x7F;
 				SetIntFlag(3);
-				bitSerial = -1;
+				m_bitSerial = -1;
 				return;
 			}
 			
 			memory[SB] = memory[SB] << 1;
 			memory[SB] |= 0x01;
 			
-			cyclesSerial -= 512;
-			bitSerial++;
+			m_cyclesSerial -= 512;
+			m_bitSerial++;
 		}
 	}
 }
@@ -930,47 +930,47 @@ void CPU::SetIntFlag(int bit)
     
     memory[IF] |= mask;
     if (memory[IE] & mask)
-        Set_Halt(false);
+        SetHalt(false);
 }
 
 void CPU::Interrupts(Instructions * inst)
 {
-	if (!Get_IME())
+	if (!GetIME())
 		return;
 
 	BYTE interrupts = memory[IE] & memory[IF];
 	if (!interrupts)
 		return;
 	
-	Set_IME(false);
-	Set_Halt(false);
+	SetIME(false);
+	SetHalt(false);
 	inst->PUSH_PC();
-    newInterrupt = true;
+    m_newInterrupt = true;
 
 	if (BIT0(interrupts))	//V-Blank
 	{
-		Set_PC(0x40);
+		SetPC(0x40);
 		memory[IF] &= ~0x01;
-        VBlankIntPending = false;
+        m_VBlankIntPending = false;
 	}
 	else if (BIT1(interrupts))	//LCD-Stat
 	{
-		Set_PC(0x48);
+		SetPC(0x48);
 		memory[IF] &= ~0x02;
 	}
 	else if (BIT2(interrupts))	//Timer
 	{
-		Set_PC(0x50);
+		SetPC(0x50);
 		memory[IF] &= ~0x04;
 	}
 	else if(BIT3(interrupts))	//Serial
 	{
-		Set_PC(0x58);
+		SetPC(0x58);
 		memory[IF] &= ~0x08;
 	}
 	else if (BIT4(interrupts))	//Joypad
 	{
-		Set_PC(0x60);
+		SetPC(0x60);
 		memory[IF] &= ~0x10;
 	}
 }
@@ -985,10 +985,10 @@ void CPU::UpdateTimer(int cycles)
     
 	if (BIT2(memory[TAC])) //Si esta habilitado el timer
 	{
-        cyclesTimer += cycles;
+        m_cyclesTimer += cycles;
         
         WORD cyclesOverflow = overflowTimer[BITS01(memory[TAC])];
-		while (cyclesTimer >= cyclesOverflow)
+		while (m_cyclesTimer >= cyclesOverflow)
 		{
 			if (memory[TIMA] == 0xFF)
 			{
@@ -998,16 +998,16 @@ void CPU::UpdateTimer(int cycles)
             else
                 memory[TIMA]++;
 
-			cyclesTimer -= cyclesOverflow;
+			m_cyclesTimer -= cyclesOverflow;
 		}
 	}
     
-    cyclesDIV += cycles;
+    m_cyclesDIV += cycles;
     
-	while (cyclesDIV >= 256)
+	while (m_cyclesDIV >= 256)
 	{
 		memory[DIV]++;
-		cyclesDIV -= 256;
+		m_cyclesDIV -= 256;
 	}
 }
 
@@ -1017,7 +1017,7 @@ BYTE CPU::TACChanged(BYTE newValue)
     if (((newValue & 0x03) != (memory[TAC] & 0x03)) ||
         ((newValue & 0x04) == 0))
     {
-        cyclesTimer = 0;
+        m_cyclesTimer = 0;
         memory[TIMA] = memory[TMA];
     }
     return newValue;
@@ -1025,7 +1025,7 @@ BYTE CPU::TACChanged(BYTE newValue)
 
 BYTE CPU::DIVChanged(BYTE newValue)
 {
-    cyclesDIV = 0;
+    m_cyclesDIV = 0;
     
     return 0;
 }
@@ -1060,43 +1060,43 @@ void CPU::StatChanged(BYTE newValue) {
 
 void CPU::OnEndFrame()
 {
-	v->RefreshScreen();
-	if (s)
-		s->EndFrame();
+	m_v->RefreshScreen();
+	if (m_s)
+		m_s->EndFrame();
 }
 
 void CPU::ChangeSpeed()
 {
     // Si se ha pedido un cambio de velocidad
-    if (colorMode && (memory[KEY1] & 0x01))
+    if (m_colorMode && (memory[KEY1] & 0x01))
     {
         // Se cambia a la velocidad contraria a la que estamos
         if (memory[KEY1] & 0x80) {
             // Velocidad normal
             memory[KEY1] = 0;
         
-            lcdMode0 = LCD_MODE_0;
-            lcdMode1 = LCD_MODE_1;
-            lcdMode2 = LCD_MODE_2;
-            lcdMode3 = LCD_MODE_3;
-            cyclesFrame = FRAME_CYCLES;
+            m_lcdMode0 = LCD_MODE_0;
+            m_lcdMode1 = LCD_MODE_1;
+            m_lcdMode2 = LCD_MODE_2;
+            m_lcdMode3 = LCD_MODE_3;
+            m_cyclesFrame = FRAME_CYCLES;
         }
         else {
             // Velocidad doble
             memory[KEY1] = 0x80;
         
-            lcdMode0 = LCD_MODE_0 * 2;
-            lcdMode1 = LCD_MODE_1 * 2;
-            lcdMode2 = LCD_MODE_2 * 2;
-            lcdMode3 = LCD_MODE_3 * 2;
-            cyclesFrame = FRAME_CYCLES * 2;
+            m_lcdMode0 = LCD_MODE_0 * 2;
+            m_lcdMode1 = LCD_MODE_1 * 2;
+            m_lcdMode2 = LCD_MODE_2 * 2;
+            m_lcdMode3 = LCD_MODE_3 * 2;
+            m_cyclesFrame = FRAME_CYCLES * 2;
         }
     }
 }
 
 void CPU::AddCycles(int cycles)
 {
-    lastCycles += cycles;
+    m_lastCycles += cycles;
 }
 
 #ifdef MAKEGBLOG
@@ -1110,13 +1110,13 @@ void CPU::SaveLog()
 
 void CPU::SaveState(string saveDirectory, int numSlot)
 {
-	if (c == NULL)
+	if (m_c == NULL)
 	{
 		throw GBException("There is not rom loaded. The process can't continue.");
 	}
 	
 	stringstream st;
-	st << saveDirectory << c->GetName().c_str();
+	st << saveDirectory << m_c->GetName().c_str();
 	st << "-" << numSlot << ".sav";
 	string fileName = st.str();
 	ofstream * file = new ofstream(fileName.c_str(), ios::out|ios::binary|ios::trunc);
@@ -1125,11 +1125,11 @@ void CPU::SaveState(string saveDirectory, int numSlot)
 	{
 		int version = SAVE_STATE_VERSION;
 		file->write((char *)&version, sizeof(int));
-		file->write(c->GetName().c_str(), 16);
+		file->write(m_c->GetName().c_str(), 16);
 		
 		SaveRegs(file);
 		SaveMemory(file);
-		c->SaveMBC(file);
+		m_c->SaveMBC(file);
 		
 		file->close();
 	}
@@ -1140,13 +1140,13 @@ void CPU::SaveState(string saveDirectory, int numSlot)
 
 void CPU::LoadState(string loadDirectory, int numSlot)
 {
-	if (c == NULL)
+	if (!m_c)
 	{
 		throw GBException("There is not rom loaded. The process can't continue.");
 	}
 	
 	stringstream st;
-	st << loadDirectory << c->GetName().c_str();
+	st << loadDirectory << m_c->GetName().c_str();
 	st << "-" << numSlot << ".sav";
 	string fileName = st.str();
 	ifstream * file = new ifstream(fileName.c_str(), ios::in|ios::binary);
@@ -1166,7 +1166,7 @@ void CPU::LoadState(string loadDirectory, int numSlot)
 		file->read(buffer, 16);
 		string cartName = string(buffer, 16);
 		delete[] buffer;
-		if (cartName != c->GetName())
+		if (cartName != m_c->GetName())
 		{
 			file->close();
 			delete file;
@@ -1175,7 +1175,7 @@ void CPU::LoadState(string loadDirectory, int numSlot)
 		
 		LoadRegs(file);
 		LoadMemory(file);
-		c->LoadMBC(file);
+		m_c->LoadMBC(file);
 		
 		file->close();
 		

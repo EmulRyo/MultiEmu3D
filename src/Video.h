@@ -38,12 +38,12 @@ struct VideoPixel
 class Video
 {
 private:
-	Memory *mem;
-    bool colorMode;
-	std::multimap<int, int> orderedOAM;	//posicion x, dir. memoria
-	bool priorityBGWnd[GB_SCREEN_W][GB_SCREEN_H]; // Aqui se almacena la prioridad de pintado de BG y Window
-	IGBScreenDrawable * screen;
-	VideoPixel * pixel;
+	Memory *m_mem;
+    bool m_colorMode;
+	std::multimap<int, int> m_orderedOAM;	//posicion x, dir. memoria
+	bool m_priorityBGWnd[GB_SCREEN_W][GB_SCREEN_H]; // Aqui se almacena la prioridad de pintado de BG y Window
+	IGBScreenDrawable *m_screen;
+	VideoPixel *m_pixel;
 public:
 	Video(IGBScreenDrawable * screen);
 	~Video(void);

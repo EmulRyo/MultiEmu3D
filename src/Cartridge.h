@@ -30,11 +30,11 @@
 class Cartridge
 {
 private:
-	unsigned long _romSize;
-	std::string _name;
-	bool _isLoaded;
-    bool _hasRTC;
-	BYTE * _memCartridge;
+	unsigned long m_romSize;
+	std::string m_name;
+	bool m_isLoaded;
+    bool m_hasRTC;
+	BYTE *m_memCartridge;
 
 	BYTE (*ptrRead)(WORD);
 	void (*ptrWrite)(WORD, BYTE);

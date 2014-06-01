@@ -37,105 +37,105 @@ union u_register{
 class Registers
 {
 private:
-	u_register af, bc, de, hl;
-	WORD pc; //Program Counter
-	WORD sp; //Stack Pointer
-	bool IME;
-	bool pendingIME;
-	bool pendingIMEvalue;
-	bool halt;
-	bool stop;
-    bool conditionalTaken;
+	u_register m_af, m_bc, m_de, m_hl;
+	WORD m_pc; //Program Counter
+	WORD m_sp; //Stack Pointer
+	bool m_IME;
+	bool m_pendingIME;
+	bool m_pendingIMEvalue;
+	bool m_halt;
+	bool m_stop;
+    bool m_conditionalTaken;
 public:
 	Registers();
 	~Registers();
 
 	Registers *GetPtrRegisters();
 
-	inline BYTE Get_A()				{return this->af.simple[1];}
-	inline void Set_A(BYTE value)	{this->af.simple[1] = value;}
-	inline BYTE Get_B()				{return this->bc.simple[1];}
-	inline void Set_B(BYTE value)	{this->bc.simple[1] = value;}
-	inline BYTE Get_C()				{return this->bc.simple[0];}
-	inline void Set_C(BYTE value)	{this->bc.simple[0] = value;}
-	inline BYTE Get_D()				{return this->de.simple[1];}
-	inline void Set_D(BYTE value)	{this->de.simple[1] = value;}
-	inline BYTE Get_E()				{return this->de.simple[0];}
-	inline void Set_E(BYTE value)	{this->de.simple[0] = value;}
-	inline BYTE Get_F()				{return this->af.simple[0];}
-	inline void Set_F(BYTE value)	{this->af.simple[0] = value & 0xF0;}
-	inline BYTE Get_H()				{return this->hl.simple[1];}
-	inline void Set_H(BYTE value)	{this->hl.simple[1] = value;}
-	inline BYTE Get_L()				{return this->hl.simple[0];}
-	inline void Set_L(BYTE value)	{this->hl.simple[0] = value;}
+	inline BYTE GetA()				{ return m_af.simple[1]; }
+	inline void SetA(BYTE value)	{ m_af.simple[1] = value; }
+	inline BYTE GetB()				{ return m_bc.simple[1]; }
+	inline void SetB(BYTE value)	{ m_bc.simple[1] = value; }
+	inline BYTE GetC()				{ return m_bc.simple[0]; }
+	inline void SetC(BYTE value)	{ m_bc.simple[0] = value; }
+	inline BYTE GetD()				{ return m_de.simple[1]; }
+	inline void SetD(BYTE value)	{ m_de.simple[1] = value; }
+	inline BYTE GetE()				{ return m_de.simple[0]; }
+	inline void SetE(BYTE value)	{ m_de.simple[0] = value; }
+	inline BYTE GetF()				{ return m_af.simple[0]; }
+	inline void SetF(BYTE value)	{ m_af.simple[0] = value & 0xF0; }
+	inline BYTE GetH()				{ return m_hl.simple[1]; }
+	inline void SetH(BYTE value)	{ m_hl.simple[1] = value; }
+	inline BYTE GetL()				{ return m_hl.simple[0]; }
+	inline void SetL(BYTE value)	{ m_hl.simple[0] = value; }
 
-	inline WORD Get_AF()			{return this->af.doble;}
-	inline void Set_AF(WORD value)	{this->af.doble = value & 0xFFF0;}
-	inline WORD Get_BC()			{return this->bc.doble;}
-	inline void Set_BC(WORD value)	{this->bc.doble = value;}
-	inline WORD Get_DE()			{return this->de.doble;}
-	inline void Set_DE(WORD value)	{this->de.doble = value;}
-	inline WORD Get_HL()			{return this->hl.doble;}
-	inline void Set_HL(WORD value)	{this->hl.doble = value;}
+	inline WORD GetAF()             { return m_af.doble; }
+	inline void SetAF(WORD value)	{ m_af.doble = value & 0xFFF0; }
+	inline WORD GetBC()             { return m_bc.doble; }
+	inline void SetBC(WORD value)	{ m_bc.doble = value; }
+	inline WORD GetDE()             { return m_de.doble; }
+	inline void SetDE(WORD value)	{ m_de.doble = value; }
+	inline WORD GetHL()             { return m_hl.doble; }
+	inline void SetHL(WORD value)	{ m_hl.doble = value; }
 
-	inline WORD Get_PC()			{return this->pc;}
-	inline void Set_PC(WORD value)  {this->pc = value;}
-	inline void Add_PC(int value)   {this->pc += value;};
-	inline WORD Get_SP()			{return this->sp;}
-	inline void Set_SP(WORD value)  {this->sp = value;}
-	inline void Add_SP(int value)   {this->sp += value;};
+	inline WORD GetPC()             { return m_pc; }
+	inline void SetPC(WORD value)   { m_pc = value; }
+	inline void AddPC(int value)    { m_pc += value; };
+	inline WORD GetSP()             { return m_sp; }
+	inline void SetSP(WORD value)   { m_sp = value; }
+	inline void AddSP(int value)    { m_sp += value; };
 
-	inline bool Get_IME()			{return this->IME;}
-	inline void Set_IME(bool value, bool immediately=true)
+	inline bool GetIME()			{return m_IME;}
+	inline void SetIME(bool value, bool immediately=true)
 	{
 		if (immediately)
 		{
-			this->IME = value;
-			this->pendingIME = false;
+			m_IME = value;
+			m_pendingIME = false;
 		}
 		else
 		{
-			this->pendingIME = true;
-			this->pendingIMEvalue = value;
+			m_pendingIME = true;
+			m_pendingIMEvalue = value;
 		}
 	}
 	
 	inline void Set_PendingIME()
 	{
-		if (this->pendingIME)
+		if (m_pendingIME)
 		{
-			this->IME = this->pendingIMEvalue;
-			this->pendingIME = false;
+			m_IME = m_pendingIMEvalue;
+			m_pendingIME = false;
 		}
 	}
 
-	inline bool Get_Halt()				{return this->halt;}
-	inline void Set_Halt(bool value)	{this->halt = value;}
+	inline bool GetHalt()				{ return m_halt; }
+	inline void SetHalt(bool value)	{ m_halt = value; }
 
-	inline bool Get_Stop()				{return this->stop;}
-	inline void Set_Stop(bool value)	{this->stop = value;}
+	inline bool GetStop()				{ return m_stop; }
+	inline void SetStop(bool value)	{ m_stop = value; }
 
-	WORD Get_Reg(e_registers reg);
-	void Set_Reg(e_registers reg, WORD value);
+	WORD GetReg(e_registers reg);
+	void SetReg(e_registers reg, WORD value);
 
-	inline BYTE Get_flagZ() {return (this->af.simple[0] >> 7);}
-	inline void Set_flagZ(BYTE value) {this->af.simple[0] = (this->af.simple[0] & 0x7F) | (value << 7);}
-	inline BYTE Get_flagN() {return ((this->af.simple[0] & 0x40) >> 6);}
-	inline void Set_flagN(BYTE value) {this->af.simple[0] = (this->af.simple[0] & 0xBF) | (value << 6);}
-	inline BYTE Get_flagH() {return ((this->af.simple[0] & 0x20) >> 5);}
-	inline void Set_flagH(BYTE value) {this->af.simple[0] = (this->af.simple[0] & 0xDF) | (value << 5);}
-	inline BYTE Get_flagC() {return ((this->af.simple[0] & 0x10) >> 4);}
-	inline void Set_flagC(BYTE value) {this->af.simple[0] = (this->af.simple[0] & 0xEF) | (value << 4);}
+	inline BYTE GetFlagZ()              { return (m_af.simple[0] >> 7);}
+	inline void SetFlagZ(BYTE value)    { m_af.simple[0] = (m_af.simple[0] & 0x7F) | (value << 7); }
+	inline BYTE GetFlagN()              { return ((m_af.simple[0] & 0x40) >> 6); }
+	inline void SetFlagN(BYTE value)    { m_af.simple[0] = (m_af.simple[0] & 0xBF) | (value << 6); }
+	inline BYTE GetFlagH()              { return ((m_af.simple[0] & 0x20) >> 5); }
+	inline void SetFlagH(BYTE value)    { m_af.simple[0] = (m_af.simple[0] & 0xDF) | (value << 5); }
+	inline BYTE GetFlagC()              { return ((m_af.simple[0] & 0x10) >> 4); }
+	inline void SetFlagC(BYTE value)    { m_af.simple[0] = (m_af.simple[0] & 0xEF) | (value << 4); }
 	
-	BYTE Get_Flag(e_registers flag);
-	void Set_Flag(e_registers flag, BYTE value);
+	BYTE GetFlag(e_registers flag);
+	void SetFlag(e_registers flag, BYTE value);
     
-    void Set_ConditionalTaken(bool value) {conditionalTaken = value;}
-    bool Get_ConditionalTaken() {return conditionalTaken;}
+    void SetConditionalTaken(bool value) { m_conditionalTaken = value; }
+    bool GetConditionalTaken() { return m_conditionalTaken; }
 
 	void ResetRegs();
-	void SaveRegs(std::ofstream * file);
-	void LoadRegs(std::ifstream * file);
+	void SaveRegs(std::ofstream *file);
+	void LoadRegs(std::ifstream *file);
 	
 	std::string ToString();
 };

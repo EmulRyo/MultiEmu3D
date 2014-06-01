@@ -33,49 +33,49 @@ using namespace std;
  */
 Cartridge::Cartridge(string fileName, string batteriesPath)
 {
-	_memCartridge = NULL;
+	m_memCartridge = NULL;
 	ifstream::pos_type size;
 	ifstream file (fileName.c_str(), ios::in|ios::binary|ios::ate);
 	if (file.is_open())
 	{
 		size = file.tellg();
-		this->_romSize = (unsigned long)size;
-		_memCartridge = new BYTE [size];
+		m_romSize = (unsigned long)size;
+		m_memCartridge = new BYTE [size];
 		file.seekg (0, ios::beg);
-		file.read((char *)_memCartridge, (streamsize)size);
+		file.read((char *)m_memCartridge, (streamsize)size);
 		file.close();
 
 		cout << fileName << ":\nFile loaded in memory correctly" << endl;
 		
 		CheckCartridge(batteriesPath);
 		
-		_isLoaded = true;
+		m_isLoaded = true;
 	}
 	else
 	{
 		cerr << fileName << ": Error trying to open the file" << endl;
-		_isLoaded = false;
+		m_isLoaded = false;
 	}
 }
 
 /*
  * Constructor que recibe un buffer y su tamaño y lo procesa
  */
-Cartridge::Cartridge(BYTE * cartridgeBuffer, unsigned long size, string batteriesPath)
+Cartridge::Cartridge(BYTE *cartridgeBuffer, unsigned long size, string batteriesPath)
 {
-	_romSize = size;
-	_memCartridge = cartridgeBuffer;
+	m_romSize = size;
+	m_memCartridge = cartridgeBuffer;
 	
 	CheckCartridge(batteriesPath);
 	
-	_isLoaded = true;
+	m_isLoaded = true;
 }
 
 Cartridge::~Cartridge(void)
 {
 	DestroyMBC();
-	if (_memCartridge)
-		delete [] _memCartridge;
+	if (m_memCartridge)
+		delete [] m_memCartridge;
 }
 
 /*
@@ -85,32 +85,32 @@ void Cartridge::CheckCartridge(string batteriesPath)
 {
 	MBCPathBatteries(batteriesPath);
 	
-	_name = string((char *)&_memCartridge[CART_NAME], 16);
+	m_name = string((char *)&m_memCartridge[CART_NAME], 16);
 	
-	CheckRomSize((int)_memCartridge[CART_ROM_SIZE], _romSize);
-    _hasRTC = false;
+	CheckRomSize((int)m_memCartridge[CART_ROM_SIZE], m_romSize);
+    m_hasRTC = false;
 	
-	switch(_memCartridge[CART_TYPE])
+	switch(m_memCartridge[CART_TYPE])
 	{
 		case 0x00:						//ROM ONLY
 		case 0x08:						//ROM+RAM
 		case 0x09:						//ROM+RAM+BATTERY
 			ptrRead = &NoneRead;
 			ptrWrite = &NoneWrite;
-			InitMBCNone(_name, _memCartridge, _romSize);
+			InitMBCNone(m_name, m_memCartridge, m_romSize);
 			break;
 		case 0x01:						//ROM+MBC1 
 		case 0x02:						//ROM+MBC1+RAM 
 		case 0x03:						//ROM+MBC1+RAM+BATT
 			ptrRead = &MBC1Read;
 			ptrWrite = &MBC1Write;
-			InitMBC1(_name, _memCartridge, _romSize, _memCartridge[CART_RAM_SIZE]);
+			InitMBC1(m_name, m_memCartridge, m_romSize, m_memCartridge[CART_RAM_SIZE]);
 			break;
 		case 0x05:						//ROM+MBC2 
 		case 0x06:						//ROM+MBC2+BATTERY
 			ptrRead = &MBC2Read;
 			ptrWrite = &MBC2Write;
-			InitMBC2(_name, _memCartridge, _romSize);
+			InitMBC2(m_name, m_memCartridge, m_romSize);
 			break;
 			/*
 			 case 0x0B:						//ROM+MMM01
@@ -118,13 +118,13 @@ void Cartridge::CheckCartridge(string batteriesPath)
 			 case 0x0D: mbc = MMM01; break;	//ROM+MMM01+SRAM+BATT*/
 		case 0x0F:						//ROM+MBC3+TIMER+BATT
 		case 0x10:						//ROM+MBC3+TIMER+RAM+BATT
-            _hasRTC = true;
+            m_hasRTC = true;
 		case 0x11:						//ROM+MBC3
 		case 0x12:						//ROM+MBC3+RAM
 		case 0x13:						//ROM+MBC3+RAM+BATT
 			ptrRead = &MBC3Read;
 			ptrWrite = &MBC3Write;
-			InitMBC3(_name, _memCartridge, _romSize, _memCartridge[CART_RAM_SIZE], _hasRTC);
+			InitMBC3(m_name, m_memCartridge, m_romSize, m_memCartridge[CART_RAM_SIZE], m_hasRTC);
 			break;
 		case 0x19:						//ROM+MBC5
 		case 0x1A:						//ROM+MBC5+RAM
@@ -134,7 +134,7 @@ void Cartridge::CheckCartridge(string batteriesPath)
 		case 0x1E:						//ROM+MBC5+RUMBLE+SRAM+BATT
 			ptrRead = &MBC5Read;
 			ptrWrite = &MBC5Write;
-			InitMBC5(_name, _memCartridge, _romSize, _memCartridge[CART_RAM_SIZE]);
+			InitMBC5(m_name, m_memCartridge, m_romSize, m_memCartridge[CART_RAM_SIZE]);
 			break;
 			/*case 0x1F:						//Pocket Camera
 			 case 0xFD:						//Bandai TAMA5
@@ -164,22 +164,22 @@ int Cartridge::CheckRomSize(int numHeaderSize, int fileSize)
 
 BYTE *Cartridge::GetData()
 {
-	return _memCartridge;
+	return m_memCartridge;
 }
 
 unsigned int Cartridge::GetSize()
 {
-	return _romSize;
+	return m_romSize;
 }
 
 string Cartridge::GetName()
 {
-	return _name;
+	return m_name;
 }
 
 bool Cartridge::IsLoaded()
 {
-	return _isLoaded;
+	return m_isLoaded;
 }
 
 void Cartridge::SaveMBC(ofstream * file)

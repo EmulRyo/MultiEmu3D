@@ -36,9 +36,9 @@ private:
 #else
     SoundPortaudio * sound;
 #endif
-	bool initialized;
-	bool enabled;
-	long sampleRate;
+	bool m_initialized;
+	bool m_enabled;
+	long m_sampleRate;
 	
 	int HandleError( const char* str );
 public:

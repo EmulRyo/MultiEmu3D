@@ -26,7 +26,7 @@ QueueLog::QueueLog(int maxItems)
 	if (maxItems <= 0)
 		maxItems = 100;
 	
-	this->maxItems = maxItems;
+	m_maxItems = maxItems;
 	Empty();
 }
 
@@ -37,10 +37,10 @@ QueueLog::~QueueLog()
 
 void QueueLog::DestroyAll()
 {
-    ItemLog * item;
-	ItemLog * auxItem;
+    ItemLog *item;
+	ItemLog *auxItem;
 	
-	item = first;
+	item = m_first;
 	while (item) {
 		auxItem = item->next;
 		if (item->regs)
@@ -54,12 +54,12 @@ void QueueLog::DestroyAll()
 
 void QueueLog::Empty()
 {
-    this->numItems = 0;
-	this->first = NULL;
-	this->last = NULL;
+    m_numItems = 0;
+	m_first = NULL;
+	m_last = NULL;
 }
 
-void QueueLog::Enqueue(string prefix, Registers * regs, string suffix)
+void QueueLog::Enqueue(string prefix, Registers *regs, string suffix)
 {
 	ItemLog * newItem = new ItemLog;
 	newItem->prefix = prefix;
@@ -73,30 +73,30 @@ void QueueLog::Enqueue(string prefix, Registers * regs, string suffix)
 	newItem->next = NULL;
 	newItem->prev = NULL;
 	
-	if (numItems >= maxItems)
+	if (m_numItems >= m_maxItems)
 	{
-		first = first->next;
+		m_first = m_first->next;
 		//Borrar el más viejo
-		if (first->prev->regs)
-			delete first->prev->regs;
-		delete first->prev;
-		first->prev = NULL;
-		numItems--;
+		if (m_first->prev->regs)
+			delete m_first->prev->regs;
+		delete m_first->prev;
+		m_first->prev = NULL;
+		m_numItems--;
 	}
 	
-	if (first == NULL)
+	if (m_first == NULL)
 	{
-		first = newItem;
-		last = newItem;
+		m_first = newItem;
+		m_last = newItem;
 	}
 	else
 	{
-		last->next = newItem;
-		newItem->prev = last;
-		last = newItem;
+		m_last->next = newItem;
+		newItem->prev = m_last;
+		m_last = newItem;
 	}
 	
-	numItems++;
+	m_numItems++;
 
 }
 
@@ -106,9 +106,9 @@ void QueueLog::Save(string path, bool empty)
 	
 	if (file)
 	{
-		ItemLog * item;
+		ItemLog *item;
 		
-		item = first;
+		item = m_first;
 		while (item) {
 			file << item->prefix;
 			if (item->regs)

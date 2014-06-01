@@ -24,11 +24,11 @@
 
 using namespace std;
 
-Memory::Memory(CPU * cpu, Sound * s)
+Memory::Memory(CPU *cpu, Sound *s)
 {
-    this->cpu = cpu;
-	this->c = NULL;
-	this->s = s;
+    m_cpu = cpu;
+	m_c = NULL;
+	m_s = s;
 	ResetMem();
 }
 
@@ -40,7 +40,7 @@ Memory *Memory::GetPtrMemory() { return this; }
 
 void Memory::LoadCartridge(Cartridge *c)
 {
-	this->c = c;
+	m_c = c;
 }
 
 void Memory::ResetMem()
@@ -70,26 +70,26 @@ void Memory::ResetMem()
 	memory[NR51]  = 0xF3;
 	memory[NR52]  = 0xF1;
 	
-	if (s)
+	if (m_s)
 	{
-		s->WriteRegister(NR10, 0x80);
-		s->WriteRegister(NR11, 0xBF);
-		s->WriteRegister(NR12, 0xF3);
-		s->WriteRegister(NR14, 0xBF);
-		s->WriteRegister(NR21, 0x3F);
-		s->WriteRegister(NR22, 0x00);
-		s->WriteRegister(NR24, 0xBF);
-		s->WriteRegister(NR30, 0x7F);
-		s->WriteRegister(NR31, 0xFF);
-		s->WriteRegister(NR32, 0x9F);
-		s->WriteRegister(NR33, 0xBF);
-		s->WriteRegister(NR41, 0xFF);
-		s->WriteRegister(NR42, 0x00);
-		s->WriteRegister(NR43, 0x00);
-		s->WriteRegister(NR30, 0xBF);
-		s->WriteRegister(NR50, 0x77);
-		s->WriteRegister(NR51, 0xF3);
-		s->WriteRegister(NR52, 0xF1);
+		m_s->WriteRegister(NR10, 0x80);
+		m_s->WriteRegister(NR11, 0xBF);
+		m_s->WriteRegister(NR12, 0xF3);
+		m_s->WriteRegister(NR14, 0xBF);
+		m_s->WriteRegister(NR21, 0x3F);
+		m_s->WriteRegister(NR22, 0x00);
+		m_s->WriteRegister(NR24, 0xBF);
+		m_s->WriteRegister(NR30, 0x7F);
+		m_s->WriteRegister(NR31, 0xFF);
+		m_s->WriteRegister(NR32, 0x9F);
+		m_s->WriteRegister(NR33, 0xBF);
+		m_s->WriteRegister(NR41, 0xFF);
+		m_s->WriteRegister(NR42, 0x00);
+		m_s->WriteRegister(NR43, 0x00);
+		m_s->WriteRegister(NR30, 0xBF);
+		m_s->WriteRegister(NR50, 0x77);
+		m_s->WriteRegister(NR51, 0xF3);
+		m_s->WriteRegister(NR52, 0xF1);
 	}
 	
     memory[LCDC] = 0x91;
@@ -106,10 +106,10 @@ void Memory::ResetMem()
     memory[IF]   = 0xE1;
     memory[IE]   = 0x00;
     
-    if (colorMode)
+    if (m_colorMode)
     {
-        wRam = &memory[WRAM_OFFSET+0x1000];
-        vRam = &memory[VRAM_OFFSET];
+        m_wRam = &memory[WRAM_OFFSET+0x1000];
+        m_vRam = &memory[VRAM_OFFSET];
         
         for (int i=BGP_OFFSET; i<BGP_OFFSET+SIZE_BGPCOLOR; i+=2)
         {
@@ -118,7 +118,7 @@ void Memory::ResetMem()
         }
         
         memory[HDMA5] = 0xFF;
-        hdmaActive = false;
+        m_hdmaActive = false;
     }
 }
 
@@ -126,17 +126,17 @@ void Memory::MemW(WORD address, BYTE value)
 {
 	if ((address < 0x8000) || ((address >= 0xA000)&&(address < 0xC000)))
 	{
-		c->Write(address, value);
+		m_c->Write(address, value);
 		return;
 	}
-    else if ((address >= 0x8000) && (address < 0xA000) && colorMode) //VRAM
+    else if ((address >= 0x8000) && (address < 0xA000) && m_colorMode) //VRAM
     {
-		vRam[address - 0x8000] = value;
+		m_vRam[address - 0x8000] = value;
         return;
     }
-    else if ((address >= 0xD000) && (address < 0xE000) && colorMode) //WRAM
+    else if ((address >= 0xD000) && (address < 0xE000) && m_colorMode) //WRAM
     {
-		wRam[address - 0xD000] = value;
+		m_wRam[address - 0xD000] = value;
         return;
     }
 	else if ((address >= 0xC000) && (address < 0xDE00))//C000-DDFF
@@ -144,7 +144,7 @@ void Memory::MemW(WORD address, BYTE value)
 	else if ((address >= 0xE000) && (address < 0xFE00))//E000-FDFF
 		memory[address - 0x2000] = value;
 	else if ((address >= 0xFF10) && (address <= 0xFF3F))
-        s->WriteRegister(address, value);
+        m_s->WriteRegister(address, value);
 	else
 	{
 		switch (address)
@@ -153,59 +153,59 @@ void Memory::MemW(WORD address, BYTE value)
 				OamDmaTransfer(value);
 				break;
 			case P1:
-				value = cpu->P1Changed(value);
+				value = m_cpu->P1Changed(value);
 				break;
             case TAC:
-                value = cpu->TACChanged(value);
+                value = m_cpu->TACChanged(value);
                 break;
 			case STAT:
-                cpu->StatChanged(value);
+                m_cpu->StatChanged(value);
                 return;
 			case LY:
                 memory[LY] = 0;
-                cpu->CheckLYC();
+                m_cpu->CheckLYC();
                 return;
             case LYC:
                 memory[LYC] = value;
-                cpu->CheckLYC();
+                m_cpu->CheckLYC();
                 return;
 			case DIV:
-                value = cpu->DIVChanged(value);
+                value = m_cpu->DIVChanged(value);
                 break;
             case LCDC:
-                cpu->OnWriteLCDC(value);
+                m_cpu->OnWriteLCDC(value);
                 return;
             case VBK:
-                if (colorMode) {
+                if (m_colorMode) {
                     //if (!hdmaActive)   // Si no esta activo el HDMA
                     //{
                         value &= 0x01;
-                        vRam = &memory[VRAM_OFFSET+(value*0x2000)];
+                        m_vRam = &memory[VRAM_OFFSET+(value*0x2000)];
                     //}
                 }
                 break;
             case HDMA5:
-                if (colorMode)
+                if (m_colorMode)
                     value = VRamDmaTransfer(value);
                 break;
             case KEY1:
-                if (colorMode)
+                if (m_colorMode)
                     value = ((memory[KEY1] & 0x80) | (value & 0x01));
                 break;
             case SVBK:
-                if (colorMode) {
+                if (m_colorMode) {
                     value &= 0x07;
                     if (value == 0)
                         value = 1;
-                    wRam = &memory[WRAM_OFFSET+(value*0x1000)];
+                    m_wRam = &memory[WRAM_OFFSET+(value*0x1000)];
                 }
                 break;
             case BGPI:
-                if (colorMode)
+                if (m_colorMode)
                     value &= 0xBF;
                 break;
             case BGPD:
-                if (colorMode) {
+                if (m_colorMode) {
                     BYTE index = memory[BGPI] & 0x3F;
                     memory[BGP_OFFSET + index] = value;
                     
@@ -214,11 +214,11 @@ void Memory::MemW(WORD address, BYTE value)
                 }
                 break;
             case OBPI:
-                if (colorMode)
+                if (m_colorMode)
                     value &= 0xBF;
                 break;
             case OBPD:
-                if (colorMode) {
+                if (m_colorMode) {
                     BYTE index = memory[OBPI] & 0x3F;
                     memory[OBP_OFFSET + index] = value;
                     
@@ -257,9 +257,9 @@ BYTE Memory::VRamDmaTransfer(BYTE value)
 {
     WORD mode = value & 0x80;
     
-    if (hdmaActive && mode == 0)    // Se quiere parar el hdma manualmente
+    if (m_hdmaActive && mode == 0)    // Se quiere parar el hdma manualmente
     {
-        hdmaActive = false;
+        m_hdmaActive = false;
         value = memory[HDMA5] | 0x80;  // Se pone a 1 el bit 7
     }
     else
@@ -271,7 +271,7 @@ BYTE Memory::VRamDmaTransfer(BYTE value)
             WORD length = ((value & 0x7F) + 1) * 0x10;                  // Valores entre 0x10-0x800
             
             for (int i= 0; i<length; i++)
-                vRam[dst+i] = MemR(src+i);
+                m_vRam[dst+i] = MemR(src+i);
             
             WORD srcEnd = src + length;
             WORD dstEnd = dst + length;
@@ -282,15 +282,15 @@ BYTE Memory::VRamDmaTransfer(BYTE value)
             value = 0xFF; // Se especifica que se ha terminado la copia
             
             if (memory[KEY1] & 0x80)
-                cpu->AddCycles(HDMA_CYCLES*length/0x10*2);
+                m_cpu->AddCycles(HDMA_CYCLES*length/0x10*2);
             else
-                cpu->AddCycles(HDMA_CYCLES*length/0x10);
+                m_cpu->AddCycles(HDMA_CYCLES*length/0x10);
             
-            hdmaActive = false;
+            m_hdmaActive = false;
         }
         else
         {
-            hdmaActive = true;
+            m_hdmaActive = true;
             value = value & 0x7F;  // Se pone a 0 el bit 7
         }
     }
@@ -300,13 +300,13 @@ BYTE Memory::VRamDmaTransfer(BYTE value)
 
 void Memory::UpdateHDMA()
 {
-    if (hdmaActive)
+    if (m_hdmaActive)
     {
         WORD src = (memory[HDMA1] << 8) | (memory[HDMA2] & 0xF0);           // valores entre 0000-7FF0 o A000-DFF0
         WORD dst = ((memory[HDMA3] & 0x1F) << 8) | (memory[HDMA4] & 0xF0);  // Valores entre 0x0000-0x1FF0
         
         for (int i=0; i<0x10; i++)
-            vRam[dst+i] = MemR(src+i);
+            m_vRam[dst+i] = MemR(src+i);
         
         WORD srcEnd = src + 0x10;
         WORD dstEnd = dst + 0x10;
@@ -318,22 +318,22 @@ void Memory::UpdateHDMA()
         memory[HDMA5] -= 1;
         if ((memory[HDMA5] & 0x7F) == 0x7F)
         {
-            hdmaActive = false;
+            m_hdmaActive = false;
             memory[HDMA5] = 0xFF;
         }
         
         if (memory[KEY1] & 0x80)
-            cpu->AddCycles(HDMA_CYCLES*2);
+            m_cpu->AddCycles(HDMA_CYCLES*2);
         else
-            cpu->AddCycles(HDMA_CYCLES);
+            m_cpu->AddCycles(HDMA_CYCLES);
     }
 }
 
 void Memory::SaveMemory(ofstream * file)
 {
 	file->write((char *)&memory[0x8000], 0x8000);
-    if (colorMode) {
-        file->write((char *)&hdmaActive, sizeof(hdmaActive));
+    if (m_colorMode) {
+        file->write((char *)&m_hdmaActive, sizeof(m_hdmaActive));
         file->write((char *)&memory[WRAM_OFFSET], SIZE_MEM - WRAM_OFFSET);
     }
 }
@@ -341,14 +341,14 @@ void Memory::SaveMemory(ofstream * file)
 void Memory::LoadMemory(ifstream * file)
 {
 	file->read((char *)&memory[0x8000], 0x8000);
-    if (colorMode) {
-        file->read((char *)&hdmaActive, sizeof(hdmaActive));
+    if (m_colorMode) {
+        file->read((char *)&m_hdmaActive, sizeof(m_hdmaActive));
         file->read((char *)&memory[WRAM_OFFSET], SIZE_MEM - WRAM_OFFSET);
     }
-	if (s)
+	if (m_s)
 	{
 		for (int dir=0xFF10; dir<0xFF40; dir++)
-			s->WriteRegister(dir, memory[dir]);
+			m_s->WriteRegister(dir, memory[dir]);
 	}
 	
 }

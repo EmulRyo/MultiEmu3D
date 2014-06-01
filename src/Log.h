@@ -38,16 +38,16 @@ struct ItemLog {
 class QueueLog
 {
 private:
-	int maxItems;
-	int numItems;
-	ItemLog * first;
-	ItemLog * last;
+	int m_maxItems;
+	int m_numItems;
+	ItemLog * m_first;
+	ItemLog * m_last;
     void Empty();
     void DestroyAll();
 public:
 	QueueLog(int maxItems);
 	~QueueLog();
-	void Enqueue(std::string prefix, Registers * regs, std::string suffix);
+	void Enqueue(std::string prefix, Registers *regs, std::string suffix);
 	void Save(std::string path, bool empty=true);
 };
 

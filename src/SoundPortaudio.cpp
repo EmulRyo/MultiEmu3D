@@ -25,10 +25,10 @@ static bool paInitialized = false;
 
 SoundPortaudio::SoundPortaudio()
 {
-	bufs = NULL;
-	semaphore = NULL;
-	soundOpen = false;
-    fullBuffers = 0;
+	m_bufs = NULL;
+	m_semaphore = NULL;
+	m_soundOpen = false;
+    m_fullBuffers = 0;
 }
 
 SoundPortaudio::~SoundPortaudio()
@@ -38,20 +38,20 @@ SoundPortaudio::~SoundPortaudio()
 
 bool SoundPortaudio::Start(long sampleRate, int numChannels)
 {
-	assert( !bufs ); // can only be initialized once
+	assert( !m_bufs ); // can only be initialized once
 	
     PaError err;
-	writeBuf = 0;
-	writePos = 0;
-	readBuf = 0;
+	m_writeBuf = 0;
+	m_writePos = 0;
+	m_readBuf = 0;
 	
-	bufs = new short[(long) bufSize * numBuffers];
-	if (!bufs)
+	m_bufs = new short[(long) bufSize * numBuffers];
+	if (!m_bufs)
 		return false;
 	
-    fullBuffers = 0;
-	semaphore = new wxSemaphore(numBuffers - 1);
-    mutex = new wxMutex();
+    m_fullBuffers = 0;
+	m_semaphore = new wxSemaphore(numBuffers - 1);
+    m_mutex = new wxMutex();
 	
     if (!paInitialized)
     {
@@ -66,7 +66,7 @@ bool SoundPortaudio::Start(long sampleRate, int numChannels)
     }
     
     /* Open an audio I/O stream. */
-    err = Pa_OpenDefaultStream( &stream,
+    err = Pa_OpenDefaultStream( &m_stream,
                                0,           /* no input channels */
                                numChannels, /* mono, stereo, ..., output */
                                paInt16,     /* 16 bits output */
@@ -87,54 +87,54 @@ bool SoundPortaudio::Start(long sampleRate, int numChannels)
         return false;
     }
     
-    err = Pa_StartStream( stream );
+    err = Pa_StartStream( m_stream );
     if( err != paNoError )
     {
         printf("PortAudio error: %s\n", Pa_GetErrorText( err ));
         return false;
     }
     
-	soundOpen = true;
+	m_soundOpen = true;
 	
 	return true;
 }
 
 void SoundPortaudio::Stop()
 {
-	if (soundOpen)
+	if (m_soundOpen)
 	{
-		soundOpen = false;
+		m_soundOpen = false;
         
         PaError err;
         
-		err = Pa_StopStream(stream);
+		err = Pa_StopStream(m_stream);
         if(err != paNoError)
             printf("PortAudio error: %s\n", Pa_GetErrorText(err));
 	}
 	
-	if (semaphore)
+	if (m_semaphore)
 	{
-		delete semaphore;
-		semaphore = NULL;
+		delete m_semaphore;
+		m_semaphore = NULL;
 	}
     
-    if (mutex)
+    if (m_mutex)
     {
-        delete mutex;
-        mutex = NULL;
+        delete m_mutex;
+        m_mutex = NULL;
     }
 	
-    if (bufs)
+    if (m_bufs)
     {
-        delete [] bufs;
-        bufs = NULL;
+        delete [] m_bufs;
+        m_bufs = NULL;
     }
 }
 
 inline short* SoundPortaudio::GetBufPtr( int index )
 {
 	assert( (unsigned) index < numBuffers );
-	return bufs + (long) index * bufSize;
+	return m_bufs + (long) index * bufSize;
 }
 
 void SoundPortaudio::Write(const short* in, int count)
@@ -142,30 +142,30 @@ void SoundPortaudio::Write(const short* in, int count)
 	while (count)
 	{
 		// n = espacio disponible en el buffer actual
-		int n = bufSize - writePos;
+		int n = bufSize - m_writePos;
 		// si es mayor a lo que queremos copiar
 		// n = count
 		if (n > count)
 			n = count;
 		
 		// copiar en el buffer actual (write_buf) n samples
-		memcpy(GetBufPtr(writeBuf) + writePos, in, n * sizeof(short));
+		memcpy(GetBufPtr(m_writeBuf) + m_writePos, in, n * sizeof(short));
 		in += n;
-		writePos += n;
+		m_writePos += n;
 		count -= n;
 		
 		// si el buffer ya está lleno
-		if (writePos >= bufSize )
+		if (m_writePos >= bufSize )
 		{
-			writePos = 0;
+			m_writePos = 0;
 			// seleccionar el buffer siguiente
-			writeBuf = (writeBuf + 1) % numBuffers;
+			m_writeBuf = (m_writeBuf + 1) % numBuffers;
 			// si todos los buffers estan a la espera de ser
 			// reproducidos se suspende este hilo
-			semaphore->Wait();
+			m_semaphore->Wait();
             
-            wxMutexLocker lock(*mutex);
-            fullBuffers++;
+            wxMutexLocker lock(*m_mutex);
+            m_fullBuffers++;
 		}
 		
 		// si aun no se han copiado todos los datos se hace
@@ -179,14 +179,14 @@ int SoundPortaudio::FillBuffer(void *outputBuffer, unsigned long framesPerBuffer
     size_t copyBytes = framesPerBuffer*2 * sizeof(short);
     
     // si hay por lo menos un buffer para reproducir
-	if ( fullBuffers > 0 )
+	if ( m_fullBuffers > 0 )
 	{
-		memcpy(out, GetBufPtr(readBuf), copyBytes);
-		readBuf = (readBuf + 1) % numBuffers;
-        semaphore->Post();
+		memcpy(out, GetBufPtr(m_readBuf), copyBytes);
+		m_readBuf = (m_readBuf + 1) % numBuffers;
+        m_semaphore->Post();
         
-        wxMutexLocker lock(*mutex);
-        fullBuffers--;
+        wxMutexLocker lock(*m_mutex);
+        m_fullBuffers--;
 	}
 	// si no hay ninguno reproducir silencio
 	else

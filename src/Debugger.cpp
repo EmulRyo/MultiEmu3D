@@ -50,32 +50,32 @@ Debugger::~Debugger()
 
 std::string Debugger::GetRegAF()
 {
-    return ToHex(m_cpu->Get_AF(), 4, '0');
+    return ToHex(m_cpu->GetAF(), 4, '0');
 }
 
 std::string Debugger::GetRegBC()
 {
-    return ToHex(m_cpu->Get_BC(), 4, '0');
+    return ToHex(m_cpu->GetBC(), 4, '0');
 }
 
 std::string Debugger::GetRegDE()
 {
-    return ToHex(m_cpu->Get_DE(), 4, '0');
+    return ToHex(m_cpu->GetDE(), 4, '0');
 }
 
 std::string Debugger::GetRegHL()
 {
-    return ToHex(m_cpu->Get_HL(), 4, '0');
+    return ToHex(m_cpu->GetHL(), 4, '0');
 }
 
 std::string Debugger::GetRegSP()
 {
-    return ToHex(m_cpu->Get_SP(), 4, '0');
+    return ToHex(m_cpu->GetSP(), 4, '0');
 }
 
 std::string Debugger::GetRegPC()
 {
-    return ToHex(m_cpu->Get_PC(), 4, '0');
+    return ToHex(m_cpu->GetPC(), 4, '0');
 }
 
 std::string Debugger::GetRegs()
@@ -158,11 +158,11 @@ std::string Debugger::Disassemble(WORD start, int numInstructions) {
 }
 
 std::string Debugger::Disassemble(int numInstructions) {
-    return Disassemble(m_cpu->Get_PC(), numInstructions);
+    return Disassemble(m_cpu->GetPC(), numInstructions);
 }
 
 void Debugger::DisassembleNext(WORD &currentAddress, WORD &nextAddress, std::string &name, std::string &data) {
-    currentAddress = m_cpu->Get_PC();
+    currentAddress = m_cpu->GetPC();
     DisassembleOne(currentAddress, nextAddress, name, data);
 }
 
@@ -315,7 +315,7 @@ bool Debugger::ExecuteOneFrame() {
     int cycles = 0;
     while(cycles < FRAME_CYCLES) {
         cycles += m_cpu->Execute(1);
-        if (GetBreakpointNode(m_cpu->Get_PC()))
+        if (GetBreakpointNode(m_cpu->GetPC()))
             return false;
     }
     return true;

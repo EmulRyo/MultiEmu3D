@@ -34,24 +34,24 @@ public:
 	bool Start(long sampleRate, int numChannels);
 	
 	// Write samples to buffer and block until enough space is available
-	void Write( const short * data, int count);
+	void Write( const short *data, int count);
 	
 	// Stop audio output
 	void Stop();
 	
 private:
-    PaStream *stream;
+    PaStream *m_stream;
     
     enum { bufSize = 2048 };
 	enum { numBuffers = 10 };
-	short* volatile bufs;
-	wxSemaphore* volatile semaphore;
-    wxMutex* mutex;
-	int volatile readBuf;
-	int writeBuf;	// id del buffer actual
-	int writePos;
-    int fullBuffers;
-	bool soundOpen;
+	short* volatile m_bufs;
+	wxSemaphore* volatile m_semaphore;
+    wxMutex* m_mutex;
+	int volatile m_readBuf;
+	int m_writeBuf;	// id del buffer actual
+	int m_writePos;
+    int m_fullBuffers;
+	bool m_soundOpen;
 	
 	short* GetBufPtr(int index);
 	int FillBuffer(void *outputBuffer, unsigned long framesPerBuffer);

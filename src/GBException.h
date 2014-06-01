@@ -25,8 +25,8 @@ enum ExceptionType { GBUnknown, GBError, GBExit };
 class GBException: public std::exception
 {
 private:
-	std::string description;
-	ExceptionType type;
+	std::string m_description;
+	ExceptionType m_type;
 	void newException(std::string desc, ExceptionType type);
 
 public:

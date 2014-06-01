@@ -56,9 +56,9 @@ int Sound::HandleError( const char* str )
 
 Sound::Sound()
 {
-	enabled = false;
-	initialized = true;
-	sampleRate = 44100;//22050;
+	m_enabled = false;
+	m_initialized = true;
+	m_sampleRate = 44100;//22050;
 
 #ifdef __WXMSW__
 	sound = new SoundSDL();
@@ -68,15 +68,15 @@ Sound::Sound()
     
     apu = new Basic_Gb_Apu();
 	
-	if (ChangeSampleRate(sampleRate) == ERROR)
+	if (ChangeSampleRate(m_sampleRate) == ERROR)
 	{
-		initialized = false;
+		m_initialized = false;
 		return;
 	}
 	
 	if (Start() == ERROR)
 	{
-		initialized = false;
+		m_initialized = false;
 		return;
 	}
 }
@@ -89,17 +89,17 @@ Sound::~Sound()
 
 int Sound::ChangeSampleRate(long newSampleRate)
 {
-	if (!initialized)
+	if (!m_initialized)
 		return NO_ERROR;
 	
-	sampleRate = newSampleRate;
-	bool wasEnabled = enabled;
+	m_sampleRate = newSampleRate;
+	bool wasEnabled = m_enabled;
 	
 	if (wasEnabled)
 		Stop();
 	
 	// Set sample rate and check for out of memory error
-	if (HandleError( apu->set_sample_rate(sampleRate) ) == ERROR)
+	if (HandleError( apu->set_sample_rate(m_sampleRate) ) == ERROR)
 		return ERROR;
 	
 	if (wasEnabled)
@@ -113,36 +113,36 @@ int Sound::ChangeSampleRate(long newSampleRate)
 
 int Sound::Start()
 {
-	if (!initialized)
+	if (!m_initialized)
 		return NO_ERROR;
 	
-	if (!enabled)
+	if (!m_enabled)
 	{
 		// Generate a few seconds of sound and play using SDL
-		if (sound->Start(sampleRate, 2) == false)
+		if (sound->Start(m_sampleRate, 2) == false)
 			return ERROR;
 	}
-	enabled = true;
+	m_enabled = true;
 	
 	return NO_ERROR;
 }
 
 int Sound::Stop()
 {
-	if (!initialized)
+	if (!m_initialized)
 		return NO_ERROR;
 	
-	if (enabled)
+	if (m_enabled)
 		sound->Stop();
 	
-	enabled = false;
+	m_enabled = false;
 	
 	return NO_ERROR;
 }
 
 bool Sound::GetEnabled()
 {
-	return enabled;
+	return m_enabled;
 }
 
 void Sound::SetEnabled(bool enabled)
@@ -155,7 +155,7 @@ void Sound::SetEnabled(bool enabled)
 
 void Sound::EndFrame()
 {
-	if ((!initialized) || (!enabled))
+	if ((!m_initialized) || (!m_enabled))
 		return;
 	
 	apu->end_frame();
@@ -172,7 +172,7 @@ void Sound::EndFrame()
 }
 void Sound::WriteRegister(WORD address, BYTE value)
 {
-    if (enabled)
+    if (m_enabled)
     {
         if ((address == NR52) && ((value & 0x80) == 0))
         {
@@ -191,7 +191,7 @@ void Sound::WriteRegister(WORD address, BYTE value)
 BYTE Sound::ReadRegister(WORD address)
 {
     BYTE value = 0;
-    if(enabled)
+    if(m_enabled)
         value = apu->read_register(address);
     
     // Los registros de sonido no devuelven directamente su valor.

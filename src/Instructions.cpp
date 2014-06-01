@@ -24,8 +24,8 @@
 
 using namespace std;
 
-#define _8bitsInmValue (mem->MemR(reg->Get_PC() + 1))
-#define _16bitsInmValue ((mem->MemR(reg->Get_PC() + 2)) << 8) | mem->MemR(reg->Get_PC() + 1)
+#define _8bitsInmValue (mem->MemR(reg->GetPC() + 1))
+#define _16bitsInmValue ((mem->MemR(reg->GetPC() + 2)) << 8) | mem->MemR(reg->GetPC() + 1)
 
 Instructions::Instructions(Registers* reg, Memory* mem)
 {
@@ -37,7 +37,7 @@ Instructions::~Instructions(void)
 {
 }
 
-void Instructions::NOP(){reg->Add_PC(1);}
+void Instructions::NOP(){reg->AddPC(1);}
 
 void Instructions::LD_r1_r2(e_registers e_reg1, e_registers e_reg2)
 {
@@ -47,25 +47,25 @@ void Instructions::LD_r1_r2(e_registers e_reg1, e_registers e_reg2)
 	{
 		if (e_reg2 == $)
 		{
-			mem->MemW(reg->Get_HL(), _8bitsInmValue);
+			mem->MemW(reg->GetHL(), _8bitsInmValue);
 			length = 2;
 		}
 		else
-			mem->MemW(reg->Get_HL(), (BYTE)reg->Get_Reg(e_reg2));
+			mem->MemW(reg->GetHL(), (BYTE)reg->GetReg(e_reg2));
 	}
 	else
 	{
 		if (e_reg2 == c_HL)
 		{
-			reg->Set_Reg(e_reg1, mem->MemR(reg->Get_HL()));
+			reg->SetReg(e_reg1, mem->MemR(reg->GetHL()));
 		}
 		else
 		{
-			reg->Set_Reg(e_reg1, reg->Get_Reg(e_reg2));
+			reg->SetReg(e_reg1, reg->GetReg(e_reg2));
 		}
 	}
 
-	reg->Add_PC(length);
+	reg->AddPC(length);
 }
 
 
@@ -85,21 +85,21 @@ void Instructions::LD_A_n(e_registers place)
 			length = 3;
 			break;
 		case c_BC:
-			value = mem->MemR(reg->Get_BC());
+			value = mem->MemR(reg->GetBC());
 			break;
 		case c_DE:
-			value = mem->MemR(reg->Get_DE());
+			value = mem->MemR(reg->GetDE());
 			break;
 		case c_HL:
-			value = mem->MemR(reg->Get_HL());
+			value = mem->MemR(reg->GetHL());
 			break;
 		default:
-			value = reg->Get_Reg(place);
+			value = reg->GetReg(place);
 	}
 
-	reg->Set_A(value);
+	reg->SetA(value);
 
-    reg->Add_PC(length);
+    reg->AddPC(length);
 }
 
 
@@ -111,48 +111,48 @@ void Instructions::LD_n_A(e_registers place)
 	{
 		case c_$$:
 			address = _16bitsInmValue;
-			mem->MemW(address, reg->Get_A());
+			mem->MemW(address, reg->GetA());
 			length = 3;
 			break;
 		case c_BC:
-			mem->MemW(reg->Get_BC(), reg->Get_A());
+			mem->MemW(reg->GetBC(), reg->GetA());
 			break;
 		case c_DE:
-			mem->MemW(reg->Get_DE(), reg->Get_A());
+			mem->MemW(reg->GetDE(), reg->GetA());
 			break;
 		case c_HL:
-			mem->MemW(reg->Get_HL(), reg->Get_A());
+			mem->MemW(reg->GetHL(), reg->GetA());
 			break;
 		default:
-			reg->Set_Reg(place, reg->Get_A());
+			reg->SetReg(place, reg->GetA());
 	}
 
-	reg->Add_PC(length);
+	reg->AddPC(length);
 }
 
 void Instructions::JP_nn()
 {
-	reg->Set_PC(_16bitsInmValue);
+	reg->SetPC(_16bitsInmValue);
 }
 
 void Instructions::LDH_A_n()
 {
-	reg->Set_A(mem->MemR(0xFF00 + _8bitsInmValue));
-	reg->Add_PC(2);
+	reg->SetA(mem->MemR(0xFF00 + _8bitsInmValue));
+	reg->AddPC(2);
 }
 
 void Instructions::LDH_c$_A()
 {
-	mem->MemW(0xFF00 + _8bitsInmValue, reg->Get_A());
-	reg->Add_PC(2);
+	mem->MemW(0xFF00 + _8bitsInmValue, reg->GetA());
+	reg->AddPC(2);
 }
 
 void Instructions::CCF()
 {
-	reg->Set_flagN(0);
-	reg->Set_flagH(0);
-	reg->Set_flagC(!reg->Get_flagC());
-	reg->Add_PC(1);
+	reg->SetFlagN(0);
+	reg->SetFlagH(0);
+	reg->SetFlagC(!reg->GetFlagC());
+	reg->AddPC(1);
 }
 
 void Instructions::CP_n(e_registers place)
@@ -167,43 +167,43 @@ void Instructions::CP_n(e_registers place)
 			length = 2;
 			break;
 		case c_HL:
-			value = mem->MemR(reg->Get_HL());
+			value = mem->MemR(reg->GetHL());
 			break;
 		default:
-			value = (BYTE)reg->Get_Reg(place);
+			value = (BYTE)reg->GetReg(place);
 	}
 
-	reg->Set_flagZ((reg->Get_A() == value) ? 1 : 0);
-	reg->Set_flagN(1);
-	reg->Set_flagH(((reg->Get_A() & 0x0F) < (value & 0x0F)) ? 1 : 0);
-	reg->Set_flagC((reg->Get_A() < value) ? 1 : 0);
+	reg->SetFlagZ((reg->GetA() == value) ? 1 : 0);
+	reg->SetFlagN(1);
+	reg->SetFlagH(((reg->GetA() & 0x0F) < (value & 0x0F)) ? 1 : 0);
+	reg->SetFlagC((reg->GetA() < value) ? 1 : 0);
 
-	reg->Add_PC(length);
+	reg->AddPC(length);
 }
 
 void Instructions::CPL()
 {
-	reg->Set_A(~reg->Get_A());
+	reg->SetA(~reg->GetA());
 
-	reg->Set_flagN(1);
-	reg->Set_flagH(1);
+	reg->SetFlagN(1);
+	reg->SetFlagH(1);
 
-	reg->Add_PC(1);
+	reg->AddPC(1);
 }
 
 void Instructions::LD_n_nn(e_registers place)
 {
 	assert((place == BC) || (place == DE) || (place == HL) || (place == SP));
-	reg->Set_Reg(place, _16bitsInmValue);
-    reg->Add_PC(3);
+	reg->SetReg(place, _16bitsInmValue);
+    reg->AddPC(3);
 }
 
 void Instructions::LD_nn_SP()
 {
 	WORD destAddress = _16bitsInmValue;
-	mem->MemW(destAddress, reg->Get_SP() & 0x00FF);
-	mem->MemW(destAddress + 1, reg->Get_SP() >> 8);
-    reg->Add_PC(3);
+	mem->MemW(destAddress, reg->GetSP() & 0x00FF);
+	mem->MemW(destAddress + 1, reg->GetSP() >> 8);
+    reg->AddPC(3);
 }
 
 void Instructions::JR()
@@ -214,73 +214,73 @@ void Instructions::JR()
 
 	//El "2 +" es porque antes de saltar ha tenido que ver cuales eran los dos opcodes de la instruccion
 	//y tiene importancia al ser un salto relativo con respecto al actual PC.
-    reg->Add_PC(2 + address);
+    reg->AddPC(2 + address);
 }
 
 void Instructions::JR_CC_n(e_registers flag, BYTE value2check)
 {
-	if (reg->Get_Flag(flag) == value2check)
+	if (reg->GetFlag(flag) == value2check)
     {
 		JR();
-        reg->Set_ConditionalTaken(true);
+        reg->SetConditionalTaken(true);
     }
 	else
-		reg->Add_PC(2);
+		reg->AddPC(2);
 }
 
 void Instructions::CALL_nn()
 {
-	reg->Add_SP(-1);
-	mem->MemW(reg->Get_SP(),((reg->Get_PC() + 3) & 0xFF00) >> 8);
-	reg->Add_SP(-1);
-	mem->MemW(reg->Get_SP(),(reg->Get_PC() + 3) & 0x00FF);
-	reg->Set_PC(_16bitsInmValue);
+	reg->AddSP(-1);
+	mem->MemW(reg->GetSP(),((reg->GetPC() + 3) & 0xFF00) >> 8);
+	reg->AddSP(-1);
+	mem->MemW(reg->GetSP(),(reg->GetPC() + 3) & 0x00FF);
+	reg->SetPC(_16bitsInmValue);
 }
 
 void Instructions::CALL_cc_nn(e_registers flag, BYTE value2check)
 {
-	if (reg->Get_Flag(flag) == value2check)
+	if (reg->GetFlag(flag) == value2check)
     {
 		CALL_nn();
-        reg->Set_ConditionalTaken(true);
+        reg->SetConditionalTaken(true);
     }
 	else
-		reg->Add_PC(3);
+		reg->AddPC(3);
 }
 
 void Instructions::LDI_A_cHL()
 {
-	reg->Set_A(mem->MemR(reg->Get_HL()));
-	reg->Set_HL(reg->Get_HL() + 1);
-	reg->Add_PC(1);
+	reg->SetA(mem->MemR(reg->GetHL()));
+	reg->SetHL(reg->GetHL() + 1);
+	reg->AddPC(1);
 }
 
 void Instructions::LDI_cHL_A()
 {
-	mem->MemW(reg->Get_HL(), reg->Get_A());
-	reg->Set_HL(reg->Get_HL() + 1);
-	reg->Add_PC(1);
+	mem->MemW(reg->GetHL(), reg->GetA());
+	reg->SetHL(reg->GetHL() + 1);
+	reg->AddPC(1);
 }
 
 void Instructions::LDD_A_cHL()
 {
-	reg->Set_A(mem->MemR(reg->Get_HL()));
-	reg->Set_HL(reg->Get_HL() - 1);
-	reg->Add_PC(1);
+	reg->SetA(mem->MemR(reg->GetHL()));
+	reg->SetHL(reg->GetHL() - 1);
+	reg->AddPC(1);
 }
 
 void Instructions::LDD_cHL_A()
 {
-	mem->MemW(reg->Get_HL(), reg->Get_A());
-	reg->Set_HL(reg->Get_HL() - 1);
-	reg->Add_PC(1);
+	mem->MemW(reg->GetHL(), reg->GetA());
+	reg->SetHL(reg->GetHL() - 1);
+	reg->AddPC(1);
 }
 
 void Instructions::LD_SP_HL()
 {
-	reg->Set_SP(reg->Get_HL());
+	reg->SetSP(reg->GetHL());
 
-	reg->Add_PC(1);
+	reg->AddPC(1);
 }
 
 void Instructions::SUB_n(e_registers place)
@@ -288,23 +288,23 @@ void Instructions::SUB_n(e_registers place)
 	int value, length = 1;
 
 	if (place == c_HL)
-		value = mem->MemR(reg->Get_HL());
+		value = mem->MemR(reg->GetHL());
 	else if (place == $)
 	{
 		value = _8bitsInmValue;
 		length = 2;
 	}
 	else
-		value = reg->Get_Reg(place);
+		value = reg->GetReg(place);
 
-	reg->Set_flagZ((reg->Get_A() - value) ? 0 : 1);
-	reg->Set_flagN(1);
-	reg->Set_flagH(((reg->Get_A() & 0x0F) < (value & 0x0F)) ? 1 : 0);
-	reg->Set_flagC((reg->Get_A() < value) ? 1 : 0);
+	reg->SetFlagZ((reg->GetA() - value) ? 0 : 1);
+	reg->SetFlagN(1);
+	reg->SetFlagH(((reg->GetA() & 0x0F) < (value & 0x0F)) ? 1 : 0);
+	reg->SetFlagC((reg->GetA() < value) ? 1 : 0);
 
-	reg->Set_A(reg->Get_A() - value);
+	reg->SetA(reg->GetA() - value);
 
-	reg->Add_PC(length);
+	reg->AddPC(length);
 }
 
 void Instructions::ADD_A_n(e_registers place)
@@ -315,20 +315,20 @@ void Instructions::ADD_A_n(e_registers place)
 	switch (place)
 	{
 		case $:		valueReg = _8bitsInmValue; length = 2; break;
-		case c_HL:	valueReg = mem->MemR(reg->Get_HL()); break;
-		default:	valueReg = (BYTE)reg->Get_Reg(place); break;
+		case c_HL:	valueReg = mem->MemR(reg->GetHL()); break;
+		default:	valueReg = (BYTE)reg->GetReg(place); break;
 	}
 
-	value = reg->Get_A() + valueReg;
+	value = reg->GetA() + valueReg;
 
-	reg->Set_flagZ(!(value & 0xFF) ? 1 : 0);
-	if (((reg->Get_A() & 0x0F) + (valueReg & 0x0F)) > 0x0F) reg->Set_flagH(1); else reg->Set_flagH(0);
-	reg->Set_flagN(0);
-	reg->Set_flagC((value > 0xFF) ? 1 : 0);
+	reg->SetFlagZ(!(value & 0xFF) ? 1 : 0);
+	if (((reg->GetA() & 0x0F) + (valueReg & 0x0F)) > 0x0F) reg->SetFlagH(1); else reg->SetFlagH(0);
+	reg->SetFlagN(0);
+	reg->SetFlagC((value > 0xFF) ? 1 : 0);
 
-	reg->Set_A(value & 0xFF);
+	reg->SetA(value & 0xFF);
 
-	reg->Add_PC(length);
+	reg->AddPC(length);
 }
 
 void Instructions::ADC_A_n(e_registers lugar)
@@ -339,23 +339,23 @@ void Instructions::ADC_A_n(e_registers lugar)
 	switch (lugar)
 	{
 		case $:		valueReg = _8bitsInmValue; length = 2; break;
-		case c_HL:	valueReg = mem->MemR(reg->Get_HL()); break;
-		default:	valueReg = (BYTE)reg->Get_Reg(lugar); break;
+		case c_HL:	valueReg = mem->MemR(reg->GetHL()); break;
+		default:	valueReg = (BYTE)reg->GetReg(lugar); break;
 	}
 
-	value = reg->Get_flagC() + valueReg + reg->Get_A();
+	value = reg->GetFlagC() + valueReg + reg->GetA();
 
-	reg->Set_flagZ(!(value & 0xFF) ? 1 : 0);
-	reg->Set_flagN(0);
-	if ((reg->Get_flagC() + (valueReg & 0x0F) + (reg->Get_A() & 0x0F)) > 0x0F)
-		reg->Set_flagH(1);
+	reg->SetFlagZ(!(value & 0xFF) ? 1 : 0);
+	reg->SetFlagN(0);
+	if ((reg->GetFlagC() + (valueReg & 0x0F) + (reg->GetA() & 0x0F)) > 0x0F)
+		reg->SetFlagH(1);
 	else
-		reg->Set_flagH(0);
-	reg->Set_flagC((value > 0xFF) ? 1 : 0);
+		reg->SetFlagH(0);
+	reg->SetFlagC((value > 0xFF) ? 1 : 0);
 
-	reg->Set_A(value & 0xFF);
+	reg->SetA(value & 0xFF);
 
-	reg->Add_PC(length);
+	reg->AddPC(length);
 }
 
 void Instructions::INC_n(e_registers place)
@@ -364,35 +364,35 @@ void Instructions::INC_n(e_registers place)
 
 	if (place == c_HL)
 	{
-		value = mem->MemR(reg->Get_HL()) + 1;
-		mem->MemW(reg->Get_HL(), value);
+		value = mem->MemR(reg->GetHL()) + 1;
+		mem->MemW(reg->GetHL(), value);
 	}
 	else
 	{
-		value = reg->Get_Reg(place) + 1;
-		reg->Set_Reg(place, value);
+		value = reg->GetReg(place) + 1;
+		reg->SetReg(place, value);
 	}
-	reg->Set_flagZ(value ? 0 : 1);
-	reg->Set_flagN(0);
-	reg->Set_flagH((value & 0x0F) ? 0 : 1);
+	reg->SetFlagZ(value ? 0 : 1);
+	reg->SetFlagN(0);
+	reg->SetFlagH((value & 0x0F) ? 0 : 1);
 
-	reg->Add_PC(1);
+	reg->AddPC(1);
 }
 
 void Instructions::ADD_HL_n(e_registers place)
 {
 	WORD value, hl;
 	
-	value = reg->Get_Reg(place);
-	hl = reg->Get_HL();
+	value = reg->GetReg(place);
+	hl = reg->GetHL();
 	
-	reg->Set_flagN(0);
-	reg->Set_flagH((((hl & 0x0FFF) + (value & 0x0FFF)) > 0x0FFF) ? 1 : 0);
-	reg->Set_flagC(((hl + value) > 0xFFFF) ? 1 : 0);
+	reg->SetFlagN(0);
+	reg->SetFlagH((((hl & 0x0FFF) + (value & 0x0FFF)) > 0x0FFF) ? 1 : 0);
+	reg->SetFlagC(((hl + value) > 0xFFFF) ? 1 : 0);
 	
-	reg->Set_HL(hl + value);
+	reg->SetHL(hl + value);
 	
-	reg->Add_PC(1);
+	reg->AddPC(1);
 }
 
 void Instructions::RLC_n(e_registers place)
@@ -401,37 +401,37 @@ void Instructions::RLC_n(e_registers place)
 
 	if (place == c_HL)
 	{
-		value = mem->MemR(reg->Get_HL());
+		value = mem->MemR(reg->GetHL());
 		bit7 = BIT7(value) >> 7;
 		value = (value << 1) | bit7;
-		mem->MemW(reg->Get_HL(), value);
+		mem->MemW(reg->GetHL(), value);
 	}
 	else
 	{
-		value = (BYTE)reg->Get_Reg(place);
+		value = (BYTE)reg->GetReg(place);
 		bit7 = BIT7(value) >> 7;
 		value = (value << 1) | bit7;
-		reg->Set_Reg(place, value);
+		reg->SetReg(place, value);
 	}
 
-	reg->Set_flagZ(0);
-	reg->Set_flagN(0);
-	reg->Set_flagH(0);
-	reg->Set_flagC(bit7);
+	reg->SetFlagZ(0);
+	reg->SetFlagN(0);
+	reg->SetFlagH(0);
+	reg->SetFlagC(bit7);
 
-    if (mem->MemR(reg->Get_PC()) == 0xCB)
+    if (mem->MemR(reg->GetPC()) == 0xCB)
     {
-        reg->Set_flagZ(value ? 0 : 1);
-		reg->Add_PC(2);
+        reg->SetFlagZ(value ? 0 : 1);
+		reg->AddPC(2);
     }
 	else
-		reg->Add_PC(1);
+		reg->AddPC(1);
 }
 
 void Instructions::INC_nn(e_registers lugar)
 {
-	reg->Set_Reg(lugar, reg->Get_Reg(lugar) + 1);
-	reg->Add_PC(1);
+	reg->SetReg(lugar, reg->GetReg(lugar) + 1);
+	reg->AddPC(1);
 }
 
 void Instructions::DAA()
@@ -508,39 +508,39 @@ void Instructions::DAA()
 	 0100 0010  42 Correct BCD!
 	*/
     
-    int a = reg->Get_A();
+    int a = reg->GetA();
     
-    if (reg->Get_flagN() == 0)
+    if (reg->GetFlagN() == 0)
     {
-        if (reg->Get_flagH() || ((a & 0xF) > 9))
+        if (reg->GetFlagH() || ((a & 0xF) > 9))
             a += 0x06;
         
-        if (reg->Get_flagC() || (a > 0x9F))
+        if (reg->GetFlagC() || (a > 0x9F))
             a += 0x60;
     }
     else
     {
-        if (reg->Get_flagH())
+        if (reg->GetFlagH())
             a = (a - 6) & 0xFF;
         
-        if (reg->Get_flagC())
+        if (reg->GetFlagC())
             a -= 0x60;
     }
     
-    reg->Set_flagH(0);
-    reg->Set_flagZ(0);
+    reg->SetFlagH(0);
+    reg->SetFlagZ(0);
     
     if ((a & 0x100) == 0x100)
-        reg->Set_flagC(1);
+        reg->SetFlagC(1);
     
     a &= 0xFF;
     
     if (a == 0)
-        reg->Set_flagZ(1);
+        reg->SetFlagZ(1);
     
-    reg->Set_A(a);
+    reg->SetA(a);
     
-    reg->Add_PC(1);
+    reg->AddPC(1);
 }
 
 void Instructions::DEC_n(e_registers place)
@@ -549,26 +549,26 @@ void Instructions::DEC_n(e_registers place)
 
 	if (place == c_HL)
 	{
-		value = mem->MemR(reg->Get_HL()) - 1;
-		mem->MemW(reg->Get_HL(), value);
+		value = mem->MemR(reg->GetHL()) - 1;
+		mem->MemW(reg->GetHL(), value);
 	}
 	else
 	{
-		value = reg->Get_Reg(place) - 1;
-		reg->Set_Reg(place, value);
+		value = reg->GetReg(place) - 1;
+		reg->SetReg(place, value);
 	}
 	
-	reg->Set_flagZ(!value ? 1 : 0);
-	reg->Set_flagN(1);
-	reg->Set_flagH(((value & 0x0F) == 0x0F) ? 1 : 0);
+	reg->SetFlagZ(!value ? 1 : 0);
+	reg->SetFlagN(1);
+	reg->SetFlagH(((value & 0x0F) == 0x0F) ? 1 : 0);
 
-	reg->Add_PC(1);
+	reg->AddPC(1);
 }
 
 void Instructions::DEC_nn(e_registers lugar)
 {
-	reg->Set_Reg(lugar, reg->Get_Reg(lugar) - 1);
-	reg->Add_PC(1);
+	reg->SetReg(lugar, reg->GetReg(lugar) - 1);
+	reg->AddPC(1);
 }
 
 void Instructions::OR_n(e_registers lugar)
@@ -579,24 +579,24 @@ void Instructions::OR_n(e_registers lugar)
 	switch (lugar)
 	{
 		case $:
-			value = reg->Get_A() | _8bitsInmValue;
+			value = reg->GetA() | _8bitsInmValue;
 			longitud = 2;
 			break;
 		case c_HL:
-			value = reg->Get_A() | mem->MemR(reg->Get_HL());
+			value = reg->GetA() | mem->MemR(reg->GetHL());
 			break;
 		default:
-			value = reg->Get_A() | reg->Get_Reg(lugar);
+			value = reg->GetA() | reg->GetReg(lugar);
 	}
 
-    reg->Set_A(value);
+    reg->SetA(value);
 
-	reg->Set_flagZ(value ? 0 : 1);
-	reg->Set_flagN(0);
-	reg->Set_flagH(0);
-	reg->Set_flagC(0);
+	reg->SetFlagZ(value ? 0 : 1);
+	reg->SetFlagN(0);
+	reg->SetFlagH(0);
+	reg->SetFlagC(0);
 
-	reg->Add_PC(longitud);
+	reg->AddPC(longitud);
 }
 
 void Instructions::XOR_n(e_registers lugar)
@@ -607,30 +607,30 @@ void Instructions::XOR_n(e_registers lugar)
 	switch (lugar)
 	{
 		case $:
-			value = reg->Get_A() ^ _8bitsInmValue;
+			value = reg->GetA() ^ _8bitsInmValue;
 			longitud = 2;
 			break;
 		case c_HL:
-			value = reg->Get_A() ^ mem->MemR(reg->Get_HL());
+			value = reg->GetA() ^ mem->MemR(reg->GetHL());
 			break;
 		default:
-			value = reg->Get_A() ^ reg->Get_Reg(lugar);
+			value = reg->GetA() ^ reg->GetReg(lugar);
 	}
     
-    reg->Set_A(value);
+    reg->SetA(value);
 
-	reg->Set_flagZ(value ? 0 : 1);
-	reg->Set_flagN(0);
-	reg->Set_flagH(0);
-	reg->Set_flagC(0);
+	reg->SetFlagZ(value ? 0 : 1);
+	reg->SetFlagN(0);
+	reg->SetFlagH(0);
+	reg->SetFlagC(0);
 
-	reg->Add_PC(longitud);
+	reg->AddPC(longitud);
 }
 
 void Instructions::RET()
 {
-	reg->Set_PC((mem->MemR(reg->Get_SP() + 1) << 8) | mem->MemR(reg->Get_SP()));
-	reg->Add_SP(2);
+	reg->SetPC((mem->MemR(reg->GetSP() + 1) << 8) | mem->MemR(reg->GetSP()));
+	reg->AddSP(2);
 }
 
 void Instructions::RETI()
@@ -641,40 +641,40 @@ void Instructions::RETI()
 
 void Instructions::RET_cc(e_registers flag, BYTE value2check)
 {
-	reg->Add_PC(1);
-	if (reg->Get_Flag(flag) == value2check)
+	reg->AddPC(1);
+	if (reg->GetFlag(flag) == value2check)
     {
 		RET();
-        reg->Set_ConditionalTaken(true);
+        reg->SetConditionalTaken(true);
     }
 }
 
 void Instructions::LD_nn_n(e_registers lugar)
 {
-	reg->Set_Reg(lugar, _8bitsInmValue);
-	reg->Add_PC(2);
+	reg->SetReg(lugar, _8bitsInmValue);
+	reg->AddPC(2);
 }
 
 void Instructions::LD_A_cC()
 {
-	reg->Set_A(mem->MemR(0xFF00 + reg->Get_C()));
-	reg->Add_PC(1);
+	reg->SetA(mem->MemR(0xFF00 + reg->GetC()));
+	reg->AddPC(1);
 }
 
 void Instructions::LD_cC_A()
 {
-	mem->MemW(0xFF00 + reg->Get_C(), reg->Get_A());
-	reg->Add_PC(1);
+	mem->MemW(0xFF00 + reg->GetC(), reg->GetA());
+	reg->AddPC(1);
 }
 
 void Instructions::SET_b_r(BYTE bit, e_registers place)
 {
 	if (place == c_HL)
-		mem->MemW(reg->Get_HL(), mem->MemR(reg->Get_HL()) | (1 << bit));
+		mem->MemW(reg->GetHL(), mem->MemR(reg->GetHL()) | (1 << bit));
 	else
-		reg->Set_Reg(place, reg->Get_Reg(place) | (1 << bit));
+		reg->SetReg(place, reg->GetReg(place) | (1 << bit));
 
-	reg->Add_PC(2);
+	reg->AddPC(2);
 }
 
 void Instructions::BIT_b_r(BYTE bit, e_registers lugar)
@@ -682,41 +682,41 @@ void Instructions::BIT_b_r(BYTE bit, e_registers lugar)
 	BYTE value;
 
 	if (lugar == c_HL)
-		value = mem->MemR(reg->Get_HL());
+		value = mem->MemR(reg->GetHL());
 	else
-		value = (BYTE)reg->Get_Reg(lugar);
+		value = (BYTE)reg->GetReg(lugar);
 
 	if (!(value & (1 << bit)))
-		reg->Set_flagZ(1);
+		reg->SetFlagZ(1);
 	else
-		reg->Set_flagZ(0);
+		reg->SetFlagZ(0);
 
-	reg->Set_flagN(0);
-	reg->Set_flagH(1);
+	reg->SetFlagN(0);
+	reg->SetFlagH(1);
 
-	reg->Add_PC(2);
+	reg->AddPC(2);
 }
 
 void Instructions::RES_b_r(BYTE bit, e_registers lugar)
 {
     if (lugar == c_HL)
-		mem->MemW(reg->Get_HL(), mem->MemR(reg->Get_HL()) & ~(1 << bit));
+		mem->MemW(reg->GetHL(), mem->MemR(reg->GetHL()) & ~(1 << bit));
 	else
-		reg->Set_Reg(lugar, reg->Get_Reg(lugar) & ~(1 << bit));
+		reg->SetReg(lugar, reg->GetReg(lugar) & ~(1 << bit));
 
-	reg->Add_PC(2);
+	reg->AddPC(2);
 }
 
 void Instructions::DI()
 {
-	reg->Set_IME(0);
-	reg->Add_PC(1);
+	reg->SetIME(0);
+	reg->AddPC(1);
 }
 
 void Instructions::EI()
 {
-	reg->Set_IME(1);
-	reg->Add_PC(1);
+	reg->SetIME(1);
+	reg->AddPC(1);
 }
 
 void Instructions::SBC_A(e_registers place)
@@ -729,37 +729,37 @@ void Instructions::SBC_A(e_registers place)
 	switch(place)
 	{
 		case c_HL:
-            value = mem->MemR(reg->Get_HL());
-            sum = value + reg->Get_flagC();
+            value = mem->MemR(reg->GetHL());
+            sum = value + reg->GetFlagC();
 			break;
 		case $:
             value = _8bitsInmValue;
-            sum = value + reg->Get_flagC();
+            sum = value + reg->GetFlagC();
 			length = 2;
 			break;
 		default:
-            value = reg->Get_Reg(place);
-			sum = value + reg->Get_flagC();
+            value = reg->GetReg(place);
+			sum = value + reg->GetFlagC();
 	}
-    result = reg->Get_A() - sum;
+    result = reg->GetA() - sum;
     
-	reg->Set_flagZ(!result);
-	reg->Set_flagN(1);
+	reg->SetFlagZ(!result);
+	reg->SetFlagN(1);
     
-    if ((reg->Get_A() & 0x0F) < (value & 0x0F))
-        reg->Set_flagH(true);
-    else if ((reg->Get_A() & 0x0F) < (sum & 0x0F))
-        reg->Set_flagH(true);
-    else if (((reg->Get_A() & 0x0F)==(value & 0x0F)) && ((value & 0x0F)==0x0F) && (reg->Get_flagC()))
-        reg->Set_flagH(true);
+    if ((reg->GetA() & 0x0F) < (value & 0x0F))
+        reg->SetFlagH(true);
+    else if ((reg->GetA() & 0x0F) < (sum & 0x0F))
+        reg->SetFlagH(true);
+    else if (((reg->GetA() & 0x0F)==(value & 0x0F)) && ((value & 0x0F)==0x0F) && (reg->GetFlagC()))
+        reg->SetFlagH(true);
     else
-        reg->Set_flagH(false);
+        reg->SetFlagH(false);
     
-    reg->Set_flagC(reg->Get_A() < sum);
+    reg->SetFlagC(reg->GetA() < sum);
 
-	reg->Set_A(result);
+	reg->SetA(result);
 
-	reg->Add_PC(length);
+	reg->AddPC(length);
 }
 
 void Instructions::AND(e_registers lugar)
@@ -769,22 +769,22 @@ void Instructions::AND(e_registers lugar)
 	switch (lugar)
 	{
 		case $:
-			reg->Set_A(reg->Get_A() & _8bitsInmValue);
+			reg->SetA(reg->GetA() & _8bitsInmValue);
 			longitud = 2;
 			break;
 		case c_HL:
-			reg->Set_A(reg->Get_A() & mem->MemR(reg->Get_HL()));
+			reg->SetA(reg->GetA() & mem->MemR(reg->GetHL()));
 			break;
 		default:
-			reg->Set_A(reg->Get_A() & reg->Get_Reg(lugar));
+			reg->SetA(reg->GetA() & reg->GetReg(lugar));
 	}
 
-	reg->Set_flagZ(reg->Get_A() ? 0 : 1);
-	reg->Set_flagN(0);
-	reg->Set_flagH(1);
-	reg->Set_flagC(0);
+	reg->SetFlagZ(reg->GetA() ? 0 : 1);
+	reg->SetFlagN(0);
+	reg->SetFlagH(1);
+	reg->SetFlagC(0);
 
-	reg->Add_PC(longitud);
+	reg->AddPC(longitud);
 }
 
 
@@ -794,23 +794,23 @@ void Instructions::SLA_n(e_registers place)
 
 	if (place == c_HL)
 	{
-		bit7 = BIT7(mem->MemR(reg->Get_HL())) >> 7;
-		value = mem->MemR(reg->Get_HL()) << 1;
-		mem->MemW(reg->Get_HL(), value);
+		bit7 = BIT7(mem->MemR(reg->GetHL())) >> 7;
+		value = mem->MemR(reg->GetHL()) << 1;
+		mem->MemW(reg->GetHL(), value);
 	}
 	else
 	{
-		bit7 = BIT7(reg->Get_Reg(place)) >> 7;
-		value = reg->Get_Reg(place) << 1;
-		reg->Set_Reg(place, value);
+		bit7 = BIT7(reg->GetReg(place)) >> 7;
+		value = reg->GetReg(place) << 1;
+		reg->SetReg(place, value);
 	}
 
-	reg->Set_flagZ(!value ? 1 : 0);
-	reg->Set_flagN(0);
-	reg->Set_flagH(0);
-	reg->Set_flagC(bit7);
+	reg->SetFlagZ(!value ? 1 : 0);
+	reg->SetFlagN(0);
+	reg->SetFlagH(0);
+	reg->SetFlagC(bit7);
 
-	reg->Add_PC(2);
+	reg->AddPC(2);
 }
 
 void Instructions::SRA_n(e_registers lugar)
@@ -819,25 +819,25 @@ void Instructions::SRA_n(e_registers lugar)
 
 	if (lugar == c_HL)
 	{
-		bit0 = BIT0(mem->MemR(reg->Get_HL()));
-		bit7 = BIT7(mem->MemR(reg->Get_HL()));
-		mem->MemW(reg->Get_HL(), bit7 | (mem->MemR(reg->Get_HL()) >> 1));
-		value = mem->MemR(reg->Get_HL());
+		bit0 = BIT0(mem->MemR(reg->GetHL()));
+		bit7 = BIT7(mem->MemR(reg->GetHL()));
+		mem->MemW(reg->GetHL(), bit7 | (mem->MemR(reg->GetHL()) >> 1));
+		value = mem->MemR(reg->GetHL());
 	}
 	else
 	{
-		bit0 = BIT0(reg->Get_Reg(lugar));
-		bit7 = BIT7(reg->Get_Reg(lugar));
-		reg->Set_Reg(lugar, bit7 | (reg->Get_Reg(lugar) >> 1));
-		value = (BYTE)reg->Get_Reg(lugar);
+		bit0 = BIT0(reg->GetReg(lugar));
+		bit7 = BIT7(reg->GetReg(lugar));
+		reg->SetReg(lugar, bit7 | (reg->GetReg(lugar) >> 1));
+		value = (BYTE)reg->GetReg(lugar);
 	}
 
-	reg->Set_flagZ(!value ? 1 : 0);
-	reg->Set_flagN(0);
-	reg->Set_flagH(0);
-	reg->Set_flagC(bit0);
+	reg->SetFlagZ(!value ? 1 : 0);
+	reg->SetFlagN(0);
+	reg->SetFlagH(0);
+	reg->SetFlagC(bit0);
 
-	reg->Add_PC(2);
+	reg->AddPC(2);
 }
 
 void Instructions::SRL_n(e_registers place)
@@ -846,59 +846,59 @@ void Instructions::SRL_n(e_registers place)
 
 	if (place == c_HL)
 	{
-		bit0 = BIT0(mem->MemR(reg->Get_HL()));
-		value = mem->MemR(reg->Get_HL()) >> 1;
-		mem->MemW(reg->Get_HL(), value);
+		bit0 = BIT0(mem->MemR(reg->GetHL()));
+		value = mem->MemR(reg->GetHL()) >> 1;
+		mem->MemW(reg->GetHL(), value);
 	}
 	else
 	{
-		bit0 = BIT0(reg->Get_Reg(place));
-		value = reg->Get_Reg(place) >> 1;
-		reg->Set_Reg(place, value);
+		bit0 = BIT0(reg->GetReg(place));
+		value = reg->GetReg(place) >> 1;
+		reg->SetReg(place, value);
 	}
 
-	reg->Set_flagZ(!value ? 1 : 0);
-	reg->Set_flagN(0);
-	reg->Set_flagH(0);
-	reg->Set_flagC(bit0);
+	reg->SetFlagZ(!value ? 1 : 0);
+	reg->SetFlagN(0);
+	reg->SetFlagH(0);
+	reg->SetFlagC(bit0);
 
-	reg->Add_PC(2);
+	reg->AddPC(2);
 }
 
 void Instructions::ADD_SP_n()
 {
 	char n = _8bitsInmValue;
 
-	reg->Set_flagZ(0);
-	reg->Set_flagN(0);
+	reg->SetFlagZ(0);
+	reg->SetFlagN(0);
 
-    reg->Set_flagH(((reg->Get_SP() & 0x0F) + (n & 0x0F)) > 0x0F);
-    reg->Set_flagC(((reg->Get_SP() & 0xFF) + (n & 0xFF)) > 0xFF);
+    reg->SetFlagH(((reg->GetSP() & 0x0F) + (n & 0x0F)) > 0x0F);
+    reg->SetFlagC(((reg->GetSP() & 0xFF) + (n & 0xFF)) > 0xFF);
 
-	reg->Add_SP(n);
+	reg->AddSP(n);
 
-	reg->Add_PC(2);
+	reg->AddPC(2);
 }
 
 void Instructions::JP_HL()
 {
-	reg->Set_PC(reg->Get_HL());
+	reg->SetPC(reg->GetHL());
 }
 
 void Instructions::SCF()
 {
-	reg->Set_flagN(0);
-	reg->Set_flagH(0);
-	reg->Set_flagC(1);
+	reg->SetFlagN(0);
+	reg->SetFlagH(0);
+	reg->SetFlagC(1);
 
-	reg->Add_PC(1);
+	reg->AddPC(1);
 }
 
 void Instructions::HALT()
 {
-	reg->Set_Halt(true);
+	reg->SetHalt(true);
 	
-	reg->Add_PC(1);
+	reg->AddPC(1);
 
 }
 
@@ -909,7 +909,7 @@ void Instructions::STOP()
     // boton. Aqui no se va simular ese comportamiento
 	//reg->Set_Stop(true);
 
-	reg->Add_PC(2);
+	reg->AddPC(2);
 }
 
 void Instructions::SWAP(e_registers place)
@@ -918,41 +918,41 @@ void Instructions::SWAP(e_registers place)
 
 	if (place == c_HL)
 	{
-		value = mem->MemR(reg->Get_HL());
+		value = mem->MemR(reg->GetHL());
 		value = ((value & 0x0F) << 4) | ((value & 0xF0) >> 4);
-		mem->MemW(reg->Get_HL(), value);
+		mem->MemW(reg->GetHL(), value);
 	}
 	else
 	{
-		value = (BYTE)reg->Get_Reg(place);
+		value = (BYTE)reg->GetReg(place);
 		value = ((value & 0x0F) << 4) | ((value & 0xF0) >> 4);
-		reg->Set_Reg(place, value);
+		reg->SetReg(place, value);
 	}
 
-	reg->Set_flagZ(value ? 0 : 1);
-	reg->Set_flagN(0);
-	reg->Set_flagH(0);
-	reg->Set_flagC(0);
+	reg->SetFlagZ(value ? 0 : 1);
+	reg->SetFlagN(0);
+	reg->SetFlagH(0);
+	reg->SetFlagC(0);
 
-	reg->Add_PC(2);
+	reg->AddPC(2);
 }
 
 void Instructions::PUSH_nn(e_registers lugar)
 {
-	reg->Add_SP(-1);
-	mem->MemW(reg->Get_SP(), (reg->Get_Reg(lugar) & 0xFF00) >> 8);
-	reg->Add_SP(-1);
-	mem->MemW(reg->Get_SP(), reg->Get_Reg(lugar) & 0x00FF);
+	reg->AddSP(-1);
+	mem->MemW(reg->GetSP(), (reg->GetReg(lugar) & 0xFF00) >> 8);
+	reg->AddSP(-1);
+	mem->MemW(reg->GetSP(), reg->GetReg(lugar) & 0x00FF);
 
-	reg->Add_PC(1);
+	reg->AddPC(1);
 }
 
 void Instructions::POP_nn(e_registers lugar)
 {
-	reg->Set_Reg(lugar, (mem->MemR(reg->Get_SP() + 1) << 8) | mem->MemR(reg->Get_SP()));
-	reg->Add_SP(2);
+	reg->SetReg(lugar, (mem->MemR(reg->GetSP() + 1) << 8) | mem->MemR(reg->GetSP()));
+	reg->AddSP(2);
 
-	reg->Add_PC(1);
+	reg->AddPC(1);
 }
 
 void Instructions::JP_cc_nn(e_registers flag, BYTE value2check)
@@ -961,12 +961,12 @@ void Instructions::JP_cc_nn(e_registers flag, BYTE value2check)
 
 	nn = _16bitsInmValue;
 
-	reg->Add_PC(3);
+	reg->AddPC(3);
 
-	if (reg->Get_Flag(flag) == value2check)
+	if (reg->GetFlag(flag) == value2check)
     {
-		reg->Set_PC(nn);
-        reg->Set_ConditionalTaken(true);
+		reg->SetPC(nn);
+        reg->SetConditionalTaken(true);
     }
 }
 
@@ -976,29 +976,29 @@ void Instructions::RL_n(e_registers place)
 
 	if (place == c_HL)
 	{
-		oldBit7 = BIT7(mem->MemR(reg->Get_HL())) >> 7;
-		value = (mem->MemR(reg->Get_HL()) << 1) | reg->Get_flagC();
-		mem->MemW(reg->Get_HL(), value);
+		oldBit7 = BIT7(mem->MemR(reg->GetHL())) >> 7;
+		value = (mem->MemR(reg->GetHL()) << 1) | reg->GetFlagC();
+		mem->MemW(reg->GetHL(), value);
 	}
 	else
 	{
-		oldBit7 = BIT7(reg->Get_Reg(place)) >> 7;
-		value = (reg->Get_Reg(place) << 1) | reg->Get_flagC();
-		reg->Set_Reg(place, value);
+		oldBit7 = BIT7(reg->GetReg(place)) >> 7;
+		value = (reg->GetReg(place) << 1) | reg->GetFlagC();
+		reg->SetReg(place, value);
 	}
 
-	reg->Set_flagZ(0);
-	reg->Set_flagN(0);
-	reg->Set_flagH(0);
-	reg->Set_flagC(oldBit7);
+	reg->SetFlagZ(0);
+	reg->SetFlagN(0);
+	reg->SetFlagH(0);
+	reg->SetFlagC(oldBit7);
 
-	if (mem->MemR(reg->Get_PC()) == 0xCB)
+	if (mem->MemR(reg->GetPC()) == 0xCB)
     {
-        reg->Set_flagZ(value ? 0 : 1);
-		reg->Add_PC(2);
+        reg->SetFlagZ(value ? 0 : 1);
+		reg->AddPC(2);
     }
 	else
-		reg->Add_PC(1);
+		reg->AddPC(1);
 }
 
 void Instructions::RR_n(e_registers place)
@@ -1007,31 +1007,31 @@ void Instructions::RR_n(e_registers place)
 
 	if (place == c_HL)
 	{
-		value = mem->MemR(reg->Get_HL());
+		value = mem->MemR(reg->GetHL());
 		bit0 = BIT0(value);
-		value = (reg->Get_flagC() << 7) | (value >> 1);
-		mem->MemW(reg->Get_HL(), value);
+		value = (reg->GetFlagC() << 7) | (value >> 1);
+		mem->MemW(reg->GetHL(), value);
 	}
 	else
 	{
-		value = (BYTE)reg->Get_Reg(place);
+		value = (BYTE)reg->GetReg(place);
 		bit0 = BIT0(value);
-		value = (reg->Get_flagC() << 7) | (value >> 1);
-		reg->Set_Reg(place, value);
+		value = (reg->GetFlagC() << 7) | (value >> 1);
+		reg->SetReg(place, value);
 	}
 
-	reg->Set_flagZ(0);
-	reg->Set_flagN(0);
-	reg->Set_flagH(0);
-	reg->Set_flagC(bit0);
+	reg->SetFlagZ(0);
+	reg->SetFlagN(0);
+	reg->SetFlagH(0);
+	reg->SetFlagC(bit0);
 
-	if (mem->MemR(reg->Get_PC()) == 0xCB)
+	if (mem->MemR(reg->GetPC()) == 0xCB)
     {
-        reg->Set_flagZ(value ? 0 : 1);
-		reg->Add_PC(2);
+        reg->SetFlagZ(value ? 0 : 1);
+		reg->AddPC(2);
     }
 	else
-		reg->Add_PC(1);
+		reg->AddPC(1);
 }
 
 void Instructions::RRC_n(e_registers place)
@@ -1040,61 +1040,61 @@ void Instructions::RRC_n(e_registers place)
 
 	if (place == c_HL)
 	{
-		value = mem->MemR(reg->Get_HL());
+		value = mem->MemR(reg->GetHL());
 		bit0 = BIT0(value);
 		value = (bit0 << 7) | (value >> 1);
-		mem->MemW(reg->Get_HL(), value);
+		mem->MemW(reg->GetHL(), value);
 	}
 	else
 	{
-		value = (BYTE)reg->Get_Reg(place);
+		value = (BYTE)reg->GetReg(place);
 		bit0 = BIT0(value);
 		value = (bit0 << 7) | (value >> 1);
-		reg->Set_Reg(place, value);
+		reg->SetReg(place, value);
 	}
 
-	reg->Set_flagZ(0);
-	reg->Set_flagN(0);
-	reg->Set_flagH(0);
-	reg->Set_flagC(bit0);
+	reg->SetFlagZ(0);
+	reg->SetFlagN(0);
+	reg->SetFlagH(0);
+	reg->SetFlagC(bit0);
 
-	if (mem->MemR(reg->Get_PC()) == 0xCB)
+	if (mem->MemR(reg->GetPC()) == 0xCB)
     {
-        reg->Set_flagZ(value ? 0 : 1);
-		reg->Add_PC(2);
+        reg->SetFlagZ(value ? 0 : 1);
+		reg->AddPC(2);
     }
 	else
-		reg->Add_PC(1);
+		reg->AddPC(1);
 }
 
 void Instructions::PUSH_PC()
 {
-	reg->Add_SP(-1);
-	mem->MemW(reg->Get_SP(), (reg->Get_PC() & 0xFF00) >> 8);
-	reg->Add_SP(-1);
-	mem->MemW(reg->Get_SP(), reg->Get_PC() & 0x00FF);
+	reg->AddSP(-1);
+	mem->MemW(reg->GetSP(), (reg->GetPC() & 0xFF00) >> 8);
+	reg->AddSP(-1);
+	mem->MemW(reg->GetSP(), reg->GetPC() & 0x00FF);
 }
 
 void Instructions::RST_n(BYTE desp)
 {
 	//Queremos que se guarde la siquiente instruccion a ejecutar
-	reg->Add_PC(1);
+	reg->AddPC(1);
 
 	PUSH_PC();
 
-	reg->Set_PC(0x0000 + desp);
+	reg->SetPC(0x0000 + desp);
 }
 
 void Instructions::LDHL_SP_n()
 {
 	char n = _8bitsInmValue;
 
-	reg->Set_flagZ(0);
-	reg->Set_flagN(0);
-    reg->Set_flagH(((reg->Get_SP() & 0x0F) + (n & 0x0F)) > 0x0F);
-    reg->Set_flagC(((reg->Get_SP() & 0xFF) + (n & 0xFF)) > 0xFF);
+	reg->SetFlagZ(0);
+	reg->SetFlagN(0);
+    reg->SetFlagH(((reg->GetSP() & 0x0F) + (n & 0x0F)) > 0x0F);
+    reg->SetFlagC(((reg->GetSP() & 0xFF) + (n & 0xFF)) > 0xFF);
 
-	reg->Set_HL(reg->Get_SP() + n);
+	reg->SetHL(reg->GetSP() + n);
 
-	reg->Add_PC(2);
+	reg->AddPC(2);
 }

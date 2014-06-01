@@ -31,23 +31,23 @@ Registers::~Registers()
 
 Registers *Registers::GetPtrRegisters() {return this;}
 
-WORD Registers::Get_Reg(e_registers reg)
+WORD Registers::GetReg(e_registers reg)
 {
 	switch (reg){
-		case A: return this->Get_A(); break;
-		case B: return this->Get_B(); break;
-		case C: return this->Get_C(); break;
-		case D: return this->Get_D(); break;
-		case E: return this->Get_E(); break;
-		case F: return this->Get_F(); break;
-		case H: return this->Get_H(); break;
-		case L: return this->Get_L(); break;
-		case AF: return this->Get_AF(); break;
-		case BC: return this->Get_BC(); break;
-		case DE: return this->Get_DE(); break;
-		case HL: return this->Get_HL(); break;
-		case PC: return this->Get_PC(); break;
-		case SP: return this->Get_SP(); break;
+		case A: return GetA(); break;
+		case B: return GetB(); break;
+		case C: return GetC(); break;
+		case D: return GetD(); break;
+		case E: return GetE(); break;
+		case F: return GetF(); break;
+		case H: return GetH(); break;
+		case L: return GetL(); break;
+		case AF: return GetAF(); break;
+		case BC: return GetBC(); break;
+		case DE: return GetDE(); break;
+		case HL: return GetHL(); break;
+		case PC: return GetPC(); break;
+		case SP: return GetSP(); break;
 		default:
 			stringstream out;
 			out << "Get_Reg - Error, incorrect register: " << reg << endl;
@@ -55,23 +55,23 @@ WORD Registers::Get_Reg(e_registers reg)
 	}
 }
 
-void Registers::Set_Reg(e_registers reg, WORD value)
+void Registers::SetReg(e_registers reg, WORD value)
 {
 	switch (reg){
-		case A: this->Set_A((BYTE)value); break;
-		case B: this->Set_B((BYTE)value); break;
-		case C: this->Set_C((BYTE)value); break;
-		case D: this->Set_D((BYTE)value); break;
-		case E: this->Set_E((BYTE)value); break;
-		case F: this->Set_F((BYTE)value); break;
-		case H: this->Set_H((BYTE)value); break;
-		case L: this->Set_L((BYTE)value); break;
-		case AF: this->Set_AF(value); break;
-		case BC: this->Set_BC(value); break;
-		case DE: this->Set_DE(value); break;
-		case HL: this->Set_HL(value); break;
-		case PC: this->Set_PC(value); break;
-		case SP: this->Set_SP(value); break;
+		case A: SetA((BYTE)value); break;
+		case B: SetB((BYTE)value); break;
+		case C: SetC((BYTE)value); break;
+		case D: SetD((BYTE)value); break;
+		case E: SetE((BYTE)value); break;
+		case F: SetF((BYTE)value); break;
+		case H: SetH((BYTE)value); break;
+		case L: SetL((BYTE)value); break;
+		case AF: SetAF(value); break;
+		case BC: SetBC(value); break;
+		case DE: SetDE(value); break;
+		case HL: SetHL(value); break;
+		case PC: SetPC(value); break;
+		case SP: SetSP(value); break;
 		default:
 			stringstream out;
 			out << "Set_Reg - Error, incorrect register: " << reg << endl;
@@ -79,13 +79,13 @@ void Registers::Set_Reg(e_registers reg, WORD value)
 	}
 }
 
-BYTE Registers::Get_Flag(e_registers flag)
+BYTE Registers::GetFlag(e_registers flag)
 {
 	switch (flag){
-		case f_C: return this->Get_flagC();
-		case f_H: return this->Get_flagH();
-		case f_N: return this->Get_flagN();
-		case f_Z: return this->Get_flagZ();
+		case f_C: return GetFlagC();
+		case f_H: return GetFlagH();
+		case f_N: return GetFlagN();
+		case f_Z: return GetFlagZ();
 		default:
 			stringstream out;
 			out << "Error, incorrect flag (Get): " << flag << endl;
@@ -93,13 +93,13 @@ BYTE Registers::Get_Flag(e_registers flag)
 	}
 }
 
-void Registers::Set_Flag(e_registers flag, BYTE value)
+void Registers::SetFlag(e_registers flag, BYTE value)
 {
 	switch (flag){
-		case f_C: this->Set_flagC(value);
-		case f_H: this->Set_flagH(value);
-		case f_N: this->Set_flagN(value);
-		case f_Z: this->Set_flagZ(value);
+		case f_C: SetFlagC(value);
+		case f_H: SetFlagH(value);
+		case f_N: SetFlagN(value);
+		case f_Z: SetFlagZ(value);
 		default:
 			stringstream out;
 			out << "Error, incorrect flag (Set): " << flag << endl;
@@ -109,68 +109,58 @@ void Registers::Set_Flag(e_registers flag, BYTE value)
 
 void Registers::ResetRegs()
 {
-	this->Set_AF(0x11B0);
-	this->Set_BC(0x0013);
-	this->Set_DE(0x00D8);
-	this->Set_HL(0x014D);
-	this->Set_PC(0x0100);
-	this->Set_SP(0xFFFE);
-	this->Set_Halt(false);
-	this->Set_Stop(false);
-	this->Set_IME(false);
+	SetAF(0x11B0);
+	SetBC(0x0013);
+	SetDE(0x00D8);
+	SetHL(0x014D);
+	SetPC(0x0100);
+	SetSP(0xFFFE);
+	SetHalt(false);
+	SetStop(false);
+	SetIME(false);
 }
 
 string Registers::ToString()
 {
 	stringstream out;
 	
-	out << "PC: " << setfill('0') << setw(4) << uppercase << hex << (int)Get_PC()
-		<< ", AF: " << setfill('0') << setw(4) << uppercase << hex << (int)Get_AF()
-		<< ", BC: " << setfill('0') << setw(4) << uppercase << hex << (int)Get_BC()
-		<< ", DE: " << setfill('0') << setw(4) << uppercase << hex << (int)Get_DE()
-		<< ", HL: " << setfill('0') << setw(4) << uppercase << hex << (int)Get_HL()
-		<< ", SP: " << setfill('0') << setw(4) << uppercase << hex << (int)Get_SP()
-		<< ", H: " << Get_Halt() << ", I: " << Get_IME();
-	/*
-	out << "PC = " << hex << (int)Get_PC()
-	<< " SP = " << hex << (int)Get_SP()
-	<< " AF = " << hex << (int)Get_AF()
-	<< " BC = " << hex << (int)Get_BC()
-	<< " DE = " << hex << (int)Get_DE()
-	<< " HL = " <<	hex << (int)Get_HL()
-	<< " Interrupts = " << Get_IME();
-	 */
+	out << "PC: " << setfill('0') << setw(4) << uppercase << hex << (int)GetPC()
+		<< ", AF: " << setfill('0') << setw(4) << uppercase << hex << (int)GetAF()
+		<< ", BC: " << setfill('0') << setw(4) << uppercase << hex << (int)GetBC()
+		<< ", DE: " << setfill('0') << setw(4) << uppercase << hex << (int)GetDE()
+		<< ", HL: " << setfill('0') << setw(4) << uppercase << hex << (int)GetHL()
+		<< ", SP: " << setfill('0') << setw(4) << uppercase << hex << (int)GetSP()
+		<< ", H: " << GetHalt() << ", I: " << GetIME();
 	
 	return out.str();
 }
 
 void Registers::SaveRegs(ofstream * file)
 {
-	//file->write((char *)this, sizeof(Registers));
-	file->write((char *)&this->af.doble, sizeof(WORD));
-	file->write((char *)&this->bc.doble, sizeof(WORD));
-	file->write((char *)&this->de.doble, sizeof(WORD));
-	file->write((char *)&this->hl.doble, sizeof(WORD));
-	file->write((char *)&this->pc, sizeof(WORD));
-	file->write((char *)&this->sp, sizeof(WORD));
-	file->write((char *)&this->IME, sizeof(bool));
-	file->write((char *)&this->pendingIME, sizeof(bool));
-	file->write((char *)&this->pendingIMEvalue, sizeof(bool));
-	file->write((char *)&this->halt, sizeof(bool));
-	file->write((char *)&this->stop, sizeof(bool));
+	file->write((char *)&m_af.doble, sizeof(WORD));
+	file->write((char *)&m_bc.doble, sizeof(WORD));
+	file->write((char *)&m_de.doble, sizeof(WORD));
+	file->write((char *)&m_hl.doble, sizeof(WORD));
+	file->write((char *)&m_pc, sizeof(WORD));
+	file->write((char *)&m_sp, sizeof(WORD));
+	file->write((char *)&m_IME, sizeof(bool));
+	file->write((char *)&m_pendingIME, sizeof(bool));
+	file->write((char *)&m_pendingIMEvalue, sizeof(bool));
+	file->write((char *)&m_halt, sizeof(bool));
+	file->write((char *)&m_stop, sizeof(bool));
 }
 
 void Registers::LoadRegs(ifstream * file)
 {
-	file->read((char *)&this->af.doble, sizeof(WORD));
-	file->read((char *)&this->bc.doble, sizeof(WORD));
-	file->read((char *)&this->de.doble, sizeof(WORD));
-	file->read((char *)&this->hl.doble, sizeof(WORD));
-	file->read((char *)&this->pc, sizeof(WORD));
-	file->read((char *)&this->sp, sizeof(WORD));
-	file->read((char *)&this->IME, sizeof(bool));
-	file->read((char *)&this->pendingIME, sizeof(bool));
-	file->read((char *)&this->pendingIMEvalue, sizeof(bool));
-	file->read((char *)&this->halt, sizeof(bool));
-	file->read((char *)&this->stop, sizeof(bool));
+	file->read((char *)&m_af.doble, sizeof(WORD));
+	file->read((char *)&m_bc.doble, sizeof(WORD));
+	file->read((char *)&m_de.doble, sizeof(WORD));
+	file->read((char *)&m_hl.doble, sizeof(WORD));
+	file->read((char *)&m_pc, sizeof(WORD));
+	file->read((char *)&m_sp, sizeof(WORD));
+	file->read((char *)&m_IME, sizeof(bool));
+	file->read((char *)&m_pendingIME, sizeof(bool));
+	file->read((char *)&m_pendingIMEvalue, sizeof(bool));
+	file->read((char *)&m_halt, sizeof(bool));
+	file->read((char *)&m_stop, sizeof(bool));
 }

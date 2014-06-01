@@ -40,20 +40,20 @@ class CPU;
 class Memory
 {
 protected:
-	Cartridge *c;
-	Sound * s;
-    CPU * cpu;
-    bool colorMode;
-    bool hdmaActive;
+	Cartridge *m_c;
+	Sound *m_s;
+    CPU *m_cpu;
+    bool m_colorMode;
+    bool m_hdmaActive;
 private:
-    BYTE *wRam;
-    BYTE *vRam;
+    BYTE *m_wRam;
+    BYTE *m_vRam;
 	void OamDmaTransfer(BYTE direction);
     BYTE VRamDmaTransfer(BYTE value);
 public:
 	BYTE memory[SIZE_MEM];
 public:
-	Memory(CPU * cpu, Sound * s);
+	Memory(CPU *cpu, Sound *s);
 	~Memory();
 	Memory *GetPtrMemory();
 	void ResetMem();
@@ -63,19 +63,19 @@ public:
 	inline BYTE MemR(WORD address)
 	{
 		if ((address < 0x8000) || ((address >=0xA000) && (address < 0xC000)))
-            return c->Read(address);
+            return m_c->Read(address);
 		else if ((address >= 0xFF10) && (address <= 0xFF3F))
-            return s->ReadRegister(address);
-        else if (colorMode && (address >= 0x8000) && address < 0xA000)
-            return vRam[address - 0x8000];
-        else if (colorMode && (address >= 0xD000) && address < 0xE000)
-            return wRam[address - 0xD000];
-        else if (colorMode && (address == BGPD))
+            return m_s->ReadRegister(address);
+        else if (m_colorMode && (address >= 0x8000) && address < 0xA000)
+            return m_vRam[address - 0x8000];
+        else if (m_colorMode && (address >= 0xD000) && address < 0xE000)
+            return m_wRam[address - 0xD000];
+        else if (m_colorMode && (address == BGPD))
         {
             BYTE index = memory[BGPI] & 0x3F;
             return memory[BGP_OFFSET + index];
         }
-        else if (colorMode && (address == OBPD))
+        else if (m_colorMode && (address == OBPD))
         {
             BYTE index = memory[OBPI] & 0x3F;
             return memory[OBP_OFFSET + index];
@@ -86,8 +86,8 @@ public:
     BYTE MemRVRam(WORD address, int slot);
     BYTE MemRWRam(WORD address, int slot);
     void UpdateHDMA();
-	void SaveMemory(std::ofstream * file);
-	void LoadMemory(std::ifstream * file);
+	void SaveMemory(std::ofstream *file);
+	void LoadMemory(std::ifstream *file);
 };
 
 #endif

@@ -41,16 +41,16 @@ GBException::~GBException() throw()
 
 ExceptionType GBException::GetType()
 {
-	return type;
+	return m_type;
 }
 
 void GBException::newException(string description, ExceptionType type)
 {
-	this->description = description;
-	this->type = type;
+	m_description = description;
+	m_type = type;
 }
 
 const char * GBException::what() const throw()
 {
-	return description.c_str();
+	return m_description.c_str();
 }
