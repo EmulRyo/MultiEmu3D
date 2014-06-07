@@ -78,14 +78,39 @@ Cartridge::~Cartridge(void)
 		delete [] m_memCartridge;
 }
 
+string Trim(const string &str) {
+    size_t endpos = str.find_last_not_of(" ");
+    if( string::npos != endpos )
+        return str.substr( 0, endpos+1 );
+    else
+        return str;
+}
+
+string Cartridge::GetGoodName(const char *name) {
+    string allow = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz ._-'!";
+    
+    int numChars = 16;
+    if ((m_memCartridge[CART_COLOR] == 0x80) || (m_memCartridge[CART_COLOR] == 0xC0))
+        numChars = 11;
+    string tmp = string(name, numChars);
+    
+    size_t found = 0;
+    while (found != string::npos) {
+        found = tmp.find_first_not_of(allow);
+        if (found != string::npos)
+            tmp[found] = ' ';
+    }
+    
+    return Trim(tmp);
+}
+
 /*
  * Comprueba el buffer de la rom, extrae el nombre, compara el tamaño e inicializa el MBC
  */
 void Cartridge::CheckCartridge(string batteriesPath)
 {
 	MBCPathBatteries(batteriesPath);
-	
-	m_name = string((char *)&m_memCartridge[CART_NAME], 16);
+	m_name = GetGoodName((char *)&m_memCartridge[CART_NAME]);
 	
 	CheckRomSize((int)m_memCartridge[CART_ROM_SIZE], m_romSize);
     m_hasRTC = false;

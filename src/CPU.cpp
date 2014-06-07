@@ -1163,9 +1163,10 @@ void CPU::LoadState(string loadDirectory, int numSlot)
 			throw GBException("This filesave is not compatible and can't be loaded.");
 		}
 		
-		char * buffer = new char[16];
+		char *buffer = new char[16];
 		file->read(buffer, 16);
-		string cartName = string(buffer, 16);
+        
+        string cartName = m_c->GetGoodName(buffer);
 		delete[] buffer;
 		if (cartName != m_c->GetName())
 		{

@@ -39,7 +39,8 @@ private:
 	BYTE (*ptrRead)(WORD);
 	void (*ptrWrite)(WORD, BYTE);
 	void CheckCartridge(std::string batteriesPath="");
-	int CheckRomSize(int numHeaderSize, int fileSize);
+	int  CheckRomSize(int numHeaderSize, int fileSize);
+    
 public:
 	Cartridge(std::string fileName, std::string batteriesPath="");
 	Cartridge(BYTE * cartridgeBuffer, unsigned long size, std::string batteriesPath="");
@@ -47,6 +48,7 @@ public:
 	
 	BYTE *GetData();
 	unsigned int GetSize();
+    std::string GetGoodName(const char *name);
 	std::string GetName();
 	bool IsLoaded();
 
