@@ -104,7 +104,7 @@ RendererOGL::RendererOGL(MainFrame *parent, wxWindowID id,
 
 RendererOGL::~RendererOGL()
 {
-    delete m_glContext;
+    wxDELETE(m_glContext);
 }
 
 void RendererOGL::OnPaint( wxPaintEvent& event)

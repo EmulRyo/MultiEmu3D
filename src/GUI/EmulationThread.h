@@ -29,6 +29,7 @@ class Sound;
 class Pad;
 class CPU;
 class Debugger;
+class Joystick;
 class IGBScreenDrawable;
 class wxMutex;
 
@@ -58,6 +59,7 @@ private:
 	Cartridge *cartridge;
     CPU *cpu;
     Debugger *debugger;
+    Joystick *joystick;
     wxMutex *mutex;
     wxStopWatch swFrame;
     wxKeyCode keysUsed[8];

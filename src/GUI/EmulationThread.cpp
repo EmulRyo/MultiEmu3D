@@ -28,6 +28,7 @@
 #include "../Debugger.h"
 #include "Settings.h"
 #include "EmulationThread.h"
+#include "Joystick.h"
 
 using namespace std;
 
@@ -54,6 +55,8 @@ EmulationThread::EmulationThread()
     ApplySettings();
     
     SetState(NotStartedYet);
+    
+    joystick = new Joystick();
 }
 
 EmulationThread::~EmulationThread() {
@@ -62,8 +65,10 @@ EmulationThread::~EmulationThread() {
 	delete video;
 	delete sound;
     delete pad;
-	if (cartridge)
+    if (cartridge)
 		delete cartridge;
+    
+    delete joystick;
 }
 
 void EmulationThread::SetState(enumEmuStates state)
@@ -253,6 +258,7 @@ void EmulationThread::UpdatePad()
         bool buttonsState[8];
         for (int i=0; i<8; i++)
             buttonsState[i] = wxGetKeyState(keysUsed[i]);
+        joystick->UpdateButtonsState(buttonsState);
         cpu->UpdatePad(buttonsState);
     }
 }

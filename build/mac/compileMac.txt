@@ -32,6 +32,9 @@ export MACMINVER="10.6"
        LDFLAGS="${ARCHVAL}" \
        OBJCFLAGS="${ARCHVAL}" \
        OBJCXXFLAGS="${ARCHVAL}"
+       
+Go to "build-release/lib/wx/include/osx_cocoa-unicode-static-3.0/wx/setup.h" and
+set "wxUSE_JOYSTICK" to 1
 make
 
 
