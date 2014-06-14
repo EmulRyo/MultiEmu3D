@@ -57,6 +57,7 @@ EmulationThread::EmulationThread()
     SetState(NotStartedYet);
     
     joystick = new Joystick();
+    m_finished = false;
 }
 
 EmulationThread::~EmulationThread() {
@@ -117,6 +118,8 @@ wxThread::ExitCode EmulationThread::Entry()
         if (time < desired)
             this->Sleep(desired-time);
     }
+    
+    m_finished = true;
     
     return 0;
 }
@@ -271,4 +274,8 @@ void EmulationThread::PadSetKeys(int* keys)
 {
 	for (int i=0; i<8; i++)
 		keysUsed[i] = (wxKeyCode)keys[i];
+}
+
+bool EmulationThread::Finished() {
+    return m_finished;
 }

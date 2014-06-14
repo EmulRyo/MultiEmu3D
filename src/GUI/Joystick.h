@@ -36,6 +36,10 @@ private:
     std::vector<wxJoystick *> m_allJoysCreated;
     
     void CheckChanges();
+    void UpdateXYAxes(bool buttonsState[8]);
+    void UpdatePOV(bool buttonsState[8]);
+    void UpdateGeneric(bool buttonsState[8]);
+    void UpdateXbox360(bool buttonsState[8]);
 };
 
 #endif

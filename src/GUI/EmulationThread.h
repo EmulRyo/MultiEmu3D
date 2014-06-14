@@ -51,6 +51,7 @@ public:
     
     enumEmuStates GetState();
     void SetState(enumEmuStates state);
+    bool Finished();
     
 private:
 	Video *video;
@@ -63,6 +64,7 @@ private:
     wxMutex *mutex;
     wxStopWatch swFrame;
     wxKeyCode keysUsed[8];
+    bool m_finished;
     
 	enumEmuStates emuState;
     

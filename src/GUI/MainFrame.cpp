@@ -452,10 +452,14 @@ void MainFrame::OnClose(wxCloseEvent&)
 {
     timer->Stop();
     
-	if (settingsDialog)
+	if (settingsDialog) {
 		settingsDialog->Destroy();
+        delete settingsDialog;
+    }
     
     emulation->Delete();
+    while (!emulation->Finished())
+        wxThread::This()->Sleep(1);
     
     Destroy();
 }
