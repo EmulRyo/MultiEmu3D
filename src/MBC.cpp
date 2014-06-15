@@ -42,8 +42,8 @@ RTC *_rtc = NULL;
 static string _romName = "";
 static string _pathBatteries = "";
 
-void MBCSaveRam();
-void MBCLoadRam();
+void MBCSaveBattRam();
+void MBCLoadBattRam();
 
 void InitMBC(string romName, BYTE * memCartridge, int romSize)
 {
@@ -82,7 +82,7 @@ void InitMBC1(string romName, BYTE * memCartridge, int romSize, int ramHeaderSiz
 		_memRamMBC = new BYTE[_ramSize];
 	_ptrRamMBC = _memRamMBC;
 	
-	MBCLoadRam();
+	MBCLoadBattRam();
 }
 
 void InitMBC2(string romName, BYTE * memCartridge, int romSize)
@@ -94,7 +94,7 @@ void InitMBC2(string romName, BYTE * memCartridge, int romSize)
 	_memRamMBC = new BYTE[_ramSize];
 	_ptrRamMBC = _memRamMBC;
 	
-	MBCLoadRam();
+	MBCLoadBattRam();
 }
 
 void InitMBC3(string romName, BYTE * memCartridge, int romSize, int ramHeaderSize, bool hasRTC)
@@ -117,7 +117,7 @@ void InitMBC3(string romName, BYTE * memCartridge, int romSize, int ramHeaderSiz
     if (hasRTC)
         _rtc = new RTC();
 	
-	MBCLoadRam();
+	MBCLoadBattRam();
 }
 
 void InitMBC5(string romName, BYTE * memCartridge, int romSize, int ramHeaderSize)
@@ -127,8 +127,10 @@ void InitMBC5(string romName, BYTE * memCartridge, int romSize, int ramHeaderSiz
 
 void DestroyMBC()
 {
-	if (_memRamMBC)
+	if (_memRamMBC) {
+        MBCExtract();
 		delete [] _memRamMBC;
+    }
 	_memRamMBC = NULL;
 	_ptrRamMBC = NULL;
 }
@@ -156,7 +158,7 @@ void MBC1Write(WORD address, BYTE value)
 			lastRamEnabled = _ramEnabled;
 			_ramEnabled = ((value & 0x0F) == 0x0A);
 			if ((lastRamEnabled) && (!_ramEnabled))
-				MBCSaveRam();
+				MBCSaveBattRam();
 			break;
 		case 0x2:
 		case 0x3:
@@ -226,7 +228,7 @@ void MBC2Write(WORD address, BYTE value)
 				_ramEnabled = !_ramEnabled;
 			
 			if ((lastRamEnabled) && (!_ramEnabled))
-				MBCSaveRam();
+				MBCSaveBattRam();
 			break;
 		case 0x2:
 		case 0x3:
@@ -276,7 +278,7 @@ void MBC3Write(WORD address, BYTE value)
 			lastRamEnabled = _ramEnabled;
 			_ramEnabled = ((value & 0x0F) == 0x0A);
 			if ((_memMode == 0) && (lastRamEnabled) && (!_ramEnabled))
-				MBCSaveRam();
+				MBCSaveBattRam();
 			break;
 		case 0x2:
 		case 0x3:
@@ -352,7 +354,7 @@ void MBC5Write(WORD address, BYTE value)
 			lastRamEnabled = _ramEnabled;
 			_ramEnabled = ((value & 0x0F) == 0x0A);
 			if ((lastRamEnabled) && (!_ramEnabled))
-				MBCSaveRam();
+				MBCSaveBattRam();
 			break;
 		case 0x2:
 			//Cambiar romBank
@@ -394,7 +396,7 @@ BYTE MBC5Read(WORD address)
 	return 0;
 }
 
-void MBCLoadRam()
+void MBCLoadBattRam()
 {
 	stringstream fileName;
 	fileName << _pathBatteries.c_str() << _romName.c_str() << ".BATT";
@@ -421,7 +423,7 @@ void MBCLoadRam()
 	}
 }
 
-void MBCSaveRam()
+void MBCSaveBattRam()
 {
     if (_ramSize == 0)
 		return;
@@ -439,7 +441,13 @@ void MBCSaveRam()
             file.write(rtcData, 48);
         }
 		file.close();
+        printf("%s.BATT saved\n", _romName.c_str());
 	}
+}
+
+void MBCExtract() {
+    if (_ramEnabled)
+        MBCSaveBattRam();
 }
 
 void MBCPathBatteries(string path)

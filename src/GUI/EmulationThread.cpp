@@ -85,6 +85,8 @@ void EmulationThread::SetState(enumEmuStates state)
     
     if (state == Stopped)
     {
+        if (cartridge)
+            cartridge->Extract();
 #ifdef MAKEGBLOG
         cpu->SaveLog();
 #endif
@@ -154,7 +156,6 @@ bool EmulationThread::ChangeFile(wxString fileName)
             wxMessageBox(_("Only gb, gbc and zip files allowed!"), _("Error"));
             return false;
         }
-        
         
         // Si ha llegado aquí es que es un archivo permitido
         if (cartridge)

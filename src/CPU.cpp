@@ -1130,7 +1130,7 @@ void CPU::SaveState(string saveDirectory, int numSlot)
 		
 		SaveRegs(file);
 		SaveMemory(file);
-		m_c->SaveMBC(file);
+		m_c->SaveStateMBC(file);
 		
 		file->close();
 	}
@@ -1177,7 +1177,7 @@ void CPU::LoadState(string loadDirectory, int numSlot)
 		
 		LoadRegs(file);
 		LoadMemory(file);
-		m_c->LoadMBC(file);
+		m_c->LoadStateMBC(file);
 		
 		file->close();
 		

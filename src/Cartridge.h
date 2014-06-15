@@ -43,7 +43,7 @@ private:
     
 public:
 	Cartridge(std::string fileName, std::string batteriesPath="");
-	Cartridge(BYTE * cartridgeBuffer, unsigned long size, std::string batteriesPath="");
+	Cartridge(BYTE *cartridgeBuffer, unsigned long size, std::string batteriesPath="");
 	~Cartridge();
 	
 	BYTE *GetData();
@@ -55,8 +55,10 @@ public:
 	inline BYTE Read(WORD direction) { return ptrRead(direction); };
 	inline void Write(WORD direction, BYTE value) { ptrWrite(direction, value); };
 	
-	void SaveMBC(std::ofstream * file);
-	void LoadMBC(std::ifstream * file);
+	void SaveStateMBC(std::ofstream *file);
+	void LoadStateMBC(std::ifstream *file);
+    
+    void Extract();
 };
 
 #endif

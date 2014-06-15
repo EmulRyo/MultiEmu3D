@@ -45,6 +45,8 @@ void MBC5Write(WORD address, BYTE value);
 
 void MBCPathBatteries(std::string path);
 
+void MBCExtract();
+
 void MBCSaveState(std::ofstream * file);
 void MBCLoadState(std::ifstream * file);
 
