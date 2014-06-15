@@ -88,6 +88,8 @@ void Video::UpdateBG(int y)
 	valueSCX = MEMR(SCX);
 
 	display = BIT7(valueLCDC);
+    if ((!m_colorMode) && !BIT0(MEMR(LCDC)))
+        display = false;
 	
 	//Si el LCD desactivado
 	//pintamos la linea de blanco o negro
@@ -99,6 +101,8 @@ void Video::UpdateBG(int y)
                 m_screen->OnDrawPixel(0, 0, 0, x, y);
             else
                 m_screen->OnDrawPixel(3, x, y);
+            
+            m_priorityBGWnd[x][y] = false;
         }
 		
 		return;
@@ -154,6 +158,8 @@ void Video::UpdateWin(int y)
 	//Si la ventana esta desactivada no hacemos nada
 	if (!BIT5(MEMR(LCDC)))
 		return;
+    if (!m_colorMode && (!BIT0(MEMR(LCDC))))
+        return;
 
 	wndPosX = MEMR(WX) - 7;
 	wndPosY = MEMR(WY);
@@ -253,14 +259,16 @@ inline void Video::GetColor(VideoPixel *p)
         p->r = colorPalette[p->indexColor][0];
         p->g = colorPalette[p->indexColor][1];
         p->b = colorPalette[p->indexColor][2];
+        
+        if (bgPriority && (m_pixel->indexColor > 0))
+            m_priorityBGWnd[m_pixel->x][m_pixel->y] = true;
+        else
+            m_priorityBGWnd[m_pixel->x][m_pixel->y] = false;
     }
-    else
+    else {
         p->color = p->palette[p->indexColor];
-    
-    if (bgPriority && (m_pixel->indexColor > 0))
-        m_priorityBGWnd[m_pixel->x][m_pixel->y] = true;
-    else
-        m_priorityBGWnd[m_pixel->x][m_pixel->y] = false;
+        m_priorityBGWnd[m_pixel->x][m_pixel->y] = (m_pixel->indexColor > 0);
+    }
 }
 
 void Video::OrderOAM(int y)
@@ -420,19 +428,17 @@ void Video::UpdateOAM(int y)
 // 3 - OAM Attribute Bit 7
 // * El valor de BG Map Attr está almacenado en priorityBGWnd
 bool Video::ObjAboveBG(BYTE oamBit7, int x, int y) {
-    bool paintSprite = (BIT0(MEMR(LCDC)) == 0);
-    if (!paintSprite) {
-        if (m_colorMode) {
+    if (m_colorMode) {
+        bool paintSprite = (BIT0(MEMR(LCDC)) == 0);
+        if (!paintSprite) {
             if (m_priorityBGWnd[x][y])
                 paintSprite = false;
             else
                 paintSprite = oamBit7 ? false : true;
         }
-        else
-            paintSprite = true;
-    }
-    
-    return paintSprite;
+        return paintSprite;
+    } else
+        return !oamBit7 || !m_priorityBGWnd[x][y];
 }
 
 void Video::GetDMGPalette(int *palette, int dir)
