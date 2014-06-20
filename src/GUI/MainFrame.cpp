@@ -33,7 +33,7 @@
 #include "DebuggerDialog.h"
 #include "IDControls.h"
 #include "Settings.h"
-#include "../GBException.h"
+#include "../HW/SMSException.h"
 #include "Xpm/open.xpm"
 #include "Xpm/play.xpm"
 #include "Xpm/pause.xpm"
@@ -299,7 +299,7 @@ void MainFrame::OnLoadState(wxCommandEvent &event)
 	{
 		emulation->LoadState(string(savesDir.mb_str()), id);
 	}
-	catch(GBException e)
+	catch(SMSException e)
 	{
 		wxMessageBox(wxString(e.what(), wxConvUTF8), _("Error"), wxICON_WARNING);
 	}
@@ -321,7 +321,7 @@ void MainFrame::OnSaveState(wxCommandEvent &event)
 	{
 		emulation->SaveState(string(savesDir.mb_str()), id);
 	}
-	catch(GBException e)
+	catch(SMSException e)
 	{
 		wxMessageBox(wxString(e.what(), wxConvUTF8), _("Error"), wxICON_WARNING);
 	}

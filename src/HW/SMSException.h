@@ -15,14 +15,14 @@
  along with DMGBoy.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef __GBEXCEPTION_H__
-#define __GBEXCEPTION_H__
+#ifndef __SMSEXCEPTION_H__
+#define __SMSEXCEPTION_H__
 
 #include <string>
 
-enum ExceptionType { GBUnknown, GBError, GBExit };
+enum ExceptionType { SMSUnknown, SMSError, SMSExit };
 
-class GBException: public std::exception
+class SMSException: public std::exception
 {
 private:
 	std::string m_description;
@@ -30,12 +30,12 @@ private:
 	void newException(std::string desc, ExceptionType type);
 
 public:
-	GBException();
-	GBException(std::string desc);
-	GBException(std::string desc, ExceptionType type);
+	SMSException();
+	SMSException(std::string desc);
+	SMSException(std::string desc, ExceptionType type);
 	const char* what() const throw();
 	ExceptionType GetType();
-	~GBException() throw();
+	~SMSException() throw();
 };
 
 #endif

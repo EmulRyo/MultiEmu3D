@@ -17,7 +17,7 @@
 
 #include <iostream>
 #include "Memory.h"
-#include "IGBScreenDrawable.h"
+#include "ISMSScreenDrawable.h"
 #include "Video.h"
 
 #define ABS(x) ((x) < 0 ? -(x) : (x))

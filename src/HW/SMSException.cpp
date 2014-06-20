@@ -15,42 +15,42 @@
  along with DMGBoy.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "GBException.h"
+#include "SMSException.h"
 
 using namespace std;
 
-GBException::GBException(): exception()
+SMSException::SMSException(): exception()
 {
-	newException("", GBUnknown);
+	newException("", SMSUnknown);
 }
 
-GBException::GBException(string description): exception()
+SMSException::SMSException(string description): exception()
 {
-	newException(description, GBUnknown);
+	newException(description, SMSUnknown);
 }
 
-GBException::GBException(string description, ExceptionType type): exception()
+SMSException::SMSException(string description, ExceptionType type): exception()
 {
 	newException(description, type);
 }
 
-GBException::~GBException() throw()
+SMSException::~SMSException() throw()
 {
 
 }
 
-ExceptionType GBException::GetType()
+ExceptionType SMSException::GetType()
 {
 	return m_type;
 }
 
-void GBException::newException(string description, ExceptionType type)
+void SMSException::newException(string description, ExceptionType type)
 {
 	m_description = description;
 	m_type = type;
 }
 
-const char * GBException::what() const throw()
+const char * SMSException::what() const throw()
 {
 	return m_description.c_str();
 }

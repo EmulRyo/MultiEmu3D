@@ -20,14 +20,14 @@
 
 //#define MAKEGBLOG
 
-#define APP_NAME		"DMGBoy"
-#define APP_VERSION		"2.0"
+#define APP_NAME		"MarkSystem"
+#define APP_VERSION		"0.1"
 #define APP_MAINT		"Pablo Gascó"
 #define APP_LICENCE		"GPL v3"
 #define APP_COPYRIGTH	"(C) 2014 Pablo Gasco"
-#define APP_WEBSITE		"http://code.google.com/p/dmgboy/"
+#define APP_WEBSITE		"http://code.google.com/p/marksystem/"
 
-#define SAVE_STATE_VERSION	0x03
+#define SAVE_STATE_VERSION	0x01
 
 typedef unsigned char BYTE;
 typedef unsigned short WORD;

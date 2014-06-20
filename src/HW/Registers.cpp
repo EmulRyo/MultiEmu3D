@@ -19,7 +19,7 @@
 #include <fstream>
 #include <iomanip>
 #include "Registers.h"
-#include "GBException.h"
+#include "SMSException.h"
 
 using namespace std;
 
@@ -51,7 +51,7 @@ WORD Registers::GetReg(e_registers reg)
 		default:
 			stringstream out;
 			out << "Get_Reg - Error, incorrect register: " << reg << endl;
-			throw GBException(out.str().data());
+			throw SMSException(out.str().data());
 	}
 }
 
@@ -75,7 +75,7 @@ void Registers::SetReg(e_registers reg, WORD value)
 		default:
 			stringstream out;
 			out << "Set_Reg - Error, incorrect register: " << reg << endl;
-			throw GBException(out.str().data());
+			throw SMSException(out.str().data());
 	}
 }
 
@@ -89,7 +89,7 @@ BYTE Registers::GetFlag(e_registers flag)
 		default:
 			stringstream out;
 			out << "Error, incorrect flag (Get): " << flag << endl;
-			throw GBException(out.str().data());
+			throw SMSException(out.str().data());
 	}
 }
 
@@ -103,7 +103,7 @@ void Registers::SetFlag(e_registers flag, BYTE value)
 		default:
 			stringstream out;
 			out << "Error, incorrect flag (Set): " << flag << endl;
-			throw GBException(out.str().data());
+			throw SMSException(out.str().data());
 	}
 }
 

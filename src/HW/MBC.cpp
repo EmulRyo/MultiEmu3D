@@ -18,7 +18,6 @@
 #include <fstream>
 #include <iostream>
 #include <sstream>
-#include "GBException.h"
 #include "RTC.h"
 #include "MBC.h"
 using namespace std;
