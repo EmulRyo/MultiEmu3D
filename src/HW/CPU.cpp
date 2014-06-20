@@ -62,23 +62,7 @@ CPU::~CPU() {}
 void CPU::ResetGlobalVariables()
 {
     m_numInstructions = 0;
-    m_cyclesLCD = 0;
-	m_bitSerial = -1;
-	m_cyclesTimer = 0;
-	m_cyclesDIV = 0;
-	m_cyclesSerial = 0;
-	m_VBlankIntPending = false;
-    m_newInterrupt = false;
-    m_colorMode = false;
-    if (m_c && ((MemR(CART_COLOR) == 0x80) || (MemR(CART_COLOR) == 0xC0)))
-        m_colorMode = true;
-    m_v->SetColorMode(m_colorMode);
     
-    m_lcdMode0 = LCD_MODE_0;
-    m_lcdMode1 = LCD_MODE_1;
-    m_lcdMode2 = LCD_MODE_2;
-    m_lcdMode3 = LCD_MODE_3;
-    m_cyclesFrame = FRAME_CYCLES;
 }
 
 void CPU::Reset()
@@ -151,7 +135,7 @@ int CPU::Execute(int cyclesToExecute)
 				case (0x0E): inst.LD_nn_n(C); break;
 				case (0x0F): inst.RRC_n(A); break;
 
-				case (0x10): inst.STOP(); ChangeSpeed(); break;
+				case (0x10): inst.STOP(); break;
 				case (0x11): inst.LD_n_nn(DE); break;
 				case (0x12): inst.LD_n_A(c_DE); break;
 				case (0x13): inst.INC_nn(DE); break;
@@ -417,17 +401,11 @@ int CPU::Execute(int cyclesToExecute)
         else
             m_lastCycles += GetInstructionCycles(OpCode)*4;
         
-        if (m_newInterrupt)
-        {
-            m_lastCycles += 20;
-            m_newInterrupt = false;
-        }
         
         int tmpCycles = m_lastCycles;
         
         UpdateStateLCD(m_lastCycles);
 		UpdateTimer(m_lastCycles);
-		UpdateSerial(m_lastCycles);
         Interrupts(&inst);
         
         cycles += m_lastCycles;
@@ -738,191 +716,9 @@ void CPU::UpdatePad(bool buttonsState[8])
         SetIntFlag(4);
 }
 
-void CPU::OnWriteLCDC(BYTE value)
-{
-    BYTE lastScreenOn = BIT7(memory[LCDC]);
-    BYTE screenOn = BIT7(value);
-    if (lastScreenOn && !screenOn)
-    {
-        memory[LY] = 0;
-        // Poner a 00 el flag (bits 0-1) del modo 2.
-        memory[STAT] = memory[STAT] & ~0x03;
-    }
-    else if (!lastScreenOn && screenOn) {
-        CheckLYC();
-    }
-
-    
-    m_cyclesLCD = 0;
-    memory[LCDC] = value;
-}
-
 void CPU::UpdateStateLCD(int cycles)
 {
-    m_cyclesLCD += cycles;
     
-	BYTE screenOn = BIT7(memory[LCDC]);
-    if (screenOn)
-        UpdateStateLCDOn();
-    else
-    {
-        if (m_cyclesLCD > m_cyclesFrame)
-        {
-            OnEndFrame();
-            m_cyclesLCD -= m_cyclesFrame;
-        }
-    }
-}
-
-void CPU::UpdateStateLCDOn()
-{
-    BYTE mode = BITS01(memory[STAT]);
-    
-    switch (mode)
-    {
-        case (0):	// Si se ha terminado H-Blank
-            if (m_cyclesLCD >= m_lcdMode0)
-            {
-				memory[LY]++;
-				CheckLYC();
-                m_cyclesLCD -= m_lcdMode0;
-				
-                if (memory[LY] == 144) // Si estamos en la linea 144, cambiamos al modo 1 (V-Blank)
-                {
-                    // Poner a 01 el flag (bits 0-1) del modo 1.
-					memory[STAT] = (memory[STAT] & ~0x03) | 0x01;
-					m_VBlankIntPending = true;
-                    OnEndFrame();
-                }
-                else // Sino, cambiamos al modo 2
-                {
-                    // Poner a 10 el flag (bits 0-1) del modo 2.
-					memory[STAT] = (memory[STAT] & ~0x03) | 0x02;
-					// Si interrupcion OAM habilitada, marcar peticion de interrupcion
-					// en 0xFF0F. Bit 1, flag de interrupcion de LCD STAT
-					if (BIT5(memory[STAT]))
-                        SetIntFlag(1);
-                }
-            }
-            break;
-        case (1):	// Durante V-Blank
-			// Se retrasa la interrupcion VBlank 24 ciclos.
-			// (Algunos juegos con VBlank activado en IE, hacen la comprobacion
-			// SCY == 144. Sin este retraso, antes de la interrupcion SCY = 143 y
-			// despues SCY > 144. Con lo que nunca se cumple la condicion)
-			if ((m_VBlankIntPending) && (m_cyclesLCD >= 24))
-			{
-				// Interrupcion V-Blank
-                SetIntFlag(0);
-                // Si interrupcion V-Blank habilitada, marcar peticion de interrupcion
-                // en 0xFF0F. Bit 1, flag de interrupcion de LCD STAT.
-                if (BIT4(memory[STAT]))
-                    SetIntFlag(1);
-				m_VBlankIntPending = false;
-			}
-			
-            if (m_cyclesLCD >= m_lcdMode1)
-            {
-				m_cyclesLCD -= m_lcdMode1;
-				
-                // La linea 153 dura 8 ciclos
-                if (memory[LY] == 152) {
-                    memory[LY]++;
-                    m_cyclesLCD += m_lcdMode1-4; // Comprobar doble velocidad?
-                    CheckLYC();
-                }
-                else if (memory[LY] == 153) {
-                    memory[LY] = 0;
-                    m_cyclesLCD += 4; // Comprobar doble velocidad?
-                    CheckLYC();
-                }
-                else if (memory[LY] == 0) {
-                    memory[LY] = 0;
-                    // Poner a 10 el flag (bits 0-1) del modo 2.
-					memory[STAT] = (memory[STAT] & ~0x03) | 0x02;
-					// Si interrupcion OAM habilitada, marcar peticion de interrupcion
-					// en 0xFF0F. Bit 1, flag de interrupcion de LCD STAT
-					if (BIT5(memory[STAT]))
-                        SetIntFlag(1);
-                }
-                else {
-                    memory[LY]++;
-                    CheckLYC();
-                }
-            }
-            break;
-        case (2):	// Cuando OAM se esta usando
-            if (m_cyclesLCD >= m_lcdMode2)
-            {
-				m_cyclesLCD -= m_lcdMode2;
-				
-				// Poner a 11 el flag (bits 0-1) del modo 3.
-				memory[STAT] = (memory[STAT] & ~0x03) | 0x03;
-            }
-            break;
-        case (3):	// Cuando OAM y memoria de video se estan usando (Se esta pasando informacion al LCD)
-            if (m_cyclesLCD >= m_lcdMode3)
-            {
-				m_cyclesLCD -= m_lcdMode3;
-                
-				// Poner a 00 el flag (bits 0-1) del modo 0.
-				memory[STAT] &= ~0x03;
-				// Si interrupcion H-Blank habilitada, marcar peticion de interrupcion
-				// en 0xFF0F. Bit 1, flag de interrupcion de LCD STAT
-				if (BIT3(memory[STAT]))
-                    SetIntFlag(1);
-                
-                if (m_colorMode)
-                    UpdateHDMA();
-                
-                m_v->UpdateLine(memory[LY]);
-            }
-            break;
-	}
-}
-
-void CPU::CheckLYC()
-{
-	if (memory[LY] == memory[LYC])
-	{
-		memory[STAT] |= 0x04;
-		if (BIT6(memory[STAT]))
-            SetIntFlag(1);
-	}
-	else
-		memory[STAT] &= ~0x04;
-}
-
-inline void CPU::UpdateSerial(int cycles)
-{
-    if (BIT7(memory[SC]) && BIT0(memory[SC]))
-	{
-        m_cyclesSerial += cycles;
-        
-		if (m_bitSerial < 0)
-		{
-			m_bitSerial = 0;
-			m_cyclesSerial = 0;
-			return;
-		}
-		
-		if (m_cyclesSerial >= 512)
-		{
-			if (m_bitSerial > 7)
-			{
-				memory[SC] &= 0x7F;
-				SetIntFlag(3);
-				m_bitSerial = -1;
-				return;
-			}
-			
-			memory[SB] = memory[SB] << 1;
-			memory[SB] |= 0x01;
-			
-			m_cyclesSerial -= 512;
-			m_bitSerial++;
-		}
-	}
 }
 
 void CPU::SetIntFlag(int bit)
@@ -936,127 +732,12 @@ void CPU::SetIntFlag(int bit)
 
 void CPU::Interrupts(Instructions * inst)
 {
-	if (!GetIME())
-		return;
-
-	BYTE interrupts = memory[IE] & memory[IF];
-	if (!interrupts)
-		return;
 	
-	SetIME(false);
-	SetHalt(false);
-	inst->PUSH_PC();
-    m_newInterrupt = true;
-
-	if (BIT0(interrupts))	//V-Blank
-	{
-		SetPC(0x40);
-		memory[IF] &= ~0x01;
-        m_VBlankIntPending = false;
-	}
-	else if (BIT1(interrupts))	//LCD-Stat
-	{
-		SetPC(0x48);
-		memory[IF] &= ~0x02;
-	}
-	else if (BIT2(interrupts))	//Timer
-	{
-		SetPC(0x50);
-		memory[IF] &= ~0x04;
-	}
-	else if(BIT3(interrupts))	//Serial
-	{
-		SetPC(0x58);
-		memory[IF] &= ~0x08;
-	}
-	else if (BIT4(interrupts))	//Joypad
-	{
-		SetPC(0x60);
-		memory[IF] &= ~0x10;
-	}
 }
 
 void CPU::UpdateTimer(int cycles)
 {
-	// Estos serian los valores en Hz que puede tomar TAC:
-	// 4096, 262144, 65536, 16384
-	// En overflowTimer se encuentran estos valores en ciclos
-	// maquina
-	WORD overflowTimer[] = {1024, 16, 64, 256};
-    
-	if (BIT2(memory[TAC])) //Si esta habilitado el timer
-	{
-        m_cyclesTimer += cycles;
-        
-        WORD cyclesOverflow = overflowTimer[BITS01(memory[TAC])];
-		while (m_cyclesTimer >= cyclesOverflow)
-		{
-			if (memory[TIMA] == 0xFF)
-			{
-				memory[TIMA] = memory[TMA];
-                SetIntFlag(2);
-			}
-            else
-                memory[TIMA]++;
-
-			m_cyclesTimer -= cyclesOverflow;
-		}
-	}
-    
-    m_cyclesDIV += cycles;
-    
-	while (m_cyclesDIV >= 256)
-	{
-		memory[DIV]++;
-		m_cyclesDIV -= 256;
-	}
-}
-
-BYTE CPU::TACChanged(BYTE newValue)
-{
-    newValue &= 0x07;
-    if (((newValue & 0x03) != (memory[TAC] & 0x03)) ||
-        ((newValue & 0x04) == 0))
-    {
-        m_cyclesTimer = 0;
-        memory[TIMA] = memory[TMA];
-    }
-    return newValue;
-}
-
-BYTE CPU::DIVChanged(BYTE newValue)
-{
-    m_cyclesDIV = 0;
-    
-    return 0;
-}
-
-BYTE CPU::P1Changed(BYTE newValue)
-{
-    BYTE oldP1 = memory[P1];
-    newValue = (newValue & 0xF0) | (oldP1 & ~0xF0);
-    newValue = m_p->Update(newValue);
-    if ((newValue != oldP1) && ((newValue & 0x0F) != 0x0F))
-    {
-        //Debe producir una interrupcion
-        memory[IF] |=  0x10;
-    }
-    return newValue;
-}
-
-void CPU::StatChanged(BYTE newValue) {
-    memory[STAT] = (newValue & ~0x07) | (memory[STAT] & 0x07);
-    
-    if (BIT5(memory[STAT]) && ((memory[STAT] & 0x11) == 2))
-        SetIntFlag(1);
-    
-    if (BIT4(memory[STAT]) && ((memory[STAT] & 0x11) == 1))
-        SetIntFlag(1);
-    
-    if (BIT3(memory[STAT]) && ((memory[STAT] & 0x11) == 0))
-        SetIntFlag(1);
-    
-    CheckLYC();
+	
 }
 
 void CPU::OnEndFrame()
@@ -1064,40 +745,6 @@ void CPU::OnEndFrame()
 	m_v->RefreshScreen();
 	if (m_s)
 		m_s->EndFrame();
-}
-
-void CPU::ChangeSpeed()
-{
-    // Si se ha pedido un cambio de velocidad
-    if (m_colorMode && (memory[KEY1] & 0x01))
-    {
-        // Se cambia a la velocidad contraria a la que estamos
-        if (memory[KEY1] & 0x80) {
-            // Velocidad normal
-            memory[KEY1] = 0;
-        
-            m_lcdMode0 = LCD_MODE_0;
-            m_lcdMode1 = LCD_MODE_1;
-            m_lcdMode2 = LCD_MODE_2;
-            m_lcdMode3 = LCD_MODE_3;
-            m_cyclesFrame = FRAME_CYCLES;
-        }
-        else {
-            // Velocidad doble
-            memory[KEY1] = 0x80;
-        
-            m_lcdMode0 = LCD_MODE_0 * 2;
-            m_lcdMode1 = LCD_MODE_1 * 2;
-            m_lcdMode2 = LCD_MODE_2 * 2;
-            m_lcdMode3 = LCD_MODE_3 * 2;
-            m_cyclesFrame = FRAME_CYCLES * 2;
-        }
-    }
-}
-
-void CPU::AddCycles(int cycles)
-{
-    m_lastCycles += cycles;
 }
 
 #ifdef MAKEGBLOG

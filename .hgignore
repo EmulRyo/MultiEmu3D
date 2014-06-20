@@ -2,10 +2,10 @@ syntax: glob
 
 .DS_Store
 Config.xcconfig
-build/mac/Xcode/DMGBoy.xcodeproj/xcuserdata/*
-build/mac/Xcode/DMGBoy.xcodeproj/project.xcworkspace/xcuserdata/*
-build/mac/Xcode/DMGBoy.xcodeproj/pablo.pbxuser
-build/mac/Xcode/DMGBoy.xcodeproj/pablo.perspectivev3
+build/mac/Xcode/MarkSystem.xcodeproj/xcuserdata/*
+build/mac/Xcode/MarkSystem.xcodeproj/project.xcworkspace/xcuserdata/*
+build/mac/Xcode/MarkSystem.xcodeproj/pablo.pbxuser
+build/mac/Xcode/MarkSystem.xcodeproj/pablo.perspectivev3
 *Xcode/build/*
 
 */debug/*
@@ -18,12 +18,12 @@ build/mac/Xcode/DMGBoy.xcodeproj/pablo.perspectivev3
 *.depend
 build/win32/vs2010/VS2010_vcredist_x86.exe
 
-build/linux/CodeBlocks/DMGBoy
-build/linux/CodeBlocks/DMGBoy.layout
+build/linux/CodeBlocks/MarkSystem
+build/linux/CodeBlocks/MarkSystem.layout
 build/linux/CodeBlocks/gb.3di
 build/linux/CodeBlocks/gb.jpg
 
 *.backup
 */log.txt
-build/installers/DMGBoy*
+build/installers/MarkSystem*
 build/installers/binaries/*

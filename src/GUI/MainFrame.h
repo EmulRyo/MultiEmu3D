@@ -23,7 +23,7 @@
 #include <wx/frame.h>
 #include <wx/timer.h>
 #include <wx/sizer.h>
-#include "../Def.h"
+#include "../HW/Def.h"
 
 class RendererBase;
 class SettingsDialog;

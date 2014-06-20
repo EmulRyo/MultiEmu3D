@@ -19,14 +19,14 @@
 #define __BASERENDERER_H__
 
 #include <wx/dnd.h>
-#include "../Def.h"
-#include "../IGBScreenDrawable.h"
+#include "../HW/Def.h"
+#include "../HW/ISMSScreenDrawable.h"
 
 /*******************************************************************************
  * RendererBase Class
  *******************************************************************************/
 
-class RendererBase: public IGBScreenDrawable {
+class RendererBase: public ISMSScreenDrawable {
     
 public:
 	RendererBase();
@@ -40,17 +40,15 @@ public:
 	void OnClear();
 	void OnRefreshGBScreen();
     void OnRefreshRealScreen();
-	void OnPreDraw();
-	void OnPostDraw();
 	void OnDrawPixel(int idColor, int x, int y);
     void OnDrawPixel(BYTE r, BYTE g, BYTE b, int x, int y);
     virtual void OnChangeView() = 0;
     
 protected:
-	BYTE * imgBuf1;
-    BYTE * imgBuf2;
-    BYTE * frontBuffer;
-    BYTE * backBuffer;
+	BYTE *imgBuf1;
+    BYTE *imgBuf2;
+    BYTE *frontBuffer;
+    BYTE *backBuffer;
     
 private:
 	wxWindow * winRenderer;

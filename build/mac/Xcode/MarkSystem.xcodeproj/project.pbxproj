@@ -39,7 +39,6 @@
 		6EABFB9E193A7B09005A0457 /* dmgboy.mo in Resources */ = {isa = PBXBuildFile; fileRef = 6EABFB9D193A7B09005A0457 /* dmgboy.mo */; };
 		6EABFB9F193A7B3E005A0457 /* dmgboy.mo in CopyFiles */ = {isa = PBXBuildFile; fileRef = 6EABFB9D193A7B09005A0457 /* dmgboy.mo */; };
 		6EAFD344172C03EC0089D6D0 /* MarkSystem.icns in Resources */ = {isa = PBXBuildFile; fileRef = 6E20575F120589BF00079331 /* MarkSystem.icns */; };
-		6EC31DD119538BCB00A7BF0B /* MarkSystem.icns in Resources */ = {isa = PBXBuildFile; fileRef = 6EC31DD019538BCB00A7BF0B /* MarkSystem.icns */; };
 		6ED4CF67195381BA0003C70B /* Cartridge.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 6ED4CF45195381BA0003C70B /* Cartridge.cpp */; };
 		6ED4CF68195381BA0003C70B /* CPU.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 6ED4CF47195381BA0003C70B /* CPU.cpp */; };
 		6ED4CF69195381BA0003C70B /* Debugger.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 6ED4CF49195381BA0003C70B /* Debugger.cpp */; };
@@ -175,7 +174,6 @@
 		6EAFD345172C0C070089D6D0 /* Config.xcconfig */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xcconfig; path = Config.xcconfig; sourceTree = "<group>"; };
 		6EBF280C146746D100F2D9F8 /* EmulationThread.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = EmulationThread.cpp; sourceTree = "<group>"; };
 		6EBF280D146746D100F2D9F8 /* EmulationThread.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EmulationThread.h; sourceTree = "<group>"; };
-		6EC31DD019538BCB00A7BF0B /* MarkSystem.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; path = MarkSystem.icns; sourceTree = "<group>"; };
 		6ED4CF45195381BA0003C70B /* Cartridge.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Cartridge.cpp; path = ../../../src/HW/Cartridge.cpp; sourceTree = "<group>"; };
 		6ED4CF46195381BA0003C70B /* Cartridge.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Cartridge.h; path = ../../../src/HW/Cartridge.h; sourceTree = "<group>"; };
 		6ED4CF47195381BA0003C70B /* CPU.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = CPU.cpp; path = ../../../src/HW/CPU.cpp; sourceTree = "<group>"; };
@@ -257,7 +255,6 @@
 		29B97314FDCFA39411CA2CEA /* DMGBoy */ = {
 			isa = PBXGroup;
 			children = (
-				6EC31DD019538BCB00A7BF0B /* MarkSystem.icns */,
 				6EFA5275126354F2000E541D /* ToDo.txt */,
 				6E2B3EC417C136420066D9C6 /* 3D */,
 				6E23C6BD11D7CA0C0043AF47 /* GUI */,
@@ -528,7 +525,6 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				6EC31DD119538BCB00A7BF0B /* MarkSystem.icns in Resources */,
 				6EAFD344172C03EC0089D6D0 /* MarkSystem.icns in Resources */,
 				6EABFB9E193A7B09005A0457 /* dmgboy.mo in Resources */,
 			);

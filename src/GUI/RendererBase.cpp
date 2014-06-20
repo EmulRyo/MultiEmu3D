@@ -114,16 +114,6 @@ void RendererBase::OnRefreshRealScreen() {
     }
 }
 
-void RendererBase::OnPreDraw()
-{
-
-}
-
-void RendererBase::OnPostDraw()
-{
-
-}
-
 void RendererBase::OnDrawPixel(int idColor, int x, int y)
 {
 	BYTE r = palettes[selPalette][idColor][0];

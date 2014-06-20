@@ -20,12 +20,12 @@
 #include <wx/zipstrm.h>
 #include <wx/stdpaths.h>
 #include <wx/msgdlg.h>
-#include "../Pad.h"
-#include "../Sound.h"
-#include "../Video.h"
-#include "../CPU.h"
-#include "../Pad.h"
-#include "../Debugger.h"
+#include "../HW/Pad.h"
+#include "../HW/Sound.h"
+#include "../HW/Video.h"
+#include "../HW/CPU.h"
+#include "../HW/Pad.h"
+#include "../HW/Debugger.h"
 #include "Settings.h"
 #include "EmulationThread.h"
 #include "Joystick.h"
@@ -247,7 +247,7 @@ void EmulationThread::ApplySettings()
     sound->SetEnabled(SettingsGetSoundEnabled());
 }
 
-void EmulationThread::SetScreen(IGBScreenDrawable * screen)
+void EmulationThread::SetScreen(ISMSScreenDrawable * screen)
 {
     wxMutexLocker lock(*mutex);
 

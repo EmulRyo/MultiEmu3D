@@ -22,7 +22,7 @@
 #include "Def.h"
 
 class Memory;
-class IGBScreenDrawable;
+class ISMSScreenDrawable;
 
 struct VideoPixel
 {
@@ -39,30 +39,21 @@ class Video
 {
 private:
 	Memory *m_mem;
-    bool m_colorMode;
-	std::multimap<int, int> m_orderedOAM;	//posicion x, dir. memoria
-	bool m_priorityBGWnd[GB_SCREEN_W][GB_SCREEN_H]; // Aqui se almacena la prioridad de pintado de BG y Window
-	IGBScreenDrawable *m_screen;
+	ISMSScreenDrawable *m_screen;
 	VideoPixel *m_pixel;
 public:
-	Video(IGBScreenDrawable * screen);
+	Video(ISMSScreenDrawable * screen);
 	~Video(void);
-    void SetScreen(IGBScreenDrawable * screen);
-    void SetColorMode(bool value);
+    void SetScreen(ISMSScreenDrawable * screen);
 	void SetMem(Memory *mem);
 	void RefreshScreen();
 	void ClearScreen();
 	void UpdateLine(BYTE line);
-    void GetTile(BYTE *buffer, int widthSize, int tile, int bank);
     void GetColorPalette(BYTE palette[4][3], int address);
 private:
 	void UpdateBG(int line);
-	void UpdateWin(int line);
-	void OrderOAM(int line);
 	void UpdateOAM(int line);
 	inline void GetColor(VideoPixel * p);
-	void GetDMGPalette(int * palette, int dir);
-    bool ObjAboveBG(BYTE oamBit7, int x, int y);
 };
 
 #endif

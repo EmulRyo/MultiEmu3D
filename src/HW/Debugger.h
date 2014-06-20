@@ -45,12 +45,8 @@ public:
     
     std::string GetMem(WORD address);
     std::string GetMem(WORD start, WORD end);
-    std::string GetMemVRam(WORD start, WORD end, int slot);
-    std::string GetMemPalette(int sprite, int number);
     void GetBG(BYTE *buffer);
     void GetWindow(BYTE *buffer);
-    void GetTiles(BYTE *buffer, int width, int height);
-    void GetColorPalette(int sprite, int number, BYTE palette[4][3]);
     std::string Disassemble(WORD start, int numInstructions);
     std::string Disassemble(int numInstructions);
     void DisassembleNext(WORD &currentAddress, WORD &nextAddress, std::string &name, std::string &data);

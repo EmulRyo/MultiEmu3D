@@ -30,7 +30,7 @@ class Pad;
 class CPU;
 class Debugger;
 class Joystick;
-class IGBScreenDrawable;
+class ISMSScreenDrawable;
 class wxMutex;
 
 class EmulationThread : public wxThread
@@ -45,7 +45,7 @@ public:
     void LoadState(std::string fileName, int id);
     void SaveState(std::string fileName, int id);
     void ApplySettings();
-    void SetScreen(IGBScreenDrawable * screen);
+    void SetScreen(ISMSScreenDrawable *screen);
     void UpdatePad();
     Debugger *GetDebugger();
     

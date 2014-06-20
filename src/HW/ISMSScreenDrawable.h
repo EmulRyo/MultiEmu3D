@@ -15,16 +15,13 @@
  along with DMGBoy.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef __IGBSCREENDRAWABLE_H__
-#define __IGBSCREENDRAWABLE_H__
+#ifndef __ISMSSCREENDRAWABLE_H__
+#define __ISMSSCREENDRAWABLE_H__
 
-class IGBScreenDrawable
+class ISMSScreenDrawable
 {
 public:
-	virtual void OnPreDraw() = 0;
-	virtual void OnPostDraw() = 0;
-	virtual void OnDrawPixel(int idColor, int x, int y) = 0;
-    virtual void OnDrawPixel(BYTE r, BYTE g, BYTE b, int x, int y) = 0;
+	virtual void OnDrawPixel(BYTE r, BYTE g, BYTE b, int x, int y) = 0;
 	virtual void OnRefreshGBScreen() = 0;
 	virtual void OnClear() = 0;
 };

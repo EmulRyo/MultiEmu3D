@@ -193,75 +193,6 @@ void Debugger::DisassembleOne(WORD address, WORD &nextAddress, std::string &name
     nextAddress = address + length;
 }
 
-std::string Debugger::GetMemVRam(WORD start, WORD end, int slot)
-{
-    start &= 0xFFF0;
-    end = (end & 0xFFF0)+0x000F;
-    
-    stringstream ss;
-    unsigned int row = start;
-    while (row <= end)
-    {
-        ss << "0x";
-        AppendHex(ss, row, 4, '0');
-        ss << ": ";
-        for (int i=0x0; i<0xF; i++)
-        {
-            BYTE value = m_cpu->MemRVRam(row+i, slot);
-            AppendHex(ss, value, 2, '0');
-            ss << ' ';
-        }
-        
-        BYTE value = m_cpu->MemRVRam(row+0xF, slot);
-        AppendHex(ss, value, 2, '0');
-        if (row < end)
-            ss << '\n';
-        row += 0x10;
-    }
-    
-    return ss.str();
-}
-
-std::string Debugger::GetMemPalette(int sprite, int number)
-{
-    int address = BGP_OFFSET;
-    stringstream ss;
-    
-    number &= 0x07;
-    if (sprite)
-        address = OBP_OFFSET;
-    
-    address += number*8;
-    
-    ss << "Palette " << number << ": ";
-    
-    for (int i=0; i<4; i++)
-    {
-        WORD *value = (WORD *)((void *)&m_cpu->memory[address]);
-        AppendHex(ss, *value, 4, '0');
-        if (i < 3)
-            ss << ", ";
-        else
-            ss << "\n";
-        address += 2;
-    }
-    
-    return ss.str();
-}
-
-void Debugger::GetColorPalette(int sprite, int number, BYTE palette[4][3])
-{
-    int address = BGP_OFFSET;
-    
-    number &= 0x07;
-    if (sprite)
-        address = OBP_OFFSET;
-    
-    address += number*8;
-    
-    m_video->GetColorPalette(palette, address);
-}
-
 void Debugger::GetBG(BYTE *buffer)
 {
     
@@ -270,37 +201,6 @@ void Debugger::GetBG(BYTE *buffer)
 void Debugger::GetWindow(BYTE *buffer)
 {
     
-}
-
-void Debugger::GetTiles(BYTE *buffer, int width, int height)
-{
-    int x, y, tile, slot;
-    BYTE *tmpBuffer;
-    int widthSize = width*3;
-    int tilesInX = width / 8;
-    int tilesInY = height / 8;
-    
-    y = 0;
-    tile = 0;
-    slot = 0;
-    while ((y < tilesInY))
-    {
-        x = 0;
-        tmpBuffer = buffer + (widthSize*y*8);
-        while ((x < tilesInX) && (tile < 384))
-        {
-            m_video->GetTile(tmpBuffer, widthSize, tile, slot);
-            tmpBuffer += 8*3;
-            tile++;
-            if ((slot == 0) && (tile >= 384))
-            {
-                tile = 0;
-                slot = 1;
-            }
-            x++;
-        }
-        y++;
-    }
 }
 
 void Debugger::Reset() {
