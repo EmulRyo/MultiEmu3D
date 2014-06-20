@@ -40,7 +40,7 @@ Cartridge::Cartridge(string fileName, string batteriesPath)
 	{
 		size = file.tellg();
 		m_romSize = (unsigned long)size;
-		m_memCartridge = new BYTE [size];
+		m_memCartridge = new u8 [size];
 		file.seekg (0, ios::beg);
 		file.read((char *)m_memCartridge, (streamsize)size);
 		file.close();
@@ -61,7 +61,7 @@ Cartridge::Cartridge(string fileName, string batteriesPath)
 /*
  * Constructor que recibe un buffer y su tamaño y lo procesa
  */
-Cartridge::Cartridge(BYTE *cartridgeBuffer, unsigned long size, string batteriesPath)
+Cartridge::Cartridge(u8 *cartridgeBuffer, unsigned long size, string batteriesPath)
 {
 	m_romSize = size;
 	m_memCartridge = cartridgeBuffer;
@@ -135,7 +135,7 @@ int Cartridge::CheckRomSize(int numHeaderSize, int fileSize)
 		return 1;
 }
 
-BYTE *Cartridge::GetData()
+u8 *Cartridge::GetData()
 {
 	return m_memCartridge;
 }

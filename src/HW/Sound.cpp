@@ -29,7 +29,7 @@
 
 using namespace std;
 
-BYTE soundMask[] = {
+u8 soundMask[] = {
     0x80, 0x3F, 0x00, 0xFF, 0xBF, // NR10-NR14 (0xFF10-0xFF14)
     0xFF, 0x3F, 0x00, 0xFF, 0xBF, // NR20-NR24 (0xFF15-0xFF19)
     0x7F, 0xFF, 0x9F, 0xFF, 0xBF, // NR30-NR34 (0xFF1A-0xFF1E)
@@ -170,31 +170,15 @@ void Sound::EndFrame()
 
 	delete[] buf;
 }
-void Sound::WriteRegister(WORD address, BYTE value)
+void Sound::WriteRegister(u16 address, u8 value)
 {
     if (m_enabled)
     {
-        if ((address == NR52) && ((value & 0x80) == 0))
-        {
-            for (int i=0xFF10; i<=0xFF26; i++)
-                apu->write_register(i, 0);
-        }
-        else
-        {
-            // Si no esta habilitado el sonido se ignora la escribitura a los registros
-            if ((address >= 0xFF30) || (address == NR52) || (apu->read_register(NR52)&0x80))
-                apu->write_register(address, value);
-        }
+        
     }
 }
 
-BYTE Sound::ReadRegister(WORD address)
+u8 Sound::ReadRegister(u16 address)
 {
-    BYTE value = 0;
-    if(m_enabled)
-        value = apu->read_register(address);
-    
-    // Los registros de sonido no devuelven directamente su valor.
-    // Hay bits que no son legibles. soundMask lo resuelve.
-    return value|soundMask[address-NR10];
+    return 0;
 }

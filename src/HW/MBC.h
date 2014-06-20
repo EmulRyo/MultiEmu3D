@@ -21,27 +21,27 @@
 #include <string>
 #include "Def.h"
 
-void InitMBCNone(std::string nameROM, BYTE * memCartridge, int romSize);
-void InitMBC1(std::string, BYTE * memCartridge, int romSize, int ramHeaderSize);
-void InitMBC2(std::string, BYTE * memCartridge, int romSize);
-void InitMBC3(std::string, BYTE * memCartridge, int romSize, int ramHeaderSize, bool hasRTC);
-void InitMBC5(std::string, BYTE * memCartridge, int romSize, int ramHeaderSize);
+void InitMBCNone(std::string nameROM, u8 *memCartridge, int romSize);
+void InitMBC1(std::string, u8 *memCartridge, int romSize, int ramHeaderSize);
+void InitMBC2(std::string, u8 *memCartridge, int romSize);
+void InitMBC3(std::string, u8 *memCartridge, int romSize, int ramHeaderSize, bool hasRTC);
+void InitMBC5(std::string, u8 *memCartridge, int romSize, int ramHeaderSize);
 void DestroyMBC();
 
-BYTE NoneRead(WORD address);
-void NoneWrite(WORD address, BYTE value);
+u8 NoneRead(u16 address);
+void NoneWrite(u16 address, u8 value);
 
-BYTE MBC1Read(WORD address);
-void MBC1Write(WORD address, BYTE value);
+u8 MBC1Read(u16 address);
+void MBC1Write(u16 address, u8 value);
 
-BYTE MBC2Read(WORD address);
-void MBC2Write(WORD address, BYTE value);
+u8 MBC2Read(u16 address);
+void MBC2Write(u16 address, u8 value);
 
-BYTE MBC3Read(WORD address);
-void MBC3Write(WORD address, BYTE value);
+u8 MBC3Read(u16 address);
+void MBC3Write(u16 address, u8 value);
 
-BYTE MBC5Read(WORD address);
-void MBC5Write(WORD address, BYTE value);
+u8 MBC5Read(u16 address);
+void MBC5Write(u16 address, u8 value);
 
 void MBCPathBatteries(std::string path);
 

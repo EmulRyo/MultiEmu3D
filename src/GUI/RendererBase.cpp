@@ -20,7 +20,7 @@
 #include "RendererBase.h"
 #include "../Def.h"
 
-static BYTE palettes[][4][3] =
+static u8 palettes[][4][3] =
 {
 	{
 		{ 16,  57,  16},
@@ -69,8 +69,8 @@ void RendererBase::SetWinRenderer(wxWindow * parent, wxWindow *renderer)
 }
 
 void RendererBase::CreateScreen() {
-	imgBuf1 = new BYTE[GB_SCREEN_W*GB_SCREEN_H*3];
-    imgBuf2 = new BYTE[GB_SCREEN_W*GB_SCREEN_H*3];
+	imgBuf1 = new u8[GB_SCREEN_W*GB_SCREEN_H*3];
+    imgBuf2 = new u8[GB_SCREEN_W*GB_SCREEN_H*3];
     backBuffer = imgBuf1;
     frontBuffer = imgBuf2;
 	OnClear();
@@ -95,7 +95,7 @@ void RendererBase::OnClear()
 
 void RendererBase::PageFlip()
 {
-    BYTE * aux = frontBuffer;
+    u8 * aux = frontBuffer;
     frontBuffer = backBuffer;
     backBuffer = aux;
 }
@@ -116,14 +116,14 @@ void RendererBase::OnRefreshRealScreen() {
 
 void RendererBase::OnDrawPixel(int idColor, int x, int y)
 {
-	BYTE r = palettes[selPalette][idColor][0];
-	BYTE g = palettes[selPalette][idColor][1];
-	BYTE b = palettes[selPalette][idColor][2];
+	u8 r = palettes[selPalette][idColor][0];
+	u8 g = palettes[selPalette][idColor][1];
+	u8 b = palettes[selPalette][idColor][2];
 	
 	OnDrawPixel(r, g, b, x, y);
 }
 
-void RendererBase::OnDrawPixel(BYTE r, BYTE g, BYTE b, int x, int y)
+void RendererBase::OnDrawPixel(u8 r, u8 g, u8 b, int x, int y)
 {
     int sizeLine = GB_SCREEN_W * 3;
 	int offsetX = x * 3;

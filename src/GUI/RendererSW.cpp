@@ -18,7 +18,7 @@
 #include <wx/dcbuffer.h>
 #include <wx/image.h>
 #include "IDControls.h"
-#include "../Def.h"
+#include "../HW/Def.h"
 #include "Settings.h"
 #include "RendererSW.h"
 

@@ -133,7 +133,7 @@ bool EmulationThread::ChangeFile(wxString fileName)
     {
         wxMutexLocker lock(*mutex);
         
-        BYTE *buffer = NULL;
+        u8 *buffer = NULL;
         unsigned long size = 0;
         bool isZip = false;
         
@@ -191,7 +191,7 @@ bool EmulationThread::ChangeFile(wxString fileName)
  * Si existe mas de una rom solo carga la primera. Si se ha encontrado, la rom se devuelve en un buffer
  * junto con su tamaño, sino las variables se dejan intactas
  */
-void EmulationThread::LoadZip(const wxString zipPath, BYTE ** buffer, unsigned long * size)
+void EmulationThread::LoadZip(const wxString zipPath, u8 ** buffer, unsigned long * size)
 {
 	wxString fileInZip, fileLower;
 	wxZipEntry* entry;
@@ -205,7 +205,7 @@ void EmulationThread::LoadZip(const wxString zipPath, BYTE ** buffer, unsigned l
 		if (fileLower.EndsWith(wxT(".gb")) || fileLower.EndsWith(wxT(".gbc")))
 		{
 			*size = zip.GetSize();
-			*buffer = new BYTE[*size];
+			*buffer = new u8[*size];
 			zip.Read(*buffer, *size);
 			delete entry;
 			return;

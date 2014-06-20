@@ -35,16 +35,16 @@ protected:
     CPU *m_cpu;
 
 public:
-	BYTE memory[SIZE_MEM];
+	u8 memory[SIZE_MEM];
 public:
 	Memory(CPU *cpu, Sound *s);
 	~Memory();
 	Memory *GetPtrMemory();
 	void ResetMem();
 	void LoadCartridge(Cartridge *c);
-	void MemW(WORD direction, BYTE value);
-	inline void MemWNoCheck(WORD address, BYTE value){ memory[address-0xC000] = value; };
-	inline BYTE MemR(WORD address)
+	void MemW(u16 direction, u8 value);
+	inline void MemWNoCheck(u16 address, u8 value){ memory[address-0xC000] = value; };
+	inline u8 MemR(u16 address)
 	{
         if (address < 0xC000)
             return m_c->Read(address);

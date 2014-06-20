@@ -18,10 +18,12 @@
 #ifndef __ISMSSCREENDRAWABLE_H__
 #define __ISMSSCREENDRAWABLE_H__
 
+#include "Def.h"
+
 class ISMSScreenDrawable
 {
 public:
-	virtual void OnDrawPixel(BYTE r, BYTE g, BYTE b, int x, int y) = 0;
+	virtual void OnDrawPixel(u8 r, u8 g, u8 b, int x, int y) = 0;
 	virtual void OnRefreshGBScreen() = 0;
 	virtual void OnClear() = 0;
 };

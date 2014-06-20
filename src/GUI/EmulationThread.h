@@ -68,7 +68,7 @@ private:
     
 	enumEmuStates emuState;
     
-    void LoadZip(const wxString zipPath, BYTE ** buffer, unsigned long * size);
+    void LoadZip(const wxString zipPath, u8 **buffer, unsigned long * size);
     void PadSetKeys(int* keys);
 };
 

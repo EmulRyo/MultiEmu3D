@@ -28,7 +28,7 @@
 using namespace std;
 
 struct BreakpointNode {
-    WORD value;
+    u16 value;
     BreakpointNode *prev;
     BreakpointNode *next;
 };
@@ -91,15 +91,15 @@ std::string Debugger::GetRegs()
     return regs;
 }
 
-std::string Debugger::GetMem(WORD address) {
+std::string Debugger::GetMem(u16 address) {
     stringstream ss;
     
-    BYTE value = m_cpu->MemR(address);
+    u8 value = m_cpu->MemR(address);
     AppendHex(ss, value, 2, '0');
     return ss.str();
 }
 
-std::string Debugger::GetMem(WORD start, WORD end)
+std::string Debugger::GetMem(u16 start, u16 end)
 {
     start &= 0xFFF0;
     end = (end & 0xFFF0)+0x000F;
@@ -112,12 +112,12 @@ std::string Debugger::GetMem(WORD start, WORD end)
         ss << ": ";
         for (int i=0x0; i<0xF; i++)
         {
-            BYTE value = m_cpu->MemR(row+i);
+            u8 value = m_cpu->MemR(row+i);
             AppendHex(ss, value, 2, '0');
             ss << ' ';
         }
         
-        BYTE value = m_cpu->MemR(row+0xF);
+        u8 value = m_cpu->MemR(row+0xF);
         AppendHex(ss, value, 2, '0');
         if (row < (end & 0xFFF0))
             ss << '\n';
@@ -127,7 +127,7 @@ std::string Debugger::GetMem(WORD start, WORD end)
     return ss.str();
 }
 
-std::string Debugger::Disassemble(WORD start, int numInstructions) {
+std::string Debugger::Disassemble(u16 start, int numInstructions) {
     stringstream ss;
     
     int processed = 0;
@@ -137,7 +137,7 @@ std::string Debugger::Disassemble(WORD start, int numInstructions) {
         ss << "0x";
         AppendHex(ss, address, 4, '0');
         ss << ": ";
-        BYTE opcode = m_cpu->MemR(address);
+        u8 opcode = m_cpu->MemR(address);
         if (opcode != 0xCB) {
             ss << GetInstructionName(opcode);
             address += GetInstructionLength(opcode);
@@ -161,16 +161,16 @@ std::string Debugger::Disassemble(int numInstructions) {
     return Disassemble(m_cpu->GetPC(), numInstructions);
 }
 
-void Debugger::DisassembleNext(WORD &currentAddress, WORD &nextAddress, std::string &name, std::string &data) {
+void Debugger::DisassembleNext(u16 &currentAddress, u16 &nextAddress, std::string &name, std::string &data) {
     currentAddress = m_cpu->GetPC();
     DisassembleOne(currentAddress, nextAddress, name, data);
 }
 
-void Debugger::DisassembleOne(WORD address, WORD &nextAddress, std::string &name, std::string &data) {
+void Debugger::DisassembleOne(u16 address, u16 &nextAddress, std::string &name, std::string &data) {
     stringstream ss1, ss2;
     
     int length = 0;
-    BYTE opcode = m_cpu->MemR(address);
+    u8 opcode = m_cpu->MemR(address);
     if (opcode != 0xCB) {
         ss1 << GetInstructionName(opcode);
         length += GetInstructionLength(opcode);
@@ -182,7 +182,7 @@ void Debugger::DisassembleOne(WORD address, WORD &nextAddress, std::string &name
     }
     
     for (int i=0; i<length; i++) {
-        WORD nextData = m_cpu->MemR(address + i);
+        u16 nextData = m_cpu->MemR(address + i);
         AppendHex(ss2, nextData, 2, '0');
         if (i < length-1)
             ss2 << " ";
@@ -193,12 +193,12 @@ void Debugger::DisassembleOne(WORD address, WORD &nextAddress, std::string &name
     nextAddress = address + length;
 }
 
-void Debugger::GetBG(BYTE *buffer)
+void Debugger::GetBG(u8 *buffer)
 {
     
 }
 
-void Debugger::GetWindow(BYTE *buffer)
+void Debugger::GetWindow(u8 *buffer)
 {
     
 }
@@ -233,7 +233,7 @@ void Debugger::AppendHex(stringstream &ss, int value, int width, char fill)
     ss << setfill(fill) << setw(width) << uppercase << hex << (int)value;
 }
 
-void Debugger::AddBreakpoint(WORD address) {
+void Debugger::AddBreakpoint(u16 address) {
     if (GetBreakpointNode(address))
         return;
     
@@ -248,7 +248,7 @@ void Debugger::AddBreakpoint(WORD address) {
     m_lastBreakpoint = node;
 }
 
-void Debugger::DelBreakpoint(WORD address) {
+void Debugger::DelBreakpoint(u16 address) {
     BreakpointNode *node = GetBreakpointNode(address);
     if (node) {
         if (node->prev)
@@ -276,9 +276,9 @@ int Debugger::GetNumBreakpoints() {
     return count;
 }
 
-WORD Debugger::GetBreakpoint(int i) {
+u16 Debugger::GetBreakpoint(int i) {
     int count = 0;
-    WORD value = 0;
+    u16 value = 0;
     BreakpointNode *node = m_firstBreakpoint;
     
     while (node) {
@@ -291,11 +291,11 @@ WORD Debugger::GetBreakpoint(int i) {
     return value;
 }
 
-bool Debugger::HasBreakpoint(WORD address) {
+bool Debugger::HasBreakpoint(u16 address) {
     return GetBreakpointNode(address) ? true : false;
 }
 
-BreakpointNode *Debugger::GetBreakpointNode(WORD address) {
+BreakpointNode *Debugger::GetBreakpointNode(u16 address) {
     BreakpointNode *node = m_firstBreakpoint;
     while (node) {
         if (node->value == address)

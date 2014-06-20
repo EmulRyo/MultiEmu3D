@@ -19,7 +19,6 @@
 #define __BASERENDERER_H__
 
 #include <wx/dnd.h>
-#include "../HW/Def.h"
 #include "../HW/ISMSScreenDrawable.h"
 
 /*******************************************************************************
@@ -41,14 +40,14 @@ public:
 	void OnRefreshGBScreen();
     void OnRefreshRealScreen();
 	void OnDrawPixel(int idColor, int x, int y);
-    void OnDrawPixel(BYTE r, BYTE g, BYTE b, int x, int y);
+    void OnDrawPixel(u8 r, u8 g, u8 b, int x, int y);
     virtual void OnChangeView() = 0;
     
 protected:
-	BYTE *imgBuf1;
-    BYTE *imgBuf2;
-    BYTE *frontBuffer;
-    BYTE *backBuffer;
+	u8 *imgBuf1;
+    u8 *imgBuf2;
+    u8 *frontBuffer;
+    u8 *backBuffer;
     
 private:
 	wxWindow * winRenderer;

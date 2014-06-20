@@ -31,7 +31,7 @@ class CPU: public Registers, public Memory
 {
 private:
 	unsigned long m_numInstructions;
-	BYTE m_lastCycles;
+	u8 m_lastCycles;
 
     int m_cyclesFrame;
 	Video *m_v;
@@ -58,6 +58,7 @@ private:
 	void Init(Video *v, Pad *p);
     void ResetGlobalVariables();
 	void OpCodeCB(Instructions *inst);
+    void OpCodeED(Instructions *inst);
 	void UpdateStateLCD(int cycles);
     void UpdateStateLCDOn();
 	void UpdateTimer(int cycles);

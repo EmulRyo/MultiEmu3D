@@ -30,16 +30,16 @@ enum e_registers {
 };
 
 union u_register{
-	WORD doble;
-	BYTE simple[2];
+	u16 doble;
+	u8 simple[2];
 };
 
 class Registers
 {
 private:
 	u_register m_af, m_bc, m_de, m_hl;
-	WORD m_pc; //Program Counter
-	WORD m_sp; //Stack Pointer
+	u16 m_pc; //Program Counter
+	u16 m_sp; //Stack Pointer
 	bool m_IME;
 	bool m_pendingIME;
 	bool m_pendingIMEvalue;
@@ -52,37 +52,37 @@ public:
 
 	Registers *GetPtrRegisters();
 
-	inline BYTE GetA()				{ return m_af.simple[1]; }
-	inline void SetA(BYTE value)	{ m_af.simple[1] = value; }
-	inline BYTE GetB()				{ return m_bc.simple[1]; }
-	inline void SetB(BYTE value)	{ m_bc.simple[1] = value; }
-	inline BYTE GetC()				{ return m_bc.simple[0]; }
-	inline void SetC(BYTE value)	{ m_bc.simple[0] = value; }
-	inline BYTE GetD()				{ return m_de.simple[1]; }
-	inline void SetD(BYTE value)	{ m_de.simple[1] = value; }
-	inline BYTE GetE()				{ return m_de.simple[0]; }
-	inline void SetE(BYTE value)	{ m_de.simple[0] = value; }
-	inline BYTE GetF()				{ return m_af.simple[0]; }
-	inline void SetF(BYTE value)	{ m_af.simple[0] = value & 0xF0; }
-	inline BYTE GetH()				{ return m_hl.simple[1]; }
-	inline void SetH(BYTE value)	{ m_hl.simple[1] = value; }
-	inline BYTE GetL()				{ return m_hl.simple[0]; }
-	inline void SetL(BYTE value)	{ m_hl.simple[0] = value; }
+	inline u8 GetA()				{ return m_af.simple[1]; }
+	inline void SetA(u8 value)	{ m_af.simple[1] = value; }
+	inline u8 GetB()				{ return m_bc.simple[1]; }
+	inline void SetB(u8 value)	{ m_bc.simple[1] = value; }
+	inline u8 GetC()				{ return m_bc.simple[0]; }
+	inline void SetC(u8 value)	{ m_bc.simple[0] = value; }
+	inline u8 GetD()				{ return m_de.simple[1]; }
+	inline void SetD(u8 value)	{ m_de.simple[1] = value; }
+	inline u8 GetE()				{ return m_de.simple[0]; }
+	inline void SetE(u8 value)	{ m_de.simple[0] = value; }
+	inline u8 GetF()				{ return m_af.simple[0]; }
+	inline void SetF(u8 value)	{ m_af.simple[0] = value & 0xF0; }
+	inline u8 GetH()				{ return m_hl.simple[1]; }
+	inline void SetH(u8 value)	{ m_hl.simple[1] = value; }
+	inline u8 GetL()				{ return m_hl.simple[0]; }
+	inline void SetL(u8 value)	{ m_hl.simple[0] = value; }
 
-	inline WORD GetAF()             { return m_af.doble; }
-	inline void SetAF(WORD value)	{ m_af.doble = value & 0xFFF0; }
-	inline WORD GetBC()             { return m_bc.doble; }
-	inline void SetBC(WORD value)	{ m_bc.doble = value; }
-	inline WORD GetDE()             { return m_de.doble; }
-	inline void SetDE(WORD value)	{ m_de.doble = value; }
-	inline WORD GetHL()             { return m_hl.doble; }
-	inline void SetHL(WORD value)	{ m_hl.doble = value; }
+	inline u16 GetAF()             { return m_af.doble; }
+	inline void SetAF(u16 value)	{ m_af.doble = value & 0xFFF0; }
+	inline u16 GetBC()             { return m_bc.doble; }
+	inline void SetBC(u16 value)	{ m_bc.doble = value; }
+	inline u16 GetDE()             { return m_de.doble; }
+	inline void SetDE(u16 value)	{ m_de.doble = value; }
+	inline u16 GetHL()             { return m_hl.doble; }
+	inline void SetHL(u16 value)	{ m_hl.doble = value; }
 
-	inline WORD GetPC()             { return m_pc; }
-	inline void SetPC(WORD value)   { m_pc = value; }
+	inline u16 GetPC()             { return m_pc; }
+	inline void SetPC(u16 value)   { m_pc = value; }
 	inline void AddPC(int value)    { m_pc += value; };
-	inline WORD GetSP()             { return m_sp; }
-	inline void SetSP(WORD value)   { m_sp = value; }
+	inline u16 GetSP()             { return m_sp; }
+	inline void SetSP(u16 value)   { m_sp = value; }
 	inline void AddSP(int value)    { m_sp += value; };
 
 	inline bool GetIME()			{return m_IME;}
@@ -115,20 +115,20 @@ public:
 	inline bool GetStop()				{ return m_stop; }
 	inline void SetStop(bool value)	{ m_stop = value; }
 
-	WORD GetReg(e_registers reg);
-	void SetReg(e_registers reg, WORD value);
+	u16 GetReg(e_registers reg);
+	void SetReg(e_registers reg, u16 value);
 
-	inline BYTE GetFlagZ()              { return (m_af.simple[0] >> 7);}
-	inline void SetFlagZ(BYTE value)    { m_af.simple[0] = (m_af.simple[0] & 0x7F) | (value << 7); }
-	inline BYTE GetFlagN()              { return ((m_af.simple[0] & 0x40) >> 6); }
-	inline void SetFlagN(BYTE value)    { m_af.simple[0] = (m_af.simple[0] & 0xBF) | (value << 6); }
-	inline BYTE GetFlagH()              { return ((m_af.simple[0] & 0x20) >> 5); }
-	inline void SetFlagH(BYTE value)    { m_af.simple[0] = (m_af.simple[0] & 0xDF) | (value << 5); }
-	inline BYTE GetFlagC()              { return ((m_af.simple[0] & 0x10) >> 4); }
-	inline void SetFlagC(BYTE value)    { m_af.simple[0] = (m_af.simple[0] & 0xEF) | (value << 4); }
+	inline u8 GetFlagZ()              { return (m_af.simple[0] >> 7);}
+	inline void SetFlagZ(u8 value)    { m_af.simple[0] = (m_af.simple[0] & 0x7F) | (value << 7); }
+	inline u8 GetFlagN()              { return ((m_af.simple[0] & 0x40) >> 6); }
+	inline void SetFlagN(u8 value)    { m_af.simple[0] = (m_af.simple[0] & 0xBF) | (value << 6); }
+	inline u8 GetFlagH()              { return ((m_af.simple[0] & 0x20) >> 5); }
+	inline void SetFlagH(u8 value)    { m_af.simple[0] = (m_af.simple[0] & 0xDF) | (value << 5); }
+	inline u8 GetFlagC()              { return ((m_af.simple[0] & 0x10) >> 4); }
+	inline void SetFlagC(u8 value)    { m_af.simple[0] = (m_af.simple[0] & 0xEF) | (value << 4); }
 	
-	BYTE GetFlag(e_registers flag);
-	void SetFlag(e_registers flag, BYTE value);
+	u8 GetFlag(e_registers flag);
+	void SetFlag(e_registers flag, u8 value);
     
     void SetConditionalTaken(bool value) { m_conditionalTaken = value; }
     bool GetConditionalTaken() { return m_conditionalTaken; }

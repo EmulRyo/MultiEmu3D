@@ -48,7 +48,7 @@ void Memory::ResetMem()
 	memset(&memory, 0x00, SIZE_MEM);
 }
 
-void Memory::MemW(WORD address, BYTE value)
+void Memory::MemW(u16 address, u8 value)
 {
 	memory[address] = value;
 }

@@ -46,7 +46,7 @@ void Video::SetMem(Memory *mem)
 	m_mem = mem;
 }
 
-void Video::UpdateLine(BYTE y)
+void Video::UpdateLine(u8 y)
 {
 	UpdateBG(y);
 	UpdateOAM(y);
@@ -79,7 +79,7 @@ void Video::UpdateOAM(int y)
 	
 }
 
-void Video::GetColorPalette(BYTE palette[4][3], int address)
+void Video::GetColorPalette(u8 palette[4][3], int address)
 {
 	
 }
