@@ -109,12 +109,12 @@ void Registers::SetFlag(e_registers flag, BYTE value)
 
 void Registers::ResetRegs()
 {
-	SetAF(0x11B0);
-	SetBC(0x0013);
-	SetDE(0x00D8);
-	SetHL(0x014D);
-	SetPC(0x0100);
-	SetSP(0xFFFE);
+	SetAF(0x0000);
+	SetBC(0x0000);
+	SetDE(0x0000);
+	SetHL(0x0000);
+	SetPC(0x0000);
+	SetSP(0x0000);
 	SetHalt(false);
 	SetStop(false);
 	SetIME(false);

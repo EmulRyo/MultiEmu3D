@@ -90,8 +90,6 @@ string Cartridge::GetGoodName(const char *name) {
     string allow = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz ._-'!";
     
     int numChars = 16;
-    if ((m_memCartridge[CART_COLOR] == 0x80) || (m_memCartridge[CART_COLOR] == 0xC0))
-        numChars = 11;
     string tmp = string(name, numChars);
     
     size_t found = 0;
@@ -110,63 +108,13 @@ string Cartridge::GetGoodName(const char *name) {
 void Cartridge::CheckCartridge(string batteriesPath)
 {
 	MBCPathBatteries(batteriesPath);
-	m_name = GetGoodName((char *)&m_memCartridge[CART_NAME]);
+	m_name = string("");
 	
-	CheckRomSize((int)m_memCartridge[CART_ROM_SIZE], m_romSize);
-    m_hasRTC = false;
-	
-	switch(m_memCartridge[CART_TYPE])
-	{
-		case 0x00:						//ROM ONLY
-		case 0x08:						//ROM+RAM
-		case 0x09:						//ROM+RAM+BATTERY
-			ptrRead = &NoneRead;
-			ptrWrite = &NoneWrite;
-			InitMBCNone(m_name, m_memCartridge, m_romSize);
-			break;
-		case 0x01:						//ROM+MBC1 
-		case 0x02:						//ROM+MBC1+RAM 
-		case 0x03:						//ROM+MBC1+RAM+BATT
-			ptrRead = &MBC1Read;
-			ptrWrite = &MBC1Write;
-			InitMBC1(m_name, m_memCartridge, m_romSize, m_memCartridge[CART_RAM_SIZE]);
-			break;
-		case 0x05:						//ROM+MBC2 
-		case 0x06:						//ROM+MBC2+BATTERY
-			ptrRead = &MBC2Read;
-			ptrWrite = &MBC2Write;
-			InitMBC2(m_name, m_memCartridge, m_romSize);
-			break;
-			/*
-			 case 0x0B:						//ROM+MMM01
-			 case 0x0C:						//ROM+MMM01+SRAM
-			 case 0x0D: mbc = MMM01; break;	//ROM+MMM01+SRAM+BATT*/
-		case 0x0F:						//ROM+MBC3+TIMER+BATT
-		case 0x10:						//ROM+MBC3+TIMER+RAM+BATT
-            m_hasRTC = true;
-		case 0x11:						//ROM+MBC3
-		case 0x12:						//ROM+MBC3+RAM
-		case 0x13:						//ROM+MBC3+RAM+BATT
-			ptrRead = &MBC3Read;
-			ptrWrite = &MBC3Write;
-			InitMBC3(m_name, m_memCartridge, m_romSize, m_memCartridge[CART_RAM_SIZE], m_hasRTC);
-			break;
-		case 0x19:						//ROM+MBC5
-		case 0x1A:						//ROM+MBC5+RAM
-		case 0x1B:						//ROM+MBC5+RAM+BATT
-		case 0x1C:						//ROM+MBC5+RUMBLE
-		case 0x1D:						//ROM+MBC5+RUMBLE+SRAM
-		case 0x1E:						//ROM+MBC5+RUMBLE+SRAM+BATT
-			ptrRead = &MBC5Read;
-			ptrWrite = &MBC5Write;
-			InitMBC5(m_name, m_memCartridge, m_romSize, m_memCartridge[CART_RAM_SIZE]);
-			break;
-			/*case 0x1F:						//Pocket Camera
-			 case 0xFD:						//Bandai TAMA5
-			 case 0xFE: mbc = Other; break;	//Hudson HuC-3
-			 case 0xFF: mbc = HuC1; break;	//Hudson HuC-1*/
-		default: throw SMSException("MBC not implemented yet");
-	}
+	//CheckRomSize((int)m_memCartridge[CART_ROM_SIZE], m_romSize);
+    
+    ptrRead = &NoneRead;
+    ptrWrite = &NoneWrite;
+    InitMBCNone(m_name, m_memCartridge, m_romSize);
 }
 
 /*

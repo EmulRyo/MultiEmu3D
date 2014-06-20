@@ -133,7 +133,7 @@ bool EmulationThread::ChangeFile(wxString fileName)
     {
         wxMutexLocker lock(*mutex);
         
-        BYTE * buffer = NULL;
+        BYTE *buffer = NULL;
         unsigned long size = 0;
         bool isZip = false;
         
@@ -151,9 +151,9 @@ bool EmulationThread::ChangeFile(wxString fileName)
             if ((buffer == NULL) || (size == 0))
                 return false;
         }
-        else if (!fileLower.EndsWith(wxT(".gb")) && !fileLower.EndsWith(wxT(".gbc")))
+        else if (!fileLower.EndsWith(wxT(".sms")))
         {
-            wxMessageBox(_("Only gb, gbc and zip files allowed!"), _("Error"));
+            wxMessageBox(_("Only sms and zip files allowed!"), _("Error"));
             return false;
         }
         
@@ -169,12 +169,10 @@ bool EmulationThread::ChangeFile(wxString fileName)
         
         battsDir += wxFileName::GetPathSeparator();
         
-        if (isZip) {
+        if (isZip)
             cartridge = new Cartridge(buffer, size, string(battsDir.mb_str()));
-        }else {
+        else
             cartridge = new Cartridge(string(fileName.mb_str()), string(battsDir.mb_str()));
-        }
-        
         
         cpu->LoadCartridge(cartridge);
         cpu->Reset();

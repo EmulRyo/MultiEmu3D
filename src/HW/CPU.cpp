@@ -48,6 +48,7 @@ void CPU::Init(Video *v, Pad *p)
 {
     m_v = v;
     m_p = p;
+    m_cyclesFrame = 100000;
 	v->SetMem(this->GetPtrMemory());
 	ResetGlobalVariables();
 	
@@ -382,6 +383,7 @@ int CPU::Execute(int cyclesToExecute)
 					stringstream out;
 					out << "Error, instruction not implemented: 0x";
 					out << setfill('0') << setw(2) << uppercase << hex << (int)OpCode << endl;
+                    cout << out.str();
 #ifdef MAKEGBLOG
                     SaveLog();
 #endif

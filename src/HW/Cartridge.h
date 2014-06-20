@@ -21,11 +21,6 @@
 #include <string>
 #include "Def.h"
 
-#define CART_NAME		0x0134
-#define CART_COLOR		0x0143
-#define CART_TYPE		0x0147
-#define CART_ROM_SIZE	0x0148
-#define CART_RAM_SIZE	0x0149
 
 class Cartridge
 {
@@ -33,7 +28,6 @@ private:
 	unsigned long m_romSize;
 	std::string m_name;
 	bool m_isLoaded;
-    bool m_hasRTC;
 	BYTE *m_memCartridge;
 
 	BYTE (*ptrRead)(WORD);

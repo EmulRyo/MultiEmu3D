@@ -22,7 +22,8 @@
 #include "Cartridge.h"
 #include "Sound.h"
 
-#define SIZE_MEM       0x10000
+#define SIZE_RAM   0x2000
+#define SIZE_MEM (SIZE_RAM)
 
 class CPU;
 
@@ -42,10 +43,20 @@ public:
 	void ResetMem();
 	void LoadCartridge(Cartridge *c);
 	void MemW(WORD direction, BYTE value);
-	inline void MemWNoCheck(WORD address, BYTE value){ memory[address] = value; };
+	inline void MemWNoCheck(WORD address, BYTE value){ memory[address-0xC000] = value; };
 	inline BYTE MemR(WORD address)
 	{
-		return memory[address];
+        if (address < 0xC000)
+            return m_c->Read(address);
+        else if (address < 0xE000)
+            return memory[address-0xC000];
+        else if (address < 0xFFF0)
+            return memory[address-0xE000];
+        else {
+            printf("MemR address not controlled: %d\n", address);
+            return 0;
+        }
+		
 	}
 	void SaveMemory(std::ofstream *file);
 	void LoadMemory(std::ifstream *file);

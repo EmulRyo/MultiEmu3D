@@ -266,7 +266,7 @@ void MainFrame::OnFileOpen(wxCommandEvent &) {
     emulation->SetState(Paused);
 	
 	wxFileDialog* openDialog = new wxFileDialog(this, _("Choose a gameboy rom to open"), wxEmptyString, wxEmptyString,
-												wxT("Gameboy roms (*.gb; *.gbc; *.zip)|*.gb;*.gbc;*.zip"),
+												wxT("Gameboy roms (*.sms; *.zip)|*.sms;*.zip"),
 												wxFD_OPEN, wxDefaultPosition);
 
 	
