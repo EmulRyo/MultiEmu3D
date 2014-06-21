@@ -396,8 +396,8 @@ void MainFrame::UpdateRecentMenu(wxString fileName)
 	{
 		startFrom = numRecentFiles-1;
 		int id = ID_RECENT0 + numRecentFiles;
-		recentMenuFile->Insert(numRecentFiles, id, wxT(""));
-		recentMenuPopup->Insert(numRecentFiles, id, wxT(""));
+		recentMenuFile->Insert(numRecentFiles, id, wxT(" "));
+		recentMenuPopup->Insert(numRecentFiles, id, wxT(" "));
 		numRecentFiles++;
 	}
 	// Si no existia pero hemos llegado al limite

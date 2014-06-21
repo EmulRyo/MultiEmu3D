@@ -906,12 +906,7 @@ void Instructions::HALT()
 
 void Instructions::STOP()
 {
-    // En una gameboy real apagaria la pantalla si ha
-    // transcurrido demasiado tiempo sin pulsar ningun
-    // boton. Aqui no se va simular ese comportamiento
-	//reg->Set_Stop(true);
-
-	reg->AddPC(2);
+    reg->AddPC(2);
 }
 
 void Instructions::SWAP(e_registers place)
@@ -1111,6 +1106,50 @@ void Instructions::IM(u8 mode) {
     reg->SetIntMode(mode);
     
     reg->AddPC(2);
+}
+
+void Instructions::DJNZ() {
+    u8 value = reg->GetB() - 1;
+    reg->SetB(value);
+    if (value != 0) {
+        JR();
+        reg->SetConditionalTaken(true);
+    } else {
+        reg->AddPC(2);
+    }
+}
+
+void Instructions::LD_cNN_nn(e_registers place) {
+    assert((place == BC) || (place == DE) || (place == HL));
+    
+    u16 address = _16bitsInmValue;
+    u16 value = reg->GetReg(place);
+    mem->MemW(address+0, (value & 0x00FF));
+    mem->MemW(address+1, (value >> 8));
+    
+    reg->AddPC(3);
+}
+
+void Instructions::LD_cNN_n(e_registers place) {
+    assert((place == A) || (place == B) || (place == C) ||
+           (place == D) || (place == E) || (place == F));
+    
+    u16 address = _16bitsInmValue;
+    u8  value = reg->GetReg(place);
+    mem->MemW(address+0, value);
+    
+    reg->AddPC(3);
+}
+
+void Instructions::LDIR() {
+    u8 z;
+    u16 bc;
+    
+    do {
+        //LDI
+        z = reg->GetFlagZ();
+        bc = reg->GetBC();
+    } while ((z != 1) && (bc != 0));
 }
 
 void Instructions::NOT_IMPLEMENTED() {

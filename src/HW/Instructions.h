@@ -100,6 +100,10 @@ public:
 	void XOR_n(e_registers place);
     
     void IM(u8 mode);
+    void DJNZ();
+    void LD_cNN_nn(e_registers place);
+    void LD_cNN_n(e_registers place);
+    void LDIR();
     void NOT_IMPLEMENTED();
 };
 

@@ -136,7 +136,7 @@ int CPU::Execute(int cyclesToExecute)
 				case (0x0E): inst.LD_nn_n(C); break;
 				case (0x0F): inst.RRC_n(A); break;
 
-				case (0x10): inst.NOT_IMPLEMENTED(); break;
+				case (0x10): inst.DJNZ(); break;
 				case (0x11): inst.LD_n_nn(DE); break;
 				case (0x12): inst.LD_n_A(c_DE); break;
 				case (0x13): inst.INC_nn(DE); break;
@@ -155,7 +155,7 @@ int CPU::Execute(int cyclesToExecute)
 
 				case (0x20): inst.JR_CC_n(f_Z, 0); break;
 				case (0x21): inst.LD_n_nn(HL); break;
-				case (0x22): inst.LDI_cHL_A(); break;
+				case (0x22): inst.LD_cNN_nn(HL); break;
 				case (0x23): inst.INC_nn(HL); break;
 				case (0x24): inst.INC_n(H); break;
 				case (0x25): inst.DEC_n(H); break;
@@ -163,7 +163,7 @@ int CPU::Execute(int cyclesToExecute)
 				case (0x27): inst.DAA(); break;
 				case (0x28): inst.JR_CC_n(f_Z, 1); break;
 				case (0x29): inst.ADD_HL_n(HL); break;
-				case (0x2A): inst.LDI_A_cHL(); break;
+				case (0x2A): inst.NOT_IMPLEMENTED(); break;
 				case (0x2B): inst.DEC_nn(HL); break;
 				case (0x2C): inst.INC_n(L); break;
 				case (0x2D): inst.DEC_n(L); break;
@@ -172,7 +172,7 @@ int CPU::Execute(int cyclesToExecute)
 
 				case (0x30): inst.JR_CC_n(f_C, 0); break;
 				case (0x31): inst.LD_n_nn(SP); break;
-				case (0x32): inst.LDD_cHL_A(); break;
+				case (0x32): inst.LD_cNN_n(A); break;
 				case (0x33): inst.INC_nn(SP); break;
 				case (0x34): inst.INC_n(c_HL); break;
 				case (0x35): inst.DEC_n(c_HL); break;
