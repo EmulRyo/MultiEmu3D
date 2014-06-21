@@ -770,7 +770,7 @@ void CPU::OpCodeED(Instructions * inst)
 		case (0x7A): inst->NOT_IMPLEMENTED(); break;
 		case (0x7B): inst->NOT_IMPLEMENTED(); break;
         
-        case (0xA0): inst->NOT_IMPLEMENTED(); break;
+        case (0xA0): inst->LDI(); break;
         case (0xA1): inst->NOT_IMPLEMENTED(); break;
         case (0xA2): inst->NOT_IMPLEMENTED(); break;
         case (0xA3): inst->NOT_IMPLEMENTED(); break;
@@ -779,7 +779,7 @@ void CPU::OpCodeED(Instructions * inst)
         case (0xAA): inst->NOT_IMPLEMENTED(); break;
         case (0xAB): inst->NOT_IMPLEMENTED(); break;
             
-        case (0xB0): inst->NOT_IMPLEMENTED(); break;
+        case (0xB0): inst->LDIR(); break;
         case (0xB1): inst->NOT_IMPLEMENTED(); break;
         case (0xB2): inst->NOT_IMPLEMENTED(); break;
         case (0xB3): inst->NOT_IMPLEMENTED(); break;

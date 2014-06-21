@@ -102,14 +102,18 @@ public:
 	u16 GetReg(e_registers reg);
 	void SetReg(e_registers reg, u16 value);
 
-	inline u8 GetFlagZ()              { return (m_af.simple[0] >> 7);}
-	inline void SetFlagZ(u8 value)    { m_af.simple[0] = (m_af.simple[0] & 0x7F) | (value << 7); }
-	inline u8 GetFlagN()              { return ((m_af.simple[0] & 0x40) >> 6); }
-	inline void SetFlagN(u8 value)    { m_af.simple[0] = (m_af.simple[0] & 0xBF) | (value << 6); }
-	inline u8 GetFlagH()              { return ((m_af.simple[0] & 0x20) >> 5); }
-	inline void SetFlagH(u8 value)    { m_af.simple[0] = (m_af.simple[0] & 0xDF) | (value << 5); }
-	inline u8 GetFlagC()              { return ((m_af.simple[0] & 0x10) >> 4); }
-	inline void SetFlagC(u8 value)    { m_af.simple[0] = (m_af.simple[0] & 0xEF) | (value << 4); }
+    inline u8 GetFlagS()              { return (m_af.simple[0] >> 7);}
+	inline void SetFlagS(u8 value)    { m_af.simple[0] = (m_af.simple[0] & 0x7F) | (value << 7); }
+	inline u8 GetFlagZ()              { return ((m_af.simple[0] & 0x40) >> 6); }
+	inline void SetFlagZ(u8 value)    { m_af.simple[0] = (m_af.simple[0] & 0xBF) | (value << 6); }
+    inline u8 GetFlagH()              { return ((m_af.simple[0] & 0x10) >> 4); }
+	inline void SetFlagH(u8 value)    { m_af.simple[0] = (m_af.simple[0] & 0xEF) | (value << 4); }
+    inline u8 GetFlagPV()             { return ((m_af.simple[0] & 0x04) >> 2); }
+	inline void SetFlagPV(u8 value)   { m_af.simple[0] = (m_af.simple[0] & 0xFB) | (value << 2); }
+	inline u8 GetFlagN()              { return ((m_af.simple[0] & 0x02) >> 1); }
+	inline void SetFlagN(u8 value)    { m_af.simple[0] = (m_af.simple[0] & 0xFD) | (value << 1); }
+	inline u8 GetFlagC()              { return (m_af.simple[0] & 0x01); }
+	inline void SetFlagC(u8 value)    { m_af.simple[0] = (m_af.simple[0] & 0xFE) | value; }
 	
 	u8 GetFlag(e_registers flag);
 	void SetFlag(e_registers flag, u8 value);

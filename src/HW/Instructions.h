@@ -103,6 +103,7 @@ public:
     void DJNZ();
     void LD_cNN_nn(e_registers place);
     void LD_cNN_n(e_registers place);
+    void LDI(bool incrementPC = true);
     void LDIR();
     void NOT_IMPLEMENTED();
 };

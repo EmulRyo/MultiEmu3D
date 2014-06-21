@@ -1141,15 +1141,36 @@ void Instructions::LD_cNN_n(e_registers place) {
     reg->AddPC(3);
 }
 
+void Instructions::LDI(bool incrementPC) {
+    u16 addressDE = reg->GetDE();
+    u8 valueHL = mem->MemR(reg->GetHL());
+    mem->MemW(addressDE, valueHL);
+    reg->SetDE(addressDE+1);
+    reg->SetHL(reg->GetHL()+1);
+    reg->SetBC(reg->GetBC()-1);
+    
+    reg->SetFlagH(0);
+    reg->SetFlagN(0);
+    reg->SetFlagPV(!reg->GetBC() ? 0 : 1);
+    
+    if (incrementPC)
+        reg->AddPC(2);
+}
+
 void Instructions::LDIR() {
-    u8 z;
     u16 bc;
     
     do {
-        //LDI
-        z = reg->GetFlagZ();
+        LDI(false);
         bc = reg->GetBC();
-    } while ((z != 1) && (bc != 0));
+        // Duda: decrementar PC en 2 a cada iteracion?
+    } while (bc != 0);
+    
+    reg->SetFlagH(0);
+    reg->SetFlagN(0);
+    reg->SetFlagPV(0);
+    
+    reg->AddPC(2);
 }
 
 void Instructions::NOT_IMPLEMENTED() {
