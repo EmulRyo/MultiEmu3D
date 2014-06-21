@@ -117,7 +117,9 @@ void Registers::ResetRegs()
 	SetSP(0x0000);
 	SetHalt(false);
 	SetStop(false);
-	SetIME(false);
+	SetIFF1(false);
+    SetIFF2(false);
+    SetIntMode(0);
 }
 
 string Registers::ToString()
@@ -130,12 +132,12 @@ string Registers::ToString()
 		<< ", DE: " << setfill('0') << setw(4) << uppercase << hex << (int)GetDE()
 		<< ", HL: " << setfill('0') << setw(4) << uppercase << hex << (int)GetHL()
 		<< ", SP: " << setfill('0') << setw(4) << uppercase << hex << (int)GetSP()
-		<< ", H: " << GetHalt() << ", I: " << GetIME();
+		<< ", H: " << GetHalt();
 	
 	return out.str();
 }
 
-void Registers::SaveRegs(ofstream * file)
+void Registers::SaveRegs(ofstream *file)
 {
 	file->write((char *)&m_af.doble, sizeof(u16));
 	file->write((char *)&m_bc.doble, sizeof(u16));
@@ -143,14 +145,14 @@ void Registers::SaveRegs(ofstream * file)
 	file->write((char *)&m_hl.doble, sizeof(u16));
 	file->write((char *)&m_pc, sizeof(u16));
 	file->write((char *)&m_sp, sizeof(u16));
-	file->write((char *)&m_IME, sizeof(bool));
-	file->write((char *)&m_pendingIME, sizeof(bool));
-	file->write((char *)&m_pendingIMEvalue, sizeof(bool));
+	file->write((char *)&m_iff1, sizeof(bool));
+	file->write((char *)&m_iff2, sizeof(bool));
+    file->write((char *)&m_intMode, sizeof(u8));
 	file->write((char *)&m_halt, sizeof(bool));
 	file->write((char *)&m_stop, sizeof(bool));
 }
 
-void Registers::LoadRegs(ifstream * file)
+void Registers::LoadRegs(ifstream *file)
 {
 	file->read((char *)&m_af.doble, sizeof(u16));
 	file->read((char *)&m_bc.doble, sizeof(u16));
@@ -158,9 +160,9 @@ void Registers::LoadRegs(ifstream * file)
 	file->read((char *)&m_hl.doble, sizeof(u16));
 	file->read((char *)&m_pc, sizeof(u16));
 	file->read((char *)&m_sp, sizeof(u16));
-	file->read((char *)&m_IME, sizeof(bool));
-	file->read((char *)&m_pendingIME, sizeof(bool));
-	file->read((char *)&m_pendingIMEvalue, sizeof(bool));
+	file->read((char *)&m_iff1, sizeof(bool));
+	file->read((char *)&m_iff2, sizeof(bool));
+    file->read((char *)&m_intMode, sizeof(u8));
 	file->read((char *)&m_halt, sizeof(bool));
 	file->read((char *)&m_stop, sizeof(bool));
 }

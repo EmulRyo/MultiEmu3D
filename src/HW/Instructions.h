@@ -98,6 +98,9 @@ public:
 	void SUB_n(e_registers place);
 	void SWAP(e_registers place);
 	void XOR_n(e_registers place);
+    
+    void IM(u8 mode);
+    void NOT_IMPLEMENTED();
 };
 
 #endif
