@@ -89,7 +89,7 @@ int CPU::Execute(int cyclesToExecute)
 		return 0;
 	
     int cycles = 0;
-	u8 OpCode = 0, NextOpcode = 0, lastOpCode = 0;
+	u8 opcode = 0, nextOpcode = 0, lastOpcode = 0;
 
 	Instructions inst(this->GetPtrRegisters(), this->GetPtrMemory());
 
@@ -100,16 +100,22 @@ int CPU::Execute(int cyclesToExecute)
     while (cycles < cyclesToExecute)
     {
 		m_numInstructions++;
-		lastOpCode = OpCode;
-		OpCode = MemR(GetPC());
-        NextOpcode = MemR(GetPC() + 1);
+		lastOpcode = opcode;
+		opcode = MemR(GetPC());
+        nextOpcode = MemR(GetPC() + 1);
+        
+        if (opcode == 0xDD) {
+            inst.SetOpcode(opcode);
+            opcode = nextOpcode;
+            AddPC(1);
+        }
 		
 #ifdef MAKEGBLOG
-		stringstream ssOpCode;
-		ssOpCode << numInstructions << ", ";
-		ssOpCode << "Op: " << setfill('0') << setw(2) << uppercase << hex << (int)OpCode;
-		if (OpCode == 0xCB)
-			ssOpCode << setfill('0') << setw(2) << uppercase << hex << (int)NextOpcode;
+		stringstream ssOpcode;
+		ssOpcode << numInstructions << ", ";
+		ssOpcode << "Op: " << setfill('0') << setw(2) << uppercase << hex << (int)opcode;
+		if (opCode == 0xCB)
+			ssOpCode << setfill('0') << setw(2) << uppercase << hex << (int)nextOpcode;
         ssOpCode << ", ";
         //stringstream ssOpCode2;
 		log->Enqueue(ssOpCode.str(), this->GetPtrRegisters(), "");
@@ -117,7 +123,7 @@ int CPU::Execute(int cyclesToExecute)
 		
 		if (!GetHalt())
 		{
-			switch(OpCode)
+			switch(opcode)
 			{
 				case (0x00): inst.NOP(); break;
 				case (0x01): inst.LD_n_nn(BC); break;
@@ -393,7 +399,7 @@ int CPU::Execute(int cyclesToExecute)
 				default:
 					stringstream out;
 					out << "Error, instruction not implemented: 0x";
-					out << setfill('0') << setw(2) << uppercase << hex << (int)OpCode << endl;
+					out << setfill('0') << setw(2) << uppercase << hex << (int)opcode << endl;
                     cout << out.str();
 #ifdef MAKEGBLOG
                     SaveLog();
@@ -404,16 +410,7 @@ int CPU::Execute(int cyclesToExecute)
             
 		} // end if (!GetHalt())
         
-        if (OpCode == 0xCB)
-            m_lastCycles += GetInstructionCyclesCB(NextOpcode)*4;
-        else if (GetConditionalTaken())
-        {
-            m_lastCycles += GetInstructionCondicionalCycles(OpCode)*4;
-            SetConditionalTaken(false);
-        }
-        else
-            m_lastCycles += GetInstructionCycles(OpCode)*4;
-        
+        m_lastCycles += GetInstructionCycles(opcode);
         
         int tmpCycles = m_lastCycles;
         
@@ -790,7 +787,7 @@ void CPU::OpCodeED(Instructions * inst)
             
         default:
 			stringstream out;
-			out << "Error, instruction not implemented: 0xCB";
+			out << "Error, instruction not implemented: 0xED";
 			out << setfill('0') << setw(2) << uppercase << hex << (int)OpCode << "\n";
             cout << out.str();
 #ifdef MAKEGBLOG
@@ -815,7 +812,7 @@ void CPU::SetIntFlag(int bit)
     
 }
 
-void CPU::Interrupts(Instructions * inst)
+void CPU::Interrupts(Instructions *inst)
 {
 	
 }

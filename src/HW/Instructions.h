@@ -24,12 +24,15 @@ class Memory;
 class Instructions
 {
 private:
-	Registers *reg;
-	Memory *mem;
+	Registers   *m_reg;
+	Memory      *m_mem;
+    u8          m_opcode;
 
 public:
 	Instructions(Registers *reg, Memory *mem);
 	~Instructions(void);
+    
+    void SetOpcode(u8 opcode);
 	
 	void ADC_A_n(e_registers place);
 	void ADD_A_n(e_registers place);
