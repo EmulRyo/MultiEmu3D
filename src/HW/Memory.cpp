@@ -53,6 +53,27 @@ void Memory::MemW(u16 address, u8 value)
 	memory[address] = value;
 }
 
+void Memory::PortW(u8 port, u8 value) {
+    // 0x3F - Language detect?
+    // 0xDC: Joystick 1
+    // 0xDD: Joystick 2
+    // 0xDE - Unknown
+    // 0xDF - Unknown
+    // 0x7E - Sound
+    // 0x7F - Sound
+    // 0xBE - Video data
+    // 0xBF - Video registers
+    // 0xF0 - FM Sound register
+    // 0xF1 - FM Sound data
+    // 0xF2 - FM Sound detect
+    if ((port != 0x7F) && (port != 0xBE) && (port != 0xBF))
+        printf("PortW: 0x%X = 0x%X\n", port ,value);
+};
+
+u8 Memory::PortR(u8 port) {
+    return 0;
+}
+
 void Memory::SaveMemory(ofstream * file)
 {
 	//file->write((char *)&memory[0x8000], 0x8000);

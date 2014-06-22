@@ -108,6 +108,9 @@ public:
     void LD_cNN_n(e_registers place);
     void LDI(bool incrementPC = true);
     void LDIR();
+    void OUT(e_registers placePort, e_registers placeValue);
+    void OUTI(bool incrementPC = true);
+    void OTIR();
     void NOT_IMPLEMENTED();
 };
 

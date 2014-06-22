@@ -1181,6 +1181,8 @@ void Instructions::LDI(bool incrementPC) {
         m_reg->AddPC(2);
 }
 
+// Quizá no debería de ejecutarse todo de golpe porque las interrupciones
+// pueden ocurrir en medio del proceso
 void Instructions::LDIR() {
     u16 bc;
     
@@ -1194,6 +1196,48 @@ void Instructions::LDIR() {
     m_reg->SetFlagN(0);
     m_reg->SetFlagPV(0);
     
+    m_reg->AddPC(2);
+}
+
+void Instructions::OUT(e_registers placePort, e_registers placeValue) {
+    u8 port;
+    
+    if (placePort == $)
+        port = _8bitsInmValue;
+    else
+        port = m_reg->GetReg(placePort);
+	
+    u8 value = (placeValue == f_Z) ? 0 : m_reg->GetReg(placeValue);
+    
+    m_mem->PortW(port, value);
+    
+    m_reg->AddPC(2);
+}
+
+void Instructions::OUTI(bool incrementPC) {
+    u8 value = m_mem->MemR(m_reg->GetHL());
+    m_reg->SetHL(m_reg->GetHL()+1);
+    m_reg->SetB(m_reg->GetB()-1);
+    u8 port = m_reg->GetC();
+    
+    m_mem->PortW(port, value);
+    
+    m_reg->SetFlagN(1);
+    m_reg->AddPC(2);
+}
+
+// Quizá no debería de ejecutarse todo de golpe porque las interrupciones
+// pueden ocurrir en medio del proceso
+void Instructions::OTIR() {
+    u8 b;
+    
+    do {
+        OUTI(false);
+        b = m_reg->GetB();
+    } while (b != 0);
+    
+    m_reg->SetFlagN(1);
+    m_reg->SetFlagZ(1);
     m_reg->AddPC(2);
 }
 

@@ -186,7 +186,7 @@ int CPU::Execute(int cyclesToExecute)
 				case (0x37): inst.SCF(); break;
 				case (0x38): inst.JR_CC_n(f_C, 1); break;
 				case (0x39): inst.ADD_HL_n(SP); break;
-				case (0x3A): inst.LDD_A_cHL(); break;
+				case (0x3A): inst.NOT_IMPLEMENTED(); break;
 				case (0x3B): inst.DEC_nn(SP); break;
 				case (0x3C): inst.INC_n(A); break;
 				case (0x3D): inst.DEC_n(A); break;
@@ -349,7 +349,7 @@ int CPU::Execute(int cyclesToExecute)
 				case (0xD0): inst.RET_cc(f_C, 0); break;
 				case (0xD1): inst.POP_nn(DE); break;
 				case (0xD2): inst.JP_cc_nn(f_C, 0); break;
-                case (0xD3): inst.NOT_IMPLEMENTED(); break;
+                case (0xD3): inst.OUT($, A); break;
 				case (0xD4): inst.CALL_cc_nn(f_C, 0); break;
 				case (0xD5): inst.PUSH_nn(DE); break;
 				case (0xD6): inst.SUB_n($); break;
@@ -366,14 +366,14 @@ int CPU::Execute(int cyclesToExecute)
 				case (0xE0): inst.NOT_IMPLEMENTED(); break;
 				case (0xE1): inst.POP_nn(HL); break;
 				case (0xE2): inst.NOT_IMPLEMENTED(); break;
-                case (0xE3): inst.NOT_IMPLEMENTED(); break;
+                case (0xE3): inst.JP_cc_nn(f_PV, 0); break;
                 case (0xE4): inst.NOT_IMPLEMENTED(); break;
 				case (0xE5): inst.PUSH_nn(HL); break;
 				case (0xE6): inst.AND($); break;
 				case (0xE7): inst.RST_n(0x20); break;
 				case (0xE8): inst.NOT_IMPLEMENTED(); break;
 				case (0xE9): inst.JP_HL(); break;
-				case (0xEA): inst.NOT_IMPLEMENTED(); break;
+				case (0xEA): inst.JP_cc_nn(f_PV, 1); break;
                 case (0xEB): inst.NOT_IMPLEMENTED(); break;
                 case (0xEC): inst.NOT_IMPLEMENTED(); break;
                 case (0xED): OpCodeED(&inst); break;; break;
@@ -382,7 +382,7 @@ int CPU::Execute(int cyclesToExecute)
 
 				case (0xF0): inst.NOT_IMPLEMENTED(); break;
 				case (0xF1): inst.POP_nn(AF); break;
-				case (0xF2): inst.NOT_IMPLEMENTED(); break;
+				case (0xF2): inst.JP_cc_nn(f_S, 0); break;
 				case (0xF3): inst.DI(); break;
                 case (0xF4): inst.NOT_IMPLEMENTED(); break;
 				case (0xF5): inst.PUSH_nn(AF); break;
@@ -390,7 +390,7 @@ int CPU::Execute(int cyclesToExecute)
 				case (0xF7): inst.RST_n(0x30); break;
 				case (0xF8): inst.NOT_IMPLEMENTED(); break;
 				case (0xF9): inst.LD_SP_HL(); break;
-				case (0xFA): inst.NOT_IMPLEMENTED(); break;
+				case (0xFA): inst.JP_cc_nn(f_S, 1); break;
 				case (0xFB): inst.EI(); break;
                 case (0xFC): inst.NOT_IMPLEMENTED(); break;
                 case (0xFD): inst.NOT_IMPLEMENTED(); break;
@@ -721,7 +721,7 @@ void CPU::OpCodeED(Instructions * inst)
     switch (OpCode)
     {
 		case (0x40): inst->NOT_IMPLEMENTED(); break;
-		case (0x41): inst->NOT_IMPLEMENTED(); break;
+		case (0x41): inst->OUT(C, A); break;
 		case (0x42): inst->NOT_IMPLEMENTED(); break;
 		case (0x43): inst->NOT_IMPLEMENTED(); break;
 		case (0x44): inst->NOT_IMPLEMENTED(); break;
@@ -729,7 +729,7 @@ void CPU::OpCodeED(Instructions * inst)
 		case (0x46): inst->IM(0); break;
 		case (0x47): inst->NOT_IMPLEMENTED(); break;
 		case (0x48): inst->NOT_IMPLEMENTED(); break;
-		case (0x49): inst->NOT_IMPLEMENTED(); break;
+		case (0x49): inst->OUT(C, C); break;
 		case (0x4A): inst->NOT_IMPLEMENTED(); break;
 		case (0x4B): inst->NOT_IMPLEMENTED(); break;
 		case (0x4D): inst->NOT_IMPLEMENTED(); break;
@@ -737,40 +737,42 @@ void CPU::OpCodeED(Instructions * inst)
 		case (0x4F): inst->NOT_IMPLEMENTED(); break;
             
 		case (0x50): inst->NOT_IMPLEMENTED(); break;
-		case (0x51): inst->NOT_IMPLEMENTED(); break;
+		case (0x51): inst->OUT(C, D); break;
 		case (0x52): inst->NOT_IMPLEMENTED(); break;
 		case (0x53): inst->NOT_IMPLEMENTED(); break;
 		case (0x56): inst->IM(1); break;
 		case (0x57): inst->NOT_IMPLEMENTED(); break;
 		case (0x58): inst->NOT_IMPLEMENTED(); break;
-		case (0x59): inst->NOT_IMPLEMENTED(); break;
+		case (0x59): inst->OUT(C, E); break;
 		case (0x5A): inst->NOT_IMPLEMENTED(); break;
 		case (0x5B): inst->NOT_IMPLEMENTED(); break;
 		case (0x5E): inst->IM(2); break;
 		case (0x5F): inst->NOT_IMPLEMENTED(); break;
             
 		case (0x60): inst->NOT_IMPLEMENTED(); break;
-		case (0x61): inst->NOT_IMPLEMENTED(); break;
+		case (0x61): inst->OUT(C, H); break;
 		case (0x62): inst->NOT_IMPLEMENTED(); break;
 		case (0x63): inst->NOT_IMPLEMENTED(); break;
 		case (0x67): inst->NOT_IMPLEMENTED(); break;
 		case (0x68): inst->NOT_IMPLEMENTED(); break;
-		case (0x69): inst->NOT_IMPLEMENTED(); break;
+		case (0x69): inst->OUT(C, L); break;
 		case (0x6A): inst->NOT_IMPLEMENTED(); break;
 		case (0x6B): inst->NOT_IMPLEMENTED(); break;
 		case (0x6F): inst->NOT_IMPLEMENTED(); break;
-            
+        
+        case (0x70): inst->NOT_IMPLEMENTED(); break;
+        case (0x71): inst->OUT(C, f_Z); break;
 		case (0x72): inst->NOT_IMPLEMENTED(); break;
 		case (0x73): inst->NOT_IMPLEMENTED(); break;
         case (0x78): inst->NOT_IMPLEMENTED(); break;
-		case (0x79): inst->NOT_IMPLEMENTED(); break;
+		case (0x79): inst->OUT(C, A); break;
 		case (0x7A): inst->NOT_IMPLEMENTED(); break;
 		case (0x7B): inst->NOT_IMPLEMENTED(); break;
         
         case (0xA0): inst->LDI(); break;
         case (0xA1): inst->NOT_IMPLEMENTED(); break;
         case (0xA2): inst->NOT_IMPLEMENTED(); break;
-        case (0xA3): inst->NOT_IMPLEMENTED(); break;
+        case (0xA3): inst->OUTI(); break;
         case (0xA8): inst->NOT_IMPLEMENTED(); break;
         case (0xA9): inst->NOT_IMPLEMENTED(); break;
         case (0xAA): inst->NOT_IMPLEMENTED(); break;
@@ -779,7 +781,7 @@ void CPU::OpCodeED(Instructions * inst)
         case (0xB0): inst->LDIR(); break;
         case (0xB1): inst->NOT_IMPLEMENTED(); break;
         case (0xB2): inst->NOT_IMPLEMENTED(); break;
-        case (0xB3): inst->NOT_IMPLEMENTED(); break;
+        case (0xB3): inst->OTIR(); break;
         case (0xB8): inst->NOT_IMPLEMENTED(); break;
         case (0xB9): inst->NOT_IMPLEMENTED(); break;
         case (0xBA): inst->NOT_IMPLEMENTED(); break;

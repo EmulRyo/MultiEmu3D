@@ -253,33 +253,11 @@ void DebuggerDialog::UpdateRegisters() {
 }
 
 void DebuggerDialog::UpdateVideoRegs() {
-    const char *names[]    = { "LCDC", "STAT", "SCY", "SCX", "LY", "LYC", "DMA", "BGP", "OBP0", "OBP1", "WY", "WX", "BGPI", "BGPD", "OBPI", "OBPD" };
-    const WORD addresses[] = {  LCDC,   STAT,   SCY,   SCX,   LY,   LYC,   DMA,   BGP,   OBP0,   OBP1,   WY,   WX,   BGPI,   BGPD,   OBPI,   OBPD  };
     
-    m_videoView->DeleteAllItems();
-    
-    for (int i=0; i<16; i++) {
-        m_videoView->InsertItem(i, "");
-        m_videoView->SetItem(i, 0, names[i]);
-        m_videoView->SetItem(i, 1, m_debugger->ToHex(addresses[i], 4, '0'));
-        m_videoView->SetItem(i, 2, m_debugger->GetMem(addresses[i]));
-        m_videoView->SetItemFont(i, *m_font);
-    }
 }
 
 void DebuggerDialog::UpdateOtherRegs() {
-    const char *names[]    = { "P1", "SB", "SC", "DIV", "TIMA", "TMA", "TAC", "KEY1", "VBK", "HDMA1", "HDMA2", "HDMA3", "HDMA4", "HDMA5", "SVBK", "IF", "IE" };
-    const WORD addresses[] = {  P1,   SB,   SC,   DIV,   TIMA,   TMA,   TAC,   KEY1,   VBK,   HDMA1,   HDMA2,   HDMA3,   HDMA4,   HDMA5,   SVBK,   IF,   IE  };
     
-    m_othersView->DeleteAllItems();
-    
-    for (int i=0; i<17; i++) {
-        m_othersView->InsertItem(i, "");
-        m_othersView->SetItem(i, 0, names[i]);
-        m_othersView->SetItem(i, 1, m_debugger->ToHex(addresses[i], 4, '0'));
-        m_othersView->SetItem(i, 2, m_debugger->GetMem(addresses[i]));
-        m_othersView->SetItemFont(i, *m_font);
-    }
 }
 
 void DebuggerDialog::UpdateDissassembler() {
