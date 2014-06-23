@@ -23,11 +23,6 @@ class Memory;
 
 class Instructions
 {
-private:
-	Registers   *m_reg;
-	Memory      *m_mem;
-    u8          m_opcode;
-
 public:
 	Instructions(Registers *reg, Memory *mem);
 	~Instructions(void);
@@ -111,7 +106,15 @@ public:
     void OUT(e_registers placePort, e_registers placeValue);
     void OUTI(bool incrementPC = true);
     void OTIR();
+    void SLL_n(e_registers place);
     void NOT_IMPLEMENTED();
+    
+private:
+	Registers   *m_reg;
+	Memory      *m_mem;
+    u8          m_opcode;
+    
+    u8 EvenBitsSet(u8 v);
 };
 
 #endif

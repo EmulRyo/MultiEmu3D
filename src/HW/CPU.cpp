@@ -487,6 +487,14 @@ void CPU::OpCodeCB(Instructions * inst)
 		case (0x2E): inst->SRA_n(c_HL); break;
 		case (0x2F): inst->SRA_n(A); break;
 
+        case (0x30): inst->SLL_n(B); break;
+        case (0x31): inst->SLL_n(C); break;
+        case (0x32): inst->SLL_n(D); break;
+        case (0x33): inst->SLL_n(E); break;
+        case (0x34): inst->SLL_n(H); break;
+        case (0x35): inst->SLL_n(L); break;
+        case (0x36): inst->SLL_n(c_HL); break;
+        case (0x37): inst->SLL_n(A); break;
 		case (0x38): inst->SRL_n(B); break;
         case (0x39): inst->SRL_n(C); break;
         case (0x3A): inst->SRL_n(D); break;

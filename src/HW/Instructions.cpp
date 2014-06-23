@@ -1181,22 +1181,17 @@ void Instructions::LDI(bool incrementPC) {
         m_reg->AddPC(2);
 }
 
-// Quizá no debería de ejecutarse todo de golpe porque las interrupciones
-// pueden ocurrir en medio del proceso
 void Instructions::LDIR() {
-    u16 bc;
     
-    do {
-        LDI(false);
-        bc = m_reg->GetBC();
-        // Duda: decrementar PC en 2 a cada iteracion?
-    } while (bc != 0);
+    LDI(false);
     
-    m_reg->SetFlagH(0);
-    m_reg->SetFlagN(0);
-    m_reg->SetFlagPV(0);
-    
-    m_reg->AddPC(2);
+    if (m_reg->GetBC() == 0) {
+        m_reg->SetFlagH(0);
+        m_reg->SetFlagN(0);
+        m_reg->SetFlagPV(0);
+        
+        m_reg->AddPC(2);
+    }
 }
 
 void Instructions::OUT(e_registers placePort, e_registers placeValue) {
@@ -1221,24 +1216,54 @@ void Instructions::OUTI(bool incrementPC) {
     u8 port = m_reg->GetC();
     
     m_mem->PortW(port, value);
-    
     m_reg->SetFlagN(1);
-    m_reg->AddPC(2);
+    
+    if (incrementPC)
+        m_reg->AddPC(2);
 }
 
-// Quizá no debería de ejecutarse todo de golpe porque las interrupciones
-// pueden ocurrir en medio del proceso
 void Instructions::OTIR() {
-    u8 b;
     
-    do {
-        OUTI(false);
-        b = m_reg->GetB();
-    } while (b != 0);
+    OUTI(false);
+    if(m_reg->GetB() == 0) {
+        m_reg->SetFlagN(1);
+        m_reg->SetFlagZ(1);
+        m_reg->AddPC(2);
+    }
+}
+
+u8 Instructions::EvenBitsSet(u8 v) {
+    u8 c; // c accumulates the total bits set in v
+    for (c = 0; v; c++)
+        v &= v - 1; // clear the least significant bit set
     
-    m_reg->SetFlagN(1);
-    m_reg->SetFlagZ(1);
-    m_reg->AddPC(2);
+    return (c % 2);
+}
+
+void Instructions::SLL_n(e_registers place)
+{
+	u8 bit7, value;
+    
+	if (place == c_HL)
+	{
+		bit7 = BIT7(m_mem->MemR(m_reg->GetHL())) >> 7;
+		value = (m_mem->MemR(m_reg->GetHL()) << 1) | 1;
+		m_mem->MemW(m_reg->GetHL(), value);
+	}
+	else
+	{
+		bit7 = BIT7(m_reg->GetReg(place)) >> 7;
+		value = (m_reg->GetReg(place) << 1) | 1;
+		m_reg->SetReg(place, value);
+	}
+    
+	m_reg->SetFlagZ(!value ? 1 : 0);
+	m_reg->SetFlagN(0);
+	m_reg->SetFlagH(0);
+	m_reg->SetFlagC(bit7);
+    m_reg->SetFlagPV(EvenBitsSet(value));
+    
+	m_reg->AddPC(2);
 }
 
 void Instructions::NOT_IMPLEMENTED() {
