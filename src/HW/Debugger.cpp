@@ -138,14 +138,17 @@ std::string Debugger::Disassemble(u16 start, int numInstructions) {
         AppendHex(ss, address, 4, '0');
         ss << ": ";
         u8 opcode = m_cpu->MemR(address);
-        if (opcode != 0xCB) {
-            ss << GetInstructionName(opcode);
-            address += GetInstructionLength(opcode);
-        }
-        else {
-            opcode = m_cpu->MemR(address+1);
-            ss << GetInstructionCBName(opcode);
-            address += 2;
+        switch (opcode) {
+            case 0xCB:
+                opcode = m_cpu->MemR(address+1);
+                ss << GetInstructionCBName(opcode);
+                address += 2;
+                break;
+                
+            default:
+                ss << GetInstructionName(opcode);
+                address += GetInstructionLength(opcode);
+                break;
         }
         
         processed++;
@@ -171,14 +174,23 @@ void Debugger::DisassembleOne(u16 address, u16 &nextAddress, std::string &name, 
     
     int length = 0;
     u8 opcode = m_cpu->MemR(address);
-    if (opcode != 0xCB) {
-        ss1 << GetInstructionName(opcode);
-        length += GetInstructionLength(opcode);
-    }
-    else {
-        opcode = m_cpu->MemR(address+1);
-        ss1 << GetInstructionCBName(opcode);
-        length += 2;
+    switch (opcode) {
+        case 0xCB:
+            opcode = m_cpu->MemR(address+1);
+            ss1 << GetInstructionCBName(opcode);
+            length += 2;
+            break;
+            
+        case 0xED:
+            opcode = m_cpu->MemR(address+1);
+            ss1 << GetInstructionEDName(opcode);
+            length += GetInstructionEDLength(opcode);
+            break;
+            
+        default:
+            ss1 << GetInstructionName(opcode);
+            length += GetInstructionLength(opcode);
+            break;
     }
     
     for (int i=0; i<length; i++) {

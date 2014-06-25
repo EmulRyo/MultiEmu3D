@@ -186,7 +186,7 @@ int CPU::Execute(int cyclesToExecute)
 				case (0x37): inst.SCF(); break;
 				case (0x38): inst.JR_CC_n(f_C, 1); break;
 				case (0x39): inst.ADD_HL_n(SP); break;
-				case (0x3A): inst.NOT_IMPLEMENTED(); break;
+				case (0x3A): inst.LD_A_n(c_$$); break;
 				case (0x3B): inst.DEC_nn(SP); break;
 				case (0x3C): inst.INC_n(A); break;
 				case (0x3D): inst.DEC_n(A); break;
@@ -411,6 +411,8 @@ int CPU::Execute(int cyclesToExecute)
 		} // end if (!GetHalt())
         
         m_lastCycles += GetInstructionCycles(opcode);
+        if (m_lastCycles == 0)
+            m_lastCycles = 2;
         
         int tmpCycles = m_lastCycles;
         

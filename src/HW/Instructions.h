@@ -37,7 +37,6 @@ public:
 	void BIT_b_r(u8 bit, e_registers place);
 	void CALL_nn();
 	void CALL_cc_nn(e_registers flag, u8 value2check);
-	void CCF();
 	void CP_n(e_registers place);
 	void CPL();
 	void DAA();
@@ -107,6 +106,7 @@ public:
     void OUTI(bool incrementPC = true);
     void OTIR();
     void SLL_n(e_registers place);
+    void CCF();
     void NOT_IMPLEMENTED();
     
 private:

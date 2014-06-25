@@ -50,7 +50,15 @@ void Memory::ResetMem()
 
 void Memory::MemW(u16 address, u8 value)
 {
-	memory[address] = value;
+    if (address < 0xC000)
+        m_c->Write(address, value);
+    else if (address < 0xE000)
+        memory[address-0xC000] = value;
+    else if (address < 0xFFF0)
+        memory[address-0xE000] = value;
+    else {
+        printf("MemW address not controlled: 0x%X\n", address);
+    }
 }
 
 void Memory::PortW(u8 port, u8 value) {

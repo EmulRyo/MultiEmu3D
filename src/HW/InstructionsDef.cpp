@@ -35,6 +35,25 @@ const u8 instructionLengths[] = {
     1, 1, 3, 1, 3, 1, 2, 1, 1, 1, 3, 1, 3, 0, 2, 1
 };
 
+const u8 instructionLengthsED[] = {
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    2, 2, 2, 4, 2, 2, 2, 2, 2, 2, 2, 4, 2, 2, 2, 2,
+    2, 2, 2, 4, 2, 2, 2, 2, 2, 2, 2, 4, 2, 2, 2, 2,
+    2, 2, 2, 4, 2, 2, 2, 2, 2, 2, 2, 4, 2, 2, 2, 2,
+    2, 2, 2, 4, 2, 2, 2, 0, 2, 2, 2, 4, 2, 2, 2, 0,
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    2, 2, 2, 2, 0, 0, 0, 0, 2, 2, 2, 2, 0, 0, 0, 0,
+    2, 2, 2, 2, 0, 0, 0, 0, 2, 2, 2, 2, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+};
+
 const u8 instructionCycles[] = {
     1, 3, 2, 2, 1, 1, 2, 1, 5, 2, 2, 2, 1, 1, 2, 1,
     0, 3, 2, 2, 1, 1, 2, 1, 3, 2, 2, 2, 1, 1, 2, 1,
@@ -640,6 +659,124 @@ const char* instructionsCBName[] = {
     "SET 7 A"
 };
 
+const char* instructionsEDName[] = {
+    "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "",
+    "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "",
+    "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "",
+    "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "",
+    
+    "IN B,(C)",
+    "OUT (C),B",
+    "SBC HL,BC",
+    "LD (nn),BC",
+    "NEG",
+    "RETN",
+    "IM 0",
+    "LD I,A",
+    "IN C,(C)",
+    "OUT (C),C",
+    "ADC HL,BC",
+    "LD BC,(nn)",
+    "NEG",
+    "RETI",
+    "IM 0/1",
+    "LD R,A",
+    
+    "IN D,(C)",
+    "OUT (C),D",
+    "SBC HL,DE",
+    "LD (nn),DE",
+    "NEG",
+    "RETN",
+    "IM 1",
+    "LD A,I",
+    "IN E,(C)",
+    "OUT (C),E",
+    "ADC HL,DE",
+    "LD DE,(nn)",
+    "NEG",
+    "RETN",
+    "IM 2",
+    "LD A,R",
+    
+    "IN H,(C)",
+    "OUT (C),H",
+    "SBC HL,HL",
+    "LD (nn),HL",
+    "NEG",
+    "RETN",
+    "IM 0",
+    "RRD",
+    "IN L,(C)",
+    "OUT (C),L",
+    "ADC HL,HL",
+    "LD HL,(nn)",
+    "NEG",
+    "RETN",
+    "IM 0/1",
+    "RLD",
+    
+    "IN (C)",
+    "OUT (C),0",
+    "SBC HL,SP",
+    "LD (nn),SP",
+    "NEG",
+    "RETN",
+    "IM 1",
+    "",
+    "IN A,(C)",
+    "OUT (C),A",
+    "ADC HL,SP",
+    "LD SP,(nn)",
+    "NEG",
+    "RETN",
+    "IM 2",
+    "",
+    
+    "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "",
+    "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "",
+    
+    "LDI",
+    "CPI",
+    "INI",
+    "OUTI",
+    "",
+    "",
+    "",
+    "",
+    "LDD",
+    "CPD",
+    "IND",
+    "OUTD",
+    "",
+    "",
+    "",
+    "",
+    
+    "LDIR",
+    "CPIR",
+    "INIR",
+    "OTIR",
+    "",
+    "",
+    "",
+    "",
+    "LDDR",
+    "CPDR",
+    "INDR",
+    "OUTDR",
+    "",
+    "",
+    "",
+    "",
+    
+    "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "",
+    "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "",
+    "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "",
+    "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", ""
+
+};
+
 const char *GetInstructionName(u8 opcode) {
     return instructionsName[opcode];
 }
@@ -648,8 +785,16 @@ const char *GetInstructionCBName(u8 opcode) {
     return instructionsCBName[opcode];
 }
 
+const char *GetInstructionEDName(u8 opcode) {
+    return instructionsEDName[opcode];
+}
+
 u8 GetInstructionLength(u8 opcode) {
     return instructionLengths[opcode];
+}
+
+u8 GetInstructionEDLength(u8 opcode) {
+    return instructionLengthsED[opcode];
 }
 
 u8 GetInstructionCycles(u8 opcode) {

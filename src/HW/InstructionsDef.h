@@ -22,7 +22,9 @@
 
 const char *GetInstructionName(u8 opcode);
 const char *GetInstructionCBName(u8 opcode);
+const char *GetInstructionEDName(u8 opcode);
 u8 GetInstructionLength(u8 opcode);
+u8 GetInstructionEDLength(u8 opcode);
 u8 GetInstructionCycles(u8 opcode);
 u8 GetInstructionCondicionalCycles(u8 opcode);
 u8 GetInstructionCyclesCB(u8 opcode);

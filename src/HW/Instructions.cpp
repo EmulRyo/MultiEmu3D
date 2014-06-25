@@ -166,14 +166,6 @@ void Instructions::LDH_c$_A()
 	m_reg->AddPC(2);
 }
 
-void Instructions::CCF()
-{
-	m_reg->SetFlagN(0);
-	m_reg->SetFlagH(0);
-	m_reg->SetFlagC(!m_reg->GetFlagC());
-	m_reg->AddPC(1);
-}
-
 void Instructions::CP_n(e_registers place)
 {
 	u8 value;
@@ -1264,6 +1256,15 @@ void Instructions::SLL_n(e_registers place)
     m_reg->SetFlagPV(EvenBitsSet(value));
     
 	m_reg->AddPC(2);
+}
+
+void Instructions::CCF() {
+    u8 c = m_reg->GetFlagC();
+    m_reg->SetFlagH(c);
+    m_reg->SetFlagN(0);
+    m_reg->SetFlagN(c ? 0 : 1);
+    
+    m_reg->AddPC(1);
 }
 
 void Instructions::NOT_IMPLEMENTED() {
