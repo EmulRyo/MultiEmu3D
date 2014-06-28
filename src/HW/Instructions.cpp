@@ -1267,6 +1267,30 @@ void Instructions::CCF() {
     m_reg->AddPC(1);
 }
 
+void Instructions::IN_A_n() {
+    u8 port = _8bitsInmValue;
+    u8 value = m_mem->PortR(port);
+    m_reg->SetA(value);
+    
+    m_reg->AddPC(2);
+}
+
+void Instructions::IN(e_registers placeValue) {
+    u8 port = m_reg->GetC();
+    u8 value = m_mem->PortR(port);
+    m_reg->SetReg(placeValue, value);
+    
+    s8 sValue = value;
+    
+    m_reg->SetFlagS((sValue < 0) ? 1 : 0);
+    m_reg->SetFlagZ(!value);
+    m_reg->SetFlagH(0);
+    m_reg->SetFlagPV(EvenBitsSet(value));
+    m_reg->SetFlagN(0);
+    
+    m_reg->AddPC(2);
+}
+
 void Instructions::NOT_IMPLEMENTED() {
     printf("Not implemented\n");
 }

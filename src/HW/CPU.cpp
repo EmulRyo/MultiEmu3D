@@ -357,7 +357,7 @@ int CPU::Execute(int cyclesToExecute)
 				case (0xD8): inst.RET_cc(f_C, 1); break;
 				case (0xD9): inst.NOT_IMPLEMENTED(); break;
 				case (0xDA): inst.JP_cc_nn(f_C, 1); break;
-                case (0xDB): inst.NOT_IMPLEMENTED(); break;
+                case (0xDB): inst.IN_A_n(); break;
 				case (0xDC): inst.CALL_cc_nn(f_C, 1); break;
                 case (0xDD): inst.NOT_IMPLEMENTED(); break;
 				case (0xDE): inst.SBC_A($); break;
@@ -730,7 +730,7 @@ void CPU::OpCodeED(Instructions * inst)
     
     switch (OpCode)
     {
-		case (0x40): inst->NOT_IMPLEMENTED(); break;
+		case (0x40): inst->IN(B); break;
 		case (0x41): inst->OUT(C, A); break;
 		case (0x42): inst->NOT_IMPLEMENTED(); break;
 		case (0x43): inst->NOT_IMPLEMENTED(); break;
@@ -738,7 +738,7 @@ void CPU::OpCodeED(Instructions * inst)
 		case (0x45): inst->NOT_IMPLEMENTED(); break;
 		case (0x46): inst->IM(0); break;
 		case (0x47): inst->NOT_IMPLEMENTED(); break;
-		case (0x48): inst->NOT_IMPLEMENTED(); break;
+		case (0x48): inst->IN(C); break;
 		case (0x49): inst->OUT(C, C); break;
 		case (0x4A): inst->NOT_IMPLEMENTED(); break;
 		case (0x4B): inst->NOT_IMPLEMENTED(); break;
@@ -746,25 +746,25 @@ void CPU::OpCodeED(Instructions * inst)
 		case (0x4E): inst->NOT_IMPLEMENTED(); break;
 		case (0x4F): inst->NOT_IMPLEMENTED(); break;
             
-		case (0x50): inst->NOT_IMPLEMENTED(); break;
+		case (0x50): inst->IN(D); break;
 		case (0x51): inst->OUT(C, D); break;
 		case (0x52): inst->NOT_IMPLEMENTED(); break;
 		case (0x53): inst->NOT_IMPLEMENTED(); break;
 		case (0x56): inst->IM(1); break;
 		case (0x57): inst->NOT_IMPLEMENTED(); break;
-		case (0x58): inst->NOT_IMPLEMENTED(); break;
+		case (0x58): inst->IN(E); break;
 		case (0x59): inst->OUT(C, E); break;
 		case (0x5A): inst->NOT_IMPLEMENTED(); break;
 		case (0x5B): inst->NOT_IMPLEMENTED(); break;
 		case (0x5E): inst->IM(2); break;
 		case (0x5F): inst->NOT_IMPLEMENTED(); break;
             
-		case (0x60): inst->NOT_IMPLEMENTED(); break;
+		case (0x60): inst->IN(H); break;
 		case (0x61): inst->OUT(C, H); break;
 		case (0x62): inst->NOT_IMPLEMENTED(); break;
 		case (0x63): inst->NOT_IMPLEMENTED(); break;
 		case (0x67): inst->NOT_IMPLEMENTED(); break;
-		case (0x68): inst->NOT_IMPLEMENTED(); break;
+		case (0x68): inst->IN(L); break;
 		case (0x69): inst->OUT(C, L); break;
 		case (0x6A): inst->NOT_IMPLEMENTED(); break;
 		case (0x6B): inst->NOT_IMPLEMENTED(); break;

@@ -107,6 +107,8 @@ public:
     void OTIR();
     void SLL_n(e_registers place);
     void CCF();
+    void IN_A_n();
+    void IN(e_registers place);
     void NOT_IMPLEMENTED();
     
 private:

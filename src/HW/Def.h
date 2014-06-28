@@ -29,8 +29,10 @@
 
 #define SAVE_STATE_VERSION	0x01
 
-typedef unsigned char u8;
-typedef unsigned short u16;
+typedef unsigned char    u8;
+typedef unsigned short  u16;
+typedef char             s8;
+typedef short           s16;
 
 #define GB_SCREEN_W 160
 #define GB_SCREEN_H 144

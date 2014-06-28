@@ -79,6 +79,7 @@ void Memory::PortW(u8 port, u8 value) {
 };
 
 u8 Memory::PortR(u8 port) {
+    printf("PortR: 0x%X\n", port);
     return 0;
 }
 
