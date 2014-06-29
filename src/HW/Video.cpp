@@ -126,18 +126,14 @@ void Video::SetData(u8 value) {
     m_numWrite = 0;
     
     if (m_vramAddress) {
-        if (m_address < 0x4000) {
-            m_memory[m_address] = value;
-            if (m_address < 0x3FFF)
-                m_address++;
-        }
+        m_memory[m_address] = value;
+        if (m_address < 0x3FFF)
+            m_address++;
     }
     else {
-        if (m_address < 32) {
-            m_palettes[m_address] = value;
-            if (m_address < 31)
-                m_address++;
-        }
+        m_palettes[m_address] = value;
+        if (m_address < 31)
+            m_address++;
     }
 }
 
@@ -146,8 +142,18 @@ u8 Video::GetAddress() {
 }
 
 u8 Video::GetData() {
-    if (m_vramAddress)
-        return m_memory[m_address];
-    else
-        return m_palettes[m_address];
+    if (m_vramAddress) {
+        u8 value = m_memory[m_address];
+        if (m_address < 0x3FFF)
+            m_address++;
+        
+        return value;
+    }
+    else {
+        u8 value = m_palettes[m_address];
+        if (m_address < 31)
+            m_address++;
+        
+        return value;
+    }
 }
