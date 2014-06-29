@@ -21,6 +21,8 @@
 #include "map"
 #include "Def.h"
 
+#define VDP_MEM 0x4000
+
 class Memory;
 class ISMSScreenDrawable;
 
@@ -37,20 +39,32 @@ struct VideoPixel
 
 class Video
 {
-private:
-	Memory *m_mem;
-	ISMSScreenDrawable *m_screen;
-	VideoPixel *m_pixel;
 public:
-	Video(ISMSScreenDrawable * screen);
+	Video(ISMSScreenDrawable *screen);
 	~Video(void);
-    void SetScreen(ISMSScreenDrawable * screen);
-	void SetMem(Memory *mem);
+    void SetScreen(ISMSScreenDrawable *screen);
 	void RefreshScreen();
 	void ClearScreen();
 	void UpdateLine(u8 line);
     void GetColorPalette(u8 palette[4][3], int address);
+    
+    u8   GetAddress();          //0xBF
+    void SetAddress(u8 value);  //0xBF
+    
+    u8   GetData();             //0xBE
+    void SetData(u8 value);     //0xBE
+    
 private:
+	u8  m_memory[VDP_MEM];
+    u8  m_regs[16];
+    u8  m_palettes[32];
+    u16 m_address;
+    u8  m_numWrite;
+    u8  m_partialAddress;
+    bool m_vramAddress;
+	ISMSScreenDrawable *m_screen;
+	VideoPixel *m_pixel;
+
 	void UpdateBG(int line);
 	void UpdateOAM(int line);
 	inline void GetColor(VideoPixel * p);

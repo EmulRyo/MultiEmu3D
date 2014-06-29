@@ -21,14 +21,16 @@
 #include "Pad.h"
 #include "Memory.h"
 #include "CPU.h"
+#include "Video.h"
 
 using namespace std;
 
-Memory::Memory(CPU *cpu, Sound *s)
+Memory::Memory(CPU *cpu, Video *v, Sound *s)
 {
     m_cpu = cpu;
 	m_c = NULL;
 	m_s = s;
+    m_video = v;
 	ResetMem();
 }
 
@@ -69,18 +71,39 @@ void Memory::PortW(u8 port, u8 value) {
     // 0xDF - Unknown
     // 0x7E - Sound
     // 0x7F - Sound
-    // 0xBE - Video data
-    // 0xBF - Video registers
     // 0xF0 - FM Sound register
     // 0xF1 - FM Sound data
     // 0xF2 - FM Sound detect
-    if ((port != 0x7F) && (port != 0xBE) && (port != 0xBF))
-        printf("PortW: 0x%X = 0x%X\n", port ,value);
+    switch (port) {
+        // 0xBE - Video data
+        case 0xBE:
+            m_video->SetData(value);
+            break;
+        
+        // 0xBF - Video registers
+        case 0xBF:
+            m_video->SetAddress(value);
+            break;
+            
+        default:
+            if (port != 0x7F)
+                printf("PortW: 0x%X = 0x%X\n", port ,value);
+            break;
+    }
 };
 
 u8 Memory::PortR(u8 port) {
-    printf("PortR: 0x%X\n", port);
-    return 0;
+    
+    switch (port) {
+        case 0xBE:
+            return m_video->GetData();
+            
+        case 0xBF:
+            return m_video->GetAddress();
+            
+        default:
+            return 0;
+    }
 }
 
 void Memory::SaveMemory(ofstream * file)

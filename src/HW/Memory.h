@@ -26,6 +26,7 @@
 #define SIZE_MEM (SIZE_RAM)
 
 class CPU;
+class Video;
 
 class Memory
 {
@@ -33,11 +34,12 @@ protected:
 	Cartridge *m_c;
 	Sound *m_s;
     CPU *m_cpu;
+    Video *m_video;
 
 public:
 	u8 memory[SIZE_MEM];
 public:
-	Memory(CPU *cpu, Sound *s);
+	Memory(CPU *cpu, Video *v, Sound *s);
 	~Memory();
 	Memory *GetPtrMemory();
 	void ResetMem();

@@ -33,12 +33,12 @@
 using namespace std;
 
 
-CPU::CPU(Video *v, Pad *p, Sound *s): Memory(this, s)
+CPU::CPU(Video *v, Pad *p, Sound *s): Memory(this, v, s)
 {
 	Init(v, p);
 }
 
-CPU::CPU(Video *v, Pad *p, Cartridge *c, Sound *s): Memory(this, s)
+CPU::CPU(Video *v, Pad *p, Cartridge *c, Sound *s): Memory(this, v, s)
 {
     LoadCartridge(c);
 	Init(v, p);
@@ -49,7 +49,6 @@ void CPU::Init(Video *v, Pad *p)
     m_v = v;
     m_p = p;
     m_cyclesFrame = 100000;
-	v->SetMem(this->GetPtrMemory());
 	ResetGlobalVariables();
 	
 #ifdef MAKEGBLOG
