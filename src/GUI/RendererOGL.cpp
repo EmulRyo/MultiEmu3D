@@ -158,7 +158,7 @@ void RendererOGL::InitGL()
 	
     glGenTextures(1, &m_textureID);
 	glBindTexture(GL_TEXTURE_2D, m_textureID);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, GB_SCREEN_W, GB_SCREEN_H, 0, GL_RGB, GL_UNSIGNED_BYTE, frontBuffer);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, SMS_SCREEN_W, SMS_SCREEN_H, 0, GL_RGB, GL_UNSIGNED_BYTE, frontBuffer);
     
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
@@ -190,7 +190,7 @@ void RendererOGL::SetPerspective() {
     int winW, winH, w, h, x, y;
     GetClientSize(&winW, &winH);
     
-    float gbAspectRatio = (float)GB_SCREEN_W / GB_SCREEN_H;
+    float gbAspectRatio = (float)SMS_SCREEN_W / SMS_SCREEN_H;
     float wAspectRatio = (float)winW / winH;
     
     if (gbAspectRatio < wAspectRatio)
@@ -363,7 +363,7 @@ void RendererOGL::Render()
 void RendererOGL::ScreenDraw() {
     glEnable(GL_TEXTURE_2D);
     glBindTexture(GL_TEXTURE_2D, m_textureID);
-    glTexSubImage2D (GL_TEXTURE_2D, 0, 0, 0, GB_SCREEN_W, GB_SCREEN_H, GL_RGB, GL_UNSIGNED_BYTE, frontBuffer);
+    glTexSubImage2D (GL_TEXTURE_2D, 0, 0, 0, SMS_SCREEN_W, SMS_SCREEN_H, GL_RGB, GL_UNSIGNED_BYTE, frontBuffer);
     
     float ambient[] = {1.0f, 1.0f, 1.0f, 1.0f};
     float diffuse[] = {1.0f, 1.0f, 1.0f, 1.0f};

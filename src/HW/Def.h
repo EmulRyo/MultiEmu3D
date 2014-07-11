@@ -31,11 +31,13 @@
 
 typedef unsigned char    u8;
 typedef unsigned short  u16;
+typedef unsigned int    u32;
 typedef char             s8;
 typedef short           s16;
+typedef int             s32;
 
-#define GB_SCREEN_W 160
-#define GB_SCREEN_H 144
+#define SMS_SCREEN_W 256
+#define SMS_SCREEN_H 224
 
 #define FRAME_CYCLES    70224
 

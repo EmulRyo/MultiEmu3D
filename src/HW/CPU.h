@@ -59,10 +59,6 @@ private:
     void ResetGlobalVariables();
 	void OpCodeCB(Instructions *inst);
     void OpCodeED(Instructions *inst);
-	void UpdateStateLCD(int cycles);
-    void UpdateStateLCDOn();
-	void UpdateTimer(int cycles);
-    void SetIntFlag(int bit);
 	void Interrupts(Instructions * inst);
 	void OnEndFrame();
 };

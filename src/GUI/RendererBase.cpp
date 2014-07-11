@@ -62,15 +62,15 @@ wxWindow * RendererBase::GetWinRenderer()
 
 void RendererBase::SetWinRenderer(wxWindow * parent, wxWindow *renderer)
 {
-    renderer->SetMinSize(wxSize(GB_SCREEN_W, GB_SCREEN_H));
+    renderer->SetMinSize(wxSize(SMS_SCREEN_W, SMS_SCREEN_H));
 	this->winRenderer = renderer;
 	renderer->SetDropTarget(new DnDFile(parent));
     //renderer->SetCursor( wxCursor( wxCURSOR_BLANK ) ); 
 }
 
 void RendererBase::CreateScreen() {
-	imgBuf1 = new u8[GB_SCREEN_W*GB_SCREEN_H*3];
-    imgBuf2 = new u8[GB_SCREEN_W*GB_SCREEN_H*3];
+	imgBuf1 = new u8[SMS_SCREEN_W*SMS_SCREEN_H*3];
+    imgBuf2 = new u8[SMS_SCREEN_W*SMS_SCREEN_H*3];
     backBuffer = imgBuf1;
     frontBuffer = imgBuf2;
 	OnClear();
@@ -87,7 +87,7 @@ void RendererBase::ChangePalette(bool original)
 
 void RendererBase::OnClear()
 {
-	int size = GB_SCREEN_W*GB_SCREEN_H*3;
+	int size = SMS_SCREEN_W*SMS_SCREEN_H*3;
     memset(backBuffer, 0, size);
     memset(frontBuffer, 0, size);
 	PageFlip();
@@ -125,7 +125,7 @@ void RendererBase::OnDrawPixel(int idColor, int x, int y)
 
 void RendererBase::OnDrawPixel(u8 r, u8 g, u8 b, int x, int y)
 {
-    int sizeLine = GB_SCREEN_W * 3;
+    int sizeLine = SMS_SCREEN_W * 3;
 	int offsetX = x * 3;
 	int offsetY = y * sizeLine;
 	int offsetBuf = offsetY + offsetX;

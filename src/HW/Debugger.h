@@ -47,6 +47,7 @@ public:
     std::string GetMem(u16 start, u16 end);
     void GetBG(u8 *buffer);
     void GetWindow(u8 *buffer);
+    void GetTiles(u8 *buffer, int width, int height);
     std::string Disassemble(u16 start, int numInstructions);
     std::string Disassemble(int numInstructions);
     void DisassembleNext(u16 &currentAddress, u16 &nextAddress, std::string &name, std::string &data);

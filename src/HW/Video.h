@@ -29,7 +29,7 @@ class ISMSScreenDrawable;
 struct VideoPixel
 {
 	int x, y;
-	int rowMap, tileDataSelect;
+	int rowMap;
 	int color, indexColor, xScrolled;
 	int palette[4];
 	int mapIni;
@@ -45,29 +45,37 @@ public:
     void SetScreen(ISMSScreenDrawable *screen);
 	void RefreshScreen();
 	void ClearScreen();
-	void UpdateLine(u8 line);
-    void GetColorPalette(u8 palette[4][3], int address);
     
+    u8   GetLine();             //0x7F
     u8   GetAddress();          //0xBF
     void SetAddress(u8 value);  //0xBF
-    
     u8   GetData();             //0xBE
     void SetData(u8 value);     //0xBE
+    
+    void GetTile(u8 *buffer, int widthSize, int tile);
+    
+    void Update(u8 cycles);
     
 private:
 	u8  m_memory[VDP_MEM];
     u8  m_regs[16];
     u8  m_palettes[32];
+    u8  m_rgbPalettes[32][3];
     u16 m_address;
     u8  m_numWrite;
     u8  m_partialAddress;
+    u8  m_line;
+    u32 m_cycles;
+    u16 m_cyclesLine;
     bool m_vramAddress;
 	ISMSScreenDrawable *m_screen;
 	VideoPixel *m_pixel;
 
-	void UpdateBG(int line);
-	void UpdateOAM(int line);
+    void UpdateLine(u8 line);
+	void UpdateBG(u8 y);
+	void UpdateOAM(u8 y);
 	inline void GetColor(VideoPixel * p);
+    void UpdatePalette(u8 numPalette);
 };
 
 #endif

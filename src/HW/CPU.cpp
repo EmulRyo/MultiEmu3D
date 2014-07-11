@@ -32,7 +32,6 @@
 
 using namespace std;
 
-
 CPU::CPU(Video *v, Pad *p, Sound *s): Memory(this, v, s)
 {
 	Init(v, p);
@@ -48,7 +47,9 @@ void CPU::Init(Video *v, Pad *p)
 {
     m_v = v;
     m_p = p;
-    m_cyclesFrame = 100000;
+    // 3,579545 Mhz NTSC
+    // 3,546893 Mhz PAL
+    m_cyclesFrame = 59659;
 	ResetGlobalVariables();
 	
 #ifdef MAKEGBLOG
@@ -415,8 +416,8 @@ int CPU::Execute(int cyclesToExecute)
         
         int tmpCycles = m_lastCycles;
         
-        UpdateStateLCD(m_lastCycles);
-		UpdateTimer(m_lastCycles);
+        m_v->Update(m_lastCycles);
+        
         Interrupts(&inst);
         
         cycles += m_lastCycles;
@@ -813,22 +814,7 @@ void CPU::UpdatePad(bool buttonsState[8])
 	
 }
 
-void CPU::UpdateStateLCD(int cycles)
-{
-    
-}
-
-void CPU::SetIntFlag(int bit)
-{
-    
-}
-
 void CPU::Interrupts(Instructions *inst)
-{
-	
-}
-
-void CPU::UpdateTimer(int cycles)
 {
 	
 }

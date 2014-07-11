@@ -42,11 +42,11 @@ RendererSW::~RendererSW() {
 
 void RendererSW::OnPaint(wxPaintEvent &) {
     
-	wxImage img = wxImage(GB_SCREEN_W, GB_SCREEN_H, frontBuffer, true);
+	wxImage img = wxImage(SMS_SCREEN_W, SMS_SCREEN_H, frontBuffer, true);
 	
 	int winZoom = SettingsGetWindowZoom();
 	if (winZoom > 1)
-		img.Rescale(GB_SCREEN_W*winZoom, GB_SCREEN_H*winZoom, wxIMAGE_QUALITY_NORMAL);
+		img.Rescale(SMS_SCREEN_W*winZoom, SMS_SCREEN_H*winZoom, wxIMAGE_QUALITY_NORMAL);
     wxBitmap bmp(img);
     
     // paint the screen

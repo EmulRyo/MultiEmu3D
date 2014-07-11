@@ -223,7 +223,7 @@ void MainFrame::CreateToolBar()
 {
     toolBar = new wxToolBar(this, wxID_ANY);
     toolBar->SetToolBitmapSize(wxSize(16, 16));
-    toolBar->SetMinSize(wxSize(GB_SCREEN_W, 25));
+    toolBar->SetMinSize(wxSize(SMS_SCREEN_W, 25));
     
 	wxBitmap bmpOpen(open_xpm);
 	toolBar->AddTool(wxID_OPEN, _("Open"), bmpOpen, _("Open"));
@@ -624,15 +624,15 @@ void MainFrame::OnResize(wxSizeEvent &event)
     imageSize.y -= toolBarSize.y;
     int titleBarHeight = 22;
     
-    float aspectRatio = (float)GB_SCREEN_W / GB_SCREEN_H;
+    float aspectRatio = (float)SMS_SCREEN_W / SMS_SCREEN_H;
 
     int magneticBorder = 20;
-    int mod = imageSize.x % GB_SCREEN_W;
+    int mod = imageSize.x % SMS_SCREEN_W;
     
     if (mod < magneticBorder)
         imageSize.x -= mod;
-    else if (mod > (GB_SCREEN_W-magneticBorder))
-        imageSize.x += (GB_SCREEN_W-mod);
+    else if (mod > (SMS_SCREEN_W-magneticBorder))
+        imageSize.x += (SMS_SCREEN_W-mod);
     
     imageSize.y = imageSize.x / aspectRatio;
     

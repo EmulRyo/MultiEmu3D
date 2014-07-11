@@ -28,8 +28,13 @@ using namespace std;
 Video::Video(ISMSScreenDrawable *screen)
 {
     m_numWrite = 0;
+    m_line = 0;
+    m_cycles = 0;
+    m_cyclesLine = 0;
     m_vramAddress = true;
     m_pixel = new VideoPixel();
+    m_regs[2] = 0x0E;
+    m_regs[5] = 0x7E;
 	SetScreen(screen);
 }
 
@@ -43,42 +48,15 @@ void Video::SetScreen(ISMSScreenDrawable *screen)
     m_screen = screen;
 }
 
-void Video::UpdateLine(u8 y)
-{
-	UpdateBG(y);
-	UpdateOAM(y);
-}
-
 void Video::RefreshScreen()
 {
-    if (m_screen)
-        m_screen->OnRefreshGBScreen();
+    m_screen->OnRefreshGBScreen();
 }
 
 void Video::ClearScreen()
 {
     if (m_screen)
         m_screen->OnClear();
-}
-
-void Video::UpdateBG(int y)
-{
-	
-}
-
-inline void Video::GetColor(VideoPixel *p)
-{
-	
-}
-
-void Video::UpdateOAM(int y)
-{
-	
-}
-
-void Video::GetColorPalette(u8 palette[4][3], int address)
-{
-	
 }
 
 void Video::SetAddress(u8 value) {
@@ -127,21 +105,24 @@ void Video::SetData(u8 value) {
     
     if (m_vramAddress) {
         m_memory[m_address] = value;
-        if (m_address < 0x3FFF)
-            m_address++;
+        m_address++;
+        m_address &= 0x3FFF;
     }
     else {
         m_palettes[m_address] = value;
-        if (m_address < 31)
-            m_address++;
+        UpdatePalette(m_address);
+        m_address++;
+        m_address &= 0x3F;
     }
 }
 
 u8 Video::GetAddress() {
+    m_numWrite = 0;
     return m_partialAddress;
 }
 
 u8 Video::GetData() {
+    m_numWrite = 0;
     if (m_vramAddress) {
         u8 value = m_memory[m_address];
         if (m_address < 0x3FFF)
@@ -155,5 +136,165 @@ u8 Video::GetData() {
             m_address++;
         
         return value;
+    }
+}
+
+u8 Video::GetLine() {
+    return m_line;
+}
+
+void Video::Update(u8 cycles) {
+    // 486 lineas visibles de 525 en NTSC. => 92.5714 % son visibles
+    // 0,925714 * 59659 = 55227 ciclos en lineas visibles
+    // 59659 - 55227 = 4432 ciclos en VBlank
+    // 55227 / 224 = 247 ciclos cada linea
+    
+    m_cycles += cycles;
+
+    if (m_cycles > 59659) {
+        m_cycles -= 59659;
+        m_cyclesLine = 0;
+        m_line = 0;
+    }
+    
+    m_cyclesLine += cycles;
+    if (m_cyclesLine > 247) {
+        m_cyclesLine -= 247;
+        if (m_line < SMS_SCREEN_H)
+            UpdateLine(m_line);
+        else if (m_line == SMS_SCREEN_H)
+            RefreshScreen();
+        m_line++;
+    }
+}
+
+void Video::UpdateLine(u8 line) {
+	UpdateBG(line);
+	UpdateOAM(line);
+}
+
+void Video::UpdateBG(u8 y) {
+    int x, yScrolled;
+    
+    m_pixel->mapIni = 0x3800;
+    
+	yScrolled = (y + 0);
+	
+    m_pixel->y = y;
+	m_pixel->yTile = yScrolled % 8;
+	m_pixel->rowMap = ((yScrolled/8) * 32);
+	
+	for (x=0; x<SMS_SCREEN_W; x++)
+	{
+		m_pixel->x = x;
+		m_pixel->xScrolled = (x + 0);
+		if (m_pixel->xScrolled > 255)
+			m_pixel->xScrolled -= 256;
+        
+		GetColor(m_pixel);
+        
+        m_screen->OnDrawPixel(m_pixel->r, m_pixel->g, m_pixel->b, x, y);
+	}
+}
+
+void Video::UpdateOAM(u8 y) {
+	
+}
+
+inline void Video::GetColor(VideoPixel *p)
+{
+	int xTile, tileData[4], addressIdTile, addressTile, yTile, idMapTile, bgPriority;
+	
+    idMapTile = p->rowMap + p->xScrolled/8;
+    //printf("[%d, %d]: %d\n", p->xScrolled, p->y, idMapTile);
+    
+	addressIdTile = p->mapIni + idMapTile*2;
+    u8 data1 = m_memory[addressIdTile + 0];
+    u8 data2 = m_memory[addressIdTile + 1];
+    
+    u16 tileNumber = (data2 & 0x01) << 8 | data1;
+    //printf("[0x%X]: %d\n", addressIdTile, tileNumber);
+	
+	addressTile = tileNumber * 32;
+    
+    bgPriority = 0;
+    xTile = p->xScrolled % 8;
+    yTile = p->yTile;
+    
+    if (BIT1(data2))    // Flip x
+        xTile = ABS(xTile - 7);
+    if (BIT2(data2))    // Flip y
+        yTile = ABS(yTile - 7);
+    bgPriority = BIT4(data2);
+    u8 paletteOffset = BIT3(data2) ? 16 : 0;
+    
+	
+	int addressLineTile = addressTile + (yTile * 4); //yTile * 4 porque cada linea de 1 tile ocupa 4 bytes
+	
+	tileData[0] = m_memory[addressLineTile + 0];
+	tileData[1] = m_memory[addressLineTile + 1];
+    tileData[2] = m_memory[addressLineTile + 2];
+    tileData[3] = m_memory[addressLineTile + 3];
+    
+	int pixX = ABS(xTile - 7);
+    
+	//Un pixel lo componen 4 bits. Seleccionar la posicion del bit en los cuatro bytes (tileData)
+	//Esto devolvera un numero de color que junto a la paleta de color nos dara el color requerido
+	p->indexColor  = (((tileData[3] & (0x01 << pixX)) >> pixX) << 3);
+    p->indexColor |= (((tileData[2] & (0x01 << pixX)) >> pixX) << 2);
+    p->indexColor |= (((tileData[1] & (0x01 << pixX)) >> pixX) << 1);
+    p->indexColor |=  ((tileData[0] & (0x01 << pixX)) >> pixX);
+    
+    p->indexColor += paletteOffset;
+    
+    p->r = m_rgbPalettes[p->indexColor][0];
+    p->g = m_rgbPalettes[p->indexColor][1];
+    p->b = m_rgbPalettes[p->indexColor][2];
+}
+
+void Video::UpdatePalette(u8 numPalette) {
+        u8 data = m_palettes[numPalette];
+        
+        m_rgbPalettes[numPalette][0] = data & 0x03;
+        m_rgbPalettes[numPalette][1] = (data >> 2) & 0x03;
+        m_rgbPalettes[numPalette][2] = (data >> 4) & 0x03;
+        
+        // Como el valor va de 0 a 3, hay que convertirlo de 0 a 255
+        m_rgbPalettes[numPalette][0] *= 85;
+        m_rgbPalettes[numPalette][1] *= 85;
+        m_rgbPalettes[numPalette][2] *= 85;
+}
+
+void Video::GetTile(u8 *buffer, int widthSize, int tile)
+{
+    u8 tileData[4];
+    
+    int addressTile = tile * 32;
+    
+    for (int y=0; y<8; y++)
+    {
+        for (int x=0; x<8; x++)
+        {
+            int addressLineTile = addressTile + (y * 4); //yTile * 4 porque cada linea de 1 tile ocupa 4 bytes
+            
+            tileData[0] = m_memory[addressLineTile + 0];
+            tileData[1] = m_memory[addressLineTile + 1];
+            tileData[2] = m_memory[addressLineTile + 2];
+            tileData[3] = m_memory[addressLineTile + 3];
+            
+            int pixX = ABS(x - 7);
+            //Un pixel lo componen 4 bits. Seleccionar la posicion del bit en los cuatro bytes (tileData)
+            //Esto devolvera un numero de color que junto a la paleta de color nos dara el color requerido
+            int indexColor  = (((tileData[3] & (0x01 << pixX)) >> pixX) << 3);
+                indexColor |= (((tileData[2] & (0x01 << pixX)) >> pixX) << 2);
+                indexColor |= (((tileData[1] & (0x01 << pixX)) >> pixX) << 1);
+                indexColor |=  ((tileData[0] & (0x01 << pixX)) >> pixX);
+            
+            int offset = widthSize*y + x*3;
+            
+            buffer[offset + 0] = m_rgbPalettes[indexColor][0];
+            buffer[offset + 1] = m_rgbPalettes[indexColor][1];
+            buffer[offset + 2] = m_rgbPalettes[indexColor][2];
+        }
     }
 }

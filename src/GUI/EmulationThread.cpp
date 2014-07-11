@@ -92,6 +92,16 @@ void EmulationThread::SetState(enumEmuStates state)
 #endif
         cpu->Reset();
     }
+    
+    if (debugger && (state == Paused))
+    {
+        int width = 16*8;
+        int height = 28*8;
+        u8 buffer[width*height*3];
+        debugger->GetTiles(buffer, width, height);
+        wxImage *img = new wxImage(width, height, buffer);
+        img->SaveFile("tiles.bmp");
+    }
 }
 
 enumEmuStates EmulationThread::GetState()
@@ -202,7 +212,7 @@ void EmulationThread::LoadZip(const wxString zipPath, u8 ** buffer, unsigned lon
 		fileInZip = entry->GetName();
         
 		fileLower = fileInZip.Lower();
-		if (fileLower.EndsWith(wxT(".gb")) || fileLower.EndsWith(wxT(".gbc")))
+		if (fileLower.EndsWith(wxT(".sms")) || fileLower.EndsWith(wxT(".sms")))
 		{
 			*size = zip.GetSize();
 			*buffer = new u8[*size];
@@ -218,7 +228,7 @@ void EmulationThread::LoadZip(const wxString zipPath, u8 ** buffer, unsigned lon
 	}
     
 	// Archivo no encontrado
-	wxMessageBox(_("GameBoy rom not found in the file:\n")+zipPath, _("Error"));
+	wxMessageBox(_("Master System rom not found in the file:\n")+zipPath, _("Error"));
 	return;
 }
 
