@@ -17,56 +17,38 @@
 
 #include "Pad.h"
 
-enum e_gbpad { UP, DOWN, LEFT, RIGHT, A, B, SELECT, START };
+enum e_smspad { UP, DOWN, LEFT, RIGHT, B1, B2 };
 
 Pad::Pad() {
-    for (int i=0; i<8; i++)
-        m_buttonsState[i] = false;
-}
-
-u8 Pad::Update(u8 valueP1)
-{
-    u8 newValue = 0;
+    for (int i=0; i<6; i++) {
+        m_buttonsStatePad1[i] = false;
+        m_buttonsStatePad2[i] = false;
+    }
     
-	if(!BIT5(valueP1)) {
-        u8 start  = (m_buttonsState[START]  ? 0 : 1) << 3;
-        u8 select = (m_buttonsState[SELECT] ? 0 : 1) << 2;
-        u8 b      = (m_buttonsState[B]      ? 0 : 1) << 1;
-        u8 a      = (m_buttonsState[A]      ? 0 : 1);
-		newValue = start | select | b | a;
-    }
-    else if(!BIT4(valueP1)) {
-        u8 down  = (m_buttonsState[DOWN]  ? 0 : 1) << 3;
-        u8 up    = (m_buttonsState[UP]    ? 0 : 1) << 2;
-        u8 left  = (m_buttonsState[LEFT]  ? 0 : 1) << 1;
-        u8 right = (m_buttonsState[RIGHT] ? 0 : 1);
-		newValue = down | up | left | right;
-    }
-    else {
-        //Desactivar los botones
-        newValue = 0x0F;
-    }
-	return ((valueP1 & 0xF0) | newValue);
+    m_data1 = 0xFF;
+    m_data2 = 0xFF;
 }
 
-// Devuelve 1 cuando se ha pulsado un botón
-// 0 en caso contrario
-int Pad::SetButtonsState(bool buttonsState[8], u8 *valueP1)
-{
+void Pad::SetButtonsStatePad1(bool buttonsState[6]) {
+	for (int i=0; i<6; i++)
+		m_buttonsStatePad1[i] = buttonsState[i];
 	
-	int interrupt = 0;
-	
-	for (int i=0; i<8; i++)
-	{
-		if ((m_buttonsState[i] == 0) && (buttonsState[i] == true))
-		{
-			interrupt = 1;
-		}
-		
-		m_buttonsState[i] = buttonsState[i];
-	}
-	
-	*valueP1 = Update(*valueP1);
-	
-	return interrupt;
+	m_data1 = (m_data1 & 0xC0);
+    m_data1 |= m_buttonsStatePad1[UP]    ? 0x00 : 0x01;
+    m_data1 |= m_buttonsStatePad1[DOWN]  ? 0x00 : 0x02;
+    m_data1 |= m_buttonsStatePad1[LEFT]  ? 0x00 : 0x04;
+    m_data1 |= m_buttonsStatePad1[RIGHT] ? 0x00 : 0x08;
+    m_data1 |= m_buttonsStatePad1[B1]    ? 0x00 : 0x10;
+    m_data1 |= m_buttonsStatePad1[B2]    ? 0x00 : 0x20;
+}
+
+u8 Pad::GetData(u8 port) {
+    if (port == 0xDC)
+        return m_data1;
+    else
+        return m_data2;
+}
+
+void Pad::SetData(u8 port, u8 value) {
+    
 }

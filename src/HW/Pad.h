@@ -24,11 +24,16 @@ class Pad {
 public:
     Pad();
     
-    int SetButtonsState(bool buttonsState[8], u8 *valueP1);
-    u8  Update(u8 valueP1);
+    void SetButtonsStatePad1(bool buttonsState[6]);
+    void SetButtonsStatePad2(bool buttonsState[6]);
+    u8   GetData(u8 port);              //0xDC, 0xDD
+    void SetData(u8 port, u8 value);    //0xDC, 0xDD
     
 private:
-    bool m_buttonsState[8];
+    bool m_buttonsStatePad1[6];
+    bool m_buttonsStatePad2[6];
+    
+    u8  m_data1, m_data2;
 };
 
 #endif

@@ -47,7 +47,6 @@ public:
 	
     int  Execute(int cyclesToExecute);
 	int  ExecuteOneFrame();
-	void UpdatePad(bool buttonsState[8]);
 	void Reset();
 #ifdef MAKEGBLOG
 	void SaveLog();

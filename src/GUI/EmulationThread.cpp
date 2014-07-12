@@ -49,8 +49,6 @@ EmulationThread::EmulationThread()
     keysUsed[3] = WXK_RIGHT;
     keysUsed[4] = (wxKeyCode)'A';
     keysUsed[5] = (wxKeyCode)'S';
-    keysUsed[6] = WXK_SHIFT;
-    keysUsed[7] = WXK_RETURN;
     
     ApplySettings();
     
@@ -267,11 +265,12 @@ void EmulationThread::UpdatePad()
     //wxMutexLocker lock(*mutex);
     if (emuState == Playing)
     {
-        bool buttonsState[8];
-        for (int i=0; i<8; i++)
+        bool buttonsState[6];
+        for (int i=0; i<6; i++)
             buttonsState[i] = wxGetKeyState(keysUsed[i]);
         joystick->UpdateButtonsState(buttonsState);
-        cpu->UpdatePad(buttonsState);
+        
+        pad->SetButtonsStatePad1(buttonsState);
     }
 }
 
@@ -281,7 +280,7 @@ Debugger *EmulationThread::GetDebugger() {
 
 void EmulationThread::PadSetKeys(int* keys)
 {
-	for (int i=0; i<8; i++)
+	for (int i=0; i<6; i++)
 		keysUsed[i] = (wxKeyCode)keys[i];
 }
 

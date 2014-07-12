@@ -22,15 +22,17 @@
 #include "Memory.h"
 #include "CPU.h"
 #include "Video.h"
+#include "Pad.h"
 
 using namespace std;
 
-Memory::Memory(CPU *cpu, Video *v, Sound *s)
+Memory::Memory(CPU *cpu, Video *v, Pad *p, Sound *s)
 {
     m_cpu = cpu;
 	m_c = NULL;
 	m_s = s;
     m_video = v;
+    m_pad = p;
 	ResetMem();
 }
 
@@ -65,8 +67,6 @@ void Memory::MemW(u16 address, u8 value)
 
 void Memory::PortW(u8 port, u8 value) {
     // 0x3F - Language detect?
-    // 0xDC: Joystick 1
-    // 0xDD: Joystick 2
     // 0xDE - Unknown
     // 0xDF - Unknown
     // 0x7E - Sound
@@ -83,6 +83,13 @@ void Memory::PortW(u8 port, u8 value) {
         // 0xBF - Video registers
         case 0xBF:
             m_video->SetAddress(value);
+            break;
+        
+            // 0xDC: Joystick 1
+            // 0xDD: Joystick 2
+        case 0xDC:
+        case 0xDD:
+            m_pad->SetData(port, value);
             break;
             
         default:
@@ -103,6 +110,10 @@ u8 Memory::PortR(u8 port) {
             
         case 0xBF:
             return m_video->GetAddress();
+        
+        case 0xDC:
+        case 0xDD:
+            return m_pad->GetData(port);
             
         default:
             return 0;

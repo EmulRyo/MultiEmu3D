@@ -32,12 +32,12 @@
 
 using namespace std;
 
-CPU::CPU(Video *v, Pad *p, Sound *s): Memory(this, v, s)
+CPU::CPU(Video *v, Pad *p, Sound *s): Memory(this, v, p, s)
 {
 	Init(v, p);
 }
 
-CPU::CPU(Video *v, Pad *p, Cartridge *c, Sound *s): Memory(this, v, s)
+CPU::CPU(Video *v, Pad *p, Cartridge *c, Sound *s): Memory(this, v, p, s)
 {
     LoadCartridge(c);
 	Init(v, p);
@@ -807,11 +807,6 @@ void CPU::OpCodeED(Instructions * inst)
 #endif
 			throw SMSException(out.str().data());
     }
-}
-
-void CPU::UpdatePad(bool buttonsState[8])
-{
-	
 }
 
 void CPU::Interrupts(Instructions *inst)

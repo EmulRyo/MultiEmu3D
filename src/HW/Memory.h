@@ -27,6 +27,7 @@
 
 class CPU;
 class Video;
+class Pad;
 
 class Memory
 {
@@ -35,11 +36,12 @@ protected:
 	Sound *m_s;
     CPU *m_cpu;
     Video *m_video;
+    Pad *m_pad;
 
 public:
 	u8 memory[SIZE_MEM];
 public:
-	Memory(CPU *cpu, Video *v, Sound *s);
+	Memory(CPU *cpu, Video *v, Pad *pad, Sound *s);
 	~Memory();
 	Memory *GetPtrMemory();
 	void ResetMem();
