@@ -73,7 +73,7 @@ private:
 
     void UpdateLine(u8 line);
 	void UpdateBG(u8 y);
-	void UpdateOAM(u8 y);
+	void UpdateSprites(u8 y);
 	inline void GetColor(VideoPixel * p);
     void UpdatePalette(u8 numPalette);
 };
