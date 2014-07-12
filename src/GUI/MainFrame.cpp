@@ -634,7 +634,7 @@ void MainFrame::OnResize(wxSizeEvent &event)
     else if (mod > (SMS_SCREEN_W-magneticBorder))
         imageSize.x += (SMS_SCREEN_W-mod);
     
-    imageSize.y = imageSize.x / aspectRatio;
+    imageSize.y = round((float)imageSize.x / aspectRatio);
     
     int maxHeight = wxSystemSettings::GetMetric(wxSYS_SCREEN_Y)-(toolBarSize.y+titleBarHeight);
     

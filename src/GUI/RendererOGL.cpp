@@ -221,10 +221,12 @@ void RendererOGL::ScreenCreate() {
     
     glBegin(GL_QUADS);
     glNormal3f( 0.0f, 0.0f, 1.0f);
-    glTexCoord2f(0.0f, 0.0f); glVertex3f(-23.75f, 54.225f, 16.0f);
-    glTexCoord2f(0.0f, 1.0f); glVertex3f(-23.75f, 11.475f, 16.0f);
-    glTexCoord2f(1.0f, 1.0f); glVertex3f( 23.75f, 11.475f, 16.0f);
-    glTexCoord2f(1.0f, 0.0f); glVertex3f( 23.75f, 54.225f, 16.0f);
+    // 47.5 de ancho, 42,75 de alto. AR = 1.111
+    // 48.86 de ancho, 42,75 de alto. AR = 1.143
+    glTexCoord2f(0.0f, 0.0f); glVertex3f(-24.42857f, 54.225f, 16.0f);
+    glTexCoord2f(0.0f, 1.0f); glVertex3f(-24.42857f, 11.475f, 16.0f);
+    glTexCoord2f(1.0f, 1.0f); glVertex3f( 24.42857f, 11.475f, 16.0f);
+    glTexCoord2f(1.0f, 0.0f); glVertex3f( 24.42857f, 54.225f, 16.0f);
     glEnd();
     
     glEndList();
