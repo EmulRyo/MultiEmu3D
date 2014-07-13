@@ -71,6 +71,7 @@ void CPU::Reset()
     ResetGlobalVariables();
 	ResetRegs();
 	ResetMem();
+    m_v->Reset();
 	m_v->ClearScreen();
 	if (m_s && (m_s->GetEnabled()))
 	{

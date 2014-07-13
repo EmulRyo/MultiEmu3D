@@ -43,6 +43,7 @@ public:
 	Video(ISMSScreenDrawable *screen);
 	~Video(void);
     void SetScreen(ISMSScreenDrawable *screen);
+    void Reset();
 	void RefreshScreen();
 	void ClearScreen();
     

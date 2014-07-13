@@ -27,14 +27,7 @@ using namespace std;
 
 Video::Video(ISMSScreenDrawable *screen)
 {
-    m_numWrite = 0;
-    m_line = 0;
-    m_cycles = 0;
-    m_cyclesLine = 0;
-    m_vramAddress = true;
     m_pixel = new VideoPixel();
-    m_regs[2] = 0x0E;
-    m_regs[5] = 0x7E;
 	SetScreen(screen);
 }
 
@@ -51,6 +44,20 @@ void Video::SetScreen(ISMSScreenDrawable *screen)
 void Video::RefreshScreen()
 {
     m_screen->OnRefreshGBScreen();
+}
+
+void Video::Reset() {
+    m_numWrite = 0;
+    m_line = 0;
+    m_cycles = 0;
+    m_cyclesLine = 0;
+    m_vramAddress = true;
+    m_regs[2] = 0x0E;
+    m_regs[5] = 0x7E;
+    
+    memset(m_memory, 0, VDP_MEM);
+    memset(m_palettes, 0, 32);
+    memset(m_rgbPalettes, 0, 32*3);
 }
 
 void Video::ClearScreen()

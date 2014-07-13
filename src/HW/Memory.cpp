@@ -102,7 +102,7 @@ void Memory::PortW(u8 port, u8 value) {
 u8 Memory::PortR(u8 port) {
     
     switch (port) {
-        case 0x7F:
+        case 0x7E:
             return m_video->GetLine();
             
         case 0xBE:

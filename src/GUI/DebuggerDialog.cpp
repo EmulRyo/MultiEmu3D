@@ -234,7 +234,7 @@ void DebuggerDialog::UpdateMemory() {
 }
 
 void DebuggerDialog::UpdateRegisters() {
-    const char *names[] = { "PC", "AF", "BC", "DE", "HL", "SP" };
+    const char *names[] = { "AF", "BC", "DE", "HL", "PC", "SP" };
     
     m_regsView->DeleteAllItems();
     
@@ -244,11 +244,11 @@ void DebuggerDialog::UpdateRegisters() {
         m_regsView->SetItemFont(i, *m_font);
     }
     
-    m_regsView->SetItem(0, 1, m_debugger->GetRegPC());
-    m_regsView->SetItem(1, 1, m_debugger->GetRegAF());
-    m_regsView->SetItem(2, 1, m_debugger->GetRegBC());
-    m_regsView->SetItem(3, 1, m_debugger->GetRegDE());
-    m_regsView->SetItem(4, 1, m_debugger->GetRegHL());
+    m_regsView->SetItem(0, 1, m_debugger->GetRegAF());
+    m_regsView->SetItem(1, 1, m_debugger->GetRegBC());
+    m_regsView->SetItem(2, 1, m_debugger->GetRegDE());
+    m_regsView->SetItem(3, 1, m_debugger->GetRegHL());
+    m_regsView->SetItem(4, 1, m_debugger->GetRegPC());
     m_regsView->SetItem(5, 1, m_debugger->GetRegSP());
 }
 
