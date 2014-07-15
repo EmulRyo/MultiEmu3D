@@ -41,6 +41,7 @@ private:
 	u16 m_pc; //Program Counter
 	u16 m_sp; //Stack Pointer
     u8 m_intMode;
+    bool m_intPending;
 	bool m_iff1;
     bool m_iff2;
 	bool m_halt;
@@ -90,10 +91,12 @@ public:
 	inline void SetSP(u16 value) { m_sp = value; }
 	inline void AddSP(int value) { m_sp += value; };
 
-	inline bool GetIFF1()           { return m_iff1; }
-    inline bool GetIFF2()           { return m_iff2; }
-	inline void SetIFF1(bool value) { m_iff1 = value; }
-    inline void SetIFF2(bool value) { m_iff2 = value; }
+    inline bool GetIntPending()           { return m_intPending; }
+    inline void SetIntPending(bool value) { m_intPending = value; }
+	inline bool GetIFF1()                 { return m_iff1; }
+    inline bool GetIFF2()                 { return m_iff2; }
+	inline void SetIFF1(bool value)       { m_iff1 = value; }
+    inline void SetIFF2(bool value)       { m_iff2 = value; }
     
     inline u8   GetIntMode()         { return m_intMode; }
     inline void SetIntMode(u8 value) { m_intMode = value; }

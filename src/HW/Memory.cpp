@@ -82,7 +82,7 @@ void Memory::PortW(u8 port, u8 value) {
         
         // 0xBF - Video registers
         case 0xBF:
-            m_video->SetAddress(value);
+            m_video->SetControl(value);
             break;
         
             // 0xDC: Joystick 1
@@ -93,8 +93,7 @@ void Memory::PortW(u8 port, u8 value) {
             break;
             
         default:
-            if (port != 0x7F)
-                printf("PortW: 0x%X = 0x%X\n", port ,value);
+            printf("PortW: 0x%X = 0x%X\n", port ,value);
             break;
     }
 };
@@ -109,7 +108,7 @@ u8 Memory::PortR(u8 port) {
             return m_video->GetData();
             
         case 0xBF:
-            return m_video->GetAddress();
+            return m_video->GetControl();
         
         case 0xDC:
         case 0xDD:

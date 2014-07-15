@@ -46,12 +46,13 @@ public:
     void Reset();
 	void RefreshScreen();
 	void ClearScreen();
+    bool Interrupt();
     
     u8   GetLine();             //0x7F
-    u8   GetAddress();          //0xBF
-    void SetAddress(u8 value);  //0xBF
     u8   GetData();             //0xBE
     void SetData(u8 value);     //0xBE
+    u8   GetControl();          //0xBF
+    void SetControl(u8 value);  //0xBF
     
     void GetTile(u8 *buffer, int widthSize, int tile);
     
@@ -68,6 +69,7 @@ private:
     u8  m_line;
     u32 m_cycles;
     u16 m_cyclesLine;
+    u8  m_status;
     bool m_vramAddress;
 	ISMSScreenDrawable *m_screen;
 	VideoPixel *m_pixel;

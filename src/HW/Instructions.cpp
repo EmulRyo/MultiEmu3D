@@ -729,8 +729,7 @@ void Instructions::DI()
 
 void Instructions::EI()
 {
-	m_reg->SetIFF1(true);
-    m_reg->SetIFF2(true);
+	m_reg->SetIntPending(true);
 	m_reg->AddPC(1);
 }
 

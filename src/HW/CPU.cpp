@@ -743,7 +743,7 @@ void CPU::OpCodeED(Instructions * inst)
 		case (0x49): inst->OUT(C, C); break;
 		case (0x4A): inst->NOT_IMPLEMENTED(); break;
 		case (0x4B): inst->NOT_IMPLEMENTED(); break;
-		case (0x4D): inst->NOT_IMPLEMENTED(); break;
+		case (0x4D): inst->RETI(); break;
 		case (0x4E): inst->NOT_IMPLEMENTED(); break;
 		case (0x4F): inst->NOT_IMPLEMENTED(); break;
             
@@ -812,7 +812,20 @@ void CPU::OpCodeED(Instructions * inst)
 
 void CPU::Interrupts(Instructions *inst)
 {
-	
+    if (GetIFF1()) {
+        if (m_video->Interrupt()) {
+            inst->PUSH_PC();
+            SetPC(0x38);
+            SetIFF1(false);
+            SetIFF2(false);
+        }
+    }
+    
+    if (GetIntPending()) {
+        SetIFF1(true);
+        SetIFF2(true);
+        SetIntPending(false);
+    }
 }
 
 void CPU::OnEndFrame()

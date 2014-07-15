@@ -66,7 +66,7 @@ void Video::ClearScreen()
         m_screen->OnClear();
 }
 
-void Video::SetAddress(u8 value) {
+void Video::SetControl(u8 value) {
     m_numWrite++;
     
     if (m_numWrite == 2) {
@@ -123,9 +123,11 @@ void Video::SetData(u8 value) {
     }
 }
 
-u8 Video::GetAddress() {
+u8 Video::GetControl() {
     m_numWrite = 0;
-    return m_partialAddress;
+    u8 status = m_status;
+    m_status = 0;
+    return status;
 }
 
 u8 Video::GetData() {
@@ -169,8 +171,11 @@ void Video::Update(u8 cycles) {
         m_cyclesLine -= 247;
         if (m_line < SMS_SCREEN_H)
             UpdateLine(m_line);
-        else if (m_line == SMS_SCREEN_H)
+        else if (m_line == SMS_SCREEN_H) {
             RefreshScreen();
+            // Bit 7 status flag
+            m_status |= 0x80;
+        }
         m_line++;
     }
 }
@@ -358,4 +363,12 @@ void Video::GetTile(u8 *buffer, int widthSize, int tile)
             buffer[offset + 2] = m_rgbPalettes[indexColor][2];
         }
     }
+}
+
+bool Video::Interrupt() {
+    if (BIT7(m_status) && BIT5(m_regs[1])) {
+        m_status &= 0x7F;
+        return true;
+    } else
+        return false;
 }
