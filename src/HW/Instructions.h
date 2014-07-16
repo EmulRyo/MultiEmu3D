@@ -65,7 +65,6 @@ public:
 	void LD_A_n(e_registers place);
 	void LD_A_cC();
     void LD_cC_A();
-	void LD_nn_SP();
 	void LD_r1_r2(e_registers e_reg1, e_registers e_reg2);
 	void LD_SP_HL();
 	void NOP();
@@ -110,6 +109,9 @@ public:
     void IN_A_n();
     void IN(e_registers place);
     void SBC_HL(e_registers place);
+    void LD_R_A();
+    void LD_A_R();
+    void EX_DE_HL();
     void NOT_IMPLEMENTED();
     
 private:

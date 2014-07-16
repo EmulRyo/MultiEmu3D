@@ -38,6 +38,7 @@ class Registers
 {
 private:
 	u_register m_af, m_bc, m_de, m_hl, m_ix, m_iy;
+    u8 m_r, m_i;
 	u16 m_pc; //Program Counter
 	u16 m_sp; //Stack Pointer
     u8 m_intMode;
@@ -69,6 +70,11 @@ public:
 	inline void SetH(u8 value)	{ m_hl.s[1] = value; }
 	inline u8 GetL()			{ return m_hl.s[0]; }
 	inline void SetL(u8 value)	{ m_hl.s[0] = value; }
+    inline u8 GetI()			{ return m_i; }
+	inline void SetI(u8 value)	{ m_i = value; }
+    inline u8 GetR()			{ return m_r; }
+	inline void SetR(u8 value)	{ m_r = value; }
+    inline void AddR(u8 value)	{ m_r = (m_r & 0x80) | ((m_r+value) & 0x7F); }
 
 	inline u16 GetAF()           { return m_af.d; }
 	inline void SetAF(u16 value) { m_af.d = value; }
@@ -107,7 +113,7 @@ public:
 	inline bool GetStop()			{ return m_stop; }
 	inline void SetStop(bool value)	{ m_stop = value; }
 
-	u16 GetReg(e_registers reg);
+	u16  GetReg(e_registers reg);
 	void SetReg(e_registers reg, u16 value);
 
     inline u8 GetFlagS()              { return (m_af.s[0] >> 7);}

@@ -105,6 +105,8 @@ int CPU::Execute(int cyclesToExecute)
 		opcode = MemR(GetPC());
         nextOpcode = MemR(GetPC() + 1);
         
+        AddR(1);
+        
         if (opcode == 0xDD) {
             inst.SetOpcode(opcode);
             opcode = nextOpcode;
@@ -375,7 +377,7 @@ int CPU::Execute(int cyclesToExecute)
 				case (0xE8): inst.NOT_IMPLEMENTED(); break;
 				case (0xE9): inst.JP_HL(); break;
 				case (0xEA): inst.JP_cc_nn(f_PV, 1); break;
-                case (0xEB): inst.NOT_IMPLEMENTED(); break;
+                case (0xEB): inst.EX_DE_HL(); break;
                 case (0xEC): inst.NOT_IMPLEMENTED(); break;
                 case (0xED): OpCodeED(&inst); break;; break;
                 case (0xEE): inst.XOR_n($); break;
@@ -723,18 +725,19 @@ void CPU::OpCodeCB(Instructions * inst)
     }
 }
 
-void CPU::OpCodeED(Instructions * inst)
+void CPU::OpCodeED(Instructions *inst)
 {
     u8 OpCode;
     
     OpCode = MemR(GetPC() + 1);
+    inst->SetOpcode(0xED);
     
     switch (OpCode)
     {
 		case (0x40): inst->IN(B); break;
 		case (0x41): inst->OUT(C, A); break;
 		case (0x42): inst->SBC_HL(BC); break;
-		case (0x43): inst->NOT_IMPLEMENTED(); break;
+		case (0x43): inst->LD_cNN_nn(BC); break;
 		case (0x44): inst->NOT_IMPLEMENTED(); break;
 		case (0x45): inst->NOT_IMPLEMENTED(); break;
 		case (0x46): inst->IM(0); break;
@@ -745,12 +748,12 @@ void CPU::OpCodeED(Instructions * inst)
 		case (0x4B): inst->NOT_IMPLEMENTED(); break;
 		case (0x4D): inst->RETI(); break;
 		case (0x4E): inst->NOT_IMPLEMENTED(); break;
-		case (0x4F): inst->NOT_IMPLEMENTED(); break;
+		case (0x4F): inst->LD_R_A(); break;
             
 		case (0x50): inst->IN(D); break;
 		case (0x51): inst->OUT(C, D); break;
 		case (0x52): inst->SBC_HL(DE); break;
-		case (0x53): inst->NOT_IMPLEMENTED(); break;
+		case (0x53): inst->LD_cNN_nn(DE); break;
 		case (0x56): inst->IM(1); break;
 		case (0x57): inst->NOT_IMPLEMENTED(); break;
 		case (0x58): inst->IN(E); break;
@@ -758,12 +761,12 @@ void CPU::OpCodeED(Instructions * inst)
 		case (0x5A): inst->NOT_IMPLEMENTED(); break;
 		case (0x5B): inst->NOT_IMPLEMENTED(); break;
 		case (0x5E): inst->IM(2); break;
-		case (0x5F): inst->NOT_IMPLEMENTED(); break;
+		case (0x5F): inst->LD_A_R(); break;
             
 		case (0x60): inst->IN(H); break;
 		case (0x61): inst->OUT(C, H); break;
 		case (0x62): inst->SBC_HL(HL); break;
-		case (0x63): inst->NOT_IMPLEMENTED(); break;
+		case (0x63): inst->LD_cNN_nn(HL); break;
 		case (0x67): inst->NOT_IMPLEMENTED(); break;
 		case (0x68): inst->IN(L); break;
 		case (0x69): inst->OUT(C, L); break;
@@ -774,7 +777,7 @@ void CPU::OpCodeED(Instructions * inst)
         case (0x70): inst->NOT_IMPLEMENTED(); break;
         case (0x71): inst->OUT(C, f_Z); break;
 		case (0x72): inst->SBC_HL(SP); break;
-		case (0x73): inst->NOT_IMPLEMENTED(); break;
+		case (0x73): inst->LD_cNN_nn(SP); break;
         case (0x78): inst->NOT_IMPLEMENTED(); break;
 		case (0x79): inst->OUT(C, A); break;
 		case (0x7A): inst->NOT_IMPLEMENTED(); break;

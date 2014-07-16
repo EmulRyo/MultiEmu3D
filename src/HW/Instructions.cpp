@@ -211,14 +211,6 @@ void Instructions::LD_n_nn(e_registers place)
     m_reg->AddPC(3);
 }
 
-void Instructions::LD_nn_SP()
-{
-	u16 destAddress = _16bitsInmValue;
-	m_mem->MemW(destAddress, m_reg->GetSP() & 0x00FF);
-	m_mem->MemW(destAddress + 1, m_reg->GetSP() >> 8);
-    m_reg->AddPC(3);
-}
-
 void Instructions::JR()
 {
     char address;	//Con signo
@@ -1135,14 +1127,17 @@ void Instructions::DJNZ() {
 }
 
 void Instructions::LD_cNN_nn(e_registers place) {
-    assert((place == BC) || (place == DE) || (place == HL));
+    assert((place == BC) || (place == DE) || (place == HL) || (place == SP));
     
     u16 address = _16bitsInmValue;
     u16 value = m_reg->GetReg(place);
     m_mem->MemW(address+0, (value & 0x00FF));
     m_mem->MemW(address+1, (value >> 8));
     
-    m_reg->AddPC(3);
+    if (m_opcode == 0xED)
+        m_reg->AddPC(4);
+    else
+        m_reg->AddPC(3);
 }
 
 void Instructions::LD_cNN_n(e_registers place) {
@@ -1304,6 +1299,37 @@ void Instructions::SBC_HL(e_registers place) {
     m_reg->SetFlagPV(hl > oldHL ? 1 : 0);
     m_reg->SetFlagN(1);
     m_reg->SetFlagC(hl > oldHL ? 1 : 0);
+    
+     m_reg->AddPC(2);
+}
+
+void Instructions::LD_R_A() {
+    m_reg->SetR(m_reg->GetA());
+    
+     m_reg->AddPC(2);
+}
+
+void Instructions::LD_A_R() {
+    u8 r = m_reg->GetR();
+    m_reg->SetA(r);
+    
+    m_reg->SetFlagS(r >> 7);
+    m_reg->SetFlagZ(r ? 0 : 1);
+    m_reg->SetFlagH(0);
+    m_reg->SetFlagPV(m_reg->GetIFF2());
+    m_reg->SetFlagN(0);
+    
+    m_reg->AddPC(2);
+}
+
+void Instructions::EX_DE_HL() {
+    u16 de = m_reg->GetDE();
+    u16 hl = m_reg->GetHL();
+    
+    m_reg->SetDE(hl);
+    m_reg->SetHL(de);
+    
+    m_reg->AddPC(1);
 }
 
 void Instructions::NOT_IMPLEMENTED() {

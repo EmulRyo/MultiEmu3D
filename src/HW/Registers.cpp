@@ -125,6 +125,7 @@ void Registers::ResetRegs()
     SetIX(0x0000);
     SetIY(0x0000);
 	SetSP(0xDFF0);
+    SetR(0);
 	SetHalt(false);
 	SetStop(false);
 	SetIFF1(false);
