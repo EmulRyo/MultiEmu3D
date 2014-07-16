@@ -109,6 +109,7 @@ public:
     void CCF();
     void IN_A_n();
     void IN(e_registers place);
+    void SBC_HL(e_registers place);
     void NOT_IMPLEMENTED();
     
 private:

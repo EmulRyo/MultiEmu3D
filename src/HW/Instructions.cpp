@@ -1261,7 +1261,7 @@ void Instructions::CCF() {
     u8 c = m_reg->GetFlagC();
     m_reg->SetFlagH(c);
     m_reg->SetFlagN(0);
-    m_reg->SetFlagN(c ? 0 : 1);
+    m_reg->SetFlagC(c ? 0 : 1);
     
     m_reg->AddPC(1);
 }
@@ -1288,6 +1288,22 @@ void Instructions::IN(e_registers placeValue) {
     m_reg->SetFlagN(0);
     
     m_reg->AddPC(2);
+}
+
+void Instructions::SBC_HL(e_registers place) {
+    u16 oldHL = m_reg->GetHL();
+    u16 hl = oldHL - m_reg->GetReg(place) - m_reg->GetFlagC();
+    m_reg->SetHL(hl);
+    
+    m_reg->SetFlagS(hl >> 15);
+    m_reg->SetFlagZ(hl ? 0 : 1);
+    if ((oldHL & 0x0FFF) < (hl & 0x0FFF))
+        m_reg->SetFlagH(1);
+    else
+        m_reg->SetFlagH(0);
+    m_reg->SetFlagPV(hl > oldHL ? 1 : 0);
+    m_reg->SetFlagN(1);
+    m_reg->SetFlagC(hl > oldHL ? 1 : 0);
 }
 
 void Instructions::NOT_IMPLEMENTED() {
