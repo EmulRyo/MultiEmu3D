@@ -18,7 +18,6 @@
 #include <fstream>
 #include <iostream>
 #include <sstream>
-#include "RTC.h"
 #include "MBC.h"
 using namespace std;
 
@@ -35,8 +34,6 @@ static int _numRomBanks = 2;
 static int _ramBank = 0;
 static int _ramSize = 0;	//u8s
 static int _ramEnabled = 0;
-
-RTC *_rtc = NULL;
 
 static string _romName = "";
 static string _pathBatteries = "";
@@ -110,11 +107,6 @@ void InitMBC3(string romName, u8 * memCartridge, int romSize, int ramHeaderSize,
 	if (_ramSize)
 		_memRamMBC = new u8[_ramSize];
 	_ptrRamMBC = _memRamMBC;
-    
-    if (_rtc)
-        delete _rtc;
-    if (hasRTC)
-        _rtc = new RTC();
 	
 	MBCLoadBattRam();
 }
@@ -296,16 +288,9 @@ void MBC3Write(u16 address, u8 value)
 				_ptrRamMBC = _memRamMBC + _ramBank * 0x2000;
 				_memMode = 0;
 			}
-			else if ((_rtc) && (value >= 0x08) && (value <=0x0C))	//Seleccionar RTC
-			{
-				_memMode = 1;
-                _rtc->RegSelect(value - 8);
-			}
 			break;
 		case 0x6:
 		case 0x7:
-            if ((_rtc) && (_ramEnabled) && (_memMode == 1))
-                _rtc->SetLatchData(value);
 			break;
 		case 0xA:
 		case 0xB:
@@ -313,8 +298,6 @@ void MBC3Write(u16 address, u8 value)
 			if (_ramEnabled) {
                 if (_memMode == 0)
                     _ptrRamMBC[address - 0xA000] = value;
-                else
-                    _rtc->RegWrite(value);
             }
             
 		default:
@@ -333,8 +316,6 @@ u8 MBC3Read(u16 address)
 		if (_ramEnabled) {
             if (_memMode == 0)
                 return _ptrRamMBC[address - 0xA000];
-            else
-                return _rtc->RegRead();
         }
 	}
 
@@ -403,20 +384,9 @@ void MBCLoadBattRam()
 	
 	if (file)
 	{
-        file.seekg (0, file.end);
-        streampos length = file.tellg();
         file.seekg (0, file.beg);
         
 		file.read((char *)_memRamMBC, _ramSize);
-        
-        if (_rtc) {
-            streampos pos = file.tellg();
-            if (pos < length) {
-                char rtcData[48];
-                file.read(rtcData, 48);
-                _rtc->SetFileData((int *)rtcData);
-            }
-        }
         
 		file.close();
 	}
@@ -434,11 +404,6 @@ void MBCSaveBattRam()
 	if (file)
 	{
 		file.write((char *)_memRamMBC, _ramSize);
-        if (_rtc) {
-            char rtcData[48];
-            _rtc->GetFileData((int *)rtcData);
-            file.write(rtcData, 48);
-        }
 		file.close();
         printf("%s.BATT saved\n", _romName.c_str());
 	}
@@ -463,8 +428,6 @@ void MBCSaveState(ofstream * file)
 	file->write((char *)&_ramSize, sizeof(int));
 	file->write((char *)&_ramEnabled, sizeof(int));
 	file->write((char *)_memRamMBC, _ramSize);
-    if (_rtc)
-        _rtc->SaveState(file);
 }
 
 void MBCLoadState(ifstream * file)
@@ -478,8 +441,6 @@ void MBCLoadState(ifstream * file)
 	file->read((char *)_memRamMBC, _ramSize);
 	_ptrCartridge = _memCartridge + _romBank * 0x4000;
 	_ptrRamMBC = _memRamMBC + _ramBank * 0x2000;
-    if (_rtc)
-        _rtc->LoadState(file);
 }
 
 /*

@@ -50,7 +50,6 @@
 		6ED4CF6F195381BA0003C70B /* Memory.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 6ED4CF57195381BA0003C70B /* Memory.cpp */; };
 		6ED4CF70195381BA0003C70B /* Pad.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 6ED4CF59195381BA0003C70B /* Pad.cpp */; };
 		6ED4CF71195381BA0003C70B /* Registers.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 6ED4CF5B195381BA0003C70B /* Registers.cpp */; };
-		6ED4CF72195381BA0003C70B /* RTC.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 6ED4CF5D195381BA0003C70B /* RTC.cpp */; };
 		6ED4CF73195381BA0003C70B /* Sound.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 6ED4CF5F195381BA0003C70B /* Sound.cpp */; };
 		6ED4CF74195381BA0003C70B /* SoundPortaudio.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 6ED4CF61195381BA0003C70B /* SoundPortaudio.cpp */; };
 		6ED4CF76195381BA0003C70B /* Video.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 6ED4CF65195381BA0003C70B /* Video.cpp */; };
@@ -198,8 +197,6 @@
 		6ED4CF5A195381BA0003C70B /* Pad.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Pad.h; path = ../../../src/HW/Pad.h; sourceTree = "<group>"; };
 		6ED4CF5B195381BA0003C70B /* Registers.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Registers.cpp; path = ../../../src/HW/Registers.cpp; sourceTree = "<group>"; };
 		6ED4CF5C195381BA0003C70B /* Registers.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Registers.h; path = ../../../src/HW/Registers.h; sourceTree = "<group>"; };
-		6ED4CF5D195381BA0003C70B /* RTC.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = RTC.cpp; path = ../../../src/HW/RTC.cpp; sourceTree = "<group>"; };
-		6ED4CF5E195381BA0003C70B /* RTC.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RTC.h; path = ../../../src/HW/RTC.h; sourceTree = "<group>"; };
 		6ED4CF5F195381BA0003C70B /* Sound.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Sound.cpp; path = ../../../src/HW/Sound.cpp; sourceTree = "<group>"; };
 		6ED4CF60195381BA0003C70B /* Sound.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Sound.h; path = ../../../src/HW/Sound.h; sourceTree = "<group>"; };
 		6ED4CF61195381BA0003C70B /* SoundPortaudio.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = SoundPortaudio.cpp; path = ../../../src/HW/SoundPortaudio.cpp; sourceTree = "<group>"; };
@@ -353,8 +350,6 @@
 				6ED4CF5A195381BA0003C70B /* Pad.h */,
 				6ED4CF5B195381BA0003C70B /* Registers.cpp */,
 				6ED4CF5C195381BA0003C70B /* Registers.h */,
-				6ED4CF5D195381BA0003C70B /* RTC.cpp */,
-				6ED4CF5E195381BA0003C70B /* RTC.h */,
 				6ED4CF5F195381BA0003C70B /* Sound.cpp */,
 				6ED4CF60195381BA0003C70B /* Sound.h */,
 				6ED4CF61195381BA0003C70B /* SoundPortaudio.cpp */,
@@ -571,7 +566,6 @@
 				6E2B3ED517C13BD80066D9C6 /* Geo.cpp in Sources */,
 				6E82ED74194391BF001D8B2D /* Joystick.cpp in Sources */,
 				6E2B3EDA17C14B6E0066D9C6 /* wxImageLoader.cpp in Sources */,
-				6ED4CF72195381BA0003C70B /* RTC.cpp in Sources */,
 				6ED4CF6D195381BA0003C70B /* Log.cpp in Sources */,
 				6EE5987C17CCB0EE008B5A91 /* Camera.cpp in Sources */,
 			);
