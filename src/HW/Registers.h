@@ -38,6 +38,7 @@ class Registers
 {
 private:
 	u_register m_af, m_bc, m_de, m_hl, m_ix, m_iy;
+    u_register m_af2, m_bc2, m_de2, m_hl2;
     u8 m_r, m_i;
 	u16 m_pc; //Program Counter
 	u16 m_sp; //Stack Pointer
@@ -84,6 +85,15 @@ public:
 	inline void SetDE(u16 value) { m_de.d = value; }
 	inline u16 GetHL()           { return m_hl.d; }
 	inline void SetHL(u16 value) { m_hl.d = value; }
+    
+    inline u16 GetAF2()           { return m_af2.d; }
+	inline void SetAF2(u16 value) { m_af2.d = value; }
+	inline u16 GetBC2()           { return m_bc2.d; }
+	inline void SetBC2(u16 value) { m_bc2.d = value; }
+	inline u16 GetDE2()           { return m_de2.d; }
+	inline void SetDE2(u16 value) { m_de2.d = value; }
+	inline u16 GetHL2()           { return m_hl2.d; }
+	inline void SetHL2(u16 value) { m_hl2.d = value; }
 
     inline u16 GetIX()           { return m_ix.d; }
 	inline void SetIX(u16 value) { m_ix.d = value; }

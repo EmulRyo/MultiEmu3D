@@ -56,9 +56,9 @@ public:
 private:
 	void Init(Video *v, Pad *p);
     void ResetGlobalVariables();
-	void OpCodeCB(Instructions *inst);
-    void OpCodeED(Instructions *inst);
-	void Interrupts(Instructions * inst);
+	void OpCodeCB(Instructions &inst);
+    void OpCodeED(Instructions &inst);
+	void Interrupts(Instructions &inst);
 	void OnEndFrame();
 };
 

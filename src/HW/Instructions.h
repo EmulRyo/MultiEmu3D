@@ -112,6 +112,9 @@ public:
     void LD_R_A();
     void LD_A_R();
     void EX_DE_HL();
+    void EX_AF_AF2();
+    void EXX();
+    void EX_cSP_HL();
     void NOT_IMPLEMENTED();
     
 private:

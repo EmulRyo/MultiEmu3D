@@ -46,7 +46,14 @@ void Instructions::SetOpcode(u8 opcode) {
             
             switch (nextOpcode)
             {
+                case 0x09: break;
+                
+                case 0x19: break;
+                    
                 case 0x21: break;
+                case 0x29: break;
+                    
+                case 0x39: break;
                     
                 case 0xE5: break;
                     
@@ -389,15 +396,24 @@ void Instructions::ADD_HL_n(e_registers place)
 	u16 value, hl;
 	
 	value = m_reg->GetReg(place);
-	hl = m_reg->GetHL();
+    if (m_opcode == 0xDD) {
+        hl = m_reg->GetIX();
+        if (place == HL)
+            place = IX;
+    }
+    else
+        hl = m_reg->GetHL();
 	
 	m_reg->SetFlagN(0);
 	m_reg->SetFlagH((((hl & 0x0FFF) + (value & 0x0FFF)) > 0x0FFF) ? 1 : 0);
 	m_reg->SetFlagC(((hl + value) > 0xFFFF) ? 1 : 0);
 	
-	m_reg->SetHL(hl + value);
-	
-	m_reg->AddPC(1);
+    if (m_opcode == 0xDD)
+        m_reg->SetIX(hl + value);
+    else
+        m_reg->SetHL(hl + value);
+    
+    m_reg->AddPC(1);
 }
 
 void Instructions::RLC_n(e_registers place)
@@ -1328,6 +1344,48 @@ void Instructions::EX_DE_HL() {
     
     m_reg->SetDE(hl);
     m_reg->SetHL(de);
+    
+    m_reg->AddPC(1);
+}
+
+void Instructions::EX_AF_AF2() {
+    u16 af  = m_reg->GetAF();
+    u16 af2 = m_reg->GetAF2();
+    
+    m_reg->SetAF(af2);
+    m_reg->SetAF2(af);
+    
+    m_reg->AddPC(1);
+}
+
+void Instructions::EXX() {
+    u16 bc = m_reg->GetBC();
+    u16 de = m_reg->GetDE();
+    u16 hl = m_reg->GetHL();
+    u16 bc2 = m_reg->GetBC2();
+    u16 de2 = m_reg->GetDE2();
+    u16 hl2 = m_reg->GetHL2();
+    
+    m_reg->SetBC(bc2);
+    m_reg->SetDE(de2);
+    m_reg->SetHL(hl2);
+    m_reg->SetBC2(bc);
+    m_reg->SetDE2(de);
+    m_reg->SetHL2(hl);
+    
+    m_reg->AddPC(1);
+}
+
+void Instructions::EX_cSP_HL() {
+    u8 h = m_reg->GetH();
+    u8 l = m_reg->GetL();
+    u8 sp1 = m_mem->MemR(m_reg->GetSP());
+    u8 sp2 = m_mem->MemR(m_reg->GetSP()+1);
+    
+    m_reg->SetH(sp2);
+    m_reg->SetL(sp1);
+    m_mem->MemW(m_reg->GetSP(), l);
+    m_mem->MemW(m_reg->GetSP()+1, h);
     
     m_reg->AddPC(1);
 }
