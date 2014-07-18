@@ -56,10 +56,13 @@ public:
 private:
 	void Init(Video *v, Pad *p);
     void ResetGlobalVariables();
+    void Interrupts(Instructions &inst);
+	void OnEndFrame();
+    
+    void ExecuteOpcode(u8 opcode, Instructions &inst);
 	void OpCodeCB(Instructions &inst);
     void OpCodeED(Instructions &inst);
-	void Interrupts(Instructions &inst);
-	void OnEndFrame();
+
 };
 
 #endif
