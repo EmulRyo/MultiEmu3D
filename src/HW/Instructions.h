@@ -115,7 +115,9 @@ public:
     void EX_AF_AF2();
     void EXX();
     void EX_cSP_HL();
-    void NOT_IMPLEMENTED();
+    void ADD_IX(e_registers place);
+    void LD_IX_nn();
+    void PUSH(u16 value);
     
 private:
 	Registers   *m_reg;

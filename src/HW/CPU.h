@@ -60,8 +60,10 @@ private:
 	void OnEndFrame();
     
     void ExecuteOpcode(u8 opcode, Instructions &inst);
-	void OpCodeCB(Instructions &inst);
-    void OpCodeED(Instructions &inst);
+	void OpcodeCB(Instructions &inst);
+	void OpcodeDD(Instructions &inst);
+    void OpcodeED(Instructions &inst);
+    void OpcodeFD(Instructions &inst);
 
 };
 

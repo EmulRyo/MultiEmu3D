@@ -90,11 +90,7 @@ int CPU::Execute(int cyclesToExecute)
     int cycles = 0;
 	u8 opcode = 0, nextOpcode = 0, lastOpcode = 0;
 
-	Instructions inst(this->GetPtrRegisters(), this->GetPtrMemory());
-
-#ifdef MAKEGBLOG
-	log->Enqueue("\n\nStartFrame", NULL, "");
-#endif
+	Instructions inst(GetPtrRegisters(), GetPtrMemory());
 
     while (cycles < cyclesToExecute)
     {
@@ -102,25 +98,6 @@ int CPU::Execute(int cyclesToExecute)
 		lastOpcode = opcode;
 		opcode = MemR(GetPC());
         nextOpcode = MemR(GetPC() + 1);
-        
-        AddR(1);
-        
-        if (opcode == 0xDD) {
-            inst.SetOpcode(opcode);
-            opcode = nextOpcode;
-            AddPC(1);
-        }
-		
-#ifdef MAKEGBLOG
-		stringstream ssOpcode;
-		ssOpcode << numInstructions << ", ";
-		ssOpcode << "Op: " << setfill('0') << setw(2) << uppercase << hex << (int)opcode;
-		if (opCode == 0xCB)
-			ssOpCode << setfill('0') << setw(2) << uppercase << hex << (int)nextOpcode;
-        ssOpCode << ", ";
-        //stringstream ssOpCode2;
-		log->Enqueue(ssOpCode.str(), this->GetPtrRegisters(), "");
-#endif
 		
 		if (!GetHalt())
 			ExecuteOpcode(opcode, inst);

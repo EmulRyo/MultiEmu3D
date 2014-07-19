@@ -40,30 +40,9 @@ Instructions::~Instructions(void)
 
 void Instructions::SetOpcode(u8 opcode) {
     m_opcode = opcode;
-    
-    if (opcode == 0xDD) {
-        u8 nextOpcode = m_mem->MemR(m_reg->GetPC() + 1);
-            
-            switch (nextOpcode)
-            {
-                case 0x09: break;
-                
-                case 0x19: break;
-                    
-                case 0x21: break;
-                case 0x29: break;
-                    
-                case 0x39: break;
-                    
-                case 0xE5: break;
-                    
-                default:
-                    printf("Error, instruction not implemented: 0xDD%X\n", nextOpcode);
-            }
-    }
 }
 
-void Instructions::NOP(){m_reg->AddPC(1);}
+void Instructions::NOP(){ m_reg->AddPC(1); }
 
 void Instructions::LD_r1_r2(e_registers e_reg1, e_registers e_reg2)
 {
@@ -211,9 +190,7 @@ void Instructions::CPL()
 
 void Instructions::LD_n_nn(e_registers place)
 {
-	assert((place == BC) || (place == DE) || (place == HL) || (place == SP) || (place == IX));
-    if (m_opcode == 0xDD)
-        place = IX;
+	assert((place == BC) || (place == DE) || (place == HL) || (place == SP));
 	m_reg->SetReg(place, _16bitsInmValue);
     m_reg->AddPC(3);
 }
@@ -396,22 +373,13 @@ void Instructions::ADD_HL_n(e_registers place)
 	u16 value, hl;
 	
 	value = m_reg->GetReg(place);
-    if (m_opcode == 0xDD) {
-        hl = m_reg->GetIX();
-        if (place == HL)
-            place = IX;
-    }
-    else
-        hl = m_reg->GetHL();
+    hl = m_reg->GetHL();
 	
 	m_reg->SetFlagN(0);
 	m_reg->SetFlagH((((hl & 0x0FFF) + (value & 0x0FFF)) > 0x0FFF) ? 1 : 0);
 	m_reg->SetFlagC(((hl + value) > 0xFFFF) ? 1 : 0);
 	
-    if (m_opcode == 0xDD)
-        m_reg->SetIX(hl + value);
-    else
-        m_reg->SetHL(hl + value);
+    m_reg->SetHL(hl + value);
     
     m_reg->AddPC(1);
 }
@@ -956,10 +924,7 @@ void Instructions::SWAP(e_registers place)
 
 void Instructions::PUSH_nn(e_registers place)
 {
-    if (m_opcode == 0xDD)
-        place = IX;
-    
-	m_reg->AddSP(-1);
+    m_reg->AddSP(-1);
 	m_mem->MemW(m_reg->GetSP(), (m_reg->GetReg(place) & 0xFF00) >> 8);
 	m_reg->AddSP(-1);
 	m_mem->MemW(m_reg->GetSP(), m_reg->GetReg(place) & 0x00FF);
@@ -1390,7 +1355,33 @@ void Instructions::EX_cSP_HL() {
     m_reg->AddPC(1);
 }
 
-void Instructions::NOT_IMPLEMENTED() {
-    printf("Not implemented\n");
+void Instructions::ADD_IX(e_registers place) {
+    u16 value, ix;
+	
+	value = m_reg->GetReg(place);
+    ix = m_reg->GetIX();
+	
+	m_reg->SetFlagN(0);
+	m_reg->SetFlagH((((ix & 0x0FFF) + (value & 0x0FFF)) > 0x0FFF) ? 1 : 0);
+	m_reg->SetFlagC(((ix + value) > 0xFFFF) ? 1 : 0);
+	
+    m_reg->SetIX(ix + value);
+    
+    m_reg->AddPC(2);
 }
 
+void Instructions::LD_IX_nn()
+{
+	m_reg->SetIX(_16bitsInmValue);
+    m_reg->AddPC(4);
+}
+
+void Instructions::PUSH(u16 value)
+{
+    m_reg->AddSP(-1);
+	m_mem->MemW(m_reg->GetSP(), (value & 0xFF00) >> 8);
+	m_reg->AddSP(-1);
+	m_mem->MemW(m_reg->GetSP(), value & 0x00FF);
+    
+	m_reg->AddPC(2);
+}

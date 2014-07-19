@@ -54,7 +54,7 @@
 		6ED4CF74195381BA0003C70B /* SoundPortaudio.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 6ED4CF61195381BA0003C70B /* SoundPortaudio.cpp */; };
 		6ED4CF76195381BA0003C70B /* Video.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 6ED4CF65195381BA0003C70B /* Video.cpp */; };
 		6EE5987C17CCB0EE008B5A91 /* Camera.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 6EE5987A17CCB0EE008B5A91 /* Camera.cpp */; };
-		6EE60A6219798A16008D94D5 /* Opcode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 6EE60A6019798A16008D94D5 /* Opcode.cpp */; };
+		6EE60A6219798A16008D94D5 /* CPU.Opcode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 6EE60A6019798A16008D94D5 /* CPU.Opcode.cpp */; };
 		6EF404E518AFE5F3006A0FDC /* DebuggerDialog.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 6EF404E318AFE5F3006A0FDC /* DebuggerDialog.cpp */; };
 		6EFA5C0517895CCF00DD9E94 /* Settings.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 6EFA5C0317895CCF00DD9E94 /* Settings.cpp */; };
 /* End PBXBuildFile section */
@@ -208,7 +208,7 @@
 		6EDDDE7412EA037200BFB26A /* InputTextCtrl.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = InputTextCtrl.cpp; sourceTree = "<group>"; };
 		6EE5987A17CCB0EE008B5A91 /* Camera.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Camera.cpp; path = ../../../src/GUI/3D/Camera.cpp; sourceTree = "<group>"; };
 		6EE5987B17CCB0EE008B5A91 /* Camera.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Camera.h; path = ../../../src/GUI/3D/Camera.h; sourceTree = "<group>"; };
-		6EE60A6019798A16008D94D5 /* Opcode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Opcode.cpp; path = ../../../src/HW/Opcode.cpp; sourceTree = "<group>"; };
+		6EE60A6019798A16008D94D5 /* CPU.Opcode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = CPU.Opcode.cpp; path = ../../../src/HW/CPU.Opcode.cpp; sourceTree = "<group>"; };
 		6EF404E318AFE5F3006A0FDC /* DebuggerDialog.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = DebuggerDialog.cpp; sourceTree = "<group>"; };
 		6EF404E418AFE5F3006A0FDC /* DebuggerDialog.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DebuggerDialog.h; sourceTree = "<group>"; };
 		6EFA5275126354F2000E541D /* ToDo.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = ToDo.txt; path = ../../../src/ToDo.txt; sourceTree = SOURCE_ROOT; };
@@ -331,6 +331,7 @@
 				6ED4CF45195381BA0003C70B /* Cartridge.cpp */,
 				6ED4CF46195381BA0003C70B /* Cartridge.h */,
 				6ED4CF47195381BA0003C70B /* CPU.cpp */,
+				6EE60A6019798A16008D94D5 /* CPU.Opcode.cpp */,
 				6ED4CF48195381BA0003C70B /* CPU.h */,
 				6ED4CF49195381BA0003C70B /* Debugger.cpp */,
 				6ED4CF4A195381BA0003C70B /* Debugger.h */,
@@ -348,7 +349,6 @@
 				6ED4CF56195381BA0003C70B /* MBC.h */,
 				6ED4CF57195381BA0003C70B /* Memory.cpp */,
 				6ED4CF58195381BA0003C70B /* Memory.h */,
-				6EE60A6019798A16008D94D5 /* Opcode.cpp */,
 				6ED4CF59195381BA0003C70B /* Pad.cpp */,
 				6ED4CF5A195381BA0003C70B /* Pad.h */,
 				6ED4CF5B195381BA0003C70B /* Registers.cpp */,
@@ -566,7 +566,7 @@
 				6EF404E518AFE5F3006A0FDC /* DebuggerDialog.cpp in Sources */,
 				6ED4CF76195381BA0003C70B /* Video.cpp in Sources */,
 				6E2B3ED417C13BD80066D9C6 /* Array.cpp in Sources */,
-				6EE60A6219798A16008D94D5 /* Opcode.cpp in Sources */,
+				6EE60A6219798A16008D94D5 /* CPU.Opcode.cpp in Sources */,
 				6E2B3ED517C13BD80066D9C6 /* Geo.cpp in Sources */,
 				6E82ED74194391BF001D8B2D /* Joystick.cpp in Sources */,
 				6E2B3EDA17C14B6E0066D9C6 /* wxImageLoader.cpp in Sources */,
