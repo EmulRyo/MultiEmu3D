@@ -25,6 +25,25 @@ using namespace std;
 
 Registers::Registers() {ResetRegs();}
 
+void Registers::ResetRegs()
+{
+	SetAF(0x0000);
+	SetBC(0x0000);
+	SetDE(0x0000);
+	SetHL(0x0000);
+	SetPC(0x0000);
+    SetIX(0x0000);
+    SetIY(0x0000);
+	SetSP(0xDFF0);
+    SetR(0);
+	SetHalt(false);
+	SetStop(false);
+	SetIFF1(false);
+    SetIFF2(false);
+    SetIntMode(0);
+    SetIncPC(true);
+}
+
 Registers::~Registers()
 {
 }
@@ -113,24 +132,6 @@ void Registers::SetFlag(e_registers flag, u8 value)
 			out << "Error, incorrect flag (Set): " << flag << endl;
 			throw SMSException(out.str().data());
 	}
-}
-
-void Registers::ResetRegs()
-{
-	SetAF(0x0000);
-	SetBC(0x0000);
-	SetDE(0x0000);
-	SetHL(0x0000);
-	SetPC(0x0000);
-    SetIX(0x0000);
-    SetIY(0x0000);
-	SetSP(0xDFF0);
-    SetR(0);
-	SetHalt(false);
-	SetStop(false);
-	SetIFF1(false);
-    SetIFF2(false);
-    SetIntMode(0);
 }
 
 string Registers::ToString()

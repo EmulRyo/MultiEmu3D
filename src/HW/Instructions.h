@@ -26,13 +26,10 @@ class Instructions
 public:
 	Instructions(Registers *reg, Memory *mem);
 	~Instructions(void);
-    
-    void SetOpcode(u8 opcode);
 	
 	void ADC_A_n(e_registers place);
 	void ADD_A_n(e_registers place);
 	void ADD_HL_n(e_registers place);
-	void ADD_SP_n();
 	void AND(e_registers place);
 	void BIT_b_r(u8 bit, e_registers place);
 	void CALL_nn();
@@ -52,26 +49,16 @@ public:
 	void JP_HL();
 	void JR();
     void JR_CC_n(e_registers flag, u8 value2check);
-	void LDD_A_cHL();
-    void LDD_cHL_A();
-	void LDH_c$_A();
-	void LDH_A_n();
-	void LDHL_SP_n();
-	void LDI_A_cHL();
-    void LDI_cHL_A();
 	void LD_n_A(e_registers place);
     void LD_n_nn(e_registers place);
 	void LD_nn_n(e_registers place);
 	void LD_A_n(e_registers place);
-	void LD_A_cC();
-    void LD_cC_A();
 	void LD_r1_r2(e_registers e_reg1, e_registers e_reg2);
 	void LD_SP_HL();
 	void NOP();
     void OR_n(e_registers place);
 	void POP_nn(e_registers place);
     void PUSH_nn(e_registers place);
-	void PUSH_PC();
 	void RES_b_r(u8 bit, e_registers place);
 	void RET();
 	void RETI();
@@ -90,19 +77,17 @@ public:
     void SLA_n(e_registers place);
 	void SRA_n(e_registers place);
     void SRL_n(e_registers place);
-	void STOP();
 	void SUB_n(e_registers place);
-	void SWAP(e_registers place);
 	void XOR_n(e_registers place);
     
     void IM(u8 mode);
     void DJNZ();
     void LD_cNN_nn(e_registers place);
     void LD_cNN_n(e_registers place);
-    void LDI(bool incrementPC = true);
+    void LDI();
     void LDIR();
     void OUT(e_registers placePort, e_registers placeValue);
-    void OUTI(bool incrementPC = true);
+    void OUTI();
     void OTIR();
     void SLL_n(e_registers place);
     void CCF();

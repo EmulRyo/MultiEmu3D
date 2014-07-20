@@ -19,11 +19,14 @@
 #include <sstream>
 #include "CPU.h"
 #include "Instructions.h"
+#include "InstructionsDef.h"
 #include "SMSException.h"
 
 using namespace std;
 
 void CPU::ExecuteOpcode(u8 opcode, Instructions &inst) {
+    bool executed = false;
+    SetIncPC(true);
     AddR(1);
     
     switch(opcode)
@@ -242,7 +245,7 @@ void CPU::ExecuteOpcode(u8 opcode, Instructions &inst) {
         case (0xC8): inst.RET_cc(f_Z, 1); break;
         case (0xC9): inst.RET(); break;
         case (0xCA): inst.JP_cc_nn(f_Z, 1); break;
-        case (0xCB): OpcodeCB(inst); break;
+        case (0xCB): OpcodeCB(inst, executed); break;
         case (0xCC): inst.CALL_cc_nn(f_Z, 1); break;
         case (0xCD): inst.CALL_nn(); break;
         case (0xCE): inst.ADC_A_n($); break;
@@ -261,7 +264,7 @@ void CPU::ExecuteOpcode(u8 opcode, Instructions &inst) {
         case (0xDA): inst.JP_cc_nn(f_C, 1); break;
         case (0xDB): inst.IN_A_n(); break;
         case (0xDC): inst.CALL_cc_nn(f_C, 1); break;
-        case (0xDD): OpcodeDD(inst); break;
+        case (0xDD): OpcodeDD(inst, executed); break;
         case (0xDE): inst.SBC_A($); break;
         case (0xDF): inst.RST_n(0x18); break;
 
@@ -273,7 +276,7 @@ void CPU::ExecuteOpcode(u8 opcode, Instructions &inst) {
         case (0xE9): inst.JP_HL(); break;
         case (0xEA): inst.JP_cc_nn(f_PV, 1); break;
         case (0xEB): inst.EX_DE_HL(); break;
-        case (0xED): OpcodeED(inst); break;; break;
+        case (0xED): OpcodeED(inst, executed); break;; break;
         case (0xEE): inst.XOR_n($); break;
         case (0xEF): inst.RST_n(0x28); break;
 
@@ -286,7 +289,7 @@ void CPU::ExecuteOpcode(u8 opcode, Instructions &inst) {
         case (0xF9): inst.LD_SP_HL(); break;
         case (0xFA): inst.JP_cc_nn(f_S, 1); break;
         case (0xFB): inst.EI(); break;
-        case (0xFD): OpcodeFD(inst); break;
+        case (0xFD): OpcodeFD(inst, executed); break;
         case (0xFE): inst.CP_n($); break;
         case (0xFF): inst.RST_n(0x38); break;
         default:
@@ -297,13 +300,19 @@ void CPU::ExecuteOpcode(u8 opcode, Instructions &inst) {
             throw SMSException(out.str());
             
     } // end switch
+    
+    if (!executed) {
+        if (GetIncPC())
+            AddPC(GetInstructionLength(opcode));
+
+        executed = true;
+    }
 }
 
 
-void CPU::OpcodeCB(Instructions &inst)
+void CPU::OpcodeCB(Instructions &inst, bool &executed)
 {
     u8 opcode = MemR(GetPC() + 1);
-    
     AddR(1);
 
     switch (opcode)
@@ -587,12 +596,16 @@ void CPU::OpcodeCB(Instructions &inst)
             cout << out.str();
 			throw SMSException(out.str().data());
     }
+    
+    if (!executed) {
+        AddPC(GetInstructionCBLength(opcode));
+        executed = true;
+    }
 }
 
-void CPU::OpcodeDD(Instructions &inst)
+void CPU::OpcodeDD(Instructions &inst, bool &executed)
 {
     u8 opcode = MemR(GetPC() + 1);
-    
     AddR(1);
     
     switch (opcode)
@@ -615,15 +628,19 @@ void CPU::OpcodeDD(Instructions &inst)
             cout << out.str();
 			throw SMSException(out.str().data());
     }
+    
+    if (!executed) {
+        if (GetIncPC())
+            AddPC(GetInstructionDDLength(opcode));
+        
+        executed = true;
+    }
 }
 
-void CPU::OpcodeED(Instructions &inst)
+void CPU::OpcodeED(Instructions &inst, bool &executed)
 {
     u8 opcode = MemR(GetPC() + 1);
-    
     AddR(1);
-    
-    inst.SetOpcode(0xED);
     
     switch (opcode)
     {
@@ -672,15 +689,19 @@ void CPU::OpcodeED(Instructions &inst)
             cout << out.str();
 			throw SMSException(out.str().data());
     }
+    
+    if (!executed) {
+        if (GetIncPC())
+            AddPC(GetInstructionEDLength(opcode));
+        
+        executed = true;
+    }
 }
 
-void CPU::OpcodeFD(Instructions &inst)
+void CPU::OpcodeFD(Instructions &inst, bool &executed)
 {
     u8 opcode = MemR(GetPC() + 1);
-    
     AddR(1);
-    
-    inst.SetOpcode(0xED);
     
     switch (opcode)
     {
@@ -692,5 +713,12 @@ void CPU::OpcodeFD(Instructions &inst)
 			out << setfill('0') << setw(2) << uppercase << hex << (int)opcode << "\n";
             cout << out.str();
 			throw SMSException(out.str().data());
+    }
+    
+    if (!executed) {
+        if (GetIncPC())
+            AddPC(GetInstructionFDLength(opcode));
+        
+        executed = true;
     }
 }

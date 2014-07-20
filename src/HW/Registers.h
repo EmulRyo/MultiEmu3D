@@ -49,6 +49,7 @@ private:
 	bool m_halt;
 	bool m_stop;
     bool m_conditionalTaken;
+    bool m_incPC;
 public:
 	Registers();
 	~Registers();
@@ -122,6 +123,9 @@ public:
 
 	inline bool GetStop()			{ return m_stop; }
 	inline void SetStop(bool value)	{ m_stop = value; }
+    
+    inline bool GetIncPC()           { return m_incPC; }
+    inline void SetIncPC(bool incPC) { m_incPC = incPC; }
 
 	u16  GetReg(e_registers reg);
 	void SetReg(e_registers reg, u16 value);

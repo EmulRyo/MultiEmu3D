@@ -35,6 +35,26 @@ const u8 instructionLengths[] = {
     1, 1, 3, 1, 3, 1, 2, 1, 1, 1, 3, 1, 3, 0, 2, 1
 };
 
+const u8 instructionLengthsDD[] = {
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0,
+    0, 4, 4, 2, 2, 2, 3, 0, 0, 2, 4, 2, 2, 2, 3, 0,
+    0, 0, 0, 0, 3, 3, 4, 0, 0, 2, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 2, 2, 3, 0, 0, 0, 0, 0, 2, 2, 3, 0,
+    0, 0, 0, 0, 2, 2, 3, 0, 0, 0, 0, 0, 2, 2, 3, 0,
+    2, 2, 2, 2, 2, 2, 3, 2, 2, 2, 2, 2, 2, 2, 3, 2,
+    3, 3, 3, 3, 3, 3, 0, 3, 0, 0, 0, 0, 2, 2, 3, 0,
+    0, 0, 0, 0, 2, 2, 3, 0, 0, 0, 0, 0, 2, 2, 3, 0,
+    0, 0, 0, 0, 2, 2, 3, 0, 0, 0, 0, 0, 2, 2, 3, 0,
+    0, 0, 0, 0, 2, 2, 3, 0, 0, 0, 0, 0, 2, 2, 3, 0,
+    0, 0, 0, 0, 2, 2, 3, 0, 0, 0, 0, 0, 2, 2, 3, 0,
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    0, 2, 0, 2, 0, 2, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0,
+};
+
+
 const u8 instructionLengthsED[] = {
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
@@ -52,6 +72,25 @@ const u8 instructionLengthsED[] = {
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+};
+
+const u8 instructionLengthsFD[] = {
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0,
+    0, 4, 4, 2, 2, 2, 3, 0, 0, 2, 4, 2, 2, 2, 3, 0,
+    0, 0, 0, 0, 3, 3, 4, 0, 0, 2, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 2, 2, 3, 0, 0, 0, 0, 0, 2, 2, 3, 0,
+    0, 0, 0, 0, 2, 2, 3, 0, 0, 0, 0, 0, 2, 2, 3, 0,
+    2, 2, 2, 2, 2, 2, 3, 2, 2, 2, 2, 2, 2, 2, 3, 2,
+    3, 3, 3, 3, 3, 3, 0, 3, 0, 0, 0, 0, 2, 2, 3, 0,
+    0, 0, 0, 0, 2, 2, 3, 0, 0, 0, 0, 0, 2, 2, 3, 0,
+    0, 0, 0, 0, 2, 2, 3, 0, 0, 0, 0, 0, 2, 2, 3, 0,
+    0, 0, 0, 0, 2, 2, 3, 0, 0, 0, 0, 0, 2, 2, 3, 0,
+    0, 0, 0, 0, 2, 2, 3, 0, 0, 0, 0, 0, 2, 2, 3, 0,
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    0, 2, 0, 2, 0, 2, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0,
 };
 
 const u8 instructionCycles[] = {
@@ -659,6 +698,204 @@ const char* instructionsCBName[] = {
     "SET 7 A"
 };
 
+const char* instructionsDDName[] = {
+    "", "", "", "", "", "", "", "", "", "ADD IX,BC", "", "", "", "", "", "",
+    "", "", "", "", "", "", "", "", "", "ADD IX,DE", "", "", "", "", "", "",
+    
+    "",
+    "LD IX,nn",
+    "LD (nn),IX",
+    "INC IX",
+    "INC IXh",
+    "DEC IXh",
+    "LD IXh,n",
+    "",
+    "",
+    "ADD IX,IX",
+    "LD IX,(nn)",
+    "DEC IX",
+    "INC IXl",
+    "DEC IXl",
+    "LD IXl,n",
+    "",
+    
+    "",
+    "",
+    "",
+    "",
+    "INC (IX+n)",
+    "DEC (IX+n)",
+    "LD (IX+n),n",
+    "",
+    "",
+    "ADD IX,SP",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    
+    "",
+    "",
+    "",
+    "",
+    "LD B,IXh",
+    "LD B,IXl",
+    "LD B,(IX+n)",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "LD C,IXh",
+    "LD C,IXl",
+    "LD C,(IX+n)",
+    "",
+    
+    "",
+    "",
+    "",
+    "",
+    "LD D,IXh",
+    "LD D,IXl",
+    "LD D,(IX+n)",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "LD E,IXh",
+    "LD E,IXl",
+    "LD E,(IX+n)",
+    "",
+    
+    "LD IXh,B",
+    "LD IXh,C",
+    "LD IXh,D",
+    "LD IXh,E",
+    "LD IXh,IXh",
+    "LD IXh,IXl",
+    "LD H,(IX+n)",
+    "LD IXh,A",
+    "LD IXl,B",
+    "LD IXl,C",
+    "LD IXl,D",
+    "LD IXl,E",
+    "LD IXl,IXh",
+    "LD IXl,IXl",
+    "LD L,(IX+n)",
+    "LD IXl,A",
+    
+    "LD (IX+n),B",
+    "LD (IX+n),C",
+    "LD (IX+n),D",
+    "LD (IX+n),E",
+    "LD (IX+n),H",
+    "LD (IX+n),L",
+    "",
+    "LD (IX+n),A",
+    "",
+    "",
+    "",
+    "",
+    "LD A,IXh",
+    "LD A,IXl",
+    "LD A,(IX+n)",
+    "",
+    
+    "",
+    "",
+    "",
+    "",
+    "ADD A,IXh",
+    "ADD A,IXl",
+    "ADD A,(IX+n)",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "ADC A,IXh",
+    "ADC A,IXl",
+    "ADC A,(IX+n)",
+    "",
+    
+    "",
+    "",
+    "",
+    "",
+    "SUB IXh",
+    "SUB IXl",
+    "SUB (IX+n)",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "SBC A,IXh",
+    "SBC A,IXl",
+    "SBC A,(IX+n)",
+    "",
+    
+    "",
+    "",
+    "",
+    "",
+    "AND IXh",
+    "AND IXl",
+    "AND (IX+n)",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "XOR IXh",
+    "XOR IXl",
+    "XOR (IX+n)",
+    "",
+    
+    "",
+    "",
+    "",
+    "",
+    "OR IXh",
+    "OR IXl",
+    "OR (IX+n)",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "CP IXh",
+    "CP IXl",
+    "CP (IX+n)",
+    "",
+    
+    "", "", "", "", "", "", "", "", "", "", "", "0xCB", "", "", "", "",
+    "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "",
+    
+    "",
+    "POP IX",
+    "",
+    "EX (SP),IX",
+    "",
+    "PUSH IX",
+    "",
+    "",
+    "",
+    "JP (IX)",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    
+    "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", ""
+    
+};
+
 const char* instructionsEDName[] = {
     "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "",
     "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "",
@@ -777,6 +1014,204 @@ const char* instructionsEDName[] = {
 
 };
 
+const char* instructionsFDName[] = {
+    "", "", "", "", "", "", "", "", "", "ADD IY,BC", "", "", "", "", "", "",
+    "", "", "", "", "", "", "", "", "", "ADD IY,DE", "", "", "", "", "", "",
+    
+    "",
+    "LD IY,nn",
+    "LD (nn),IY",
+    "INC IY",
+    "INC IYh",
+    "DEC IYh",
+    "LD IYh,n",
+    "",
+    "",
+    "ADD IY,IY",
+    "LD IY,(nn)",
+    "DEC IY",
+    "INC IYl",
+    "DEC IYl",
+    "LD IYl,n",
+    "",
+    
+    "",
+    "",
+    "",
+    "",
+    "INC (IY+n)",
+    "DEC (IY+n)",
+    "LD (IY+n),n",
+    "",
+    "",
+    "ADD IY,SP",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    
+    "",
+    "",
+    "",
+    "",
+    "LD B,IYh",
+    "LD B,IYl",
+    "LD B,(IY+n)",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "LD C,IYh",
+    "LD C,IYl",
+    "LD C,(IY+n)",
+    "",
+    
+    "",
+    "",
+    "",
+    "",
+    "LD D,IYh",
+    "LD D,IYl",
+    "LD D,(IY+n)",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "LD E,IYh",
+    "LD E,IYl",
+    "LD E,(IY+n)",
+    "",
+    
+    "LD IYh,B",
+    "LD IYh,C",
+    "LD IYh,D",
+    "LD IYh,E",
+    "LD IYh,IXh",
+    "LD IYh,IXl",
+    "LD H,(IY+n)",
+    "LD IYh,A",
+    "LD IYl,B",
+    "LD IYl,C",
+    "LD IYl,D",
+    "LD IYl,E",
+    "LD IYl,IYh",
+    "LD IYl,IYl",
+    "LD L,(IY+n)",
+    "LD IYl,A",
+    
+    "LD (IY+n),B",
+    "LD (IY+n),C",
+    "LD (IY+n),D",
+    "LD (IY+n),E",
+    "LD (IY+n),H",
+    "LD (IY+n),L",
+    "",
+    "LD (IY+n),A",
+    "",
+    "",
+    "",
+    "",
+    "LD A,IYh",
+    "LD A,IYl",
+    "LD A,(IY+n)",
+    "",
+    
+    "",
+    "",
+    "",
+    "",
+    "ADD A,IYh",
+    "ADD A,IYl",
+    "ADD A,(IY+n)",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "ADC A,IYh",
+    "ADC A,IYl",
+    "ADC A,(IY+n)",
+    "",
+    
+    "",
+    "",
+    "",
+    "",
+    "SUB IYh",
+    "SUB IYl",
+    "SUB (IY+n)",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "SBC A,IYh",
+    "SBC A,IYl",
+    "SBC A,(IY+n)",
+    "",
+    
+    "",
+    "",
+    "",
+    "",
+    "AND IYh",
+    "AND IYl",
+    "AND (IY+n)",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "XOR IYh",
+    "XOR IYl",
+    "XOR (IY+n)",
+    "",
+    
+    "",
+    "",
+    "",
+    "",
+    "OR IYh",
+    "OR IYl",
+    "OR (IY+n)",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "CP IYh",
+    "CP IYl",
+    "CP (IY+n)",
+    "",
+    
+    "", "", "", "", "", "", "", "", "", "", "", "0xCB", "", "", "", "",
+    "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "",
+    
+    "",
+    "POP IX",
+    "",
+    "EX (SP),IX",
+    "",
+    "PUSH IX",
+    "",
+    "",
+    "",
+    "JP (IX)",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    
+    "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", ""
+    
+};
+
 const char *GetInstructionName(u8 opcode) {
     return instructionsName[opcode];
 }
@@ -785,16 +1220,36 @@ const char *GetInstructionCBName(u8 opcode) {
     return instructionsCBName[opcode];
 }
 
+const char *GetInstructionDDName(u8 opcode) {
+    return instructionsDDName[opcode];
+}
+
 const char *GetInstructionEDName(u8 opcode) {
     return instructionsEDName[opcode];
+}
+
+const char *GetInstructionFDName(u8 opcode) {
+    return instructionsFDName[opcode];
 }
 
 u8 GetInstructionLength(u8 opcode) {
     return instructionLengths[opcode];
 }
 
+u8 GetInstructionCBLength(u8 opcode) {
+    return 2;
+}
+
+u8 GetInstructionDDLength(u8 opcode) {
+    return instructionLengthsDD[opcode];
+}
+
 u8 GetInstructionEDLength(u8 opcode) {
     return instructionLengthsED[opcode];
+}
+
+u8 GetInstructionFDLength(u8 opcode) {
+    return instructionLengthsFD[opcode];
 }
 
 u8 GetInstructionCycles(u8 opcode) {

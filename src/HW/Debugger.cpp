@@ -174,17 +174,26 @@ void Debugger::DisassembleOne(u16 address, u16 &nextAddress, std::string &name, 
     
     int length = 0;
     u8 opcode = m_cpu->MemR(address);
+    u8 nextOpcode = m_cpu->MemR(address+1);
     switch (opcode) {
         case 0xCB:
-            opcode = m_cpu->MemR(address+1);
-            ss1 << GetInstructionCBName(opcode);
-            length += 2;
+            ss1 << GetInstructionCBName(nextOpcode);
+            length += GetInstructionCBLength(nextOpcode);
+            break;
+            
+        case 0xDD:
+            ss1 << GetInstructionDDName(nextOpcode);
+            length += GetInstructionDDLength(nextOpcode);
             break;
             
         case 0xED:
-            opcode = m_cpu->MemR(address+1);
-            ss1 << GetInstructionEDName(opcode);
-            length += GetInstructionEDLength(opcode);
+            ss1 << GetInstructionEDName(nextOpcode);
+            length += GetInstructionEDLength(nextOpcode);
+            break;
+        
+        case 0xFD:
+            ss1 << GetInstructionFDName(nextOpcode);
+            length += GetInstructionFDLength(nextOpcode);
             break;
             
         default:

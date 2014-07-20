@@ -124,7 +124,7 @@ void CPU::Interrupts(Instructions &inst)
 {
     if (GetIFF1()) {
         if (m_video->Interrupt()) {
-            inst.PUSH_PC();
+            inst.PUSH(GetPC());
             SetPC(0x38);
             SetIFF1(false);
             SetIFF2(false);
