@@ -80,12 +80,16 @@ public:
 
 	inline u16 GetAF()           { return m_af.d; }
 	inline void SetAF(u16 value) { m_af.d = value; }
+    inline u16 *PtrAF()          { return &m_af.d; }
 	inline u16 GetBC()           { return m_bc.d; }
 	inline void SetBC(u16 value) { m_bc.d = value; }
+    inline u16 *PtrBC()          { return &m_bc.d; }
 	inline u16 GetDE()           { return m_de.d; }
 	inline void SetDE(u16 value) { m_de.d = value; }
+    inline u16 *PtrDE()          { return &m_de.d; }
 	inline u16 GetHL()           { return m_hl.d; }
 	inline void SetHL(u16 value) { m_hl.d = value; }
+    inline u16 *PtrHL()          { return &m_hl.d; }
     
     inline u16 GetAF2()           { return m_af2.d; }
 	inline void SetAF2(u16 value) { m_af2.d = value; }
@@ -96,10 +100,12 @@ public:
 	inline u16 GetHL2()           { return m_hl2.d; }
 	inline void SetHL2(u16 value) { m_hl2.d = value; }
 
-    inline u16 GetIX()           { return m_ix.d; }
-	inline void SetIX(u16 value) { m_ix.d = value; }
-    inline u16 GetIY()           { return m_iy.d; }
-	inline void SetIY(u16 value) { m_iy.d = value; }
+    inline u16  GetIX()           { return m_ix.d; }
+	inline void SetIX(u16 value)  { m_ix.d = value; }
+    inline u16 *PtrIX()           { return &m_ix.d; }
+    inline u16  GetIY()           { return m_iy.d; }
+	inline void SetIY(u16 value)  { m_iy.d = value; }
+    inline u16 *PtrIY()           { return &m_iy.d; }
 
 	inline u16 GetPC()           { return m_pc; }
 	inline void SetPC(u16 value) { m_pc = value; }

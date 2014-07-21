@@ -24,6 +24,10 @@
 
 using namespace std;
 
+u16 CPU::Get16BitsInmValue(u8 offset) {
+    return ((MemR(GetPC() + offset + 2)) << 8) | MemR(GetPC() + offset + 1);
+}
+
 void CPU::ExecuteOpcode(u8 opcode, Instructions &inst) {
     bool executed = false;
     SetIncPC(true);
@@ -75,6 +79,7 @@ void CPU::ExecuteOpcode(u8 opcode, Instructions &inst) {
         case (0x27): inst.DAA(); break;
         case (0x28): inst.JR_CC_n(f_Z, 1); break;
         case (0x29): inst.ADD_HL_n(HL); break;
+        case (0x2A): inst.LD_HL_cNN(); break;
         case (0x2B): inst.DEC_nn(HL); break;
         case (0x2C): inst.INC_n(L); break;
         case (0x2D): inst.DEC_n(L); break;
@@ -610,15 +615,16 @@ void CPU::OpcodeDD(Instructions &inst, bool &executed)
     
     switch (opcode)
     {
-        case 0x09: inst.ADD_IX(BC); break;
+        case 0x09: inst.ADD(PtrIX(), GetBC()); break;
             
-        case 0x19: inst.ADD_IX(DE); break;
+        case 0x19: inst.ADD(PtrIX(), GetDE()); break;
             
-        case 0x21: inst.LD_IX_nn(); break;
-        case 0x29: inst.ADD_IX(IX); break;
+        case 0x21: inst.LD(PtrIX(), Get16BitsInmValue(1)); break;
+        case 0x29: inst.ADD(PtrIX(), GetIX()); break;
             
-        case 0x39: inst.ADD_IX(SP); break;
-            
+        case 0x39: inst.ADD(PtrIX(), GetSP()); break;
+        
+        case 0xE1: inst.POP(PtrIX());  break;
         case 0xE5: inst.PUSH(GetIX());  break;
             
         default:
@@ -705,7 +711,17 @@ void CPU::OpcodeFD(Instructions &inst, bool &executed)
     
     switch (opcode)
     {
-        case (0xE5): inst.PUSH(GetIY()); break;
+        case 0x09: inst.ADD(PtrIY(), GetBC()); break;
+            
+        case 0x19: inst.ADD(PtrIY(), GetDE()); break;
+            
+        case 0x21: inst.LD(PtrIY(), Get16BitsInmValue(1)); break;
+        case 0x29: inst.ADD(PtrIY(), GetIY()); break;
+            
+        case 0x39: inst.ADD(PtrIY(), GetSP()); break;
+            
+        case 0xE1: inst.POP(PtrIY());  break;
+        case 0xE5: inst.PUSH(GetIY()); break;
             
         default:
 			stringstream out;

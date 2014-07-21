@@ -1044,28 +1044,34 @@ void Instructions::EX_cSP_HL() {
     m_mem->MemW(m_reg->GetSP()+1, h);
 }
 
-void Instructions::ADD_IX(e_registers place) {
-    u16 value, ix;
-	
-	value = m_reg->GetReg(place);
-    ix = m_reg->GetIX();
-	
-	m_reg->SetFlagN(0);
-	m_reg->SetFlagH((((ix & 0x0FFF) + (value & 0x0FFF)) > 0x0FFF) ? 1 : 0);
-	m_reg->SetFlagC(((ix + value) > 0xFFFF) ? 1 : 0);
-	
-    m_reg->SetIX(ix + value);
-}
-
-void Instructions::LD_IX_nn()
-{
-	m_reg->SetIX(_16bitsInmValue);
-}
-
 void Instructions::PUSH(u16 value)
 {
     m_reg->AddSP(-1);
 	m_mem->MemW(m_reg->GetSP(), (value & 0xFF00) >> 8);
 	m_reg->AddSP(-1);
 	m_mem->MemW(m_reg->GetSP(), value & 0x00FF);
+}
+
+void Instructions::POP(u16 *reg) {
+    *reg = (m_mem->MemR(m_reg->GetSP() + 1) << 8) | m_mem->MemR(m_reg->GetSP());
+	m_reg->AddSP(2);
+}
+
+void Instructions::LD_HL_cNN() {
+    u16 address = _16bitsInmValue;
+    m_reg->SetL(m_mem->MemR(address));
+    m_reg->SetH(m_mem->MemR(address+1));
+}
+
+void Instructions::ADD(u16 *reg, u16 value) {
+	m_reg->SetFlagN(0);
+	m_reg->SetFlagH((((*reg & 0x0FFF) + (value & 0x0FFF)) > 0x0FFF) ? 1 : 0);
+	m_reg->SetFlagC(((*reg + value) > 0xFFFF) ? 1 : 0);
+	
+    *reg += value;
+}
+
+void Instructions::LD(u16 *reg, u16 value)
+{
+    *reg = value;
 }
