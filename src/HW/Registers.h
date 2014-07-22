@@ -101,11 +101,19 @@ public:
 	inline void SetHL2(u16 value) { m_hl2.d = value; }
 
     inline u16  GetIX()           { return m_ix.d; }
+    inline u8   GetIXh()          { return m_ix.s[1]; }
+    inline u8   GetIXl()          { return m_ix.s[0]; }
 	inline void SetIX(u16 value)  { m_ix.d = value; }
     inline u16 *PtrIX()           { return &m_ix.d; }
+    inline u8  *PtrIXh()          { return &m_ix.s[1]; }
+    inline u8  *PtrIXl()          { return &m_ix.s[0]; }
     inline u16  GetIY()           { return m_iy.d; }
+    inline u8   GetIYh()          { return m_iy.s[1]; }
+    inline u8   GetIYl()          { return m_iy.s[0]; }
 	inline void SetIY(u16 value)  { m_iy.d = value; }
     inline u16 *PtrIY()           { return &m_iy.d; }
+    inline u8  *PtrIYh()          { return &m_iy.s[1]; }
+    inline u8  *PtrIYl()          { return &m_iy.s[0]; }
 
 	inline u16 GetPC()           { return m_pc; }
 	inline void SetPC(u16 value) { m_pc = value; }

@@ -1071,7 +1071,30 @@ void Instructions::ADD(u16 *reg, u16 value) {
     *reg += value;
 }
 
+void Instructions::LD(u8 *reg, u8 value)
+{
+    *reg = value;
+}
+
 void Instructions::LD(u16 *reg, u16 value)
 {
     *reg = value;
+}
+
+void Instructions::DEC(u8 *reg) {
+    *reg -= 1;
+}
+
+void Instructions::CPI() {
+    u8 hl = m_mem->MemR(m_reg->GetHL());
+    u8 result = m_reg->GetA() - hl;
+    
+    m_reg->SetFlagS(BIT7(result) >> 7);
+    m_reg->SetFlagZ(result == 0);
+    m_reg->SetFlagH((m_reg->GetA() & 0x0F) < (hl & 0x0F));
+    m_reg->SetFlagPV(m_reg->GetBC() != 0);
+    m_reg->SetFlagPV(1);
+    
+    m_reg->SetHL(m_reg->GetHL()+1);
+    m_reg->SetBC(m_reg->GetBC()-1);
 }

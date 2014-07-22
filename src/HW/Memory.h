@@ -54,13 +54,8 @@ public:
             return m_c->Read(address);
         else if (address < 0xE000)
             return memory[address-0xC000];
-        else if (address < 0xFFF0)
+        else
             return memory[address-0xE000];
-        else {
-            printf("MemR address not controlled: 0x%X\n", address);
-            return 0;
-        }
-		
 	}
     void PortW(u8 port, u8 value);
     u8   PortR(u8 port);

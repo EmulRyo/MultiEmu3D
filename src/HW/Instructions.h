@@ -104,7 +104,10 @@ public:
     void POP(u16 *reg);
     void LD_HL_cNN();
     void ADD(u16 *reg, u16 value);
+    void LD(u8  *reg, u8  value);
     void LD(u16 *reg, u16 value);
+    void DEC(u8 *reg);
+    void CPI();
     
 private:
 	Registers   *m_reg;
