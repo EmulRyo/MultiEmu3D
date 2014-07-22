@@ -34,6 +34,7 @@ using namespace std;
 Cartridge::Cartridge(string fileName, string batteriesPath)
 {
 	m_memCartridge = NULL;
+    m_offset = 0;
 	ifstream::pos_type size;
 	ifstream file (fileName.c_str(), ios::in|ios::binary|ios::ate);
 	if (file.is_open())
@@ -50,6 +51,7 @@ Cartridge::Cartridge(string fileName, string batteriesPath)
 		CheckCartridge(batteriesPath);
 		
 		m_isLoaded = true;
+        
 	}
 	else
 	{
@@ -63,6 +65,7 @@ Cartridge::Cartridge(string fileName, string batteriesPath)
  */
 Cartridge::Cartridge(u8 *cartridgeBuffer, unsigned long size, string batteriesPath)
 {
+    m_offset = 0;
 	m_romSize = size;
 	m_memCartridge = cartridgeBuffer;
 	
@@ -111,6 +114,8 @@ void Cartridge::CheckCartridge(string batteriesPath)
 	m_name = string("");
 	
 	//CheckRomSize((int)m_memCartridge[CART_ROM_SIZE], m_romSize);
+    if (m_romSize == 33280)
+        m_offset = 0x200;
     
     ptrRead = &NoneRead;
     ptrWrite = &NoneWrite;

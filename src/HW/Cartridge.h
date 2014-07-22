@@ -29,6 +29,7 @@ private:
 	std::string m_name;
 	bool m_isLoaded;
 	u8 *m_memCartridge;
+    long m_offset;
 
 	u8 (*ptrRead)(u16);
 	void (*ptrWrite)(u16, u8);
@@ -46,8 +47,8 @@ public:
 	std::string GetName();
 	bool IsLoaded();
 
-	inline u8 Read(u16 direction) { return ptrRead(direction); };
-	inline void Write(u16 direction, u8 value) { ptrWrite(direction, value); };
+	inline u8 Read(u16 address) { return ptrRead(address+m_offset); };
+	inline void Write(u16 address, u8 value) { ptrWrite(address, value); };
 	
 	void SaveStateMBC(std::ofstream *file);
 	void LoadStateMBC(std::ifstream *file);
