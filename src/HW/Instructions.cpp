@@ -1093,7 +1093,7 @@ void Instructions::CPI() {
     m_reg->SetFlagZ(result == 0);
     m_reg->SetFlagH((m_reg->GetA() & 0x0F) < (hl & 0x0F));
     m_reg->SetFlagPV(m_reg->GetBC() != 0);
-    m_reg->SetFlagPV(1);
+    m_reg->SetFlagN(1);
     
     m_reg->SetHL(m_reg->GetHL()+1);
     m_reg->SetBC(m_reg->GetBC()-1);

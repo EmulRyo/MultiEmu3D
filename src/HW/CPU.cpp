@@ -135,6 +135,7 @@ void CPU::Interrupts(Instructions &inst)
         SetIFF1(true);
         SetIFF2(true);
         SetIntPending(false);
+        SetHalt(false);
     }
 }
 

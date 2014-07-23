@@ -93,7 +93,6 @@ void Memory::PortW(u8 port, u8 value) {
             break;
             
         default:
-            printf("PortW: 0x%X = 0x%X\n", port ,value);
             break;
     }
 };
