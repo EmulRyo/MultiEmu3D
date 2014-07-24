@@ -91,6 +91,14 @@ std::string Debugger::GetRegs()
     return regs;
 }
 
+std::string Debugger::GetVReg(u8 reg) {
+    return ToHex(m_video->RegR(reg), 2, '0');
+}
+
+std::string Debugger::GetPal(u8 pal) {
+    return ToHex(m_video->PalR(pal), 2, '0');
+}
+
 std::string Debugger::GetMem(u16 address) {
     stringstream ss;
     
@@ -118,6 +126,42 @@ std::string Debugger::GetMem(u16 start, u16 end)
         }
         
         u8 value = m_cpu->MemR(row+0xF);
+        AppendHex(ss, value, 2, '0');
+        if (row < (end & 0xFFF0))
+            ss << '\n';
+        row += 0x10;
+    }
+    
+    return ss.str();
+}
+
+std::string Debugger::GetVMem(u16 start, u16 end)
+{
+    if (start > VDP_MEM-0x0010) {
+        start = VDP_MEM-0x0010;
+        end   = VDP_MEM-1;
+    }
+    
+    if (end >= VDP_MEM)
+        end = VDP_MEM-1;
+    
+    start &= 0xFFF0;
+    end = (end & 0xFFF0)+0x000F;
+    
+    stringstream ss;
+    unsigned int row = start;
+    while (row <= end)
+    {
+        AppendHex(ss, row, 4, '0');
+        ss << ": ";
+        for (int i=0x0; i<0xF; i++)
+        {
+            u8 value = m_video->MemR(row+i);
+            AppendHex(ss, value, 2, '0');
+            ss << ' ';
+        }
+        
+        u8 value = m_video->MemR(row+0xF);
         AppendHex(ss, value, 2, '0');
         if (row < (end & 0xFFF0))
             ss << '\n';
@@ -215,11 +259,6 @@ void Debugger::DisassembleOne(u16 address, u16 &nextAddress, std::string &name, 
 }
 
 void Debugger::GetBG(u8 *buffer)
-{
-    
-}
-
-void Debugger::GetWindow(u8 *buffer)
 {
     
 }

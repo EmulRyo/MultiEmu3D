@@ -15,12 +15,14 @@
  along with DMGBoy.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include <iomanip>
+#include <sstream>
 #include <wx/listctrl.h>
 #include <wx/imaglist.h>
 #include "IDControls.h"
 #include "DebuggerDialog.h"
 #include "BreakpointsDialog.h"
-#include "../Debugger.h"
+#include "../HW/Debugger.h"
 
 #include "Xpm/currentRow.xpm"
 #include "Xpm/breakPoint.xpm"
@@ -36,6 +38,7 @@ EVT_BUTTON(ID_DEBUG_ONESECOND, DebuggerDialog::OnOneSecond)
 EVT_BUTTON(ID_DEBUG_BREAKPOINTS, DebuggerDialog::OnBreakpoints)
 EVT_TEXT(ID_DEBUG_MEMADDRESS, DebuggerDialog::OnMemAddressChange)
 EVT_LIST_ITEM_ACTIVATED(ID_DEBUG_DISASSEMBLER, DebuggerDialog::OnActivated)
+EVT_RADIOBOX(ID_DEBUG_MEMSELECT, DebuggerDialog::OnMemSelectChange)
 END_EVENT_TABLE()
 
 DebuggerDialog::DebuggerDialog(wxWindow *parent, Debugger *debugger)
@@ -122,13 +125,11 @@ DebuggerDialog::DebuggerDialog(wxWindow *parent, Debugger *debugger)
     m_disassemblerView->SetColumnWidth (3, 90);
     
     wxStaticText *videoText = new wxStaticText(this, -1, wxT("Video registers:"));
-    m_videoView = new wxListView(this, wxID_ANY, wxDefaultPosition, wxSize(130, height2), wxLC_REPORT);
+    m_videoView = new wxListView(this, wxID_ANY, wxDefaultPosition, wxSize(110, height2), wxLC_REPORT);
     m_videoView->InsertColumn (0, "Name");
-    m_videoView->SetColumnWidth (0, 44);
-    m_videoView->InsertColumn (1, "Address");
-    m_videoView->SetColumnWidth (1, 49);
-    m_videoView->InsertColumn (2, "Value");
-    m_videoView->SetColumnWidth (2, 37);
+    m_videoView->SetColumnWidth (0, 60);
+    m_videoView->InsertColumn (1, "Value");
+    m_videoView->SetColumnWidth (1, 38);
     
     wxStaticText *othersText = new wxStaticText(this, -1, wxT("Other registers:"));
     m_othersView = new wxListView(this, wxID_ANY, wxDefaultPosition, wxSize(130, height2), wxLC_REPORT);
@@ -143,12 +144,18 @@ DebuggerDialog::DebuggerDialog(wxWindow *parent, Debugger *debugger)
     validator->SetCharIncludes(wxT("0123456789ABCDEFabcdef"));
     
     wxStaticText *memText = new wxStaticText(this, -1, wxT("Memory:"));
+    
+    wxString choices[2];
+    choices[0] = "Z80";
+    choices[1] = "VRAM";
+    m_memSelRBox = new wxRadioBox(this, ID_DEBUG_MEMSELECT, wxT(""), wxDefaultPosition, wxDefaultSize, 2, choices, 1, wxRA_SPECIFY_ROWS);
+    
     m_addressMemCtrl = new wxTextCtrl(this, ID_DEBUG_MEMADDRESS, wxEmptyString, wxDefaultPosition, wxSize(40, 20), 0, *validator);
     m_addressMemCtrl->SetFont(*m_font);
     m_addressMemCtrl->SetValue(wxT("0000"));
     m_addressMemCtrl->SetMaxLength(4);
     
-    m_memCtrl = new wxTextCtrl(this, -1, wxEmptyString, wxDefaultPosition, wxSize(420, 146), wxTE_MULTILINE | wxTE_READONLY);
+    m_memCtrl = new wxTextCtrl(this, -1, wxEmptyString, wxDefaultPosition, wxSize(411, 146), wxTE_MULTILINE | wxTE_READONLY);
     m_memCtrl->SetFont(*m_font);
     
     wxSizer *buttonsSizer = new wxBoxSizer(wxHORIZONTAL);
@@ -173,9 +180,14 @@ DebuggerDialog::DebuggerDialog(wxWindow *parent, Debugger *debugger)
     RegsPlusDisSizer->AddStretchSpacer();
     RegsPlusDisSizer->Add(disassemblerSizer);
     
+    wxSizer *addressAndChoiceSizer = new wxBoxSizer(wxHORIZONTAL);
+    addressAndChoiceSizer->Add(m_addressMemCtrl, 0, wxUP, 10);
+    addressAndChoiceSizer->AddSpacer(80);
+    addressAndChoiceSizer->Add(m_memSelRBox, 0, wxRIGHT, 5);
+    
     wxSizer *memSizer = new wxBoxSizer(wxVERTICAL);
     memSizer->Add(memText, 0, wxBOTTOM, 5);
-    memSizer->Add(m_addressMemCtrl, 0, wxBOTTOM, 5);
+    memSizer->Add(addressAndChoiceSizer, 0, wxBOTTOM, 5);
     memSizer->Add(m_memCtrl);
     
     wxSizer *leftSizer = new wxBoxSizer(wxVERTICAL);
@@ -210,6 +222,14 @@ DebuggerDialog::~DebuggerDialog()
 	
 }
 
+std::string DebuggerDialog::IntToString(int value, int width)
+{
+    std::stringstream ss;
+    ss << setfill('0') << setw(width) << value;
+    return ss.str();
+}
+
+
 void DebuggerDialog::UpdateUI() {
     UpdateRegisters();
     UpdateMemory();
@@ -219,16 +239,21 @@ void DebuggerDialog::UpdateUI() {
 }
 
 void DebuggerDialog::UpdateMemory() {
+    int memSelect = m_memSelRBox->GetSelection();
+    int maxMem = (memSelect == 0) ? 0x10000 : 0x4000;
     wxString address = m_addressMemCtrl->GetValue();
     long value;
     if(address.ToLong(&value, 16)) {
         value = value & 0xFFF0;
         int numLines = 9;
-        WORD maxStart = 0x10000 - (0x10*numLines);
+        u16 maxStart = maxMem - (0x10*numLines);
         if (value > maxStart)
             value = maxStart;
         string mem = "      00 01 02 03 04 05 06 07 08 09 0A 0B 0C 0D 0E 0F\n";
-        mem += m_debugger->GetMem(value, (value + (0x10*numLines)-1));
+        if (memSelect == 0)
+            mem += m_debugger->GetMem(value, (value + (0x10*numLines)-1));
+        else
+            mem += m_debugger->GetVMem(value, (value + (0x10*numLines)-1));
         m_memCtrl->SetValue(mem);
     }
 }
@@ -253,7 +278,22 @@ void DebuggerDialog::UpdateRegisters() {
 }
 
 void DebuggerDialog::UpdateVideoRegs() {
+    m_videoView->DeleteAllItems();
     
+    for (int i=0; i<0x10; i++) {
+        m_videoView->InsertItem(i, "");
+        m_videoView->SetItem(i, 0, "Reg "+IntToString(i, 2));
+        m_videoView->SetItem(i, 1, m_debugger->GetVReg(i));
+        m_videoView->SetItemFont(i, *m_font);
+    }
+    
+    for (int i=0; i<0x20; i++) {
+        int pos = i+0x10;
+        m_videoView->InsertItem(pos, "");
+        m_videoView->SetItem(pos, 0, "Pal "+IntToString(i, 2));
+        m_videoView->SetItem(pos, 1, m_debugger->GetPal(i));
+        m_videoView->SetItemFont(pos, *m_font);
+    }
 }
 
 void DebuggerDialog::UpdateOtherRegs() {
@@ -261,7 +301,7 @@ void DebuggerDialog::UpdateOtherRegs() {
 }
 
 void DebuggerDialog::UpdateDissassembler() {
-    WORD currentAddress, nextAddress;
+    u16 currentAddress, nextAddress;
     string address, name, data;
     
     m_debugger->DisassembleNext(currentAddress, nextAddress, name, data);
@@ -334,7 +374,7 @@ void DebuggerDialog::OnMemAddressChange(wxCommandEvent &event) {
     wxString address = m_addressMemCtrl->GetValue().Upper();
     m_addressMemCtrl->ChangeValue(address);
     m_addressMemCtrl->SetInsertionPoint(insertionPoint);
-    UpdateUI();
+    UpdateMemory();
 }
 
 void DebuggerDialog::OnActivated(wxListEvent &event) {
@@ -349,4 +389,8 @@ void DebuggerDialog::OnActivated(wxListEvent &event) {
             m_debugger->AddBreakpoint(value);
         UpdateDissassembler();
     }
+}
+
+void DebuggerDialog::OnMemSelectChange(wxCommandEvent &event) {
+    UpdateMemory();
 }

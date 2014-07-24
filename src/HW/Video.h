@@ -54,6 +54,9 @@ public:
     u8   GetControl();          //0xBF
     void SetControl(u8 value);  //0xBF
     
+    u8   MemR(u16 address);
+    u8   RegR(u8 reg);
+    u8   PalR(u8 pal);
     void GetTile(u8 *buffer, int widthSize, int tile);
     
     void Update(u8 cycles);

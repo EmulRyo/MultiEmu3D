@@ -372,3 +372,15 @@ bool Video::Interrupt() {
     } else
         return false;
 }
+
+u8 Video::MemR(u16 address) {
+    return m_memory[address];
+}
+
+u8 Video::RegR(u8 reg) {
+    return m_regs[reg];
+}
+
+u8 Video::PalR(u8 pal) {
+    return m_palettes[pal];
+}

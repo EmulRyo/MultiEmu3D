@@ -48,6 +48,7 @@ private:
     wxListView *m_videoView;
     wxListView *m_othersView;
     wxListView *m_disassemblerView;
+    wxRadioBox* m_memSelRBox;
     wxFont* m_font;
     
     void CreateToolBar();
@@ -63,7 +64,10 @@ private:
     void OnOneSecond(wxCommandEvent &);
     void OnBreakpoints(wxCommandEvent &);
     void OnMemAddressChange(wxCommandEvent &);
+    void OnMemSelectChange(wxCommandEvent &);
     void OnActivated(wxListEvent &);
+    
+    std::string IntToString(int value, int width);
 };
 
 #endif

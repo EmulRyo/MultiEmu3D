@@ -42,11 +42,13 @@ public:
     std::string GetRegPC();
     
     std::string GetRegs();
+    std::string GetVReg(u8 reg);
+    std::string GetPal(u8 pal);
     
     std::string GetMem(u16 address);
     std::string GetMem(u16 start, u16 end);
+    std::string GetVMem(u16 start, u16 end);
     void GetBG(u8 *buffer);
-    void GetWindow(u8 *buffer);
     void GetTiles(u8 *buffer, int width, int height);
     std::string Disassemble(u16 start, int numInstructions);
     std::string Disassemble(int numInstructions);
