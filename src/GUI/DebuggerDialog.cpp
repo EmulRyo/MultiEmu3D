@@ -36,6 +36,7 @@ EVT_BUTTON(ID_DEBUG_STEPINTO, DebuggerDialog::OnStepInto)
 EVT_BUTTON(ID_DEBUG_ONEFRAME, DebuggerDialog::OnOneFrame)
 EVT_BUTTON(ID_DEBUG_ONESECOND, DebuggerDialog::OnOneSecond)
 EVT_BUTTON(ID_DEBUG_BREAKPOINTS, DebuggerDialog::OnBreakpoints)
+EVT_BUTTON(ID_DEBUG_SAVETILES, DebuggerDialog::OnSaveTiles)
 EVT_TEXT(ID_DEBUG_MEMADDRESS, DebuggerDialog::OnMemAddressChange)
 EVT_LIST_ITEM_ACTIVATED(ID_DEBUG_DISASSEMBLER, DebuggerDialog::OnActivated)
 EVT_RADIOBOX(ID_DEBUG_MEMSELECT, DebuggerDialog::OnMemSelectChange)
@@ -53,8 +54,10 @@ DebuggerDialog::DebuggerDialog(wxWindow *parent, Debugger *debugger)
     wxButton *oneFrameButton = new wxButton(this, ID_DEBUG_ONEFRAME, wxT("Run one frame"));
     wxButton *oneSecondButton = new wxButton(this, ID_DEBUG_ONESECOND, wxT("Run one second"));
     wxButton *breakpointsButton = new wxButton(this, ID_DEBUG_BREAKPOINTS, wxT("Breakpoints"));
+    wxButton *saveTilesButton = new wxButton(this, ID_DEBUG_SAVETILES, wxT("Save tiles"));
     
     stepIntoButton->SetToolTip("Step Into (F7)");
+    saveTilesButton->SetToolTip("Save tiles as tiles.bmp");
 #ifdef __WXMAC__
     resetButton->SetToolTip("Reset (Cmd+R)");
     oneFrameButton->SetToolTip("Run one frame (Cmd+O)");
@@ -164,6 +167,8 @@ DebuggerDialog::DebuggerDialog(wxWindow *parent, Debugger *debugger)
     buttonsSizer->Add(stepIntoButton, 0, wxLEFT, 2);
     buttonsSizer->Add(oneFrameButton, 0, wxLEFT, 2);
     buttonsSizer->Add(oneSecondButton, 0, wxLEFT, 2);
+    buttonsSizer->AddSpacer(5);
+    buttonsSizer->Add(saveTilesButton, 0, wxLEFT, 2);
     buttonsSizer->AddStretchSpacer();
     buttonsSizer->Add(breakpointsButton);
     
@@ -393,4 +398,17 @@ void DebuggerDialog::OnActivated(wxListEvent &event) {
 
 void DebuggerDialog::OnMemSelectChange(wxCommandEvent &event) {
     UpdateMemory();
+}
+
+void DebuggerDialog::OnSaveTiles(wxCommandEvent &event) {
+    int width = 16*8;
+    int height = 28*8;
+    u8 buffer[width*height*3];
+    m_debugger->GetTiles(buffer, width, height);
+    wxImage *img = new wxImage(width, height, buffer);
+    
+    if (img->SaveFile("tiles.bmp"))
+        wxMessageBox("File succesfully saved as tiles.bmp");
+    else
+        wxMessageBox("Error trying to save the tiles");
 }

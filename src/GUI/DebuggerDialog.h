@@ -65,6 +65,7 @@ private:
     void OnBreakpoints(wxCommandEvent &);
     void OnMemAddressChange(wxCommandEvent &);
     void OnMemSelectChange(wxCommandEvent &);
+    void OnSaveTiles(wxCommandEvent &);
     void OnActivated(wxListEvent &);
     
     std::string IntToString(int value, int width);

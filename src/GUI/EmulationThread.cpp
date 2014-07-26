@@ -90,16 +90,6 @@ void EmulationThread::SetState(enumEmuStates state)
 #endif
         cpu->Reset();
     }
-    
-    if (debugger && (state == Paused))
-    {
-        int width = 16*8;
-        int height = 28*8;
-        u8 buffer[width*height*3];
-        debugger->GetTiles(buffer, width, height);
-        wxImage *img = new wxImage(width, height, buffer);
-        img->SaveFile("tiles.bmp");
-    }
 }
 
 enumEmuStates EmulationThread::GetState()
