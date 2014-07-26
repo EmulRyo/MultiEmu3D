@@ -52,8 +52,19 @@ void Video::Reset() {
     m_cycles = 0;
     m_cyclesLine = 0;
     m_vramAddress = true;
-    m_regs[2] = 0x0E;
-    m_regs[5] = 0x7E;
+    m_regs[ 0] = 0x36;
+    m_regs[ 1] = 0x80;
+    m_regs[ 2] = 0xFF;
+    m_regs[ 3] = 0xFF;
+    m_regs[ 4] = 0xFF;
+    m_regs[ 5] = 0xFF;
+    m_regs[ 6] = 0xFB;
+    m_regs[ 7] = 0x00;
+    m_regs[ 8] = 0x00;
+    m_regs[ 9] = 0x00;
+    m_regs[10] = 0xFF;
+    
+    m_lineIrqCounter = 0xFF;
     
     memset(m_memory, 0, VDP_MEM);
     memset(m_palettes, 0, 32);
@@ -126,7 +137,7 @@ void Video::SetData(u8 value) {
 u8 Video::GetControl() {
     m_numWrite = 0;
     u8 status = m_status;
-    m_status = 0;
+    m_status &= 0x3F;
     return status;
 }
 
@@ -164,13 +175,22 @@ void Video::Update(u8 cycles) {
         m_cycles -= 59659;
         m_cyclesLine = 0;
         m_line = 0;
+        m_lineIrqCounter = m_regs[10];
     }
     
     m_cyclesLine += cycles;
     if (m_cyclesLine > 247) {
         m_cyclesLine -= 247;
-        if (m_line < SMS_SCREEN_H)
+        if (m_line < SMS_SCREEN_H) {
+            if (m_lineIrqCounter < 0)
+                m_lineIrqCounter = m_regs[10];
+            
             UpdateLine(m_line);
+            
+            m_lineIrqCounter--;
+            if (m_lineIrqCounter < 0)
+                m_status |= 0x40;
+        }
         else if (m_line == SMS_SCREEN_H) {
             RefreshScreen();
             // Bit 7 status flag
@@ -181,7 +201,7 @@ void Video::Update(u8 cycles) {
 }
 
 void Video::UpdateLine(u8 line) {
-	UpdateBG(line);
+    UpdateBG(line);
 	UpdateSprites(line);
 }
 
@@ -368,6 +388,9 @@ void Video::GetTile(u8 *buffer, int widthSize, int tile)
 bool Video::Interrupt() {
     if (BIT7(m_status) && BIT5(m_regs[1])) {
         m_status &= 0x7F;
+        return true;
+    } else if (BIT6(m_status) && BIT4(m_regs[0])) {
+        m_status &= 0xBF;
         return true;
     } else
         return false;

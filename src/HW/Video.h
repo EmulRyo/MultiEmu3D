@@ -73,6 +73,7 @@ private:
     u32 m_cycles;
     u16 m_cyclesLine;
     u8  m_status;
+    s16 m_lineIrqCounter;
     bool m_vramAddress;
 	ISMSScreenDrawable *m_screen;
 	VideoPixel *m_pixel;
