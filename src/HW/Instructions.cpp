@@ -897,6 +897,8 @@ void Instructions::OUTI() {
     u8 port = m_reg->GetC();
     
     m_mem->PortW(port, value);
+    
+    m_reg->SetFlagZ(m_reg->GetB() ? 0 : 1);
     m_reg->SetFlagN(1);
 }
 
