@@ -46,7 +46,6 @@
 		6ED4CF6B195381BA0003C70B /* Instructions.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 6ED4CF4F195381BA0003C70B /* Instructions.cpp */; };
 		6ED4CF6C195381BA0003C70B /* InstructionsDef.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 6ED4CF51195381BA0003C70B /* InstructionsDef.cpp */; };
 		6ED4CF6D195381BA0003C70B /* Log.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 6ED4CF53195381BA0003C70B /* Log.cpp */; };
-		6ED4CF6E195381BA0003C70B /* MBC.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 6ED4CF55195381BA0003C70B /* MBC.cpp */; };
 		6ED4CF6F195381BA0003C70B /* Memory.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 6ED4CF57195381BA0003C70B /* Memory.cpp */; };
 		6ED4CF70195381BA0003C70B /* Pad.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 6ED4CF59195381BA0003C70B /* Pad.cpp */; };
 		6ED4CF71195381BA0003C70B /* Registers.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 6ED4CF5B195381BA0003C70B /* Registers.cpp */; };
@@ -190,8 +189,6 @@
 		6ED4CF52195381BA0003C70B /* InstructionsDef.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = InstructionsDef.h; path = ../../../src/HW/InstructionsDef.h; sourceTree = "<group>"; };
 		6ED4CF53195381BA0003C70B /* Log.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Log.cpp; path = ../../../src/HW/Log.cpp; sourceTree = "<group>"; };
 		6ED4CF54195381BA0003C70B /* Log.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Log.h; path = ../../../src/HW/Log.h; sourceTree = "<group>"; };
-		6ED4CF55195381BA0003C70B /* MBC.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = MBC.cpp; path = ../../../src/HW/MBC.cpp; sourceTree = "<group>"; };
-		6ED4CF56195381BA0003C70B /* MBC.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MBC.h; path = ../../../src/HW/MBC.h; sourceTree = "<group>"; };
 		6ED4CF57195381BA0003C70B /* Memory.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Memory.cpp; path = ../../../src/HW/Memory.cpp; sourceTree = "<group>"; };
 		6ED4CF58195381BA0003C70B /* Memory.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Memory.h; path = ../../../src/HW/Memory.h; sourceTree = "<group>"; };
 		6ED4CF59195381BA0003C70B /* Pad.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Pad.cpp; path = ../../../src/HW/Pad.cpp; sourceTree = "<group>"; };
@@ -345,8 +342,6 @@
 				6ED4CF52195381BA0003C70B /* InstructionsDef.h */,
 				6ED4CF53195381BA0003C70B /* Log.cpp */,
 				6ED4CF54195381BA0003C70B /* Log.h */,
-				6ED4CF55195381BA0003C70B /* MBC.cpp */,
-				6ED4CF56195381BA0003C70B /* MBC.h */,
 				6ED4CF57195381BA0003C70B /* Memory.cpp */,
 				6ED4CF58195381BA0003C70B /* Memory.h */,
 				6ED4CF59195381BA0003C70B /* Pad.cpp */,
@@ -561,7 +556,6 @@
 				6ED4CF6A195381BA0003C70B /* SMSException.cpp in Sources */,
 				6ED4CF67195381BA0003C70B /* Cartridge.cpp in Sources */,
 				6EFA5C0517895CCF00DD9E94 /* Settings.cpp in Sources */,
-				6ED4CF6E195381BA0003C70B /* MBC.cpp in Sources */,
 				6ED4CF74195381BA0003C70B /* SoundPortaudio.cpp in Sources */,
 				6EF404E518AFE5F3006A0FDC /* DebuggerDialog.cpp in Sources */,
 				6ED4CF76195381BA0003C70B /* Video.cpp in Sources */,

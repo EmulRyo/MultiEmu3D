@@ -58,10 +58,11 @@ void Memory::MemW(u16 address, u8 value)
         m_c->Write(address, value);
     else if (address < 0xE000)
         memory[address-0xC000] = value;
-    else if (address < 0xFFF0)
+    else if (address < 0xFFFC)
         memory[address-0xE000] = value;
     else {
-        printf("MemW address not controlled: 0x%X\n", address);
+        m_c->Write(address, value);
+        memory[address-0xE000] = value;
     }
 }
 

@@ -24,7 +24,6 @@
 #include "Cartridge.h"
 #include "Def.h"
 #include "SMSException.h"
-#include "MBC.h"
 
 using namespace std;
 
@@ -76,7 +75,6 @@ Cartridge::Cartridge(u8 *cartridgeBuffer, unsigned long size, string batteriesPa
 
 Cartridge::~Cartridge(void)
 {
-	DestroyMBC();
 	if (m_memCartridge)
 		delete [] m_memCartridge;
 }
@@ -110,16 +108,11 @@ string Cartridge::GetGoodName(const char *name) {
  */
 void Cartridge::CheckCartridge(string batteriesPath)
 {
-	MBCPathBatteries(batteriesPath);
 	m_name = string("");
 	
 	//CheckRomSize((int)m_memCartridge[CART_ROM_SIZE], m_romSize);
     if (m_romSize == 33280)
         m_offset = 0x200;
-    
-    ptrRead = &NoneRead;
-    ptrWrite = &NoneWrite;
-    InitMBCNone(m_name, m_memCartridge, m_romSize);
 }
 
 /*
@@ -162,14 +155,38 @@ bool Cartridge::IsLoaded()
 
 void Cartridge::SaveStateMBC(ofstream * file)
 {
-	MBCSaveState(file);
+	
 }
 
 void Cartridge::LoadStateMBC(ifstream * file)
 {
-	MBCLoadState(file);
+	
 }
 
 void Cartridge::Extract() {
-    MBCExtract();
+    
 }
+
+u8 Cartridge::Read(u16 address) {
+    return m_memCartridge[address+m_offset];
+};
+
+void Cartridge::Write(u16 address, u8 value) {
+    switch (address) {
+        case 0xFFFC:
+            printf("Cartridge RAM\n");
+            break;
+        case 0xFFFD:
+            printf("Page 0\n");
+            break;
+        case 0xFFFE:
+            printf("Page 1\n");
+            break;
+        case 0xFFFF:
+            printf("Page 2\n");
+            break;
+            
+        default:
+            break;
+    }
+};

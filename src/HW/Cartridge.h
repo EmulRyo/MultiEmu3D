@@ -31,8 +31,6 @@ private:
 	u8 *m_memCartridge;
     long m_offset;
 
-	u8 (*ptrRead)(u16);
-	void (*ptrWrite)(u16, u8);
 	void CheckCartridge(std::string batteriesPath="");
 	int  CheckRomSize(int numHeaderSize, int fileSize);
     
@@ -47,8 +45,8 @@ public:
 	std::string GetName();
 	bool IsLoaded();
 
-	inline u8 Read(u16 address) { return ptrRead(address+m_offset); };
-	inline void Write(u16 address, u8 value) { ptrWrite(address, value); };
+	u8 Read(u16 address);
+	void Write(u16 address, u8 value);
 	
 	void SaveStateMBC(std::ofstream *file);
 	void LoadStateMBC(std::ifstream *file);
