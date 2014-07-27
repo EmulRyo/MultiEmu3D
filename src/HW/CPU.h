@@ -64,6 +64,8 @@ private:
 	void OpcodeDD(Instructions &inst, bool &executed);
     void OpcodeED(Instructions &inst, bool &executed);
     void OpcodeFD(Instructions &inst, bool &executed);
+    
+    u8  Get8BitsInmValue(u8 offset);
     u16 Get16BitsInmValue(u8 offset);
 
 };

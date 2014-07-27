@@ -43,7 +43,6 @@ public:
 	void EI();
 	void HALT();
 	void INC_n(e_registers place);
-    void INC_nn(e_registers place);
 	void JP_nn();
 	void JP_cc_nn(e_registers flag, u8 value2check);
 	void JP_HL();
@@ -108,6 +107,8 @@ public:
     void LD(u16 *reg, u16 value);
     void DEC(u8 *reg);
     void CPI();
+    void INC_NoFlags(u16 *reg);
+    void NEG();
     
 private:
 	Registers   *m_reg;

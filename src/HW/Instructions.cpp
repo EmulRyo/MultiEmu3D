@@ -318,11 +318,6 @@ void Instructions::RLC_n(e_registers place)
         m_reg->SetFlagZ(value ? 0 : 1);
 }
 
-void Instructions::INC_nn(e_registers place)
-{
-	m_reg->SetReg(place, m_reg->GetReg(place) + 1);
-}
-
 void Instructions::DAA()
 {
 	/*
@@ -1084,7 +1079,7 @@ void Instructions::LD(u16 *reg, u16 value)
 }
 
 void Instructions::DEC(u8 *reg) {
-    *reg -= 1;
+    *reg = *reg-1;
 }
 
 void Instructions::CPI() {
@@ -1099,4 +1094,22 @@ void Instructions::CPI() {
     
     m_reg->SetHL(m_reg->GetHL()+1);
     m_reg->SetBC(m_reg->GetBC()-1);
+}
+
+void Instructions::INC_NoFlags(u16 *reg) {
+    *reg = *reg+1;
+}
+
+void Instructions::NEG() {
+    u8 a = m_reg->GetA();
+    u8 result = 0 - a;
+    
+    m_reg->SetFlagS(BIT7(result) >> 7);
+    m_reg->SetFlagZ(result == 0);
+    m_reg->SetFlagH((a & 0x0F) != 0);
+    m_reg->SetFlagPV(a == 0x80);
+    m_reg->SetFlagN(1);
+    m_reg->SetFlagC(a != 0);
+    
+    m_reg->SetA(result);
 }

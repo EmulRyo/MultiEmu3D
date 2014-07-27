@@ -58,24 +58,34 @@ public:
 
 	inline u8 GetA()			{ return m_af.s[1]; }
 	inline void SetA(u8 value)	{ m_af.s[1] = value; }
+    inline u8 *PtrA()           { return &m_af.s[1]; }
 	inline u8 GetB()			{ return m_bc.s[1]; }
 	inline void SetB(u8 value)	{ m_bc.s[1] = value; }
+    inline u8 *PtrB()           { return &m_bc.s[1]; }
 	inline u8 GetC()			{ return m_bc.s[0]; }
 	inline void SetC(u8 value)	{ m_bc.s[0] = value; }
+    inline u8 *PtrC()           { return &m_bc.s[0]; }
 	inline u8 GetD()			{ return m_de.s[1]; }
 	inline void SetD(u8 value)	{ m_de.s[1] = value; }
+    inline u8 *PtrD()           { return &m_de.s[1]; }
 	inline u8 GetE()			{ return m_de.s[0]; }
 	inline void SetE(u8 value)	{ m_de.s[0] = value; }
+    inline u8 *PtrE()           { return &m_de.s[0]; }
 	inline u8 GetF()			{ return m_af.s[0]; }
-	inline void SetF(u8 value)	{ m_af.s[0] = value & 0xF0; }
+	inline void SetF(u8 value)	{ m_af.s[0] = value; }
+    inline u8 *PtrF()           { return &m_af.s[0]; }
 	inline u8 GetH()			{ return m_hl.s[1]; }
 	inline void SetH(u8 value)	{ m_hl.s[1] = value; }
+    inline u8 *PtrH()           { return &m_hl.s[1]; }
 	inline u8 GetL()			{ return m_hl.s[0]; }
 	inline void SetL(u8 value)	{ m_hl.s[0] = value; }
+    inline u8 *PtrL()           { return &m_hl.s[0]; }
     inline u8 GetI()			{ return m_i; }
 	inline void SetI(u8 value)	{ m_i = value; }
+    inline u8 *PtrI()           { return &m_i; }
     inline u8 GetR()			{ return m_r; }
 	inline void SetR(u8 value)	{ m_r = value; }
+    inline u8 *PtrR()           { return &m_r; }
     inline void AddR(u8 value)	{ m_r = (m_r & 0x80) | ((m_r+value) & 0x7F); }
 
 	inline u16 GetAF()           { return m_af.d; }
@@ -117,9 +127,11 @@ public:
 
 	inline u16 GetPC()           { return m_pc; }
 	inline void SetPC(u16 value) { m_pc = value; }
+    inline u16 *PtrPC()          { return &m_pc; }
 	inline void AddPC(int value) { m_pc += value; };
 	inline u16 GetSP()           { return m_sp; }
 	inline void SetSP(u16 value) { m_sp = value; }
+    inline u16 *PtrSP()          { return &m_sp; }
 	inline void AddSP(int value) { m_sp += value; };
 
     inline bool GetIntPending()           { return m_intPending; }
