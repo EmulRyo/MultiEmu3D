@@ -21,17 +21,27 @@
 #include <string>
 #include "Def.h"
 
-
 class Cartridge
 {
+    struct Ram
+    {
+        u8   mem[0x8000];
+        bool enabled;
+        u8  *page;
+    };
+    
 private:
 	unsigned long m_romSize;
 	std::string m_name;
 	bool m_isLoaded;
-	u8 *m_memCartridge;
+	u8  *m_mem;
     long m_offset;
+    u8  *m_pages[3];
+    u8   m_maskPages;
+    Ram  m_ram;
 
-	void CheckCartridge(std::string batteriesPath="");
+    void LoadFile(std::string fileName, std::string batteriesPath);
+	void Init(std::string batteriesPath="");
 	int  CheckRomSize(int numHeaderSize, int fileSize);
     
 public:

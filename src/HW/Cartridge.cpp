@@ -32,22 +32,63 @@ using namespace std;
  */
 Cartridge::Cartridge(string fileName, string batteriesPath)
 {
-	m_memCartridge = NULL;
+	m_mem = NULL;
+	LoadFile(fileName, batteriesPath);
+}
+
+/*
+ * Constructor que recibe un buffer y su tamaño y lo procesa
+ */
+Cartridge::Cartridge(u8 *cartridgeBuffer, unsigned long size, string batteriesPath)
+{
+	m_romSize = size;
+	m_mem = cartridgeBuffer;
+	
+	Init(batteriesPath);
+	
+	m_isLoaded = true;
+}
+
+Cartridge::~Cartridge(void)
+{
+	if (m_mem)
+		delete [] m_mem;
+}
+
+void Cartridge::Init(string batteriesPath)
+{
     m_offset = 0;
-	ifstream::pos_type size;
+	m_name = string("");
+	
+	//CheckRomSize((int)m_memCartridge[CART_ROM_SIZE], m_romSize);
+    if (m_romSize == 33280)
+        m_offset = 0x200;
+    
+    m_maskPages = (m_romSize-1) >> 14;
+    
+    m_pages[0] = &m_mem[0x0000];
+    m_pages[1] = &m_mem[0x4000];
+    m_pages[2] = &m_mem[0x8000];
+    
+    m_ram.enabled = false;
+    m_ram.page = &m_ram.mem[0x0000];
+}
+
+void Cartridge::LoadFile(string fileName, string batteriesPath) {
+    ifstream::pos_type size;
 	ifstream file (fileName.c_str(), ios::in|ios::binary|ios::ate);
 	if (file.is_open())
 	{
 		size = file.tellg();
 		m_romSize = (unsigned long)size;
-		m_memCartridge = new u8 [size];
+		m_mem = new u8 [size];
 		file.seekg (0, ios::beg);
-		file.read((char *)m_memCartridge, (streamsize)size);
+		file.read((char *)m_mem, (streamsize)size);
 		file.close();
-
+        
 		cout << fileName << ":\nFile loaded in memory correctly" << endl;
 		
-		CheckCartridge(batteriesPath);
+		Init(batteriesPath);
 		
 		m_isLoaded = true;
         
@@ -57,26 +98,6 @@ Cartridge::Cartridge(string fileName, string batteriesPath)
 		cerr << fileName << ": Error trying to open the file" << endl;
 		m_isLoaded = false;
 	}
-}
-
-/*
- * Constructor que recibe un buffer y su tamaño y lo procesa
- */
-Cartridge::Cartridge(u8 *cartridgeBuffer, unsigned long size, string batteriesPath)
-{
-    m_offset = 0;
-	m_romSize = size;
-	m_memCartridge = cartridgeBuffer;
-	
-	CheckCartridge(batteriesPath);
-	
-	m_isLoaded = true;
-}
-
-Cartridge::~Cartridge(void)
-{
-	if (m_memCartridge)
-		delete [] m_memCartridge;
 }
 
 string Trim(const string &str) {
@@ -104,18 +125,6 @@ string Cartridge::GetGoodName(const char *name) {
 }
 
 /*
- * Comprueba el buffer de la rom, extrae el nombre, compara el tamaño e inicializa el MBC
- */
-void Cartridge::CheckCartridge(string batteriesPath)
-{
-	m_name = string("");
-	
-	//CheckRomSize((int)m_memCartridge[CART_ROM_SIZE], m_romSize);
-    if (m_romSize == 33280)
-        m_offset = 0x200;
-}
-
-/*
  * Compara el tamaño de la rom con el valor de la cabecera
  */
 int Cartridge::CheckRomSize(int numHeaderSize, int fileSize)
@@ -135,7 +144,7 @@ int Cartridge::CheckRomSize(int numHeaderSize, int fileSize)
 
 u8 *Cartridge::GetData()
 {
-	return m_memCartridge;
+	return m_mem;
 }
 
 unsigned int Cartridge::GetSize()
@@ -168,25 +177,34 @@ void Cartridge::Extract() {
 }
 
 u8 Cartridge::Read(u16 address) {
-    return m_memCartridge[address+m_offset];
+    address += m_offset;
+    if (address < 0x400)
+        return m_mem[address];
+    else if (address < 0x4000)
+        return m_pages[0][address];
+    else if (address < 0x8000)
+        return m_pages[1][address-0x4000];
+    else {
+        if (m_ram.enabled)
+            return m_ram.page[address-0x8000];
+        else
+            return m_pages[2][address-0x8000];
+    }
 };
 
 void Cartridge::Write(u16 address, u8 value) {
     switch (address) {
         case 0xFFFC:
-            printf("Cartridge RAM\n");
+            m_ram.enabled = BIT3(value) != 0;
+            m_ram.page = BIT2(value) ? &m_ram.mem[0x4000] : &m_ram.mem[0];
             break;
-        case 0xFFFD:
-            printf("Page 0\n");
-            break;
-        case 0xFFFE:
-            printf("Page 1\n");
-            break;
-        case 0xFFFF:
-            printf("Page 2\n");
-            break;
+        case 0xFFFD: m_pages[0] = &m_mem[(value&m_maskPages)*0x4000]; break;
+        case 0xFFFE: m_pages[1] = &m_mem[(value&m_maskPages)*0x4000]; break;
+        case 0xFFFF: m_pages[2] = &m_mem[(value&m_maskPages)*0x4000]; break;
             
         default:
+            if (m_ram.enabled && (address >= 0x8000) && ((address < 0xC000)))
+                    m_ram.page[address-0x8000] = value;
             break;
     }
 };

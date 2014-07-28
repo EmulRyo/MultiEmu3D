@@ -47,7 +47,6 @@ public:
 	void ResetMem();
 	void LoadCartridge(Cartridge *c);
 	void MemW(u16 direction, u8 value);
-	inline void MemWNoCheck(u16 address, u8 value){ memory[address-0xC000] = value; };
 	inline u8 MemR(u16 address)
 	{
         if (address < 0xC000)
