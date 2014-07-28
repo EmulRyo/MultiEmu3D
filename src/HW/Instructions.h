@@ -109,6 +109,7 @@ public:
     void CPI();
     void INC_NoFlags(u16 *reg);
     void NEG();
+    void LD_Mem(u16 address, u8 value);
     
 private:
 	Registers   *m_reg;

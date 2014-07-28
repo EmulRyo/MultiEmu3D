@@ -1113,3 +1113,7 @@ void Instructions::NEG() {
     
     m_reg->SetA(result);
 }
+
+void Instructions::LD_Mem(u16 address, u8 value) {
+    m_mem->MemW(address, value);
+}
