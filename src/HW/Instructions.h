@@ -31,7 +31,6 @@ public:
 	void ADD_A_n(e_registers place);
 	void ADD_HL_n(e_registers place);
 	void AND(e_registers place);
-	void BIT_b_r(u8 bit, e_registers place);
 	void CALL_nn();
 	void CALL_cc_nn(e_registers flag, u8 value2check);
 	void CP_n(e_registers place);
@@ -81,7 +80,6 @@ public:
     
     void IM(u8 mode);
     void DJNZ();
-    void LD_cNN_nn(e_registers place);
     void LD_cNN_n(e_registers place);
     void LDI();
     void LDIR();
@@ -110,6 +108,8 @@ public:
     void INC_NoFlags(u16 *reg);
     void NEG();
     void LD_Mem(u16 address, u8 value);
+    void LD_Mem(u16 address, u16 value);
+    void BIT(u8 bit, u8 value);
     
 private:
 	Registers   *m_reg;

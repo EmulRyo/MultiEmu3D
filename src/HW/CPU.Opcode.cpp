@@ -75,7 +75,7 @@ void CPU::ExecuteOpcode(u8 opcode, Instructions &inst) {
 
         case (0x20): inst.JR_CC_n(f_Z, 0); break;
         case (0x21): inst.LD_n_nn(HL); break;
-        case (0x22): inst.LD_cNN_nn(HL); break;
+        case (0x22): inst.LD_Mem(Get16BitsInmValue(1), GetHL()); break;
         case (0x23): inst.INC_NoFlags(PtrHL()); break;
         case (0x24): inst.INC_n(H); break;
         case (0x25): inst.DEC_n(H); break;
@@ -398,73 +398,73 @@ void CPU::OpcodeCB(Instructions &inst, bool &executed)
         case (0x3E): inst.SRL_n(c_HL); break;
         case (0x3F): inst.SRL_n(A); break;
 
-		case (0x40): inst.BIT_b_r(0, B); break;
-		case (0x41): inst.BIT_b_r(0, C); break;
-		case (0x42): inst.BIT_b_r(0, D); break;
-		case (0x43): inst.BIT_b_r(0, E); break;
-		case (0x44): inst.BIT_b_r(0, H); break;
-		case (0x45): inst.BIT_b_r(0, L); break;
-		case (0x46): inst.BIT_b_r(0, c_HL); break;
-		case (0x47): inst.BIT_b_r(0, A); break;
-		case (0x48): inst.BIT_b_r(1, B); break;
-		case (0x49): inst.BIT_b_r(1, C); break;
-		case (0x4A): inst.BIT_b_r(1, D); break;
-		case (0x4B): inst.BIT_b_r(1, E); break;
-		case (0x4C): inst.BIT_b_r(1, H); break;
-		case (0x4D): inst.BIT_b_r(1, L); break;
-		case (0x4E): inst.BIT_b_r(1, c_HL); break;
-		case (0x4F): inst.BIT_b_r(1, A); break;
+		case (0x40): inst.BIT(0, GetB()); break;
+		case (0x41): inst.BIT(0, GetC()); break;
+		case (0x42): inst.BIT(0, GetD()); break;
+		case (0x43): inst.BIT(0, GetE()); break;
+		case (0x44): inst.BIT(0, GetH()); break;
+		case (0x45): inst.BIT(0, GetL()); break;
+		case (0x46): inst.BIT(0, MemR(GetHL())); break;
+		case (0x47): inst.BIT(0, GetA()); break;
+		case (0x48): inst.BIT(1, GetB()); break;
+		case (0x49): inst.BIT(1, GetC()); break;
+		case (0x4A): inst.BIT(1, GetD()); break;
+		case (0x4B): inst.BIT(1, GetE()); break;
+		case (0x4C): inst.BIT(1, GetH()); break;
+		case (0x4D): inst.BIT(1, GetL()); break;
+		case (0x4E): inst.BIT(1, MemR(GetHL())); break;
+		case (0x4F): inst.BIT(1, GetA()); break;
 
-		case (0x50): inst.BIT_b_r(2, B); break;
-		case (0x51): inst.BIT_b_r(2, C); break;
-		case (0x52): inst.BIT_b_r(2, D); break;
-		case (0x53): inst.BIT_b_r(2, E); break;
-		case (0x54): inst.BIT_b_r(2, H); break;
-		case (0x55): inst.BIT_b_r(2, L); break;
-		case (0x56): inst.BIT_b_r(2, c_HL); break;
-		case (0x57): inst.BIT_b_r(2, A); break;
-		case (0x58): inst.BIT_b_r(3, B); break;
-		case (0x59): inst.BIT_b_r(3, C); break;
-		case (0x5A): inst.BIT_b_r(3, D); break;
-		case (0x5B): inst.BIT_b_r(3, E); break;
-		case (0x5C): inst.BIT_b_r(3, H); break;
-		case (0x5D): inst.BIT_b_r(3, L); break;
-		case (0x5E): inst.BIT_b_r(3, c_HL); break;
-		case (0x5F): inst.BIT_b_r(3, A); break;
+		case (0x50): inst.BIT(2, GetB()); break;
+		case (0x51): inst.BIT(2, GetC()); break;
+		case (0x52): inst.BIT(2, GetD()); break;
+		case (0x53): inst.BIT(2, GetE()); break;
+		case (0x54): inst.BIT(2, GetH()); break;
+		case (0x55): inst.BIT(2, GetL()); break;
+		case (0x56): inst.BIT(2, MemR(GetHL())); break;
+		case (0x57): inst.BIT(2, GetA()); break;
+		case (0x58): inst.BIT(3, GetB()); break;
+		case (0x59): inst.BIT(3, GetC()); break;
+		case (0x5A): inst.BIT(3, GetD()); break;
+		case (0x5B): inst.BIT(3, GetE()); break;
+		case (0x5C): inst.BIT(3, GetH()); break;
+		case (0x5D): inst.BIT(3, GetL()); break;
+		case (0x5E): inst.BIT(3, MemR(GetHL())); break;
+		case (0x5F): inst.BIT(3, GetA()); break;
 
-		case (0x60): inst.BIT_b_r(4, B); break;
-		case (0x61): inst.BIT_b_r(4, C); break;
-		case (0x62): inst.BIT_b_r(4, D); break;
-		case (0x63): inst.BIT_b_r(4, E); break;
-		case (0x64): inst.BIT_b_r(4, H); break;
-		case (0x65): inst.BIT_b_r(4, L); break;
-		case (0x66): inst.BIT_b_r(4, c_HL); break;
-		case (0x67): inst.BIT_b_r(4, A); break;
-		case (0x68): inst.BIT_b_r(5, B); break;
-		case (0x69): inst.BIT_b_r(5, C); break;
-		case (0x6A): inst.BIT_b_r(5, D); break;
-		case (0x6B): inst.BIT_b_r(5, E); break;
-		case (0x6C): inst.BIT_b_r(5, H); break;
-		case (0x6D): inst.BIT_b_r(5, L); break;
-		case (0x6E): inst.BIT_b_r(5, c_HL); break;
-		case (0x6F): inst.BIT_b_r(5, A); break;
+		case (0x60): inst.BIT(4, GetB()); break;
+		case (0x61): inst.BIT(4, GetC()); break;
+		case (0x62): inst.BIT(4, GetD()); break;
+		case (0x63): inst.BIT(4, GetE()); break;
+		case (0x64): inst.BIT(4, GetH()); break;
+		case (0x65): inst.BIT(4, GetL()); break;
+		case (0x66): inst.BIT(4, MemR(GetHL())); break;
+		case (0x67): inst.BIT(4, GetA()); break;
+		case (0x68): inst.BIT(5, GetB()); break;
+		case (0x69): inst.BIT(5, GetC()); break;
+		case (0x6A): inst.BIT(5, GetD()); break;
+		case (0x6B): inst.BIT(5, GetE()); break;
+		case (0x6C): inst.BIT(5, GetH()); break;
+		case (0x6D): inst.BIT(5, GetL()); break;
+		case (0x6E): inst.BIT(5, MemR(GetHL())); break;
+		case (0x6F): inst.BIT(5, GetA()); break;
 
-		case (0x70): inst.BIT_b_r(6, B); break;
-		case (0x71): inst.BIT_b_r(6, C); break;
-		case (0x72): inst.BIT_b_r(6, D); break;
-		case (0x73): inst.BIT_b_r(6, E); break;
-		case (0x74): inst.BIT_b_r(6, H); break;
-		case (0x75): inst.BIT_b_r(6, L); break;
-		case (0x76): inst.BIT_b_r(6, c_HL); break;
-		case (0x77): inst.BIT_b_r(6, A); break;
-		case (0x78): inst.BIT_b_r(7, B); break;
-		case (0x79): inst.BIT_b_r(7, C); break;
-		case (0x7A): inst.BIT_b_r(7, D); break;
-		case (0x7B): inst.BIT_b_r(7, E); break;
-		case (0x7C): inst.BIT_b_r(7, H); break;
-		case (0x7D): inst.BIT_b_r(7, L); break;
-		case (0x7E): inst.BIT_b_r(7, c_HL); break;
-		case (0x7F): inst.BIT_b_r(7, A); break;
+		case (0x70): inst.BIT(6, GetB()); break;
+		case (0x71): inst.BIT(6, GetC()); break;
+		case (0x72): inst.BIT(6, GetD()); break;
+		case (0x73): inst.BIT(6, GetE()); break;
+		case (0x74): inst.BIT(6, GetH()); break;
+		case (0x75): inst.BIT(6, GetL()); break;
+		case (0x76): inst.BIT(6, MemR(GetHL())); break;
+		case (0x77): inst.BIT(6, GetA()); break;
+		case (0x78): inst.BIT(7, GetB()); break;
+		case (0x79): inst.BIT(7, GetC()); break;
+		case (0x7A): inst.BIT(7, GetD()); break;
+		case (0x7B): inst.BIT(7, GetE()); break;
+		case (0x7C): inst.BIT(7, GetH()); break;
+		case (0x7D): inst.BIT(7, GetL()); break;
+		case (0x7E): inst.BIT(7, MemR(GetHL())); break;
+		case (0x7F): inst.BIT(7, GetA()); break;
 
         case (0x80): inst.RES_b_r(0, B); break;
         case (0x81): inst.RES_b_r(0, C); break;
@@ -628,6 +628,7 @@ void CPU::OpcodeDD(Instructions &inst, bool &executed)
         case 0x19: inst.ADD(PtrIX(), GetDE()); break;
             
         case 0x21: inst.LD(PtrIX(), Get16BitsInmValue(2)); break;
+        case 0x22: inst.LD_Mem(Get16BitsInmValue(2), GetIX()); break;
         case 0x23: inst.INC_NoFlags(PtrIX()); break;
         case 0x25: inst.DEC(PtrIXh()); break;
         case 0x29: inst.ADD(PtrIX(), GetIX()); break;
@@ -666,6 +667,8 @@ void CPU::OpcodeDD(Instructions &inst, bool &executed)
         case 0x77: inst.LD_Mem(GetIX()+Get8BitsInmValue(2), GetA()); break;
         case 0x7E: inst.LD(PtrA(), MemR(GetIX()+Get8BitsInmValue(2))); break;
         
+        case 0xCB: OpcodeDDCB(inst, executed);  break;
+            
         case 0xE1: inst.POP(PtrIX());  break;
         case 0xE5: inst.PUSH(GetIX());  break;
             
@@ -695,7 +698,7 @@ void CPU::OpcodeED(Instructions &inst, bool &executed)
 		case (0x40): inst.IN(B); break;
 		case (0x41): inst.OUT(C, A); break;
 		case (0x42): inst.SBC_HL(BC); break;
-		case (0x43): inst.LD_cNN_nn(BC); break;
+		case (0x43): inst.LD_Mem(Get16BitsInmValue(2), GetBC()); break;
         case (0x44): inst.NEG(); break;
 		case (0x46): inst.IM(0); break;
 		case (0x48): inst.IN(C); break;
@@ -708,7 +711,7 @@ void CPU::OpcodeED(Instructions &inst, bool &executed)
 		case (0x50): inst.IN(D); break;
 		case (0x51): inst.OUT(C, D); break;
 		case (0x52): inst.SBC_HL(DE); break;
-		case (0x53): inst.LD_cNN_nn(DE); break;
+		case (0x53): inst.LD_Mem(Get16BitsInmValue(2), GetDE()); break;
         case (0x54): inst.NEG(); break;
 		case (0x56): inst.IM(1); break;
 		case (0x58): inst.IN(E); break;
@@ -721,7 +724,7 @@ void CPU::OpcodeED(Instructions &inst, bool &executed)
 		case (0x60): inst.IN(H); break;
 		case (0x61): inst.OUT(C, H); break;
 		case (0x62): inst.SBC_HL(HL); break;
-		case (0x63): inst.LD_cNN_nn(HL); break;
+		case (0x63): inst.LD_Mem(Get16BitsInmValue(2), GetHL()); break;
         case (0x64): inst.NEG(); break;
 		case (0x68): inst.IN(L); break;
 		case (0x69): inst.OUT(C, L); break;
@@ -730,7 +733,7 @@ void CPU::OpcodeED(Instructions &inst, bool &executed)
         
         case (0x71): inst.OUT(C, f_Z); break;
 		case (0x72): inst.SBC_HL(SP); break;
-		case (0x73): inst.LD_cNN_nn(SP); break;
+		case (0x73): inst.LD_Mem(Get16BitsInmValue(2), GetSP()); break;
         case (0x74): inst.NEG(); break;
         case (0x78): inst.IN(A); break;
 		case (0x79): inst.OUT(C, A); break;
@@ -810,6 +813,8 @@ void CPU::OpcodeFD(Instructions &inst, bool &executed)
         case 0x77: inst.LD_Mem(GetIY()+Get8BitsInmValue(2), GetA()); break;
         case 0x7E: inst.LD(PtrA(), MemR(GetIY()+Get8BitsInmValue(2))); break;
             
+        case 0xCB: OpcodeFDCB(inst, executed);  break;
+            
         case 0xE1: inst.POP(PtrIY());  break;
         case 0xE5: inst.PUSH(GetIY()); break;
             
@@ -825,6 +830,184 @@ void CPU::OpcodeFD(Instructions &inst, bool &executed)
         if (GetIncPC())
             AddPC(GetInstructionFDLength(opcode));
         
+        executed = true;
+    }
+}
+
+void CPU::OpcodeDDCB(Instructions &inst, bool &executed)
+{
+    u8 opcode = MemR(GetPC() + 3);
+    AddR(1);
+    
+    switch (opcode)
+    {
+        case 0x40: inst.BIT(0, MemR(GetIX()+Get8BitsInmValue(2))); break;
+        case 0x41: inst.BIT(0, MemR(GetIX()+Get8BitsInmValue(2))); break;
+        case 0x42: inst.BIT(0, MemR(GetIX()+Get8BitsInmValue(2))); break;
+        case 0x43: inst.BIT(0, MemR(GetIX()+Get8BitsInmValue(2))); break;
+        case 0x44: inst.BIT(0, MemR(GetIX()+Get8BitsInmValue(2))); break;
+        case 0x45: inst.BIT(0, MemR(GetIX()+Get8BitsInmValue(2))); break;
+        case 0x46: inst.BIT(0, MemR(GetIX()+Get8BitsInmValue(2))); break;
+        case 0x47: inst.BIT(0, MemR(GetIX()+Get8BitsInmValue(2))); break;
+        case 0x48: inst.BIT(1, MemR(GetIX()+Get8BitsInmValue(2))); break;
+        case 0x49: inst.BIT(1, MemR(GetIX()+Get8BitsInmValue(2))); break;
+        case 0x4A: inst.BIT(1, MemR(GetIX()+Get8BitsInmValue(2))); break;
+        case 0x4B: inst.BIT(1, MemR(GetIX()+Get8BitsInmValue(2))); break;
+        case 0x4C: inst.BIT(1, MemR(GetIX()+Get8BitsInmValue(2))); break;
+        case 0x4D: inst.BIT(1, MemR(GetIX()+Get8BitsInmValue(2))); break;
+        case 0x4E: inst.BIT(1, MemR(GetIX()+Get8BitsInmValue(2))); break;
+        case 0x4F: inst.BIT(1, MemR(GetIX()+Get8BitsInmValue(2))); break;
+            
+        case 0x50: inst.BIT(2, MemR(GetIX()+Get8BitsInmValue(2))); break;
+        case 0x51: inst.BIT(2, MemR(GetIX()+Get8BitsInmValue(2))); break;
+        case 0x52: inst.BIT(2, MemR(GetIX()+Get8BitsInmValue(2))); break;
+        case 0x53: inst.BIT(2, MemR(GetIX()+Get8BitsInmValue(2))); break;
+        case 0x54: inst.BIT(2, MemR(GetIX()+Get8BitsInmValue(2))); break;
+        case 0x55: inst.BIT(2, MemR(GetIX()+Get8BitsInmValue(2))); break;
+        case 0x56: inst.BIT(2, MemR(GetIX()+Get8BitsInmValue(2))); break;
+        case 0x57: inst.BIT(2, MemR(GetIX()+Get8BitsInmValue(2))); break;
+        case 0x58: inst.BIT(3, MemR(GetIX()+Get8BitsInmValue(2))); break;
+        case 0x59: inst.BIT(3, MemR(GetIX()+Get8BitsInmValue(2))); break;
+        case 0x5A: inst.BIT(3, MemR(GetIX()+Get8BitsInmValue(2))); break;
+        case 0x5B: inst.BIT(3, MemR(GetIX()+Get8BitsInmValue(2))); break;
+        case 0x5C: inst.BIT(3, MemR(GetIX()+Get8BitsInmValue(2))); break;
+        case 0x5D: inst.BIT(3, MemR(GetIX()+Get8BitsInmValue(2))); break;
+        case 0x5E: inst.BIT(3, MemR(GetIX()+Get8BitsInmValue(2))); break;
+        case 0x5F: inst.BIT(3, MemR(GetIX()+Get8BitsInmValue(2))); break;
+            
+        case 0x60: inst.BIT(4, MemR(GetIX()+Get8BitsInmValue(2))); break;
+        case 0x61: inst.BIT(4, MemR(GetIX()+Get8BitsInmValue(2))); break;
+        case 0x62: inst.BIT(4, MemR(GetIX()+Get8BitsInmValue(2))); break;
+        case 0x63: inst.BIT(4, MemR(GetIX()+Get8BitsInmValue(2))); break;
+        case 0x64: inst.BIT(4, MemR(GetIX()+Get8BitsInmValue(2))); break;
+        case 0x65: inst.BIT(4, MemR(GetIX()+Get8BitsInmValue(2))); break;
+        case 0x66: inst.BIT(4, MemR(GetIX()+Get8BitsInmValue(2))); break;
+        case 0x67: inst.BIT(4, MemR(GetIX()+Get8BitsInmValue(2))); break;
+        case 0x68: inst.BIT(5, MemR(GetIX()+Get8BitsInmValue(2))); break;
+        case 0x69: inst.BIT(5, MemR(GetIX()+Get8BitsInmValue(2))); break;
+        case 0x6A: inst.BIT(5, MemR(GetIX()+Get8BitsInmValue(2))); break;
+        case 0x6B: inst.BIT(5, MemR(GetIX()+Get8BitsInmValue(2))); break;
+        case 0x6C: inst.BIT(5, MemR(GetIX()+Get8BitsInmValue(2))); break;
+        case 0x6D: inst.BIT(5, MemR(GetIX()+Get8BitsInmValue(2))); break;
+        case 0x6E: inst.BIT(5, MemR(GetIX()+Get8BitsInmValue(2))); break;
+        case 0x6F: inst.BIT(5, MemR(GetIX()+Get8BitsInmValue(2))); break;
+            
+        case 0x70: inst.BIT(6, MemR(GetIX()+Get8BitsInmValue(2))); break;
+        case 0x71: inst.BIT(6, MemR(GetIX()+Get8BitsInmValue(2))); break;
+        case 0x72: inst.BIT(6, MemR(GetIX()+Get8BitsInmValue(2))); break;
+        case 0x73: inst.BIT(6, MemR(GetIX()+Get8BitsInmValue(2))); break;
+        case 0x74: inst.BIT(6, MemR(GetIX()+Get8BitsInmValue(2))); break;
+        case 0x75: inst.BIT(6, MemR(GetIX()+Get8BitsInmValue(2))); break;
+        case 0x76: inst.BIT(6, MemR(GetIX()+Get8BitsInmValue(2))); break;
+        case 0x77: inst.BIT(6, MemR(GetIX()+Get8BitsInmValue(2))); break;
+        case 0x78: inst.BIT(6, MemR(GetIX()+Get8BitsInmValue(2))); break;
+        case 0x79: inst.BIT(7, MemR(GetIX()+Get8BitsInmValue(2))); break;
+        case 0x7A: inst.BIT(7, MemR(GetIX()+Get8BitsInmValue(2))); break;
+        case 0x7B: inst.BIT(7, MemR(GetIX()+Get8BitsInmValue(2))); break;
+        case 0x7C: inst.BIT(7, MemR(GetIX()+Get8BitsInmValue(2))); break;
+        case 0x7D: inst.BIT(7, MemR(GetIX()+Get8BitsInmValue(2))); break;
+        case 0x7E: inst.BIT(7, MemR(GetIX()+Get8BitsInmValue(2))); break;
+        case 0x7F: inst.BIT(7, MemR(GetIX()+Get8BitsInmValue(2))); break;
+            
+        default:
+			stringstream out;
+			out << "Error, instruction not implemented: 0xDDCB";
+			out << setfill('0') << setw(2) << uppercase << hex << (int)opcode << "\n";
+            cout << out.str();
+			throw SMSException(out.str().data());
+    }
+    
+    if (!executed) {
+        AddPC(GetInstructionDDCBLength(opcode));
+        executed = true;
+    }
+}
+
+void CPU::OpcodeFDCB(Instructions &inst, bool &executed)
+{
+    u8 opcode = MemR(GetPC() + 3);
+    AddR(1);
+    
+    switch (opcode)
+    {
+        case 0x40: inst.BIT(0, MemR(GetIY()+Get8BitsInmValue(2))); break;
+        case 0x41: inst.BIT(0, MemR(GetIY()+Get8BitsInmValue(2))); break;
+        case 0x42: inst.BIT(0, MemR(GetIY()+Get8BitsInmValue(2))); break;
+        case 0x43: inst.BIT(0, MemR(GetIY()+Get8BitsInmValue(2))); break;
+        case 0x44: inst.BIT(0, MemR(GetIY()+Get8BitsInmValue(2))); break;
+        case 0x45: inst.BIT(0, MemR(GetIY()+Get8BitsInmValue(2))); break;
+        case 0x46: inst.BIT(0, MemR(GetIY()+Get8BitsInmValue(2))); break;
+        case 0x47: inst.BIT(0, MemR(GetIY()+Get8BitsInmValue(2))); break;
+        case 0x48: inst.BIT(1, MemR(GetIY()+Get8BitsInmValue(2))); break;
+        case 0x49: inst.BIT(1, MemR(GetIY()+Get8BitsInmValue(2))); break;
+        case 0x4A: inst.BIT(1, MemR(GetIY()+Get8BitsInmValue(2))); break;
+        case 0x4B: inst.BIT(1, MemR(GetIY()+Get8BitsInmValue(2))); break;
+        case 0x4C: inst.BIT(1, MemR(GetIY()+Get8BitsInmValue(2))); break;
+        case 0x4D: inst.BIT(1, MemR(GetIY()+Get8BitsInmValue(2))); break;
+        case 0x4E: inst.BIT(1, MemR(GetIY()+Get8BitsInmValue(2))); break;
+        case 0x4F: inst.BIT(1, MemR(GetIY()+Get8BitsInmValue(2))); break;
+            
+        case 0x50: inst.BIT(2, MemR(GetIY()+Get8BitsInmValue(2))); break;
+        case 0x51: inst.BIT(2, MemR(GetIY()+Get8BitsInmValue(2))); break;
+        case 0x52: inst.BIT(2, MemR(GetIY()+Get8BitsInmValue(2))); break;
+        case 0x53: inst.BIT(2, MemR(GetIY()+Get8BitsInmValue(2))); break;
+        case 0x54: inst.BIT(2, MemR(GetIY()+Get8BitsInmValue(2))); break;
+        case 0x55: inst.BIT(2, MemR(GetIY()+Get8BitsInmValue(2))); break;
+        case 0x56: inst.BIT(2, MemR(GetIY()+Get8BitsInmValue(2))); break;
+        case 0x57: inst.BIT(2, MemR(GetIY()+Get8BitsInmValue(2))); break;
+        case 0x58: inst.BIT(3, MemR(GetIY()+Get8BitsInmValue(2))); break;
+        case 0x59: inst.BIT(3, MemR(GetIY()+Get8BitsInmValue(2))); break;
+        case 0x5A: inst.BIT(3, MemR(GetIY()+Get8BitsInmValue(2))); break;
+        case 0x5B: inst.BIT(3, MemR(GetIY()+Get8BitsInmValue(2))); break;
+        case 0x5C: inst.BIT(3, MemR(GetIY()+Get8BitsInmValue(2))); break;
+        case 0x5D: inst.BIT(3, MemR(GetIY()+Get8BitsInmValue(2))); break;
+        case 0x5E: inst.BIT(3, MemR(GetIY()+Get8BitsInmValue(2))); break;
+        case 0x5F: inst.BIT(3, MemR(GetIY()+Get8BitsInmValue(2))); break;
+            
+        case 0x60: inst.BIT(4, MemR(GetIY()+Get8BitsInmValue(2))); break;
+        case 0x61: inst.BIT(4, MemR(GetIY()+Get8BitsInmValue(2))); break;
+        case 0x62: inst.BIT(4, MemR(GetIY()+Get8BitsInmValue(2))); break;
+        case 0x63: inst.BIT(4, MemR(GetIY()+Get8BitsInmValue(2))); break;
+        case 0x64: inst.BIT(4, MemR(GetIY()+Get8BitsInmValue(2))); break;
+        case 0x65: inst.BIT(4, MemR(GetIY()+Get8BitsInmValue(2))); break;
+        case 0x66: inst.BIT(4, MemR(GetIY()+Get8BitsInmValue(2))); break;
+        case 0x67: inst.BIT(4, MemR(GetIY()+Get8BitsInmValue(2))); break;
+        case 0x68: inst.BIT(5, MemR(GetIY()+Get8BitsInmValue(2))); break;
+        case 0x69: inst.BIT(5, MemR(GetIY()+Get8BitsInmValue(2))); break;
+        case 0x6A: inst.BIT(5, MemR(GetIY()+Get8BitsInmValue(2))); break;
+        case 0x6B: inst.BIT(5, MemR(GetIY()+Get8BitsInmValue(2))); break;
+        case 0x6C: inst.BIT(5, MemR(GetIY()+Get8BitsInmValue(2))); break;
+        case 0x6D: inst.BIT(5, MemR(GetIY()+Get8BitsInmValue(2))); break;
+        case 0x6E: inst.BIT(5, MemR(GetIY()+Get8BitsInmValue(2))); break;
+        case 0x6F: inst.BIT(5, MemR(GetIY()+Get8BitsInmValue(2))); break;
+            
+        case 0x70: inst.BIT(6, MemR(GetIY()+Get8BitsInmValue(2))); break;
+        case 0x71: inst.BIT(6, MemR(GetIY()+Get8BitsInmValue(2))); break;
+        case 0x72: inst.BIT(6, MemR(GetIY()+Get8BitsInmValue(2))); break;
+        case 0x73: inst.BIT(6, MemR(GetIY()+Get8BitsInmValue(2))); break;
+        case 0x74: inst.BIT(6, MemR(GetIY()+Get8BitsInmValue(2))); break;
+        case 0x75: inst.BIT(6, MemR(GetIY()+Get8BitsInmValue(2))); break;
+        case 0x76: inst.BIT(6, MemR(GetIY()+Get8BitsInmValue(2))); break;
+        case 0x77: inst.BIT(6, MemR(GetIY()+Get8BitsInmValue(2))); break;
+        case 0x78: inst.BIT(6, MemR(GetIY()+Get8BitsInmValue(2))); break;
+        case 0x79: inst.BIT(7, MemR(GetIY()+Get8BitsInmValue(2))); break;
+        case 0x7A: inst.BIT(7, MemR(GetIY()+Get8BitsInmValue(2))); break;
+        case 0x7B: inst.BIT(7, MemR(GetIY()+Get8BitsInmValue(2))); break;
+        case 0x7C: inst.BIT(7, MemR(GetIY()+Get8BitsInmValue(2))); break;
+        case 0x7D: inst.BIT(7, MemR(GetIY()+Get8BitsInmValue(2))); break;
+        case 0x7E: inst.BIT(7, MemR(GetIY()+Get8BitsInmValue(2))); break;
+        case 0x7F: inst.BIT(7, MemR(GetIY()+Get8BitsInmValue(2))); break;
+            
+        default:
+			stringstream out;
+			out << "Error, instruction not implemented: 0xFDCB";
+			out << setfill('0') << setw(2) << uppercase << hex << (int)opcode << "\n";
+            cout << out.str();
+			throw SMSException(out.str().data());
+    }
+    
+    if (!executed) {
+        AddPC(GetInstructionFDCBLength(opcode));
         executed = true;
     }
 }

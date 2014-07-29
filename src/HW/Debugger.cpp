@@ -217,32 +217,46 @@ void Debugger::DisassembleOne(u16 address, u16 &nextAddress, std::string &name, 
     stringstream ss1, ss2;
     
     int length = 0;
-    u8 opcode = m_cpu->MemR(address);
-    u8 nextOpcode = m_cpu->MemR(address+1);
-    switch (opcode) {
+    u8 opcode1 = m_cpu->MemR(address);
+    u8 opcode2 = m_cpu->MemR(address+1);
+    switch (opcode1) {
         case 0xCB:
-            ss1 << GetInstructionCBName(nextOpcode);
-            length += GetInstructionCBLength(nextOpcode);
+            ss1 << GetInstructionCBName(opcode2);
+            length += GetInstructionCBLength(opcode2);
             break;
             
         case 0xDD:
-            ss1 << GetInstructionDDName(nextOpcode);
-            length += GetInstructionDDLength(nextOpcode);
+            if (opcode2 == 0xCB) {
+                u8 opcode3 = m_cpu->MemR(address+4);
+                ss1 << GetInstructionDDCBName(opcode3);
+                length += GetInstructionDDCBLength(opcode3);
+            }
+            else {
+                ss1 << GetInstructionDDName(opcode2);
+                length += GetInstructionDDLength(opcode2);
+            }
             break;
             
         case 0xED:
-            ss1 << GetInstructionEDName(nextOpcode);
-            length += GetInstructionEDLength(nextOpcode);
+            ss1 << GetInstructionEDName(opcode2);
+            length += GetInstructionEDLength(opcode2);
             break;
         
         case 0xFD:
-            ss1 << GetInstructionFDName(nextOpcode);
-            length += GetInstructionFDLength(nextOpcode);
+            if (opcode2 == 0xCB) {
+                u8 opcode3 = m_cpu->MemR(address+4);
+                ss1 << GetInstructionFDCBName(opcode3);
+                length += GetInstructionFDCBLength(opcode3);
+            }
+            else {
+                ss1 << GetInstructionFDName(opcode2);
+                length += GetInstructionFDLength(opcode2);
+            }
             break;
             
         default:
-            ss1 << GetInstructionName(opcode);
-            length += GetInstructionLength(opcode);
+            ss1 << GetInstructionName(opcode1);
+            length += GetInstructionLength(opcode1);
             break;
     }
     

@@ -520,24 +520,6 @@ void Instructions::SET_b_r(u8 bit, e_registers place)
 		m_reg->SetReg(place, m_reg->GetReg(place) | (1 << bit));
 }
 
-void Instructions::BIT_b_r(u8 bit, e_registers place)
-{
-	u8 value;
-
-	if (place == c_HL)
-		value = m_mem->MemR(m_reg->GetHL());
-	else
-		value = (u8)m_reg->GetReg(place);
-
-	if (!(value & (1 << bit)))
-		m_reg->SetFlagZ(1);
-	else
-		m_reg->SetFlagZ(0);
-
-	m_reg->SetFlagN(0);
-	m_reg->SetFlagH(1);
-}
-
 void Instructions::RES_b_r(u8 bit, e_registers place)
 {
     if (place == c_HL)
@@ -829,15 +811,6 @@ void Instructions::DJNZ() {
     }
 }
 
-void Instructions::LD_cNN_nn(e_registers place) {
-    assert((place == BC) || (place == DE) || (place == HL) || (place == SP));
-    
-    u16 address = _16bitsInmValue;
-    u16 value = m_reg->GetReg(place);
-    m_mem->MemW(address+0, (value & 0x00FF));
-    m_mem->MemW(address+1, (value >> 8));
-}
-
 void Instructions::LD_cNN_n(e_registers place) {
     assert((place == A) || (place == B) || (place == C) ||
            (place == D) || (place == E) || (place == F));
@@ -1116,4 +1089,20 @@ void Instructions::NEG() {
 
 void Instructions::LD_Mem(u16 address, u8 value) {
     m_mem->MemW(address, value);
+}
+
+void Instructions::LD_Mem(u16 address, u16 value) {
+    m_mem->MemW(address+0, value & 0x00FF);
+    m_mem->MemW(address+1, value >> 8);
+}
+
+void Instructions::BIT(u8 bit, u8 value)
+{
+	if (!(value & (1 << bit)))
+		m_reg->SetFlagZ(1);
+	else
+		m_reg->SetFlagZ(0);
+    
+	m_reg->SetFlagN(0);
+	m_reg->SetFlagH(1);
 }
