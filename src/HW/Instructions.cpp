@@ -1106,3 +1106,15 @@ void Instructions::BIT(u8 bit, u8 value)
 	m_reg->SetFlagN(0);
 	m_reg->SetFlagH(1);
 }
+
+void Instructions::SET_Mem(u8 bit, u16 address) {
+    u8 value = m_mem->MemR(address);
+    value |= (1 << bit);
+    m_mem->MemW(address, value);
+}
+
+void Instructions::RES_Mem(u8 bit, u16 address) {
+    u8 value = m_mem->MemR(address);
+    value &= ~(1 << bit);
+    m_mem->MemW(address, value);
+}
