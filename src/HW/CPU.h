@@ -69,6 +69,8 @@ private:
     
     u8  Get8BitsInmValue(u8 offset);
     u16 Get16BitsInmValue(u8 offset);
+    u16 GetIXPlusD(u8 offset);
+    u16 GetIYPlusD(u8 offset);
 
 };
 

@@ -28,7 +28,6 @@ public:
 	~Instructions(void);
 	
 	void ADC_A_n(e_registers place);
-	void ADD_A_n(e_registers place);
 	void ADD_HL_n(e_registers place);
 	void AND(e_registers place);
 	void CALL_nn();
@@ -54,7 +53,6 @@ public:
 	void LD_r1_r2(e_registers e_reg1, e_registers e_reg2);
 	void LD_SP_HL();
 	void NOP();
-    void OR_n(e_registers place);
 	void POP_nn(e_registers place);
     void PUSH_nn(e_registers place);
 	void RES_b_r(u8 bit, e_registers place);
@@ -112,6 +110,10 @@ public:
     void BIT(u8 bit, u8 value);
     void SET_Mem(u8 bit, u16 address);
     void RES_Mem(u8 bit, u16 address);
+    void LDD();
+    void LDDR();
+    void OR(u8 value);
+    void ADD(u8 value);
     
 private:
 	Registers   *m_reg;
