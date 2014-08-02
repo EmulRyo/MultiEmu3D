@@ -27,7 +27,6 @@ public:
 	Instructions(Registers *reg, Memory *mem);
 	~Instructions(void);
 	
-	void ADC_A_n(e_registers place);
 	void ADD_HL_n(e_registers place);
 	void AND(e_registers place);
 	void CALL_nn();
@@ -35,12 +34,9 @@ public:
 	void CP_n(e_registers place);
 	void CPL();
 	void DAA();
-	void DEC_n(e_registers place);
-    void DEC_nn(e_registers place);
 	void DI();
 	void EI();
 	void HALT();
-	void INC_n(e_registers place);
 	void JP_nn();
 	void JP_cc_nn(e_registers flag, u8 value2check);
 	void JP_HL();
@@ -101,9 +97,7 @@ public:
     void ADD(u16 *reg, u16 value);
     void LD(u8  *reg, u8  value);
     void LD(u16 *reg, u16 value);
-    void DEC(u8 *reg);
     void CPI();
-    void INC_NoFlags(u16 *reg);
     void NEG();
     void LD_Mem(u16 address, u8 value);
     void LD_Mem(u16 address, u16 value);
@@ -114,6 +108,14 @@ public:
     void LDDR();
     void OR(u8 value);
     void ADD(u8 value);
+    void INC_NoFlags(u16 *reg);
+    void INC(u8 *reg);
+    void INC_Mem(u16 address);
+    void DEC_NoFlags(u16 *reg);
+    void DEC(u8 *reg);
+    void DEC_Mem(u16 address);
+    void ADC(u8 value);
+    void ADC(u16 value);
     
 private:
 	Registers   *m_reg;

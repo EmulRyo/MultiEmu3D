@@ -210,50 +210,6 @@ void Instructions::SUB_n(e_registers place)
 	m_reg->SetA(m_reg->GetA() - value);
 }
 
-void Instructions::ADC_A_n(e_registers place)
-{
-	int value;
-	u8 valueReg;
-
-	switch (place)
-	{
-		case $:		valueReg = _8bitsInmValue; break;
-		case c_HL:	valueReg = m_mem->MemR(m_reg->GetHL()); break;
-		default:	valueReg = (u8)m_reg->GetReg(place); break;
-	}
-
-	value = m_reg->GetFlagC() + valueReg + m_reg->GetA();
-
-	m_reg->SetFlagZ(!(value & 0xFF) ? 1 : 0);
-	m_reg->SetFlagN(0);
-	if ((m_reg->GetFlagC() + (valueReg & 0x0F) + (m_reg->GetA() & 0x0F)) > 0x0F)
-		m_reg->SetFlagH(1);
-	else
-		m_reg->SetFlagH(0);
-	m_reg->SetFlagC((value > 0xFF) ? 1 : 0);
-
-	m_reg->SetA(value & 0xFF);
-}
-
-void Instructions::INC_n(e_registers place)
-{
-	u8 value;
-
-	if (place == c_HL)
-	{
-		value = m_mem->MemR(m_reg->GetHL()) + 1;
-		m_mem->MemW(m_reg->GetHL(), value);
-	}
-	else
-	{
-		value = m_reg->GetReg(place) + 1;
-		m_reg->SetReg(place, value);
-	}
-	m_reg->SetFlagZ(value ? 0 : 1);
-	m_reg->SetFlagN(0);
-	m_reg->SetFlagH((value & 0x0F) ? 0 : 1);
-}
-
 void Instructions::ADD_HL_n(e_registers place)
 {
 	u16 value, hl;
@@ -401,29 +357,6 @@ void Instructions::DAA()
         m_reg->SetFlagZ(1);
     
     m_reg->SetA(a);
-}
-
-void Instructions::DEC_n(e_registers place)
-{
-	u8 value;
-
-	if (place == c_HL) {
-		value = m_mem->MemR(m_reg->GetHL()) - 1;
-		m_mem->MemW(m_reg->GetHL(), value);
-	}
-	else {
-		value = m_reg->GetReg(place) - 1;
-		m_reg->SetReg(place, value);
-	}
-	
-	m_reg->SetFlagZ(!value ? 1 : 0);
-	m_reg->SetFlagN(1);
-	m_reg->SetFlagH(((value & 0x0F) == 0x0F) ? 1 : 0);
-}
-
-void Instructions::DEC_nn(e_registers place)
-{
-	m_reg->SetReg(place, m_reg->GetReg(place) - 1);
 }
 
 void Instructions::XOR_n(e_registers place)
@@ -1010,10 +943,6 @@ void Instructions::LD(u16 *reg, u16 value)
     *reg = value;
 }
 
-void Instructions::DEC(u8 *reg) {
-    *reg = *reg-1;
-}
-
 void Instructions::CPI() {
     u8 hl = m_mem->MemR(m_reg->GetHL());
     u8 result = m_reg->GetA() - hl;
@@ -1026,10 +955,6 @@ void Instructions::CPI() {
     
     m_reg->SetHL(m_reg->GetHL()+1);
     m_reg->SetBC(m_reg->GetBC()-1);
-}
-
-void Instructions::INC_NoFlags(u16 *reg) {
-    *reg = *reg+1;
 }
 
 void Instructions::NEG() {
@@ -1125,4 +1050,93 @@ void Instructions::ADD(u8 value)
 	m_reg->SetFlagC((result < a) ? 1 : 0);
     
 	m_reg->SetA(result);
+}
+
+void Instructions::INC_NoFlags(u16 *reg) {
+    *reg = *reg+1;
+}
+
+void Instructions::INC(u8 *reg) {
+    u8 oldValue = *reg;
+    u8 newValue = oldValue + 1;
+    *reg = newValue;
+    
+    m_reg->SetFlagS(newValue >> 7);
+	m_reg->SetFlagZ(newValue ? 0 : 1);
+    m_reg->SetFlagH((newValue & 0x0F) ? 0 : 1);
+    m_reg->SetFlagPV((oldValue == 0x7F) ? 1 : 0);
+	m_reg->SetFlagN(0);
+}
+
+void Instructions::INC_Mem(u16 address) {
+    u8 oldValue = m_mem->MemR(address);
+    u8 newValue = oldValue + 1;
+    m_mem->MemW(address, newValue);
+    
+    m_reg->SetFlagS(newValue >> 7);
+	m_reg->SetFlagZ(newValue ? 0 : 1);
+    m_reg->SetFlagH((newValue & 0x0F) ? 0 : 1);
+    m_reg->SetFlagPV((oldValue == 0x7F) ? 1 : 0);
+	m_reg->SetFlagN(0);
+}
+
+void Instructions::DEC_NoFlags(u16 *reg) {
+    *reg = *reg-1;
+}
+
+void Instructions::DEC(u8 *reg) {
+    u8 oldValue = *reg;
+    u8 newValue = oldValue - 1;
+    *reg = newValue;
+	
+    m_reg->SetFlagS(newValue >> 7);
+	m_reg->SetFlagZ(newValue ? 0 : 1);
+    m_reg->SetFlagH((newValue & 0x0F) == 0x0F ? 1 : 0);
+    m_reg->SetFlagPV((oldValue == 0x80) ? 1 : 0);
+	m_reg->SetFlagN(1);
+}
+
+void Instructions::DEC_Mem(u16 address) {
+    u8 oldValue = m_mem->MemR(address);
+    u8 newValue = oldValue - 1;
+    m_mem->MemW(address, newValue);
+	
+    m_reg->SetFlagS(newValue >> 7);
+	m_reg->SetFlagZ(newValue ? 0 : 1);
+    m_reg->SetFlagH((newValue & 0x0F) == 0x0F ? 1 : 0);
+    m_reg->SetFlagPV((oldValue == 0x80) ? 1 : 0);
+	m_reg->SetFlagN(1);
+}
+
+void Instructions::ADC(u8 value)
+{
+	u8 result = m_reg->GetA() + value + m_reg->GetFlagC();
+    
+    m_reg->SetFlagS(result >> 7);
+	m_reg->SetFlagZ(result ? 0 : 1);
+	if ((result & 0x0F) < (m_reg->GetA() & 0x0F))
+		m_reg->SetFlagH(1);
+	else
+		m_reg->SetFlagH(0);
+    m_reg->SetFlagPV((result < m_reg->GetA()) ? 1 : 0);
+    m_reg->SetFlagN(0);
+	m_reg->SetFlagC((result < m_reg->GetA()) ? 1 : 0);
+    
+	m_reg->SetA(result);
+}
+
+void Instructions::ADC(u16 value) {
+    u16 result = m_reg->GetHL() + value + m_reg->GetFlagC();
+    
+    m_reg->SetFlagS(result >> 15);
+	m_reg->SetFlagZ(result ? 0 : 1);
+	if ((result & 0x0FFF) < (m_reg->GetHL() & 0x0FFF))
+		m_reg->SetFlagH(1);
+	else
+		m_reg->SetFlagH(0);
+    m_reg->SetFlagPV((result < m_reg->GetHL()) ? 1 : 0);
+    m_reg->SetFlagN(0);
+	m_reg->SetFlagC((result < m_reg->GetHL()) ? 1 : 0);
+    
+	m_reg->SetHL(result);
 }
