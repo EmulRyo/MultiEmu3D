@@ -729,11 +729,7 @@ void Instructions::LDI() {
 void Instructions::LDIR() {
     
     LDI();
-    if (m_reg->GetBC() == 0) {
-        m_reg->SetFlagH(0);
-        m_reg->SetFlagN(0);
-        m_reg->SetFlagPV(0);
-    } else // Si no se cumple la condición evitar que salte
+    if (m_reg->GetBC()) // Si se cumple la condición evitar que salte
         m_reg->SetIncPC(false);
 }
 
@@ -765,10 +761,7 @@ void Instructions::OUTI() {
 void Instructions::OTIR() {
     
     OUTI();
-    if(m_reg->GetB() == 0) {
-        m_reg->SetFlagN(1);
-        m_reg->SetFlagZ(1);
-    } else // Si no se cumple la condición evitar que salte
+    if(m_reg->GetB()) // Si se cumple la condición evitar que salte
         m_reg->SetIncPC(false);
 }
 
@@ -978,6 +971,13 @@ void Instructions::LD_Mem(u16 address, u8 value) {
 void Instructions::LD_Mem(u16 address, u16 value) {
     m_mem->MemW(address+0, value & 0x00FF);
     m_mem->MemW(address+1, value >> 8);
+}
+
+void Instructions::LD_Content(u16 *reg, u16 address) {
+    u8 valueL = m_mem->MemR(address + 0);
+    u8 valueH = m_mem->MemR(address + 1);
+    
+    *reg = (valueH << 8) | valueL;
 }
 
 void Instructions::BIT(u8 bit, u8 value)

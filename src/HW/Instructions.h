@@ -97,6 +97,7 @@ public:
     void ADD(u16 *reg, u16 value);
     void LD(u8  *reg, u8  value);
     void LD(u16 *reg, u16 value);
+    void LD_Content(u16 *reg, u16 address);
     void CPI();
     void NEG();
     void LD_Mem(u16 address, u8 value);

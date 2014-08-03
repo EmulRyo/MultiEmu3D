@@ -641,7 +641,7 @@ void CPU::OpcodeDD(Instructions &inst, bool &executed)
         case 0x24: inst.INC(PtrIXh()); break;
         case 0x25: inst.DEC(PtrIXh()); break;
         case 0x29: inst.ADD(PtrIX(), GetIX()); break;
-        case 0x2A: inst.LD(PtrIX(), Get16BitsInmValue(2)); break;
+        case 0x2A: inst.LD_Content(PtrIX(), Get16BitsInmValue(2)); break;
         case 0x2C: inst.INC(PtrIXl()); break;
         case 0x2D: inst.DEC(PtrIXl()); break;
             
@@ -721,7 +721,7 @@ void CPU::OpcodeED(Instructions &inst, bool &executed)
     switch (opcode)
     {
 		case (0x40): inst.IN(B); break;
-		case (0x41): inst.OUT(C, A); break;
+		case (0x41): inst.OUT(C, B); break;
 		case (0x42): inst.SBC_HL(BC); break;
 		case (0x43): inst.LD_Mem(Get16BitsInmValue(2), GetBC()); break;
         case (0x44): inst.NEG(); break;
@@ -729,7 +729,7 @@ void CPU::OpcodeED(Instructions &inst, bool &executed)
 		case (0x48): inst.IN(C); break;
 		case (0x49): inst.OUT(C, C); break;
         case (0x4A): inst.ADC(GetBC()); break;
-        case (0x4B): inst.LD(PtrBC(), Get16BitsInmValue(2)); break;
+        case (0x4B): inst.LD_Content(PtrBC(), Get16BitsInmValue(2)); break;
         case (0x4C): inst.NEG(); break;
 		case (0x4D): inst.RETI(); break;
 		case (0x4F): inst.LD_R_A(); break;
@@ -743,7 +743,7 @@ void CPU::OpcodeED(Instructions &inst, bool &executed)
 		case (0x58): inst.IN(E); break;
 		case (0x59): inst.OUT(C, E); break;
         case (0x5A): inst.ADC(GetDE()); break;
-        case (0x5B): inst.LD(PtrDE(), Get16BitsInmValue(2)); break;
+        case (0x5B): inst.LD_Content(PtrDE(), Get16BitsInmValue(2)); break;
         case (0x5C): inst.NEG(); break;
 		case (0x5E): inst.IM(2); break;
 		case (0x5F): inst.LD_A_R(); break;
@@ -756,7 +756,7 @@ void CPU::OpcodeED(Instructions &inst, bool &executed)
 		case (0x68): inst.IN(L); break;
 		case (0x69): inst.OUT(C, L); break;
         case (0x6A): inst.ADC(GetHL()); break;
-        case (0x6B): inst.LD(PtrHL(), Get16BitsInmValue(2)); break;
+        case (0x6B): inst.LD_Content(PtrHL(), Get16BitsInmValue(2)); break;
         case (0x6C): inst.NEG(); break;
         
         case (0x71): inst.OUT(C, f_Z); break;
@@ -766,7 +766,7 @@ void CPU::OpcodeED(Instructions &inst, bool &executed)
         case (0x78): inst.IN(A); break;
 		case (0x79): inst.OUT(C, A); break;
         case (0x7A): inst.ADC(GetSP()); break;
-        case (0x7B): inst.LD(PtrSP(), Get16BitsInmValue(2)); break;
+        case (0x7B): inst.LD_Content(PtrSP(), Get16BitsInmValue(2)); break;
         case (0x7C): inst.NEG(); break;
         
         case (0xA0): inst.LDI(); break;
