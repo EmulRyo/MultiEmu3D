@@ -119,23 +119,6 @@ void Instructions::JP_nn()
     m_reg->SetIncPC(false);
 }
 
-void Instructions::CP_n(e_registers place)
-{
-	u8 value;
-
-	switch (place)
-	{
-		case $:     value = _8bitsInmValue; break;
-		case c_HL:  value = m_mem->MemR(m_reg->GetHL()); break;
-		default:    value = (u8)m_reg->GetReg(place);
-	}
-
-	m_reg->SetFlagZ((m_reg->GetA() == value) ? 1 : 0);
-	m_reg->SetFlagN(1);
-	m_reg->SetFlagH(((m_reg->GetA() & 0x0F) < (value & 0x0F)) ? 1 : 0);
-	m_reg->SetFlagC((m_reg->GetA() < value) ? 1 : 0);
-}
-
 void Instructions::CPL()
 {
 	m_reg->SetA(~m_reg->GetA());
@@ -189,25 +172,6 @@ void Instructions::CALL_cc_nn(e_registers flag, u8 value2check)
 void Instructions::LD_SP_HL()
 {
 	m_reg->SetSP(m_reg->GetHL());
-}
-
-void Instructions::SUB_n(e_registers place)
-{
-	int value;
-
-    switch (place)
-	{
-        case $:		value = _8bitsInmValue; break;
-		case c_HL:	value = m_mem->MemR(m_reg->GetHL()); break;
-		default:	value = m_reg->GetReg(place); break;
-    }
-
-	m_reg->SetFlagZ((m_reg->GetA() - value) ? 0 : 1);
-	m_reg->SetFlagN(1);
-	m_reg->SetFlagH(((m_reg->GetA() & 0x0F) < (value & 0x0F)) ? 1 : 0);
-	m_reg->SetFlagC((m_reg->GetA() < value) ? 1 : 0);
-
-	m_reg->SetA(m_reg->GetA() - value);
 }
 
 void Instructions::ADD_HL_n(e_registers place)
@@ -1140,3 +1104,50 @@ void Instructions::ADC(u16 value) {
     
 	m_reg->SetHL(result);
 }
+
+void Instructions::CP(u8 value)
+{
+    u8 result = m_reg->GetA() - value;
+    
+    m_reg->SetFlagS(result >> 7);
+	m_reg->SetFlagZ(result ? 0 : 1);
+    m_reg->SetFlagH(((value & 0x0F) > (m_reg->GetA() & 0x0F)) ? 1 : 0);
+    m_reg->SetFlagPV((value > m_reg->GetA()) ? 1 : 0);
+	m_reg->SetFlagN(1);
+	m_reg->SetFlagC((value > m_reg->GetA()) ? 1 : 0);
+}
+
+void Instructions::SUB(u8 value)
+{
+	u8 result = m_reg->GetA() - value;
+    
+	m_reg->SetFlagS(result >> 7);
+	m_reg->SetFlagZ(result ? 0 : 1);
+    m_reg->SetFlagH(((value & 0x0F) > (m_reg->GetA() & 0x0F)) ? 1 : 0);
+    m_reg->SetFlagPV((value > m_reg->GetA()) ? 1 : 0);
+	m_reg->SetFlagN(1);
+	m_reg->SetFlagC((value > m_reg->GetA()) ? 1 : 0);
+    
+	m_reg->SetA(result);
+}
+
+void Instructions::OUTD() {
+    u8 value = m_mem->MemR(m_reg->GetHL());
+    m_reg->SetHL(m_reg->GetHL()-1);
+    m_reg->SetB(m_reg->GetB()-1);
+    u8 port = m_reg->GetC();
+    
+    m_mem->PortW(port, value);
+    
+    m_reg->SetFlagZ(m_reg->GetB() ? 0 : 1);
+    m_reg->SetFlagN(1);
+}
+
+void Instructions::OTDR() {
+    
+    OUTD();
+    if(m_reg->GetB()) // Si se cumple la condición evitar que salte
+        m_reg->SetIncPC(false);
+    
+}
+

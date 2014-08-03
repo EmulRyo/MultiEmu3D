@@ -31,7 +31,6 @@ public:
 	void AND(e_registers place);
 	void CALL_nn();
 	void CALL_cc_nn(e_registers flag, u8 value2check);
-	void CP_n(e_registers place);
 	void CPL();
 	void DAA();
 	void DI();
@@ -69,7 +68,6 @@ public:
     void SLA_n(e_registers place);
 	void SRA_n(e_registers place);
     void SRL_n(e_registers place);
-	void SUB_n(e_registers place);
 	void XOR_n(e_registers place);
     
     void IM(u8 mode);
@@ -117,6 +115,10 @@ public:
     void DEC_Mem(u16 address);
     void ADC(u8 value);
     void ADC(u16 value);
+    void CP(u8 value);
+    void SUB(u8 value);
+    void OUTD();
+    void OTDR();
     
 private:
 	Registers   *m_reg;
