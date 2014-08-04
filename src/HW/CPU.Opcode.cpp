@@ -54,7 +54,7 @@ void CPU::ExecuteOpcode(u8 opcode, Instructions &inst) {
         case (0x04): inst.INC(PtrB()); break;
         case (0x05): inst.DEC(PtrB()); break;
         case (0x06): inst.LD_nn_n(B); break;
-        case (0x07): inst.RLC_n(A); break;
+        case (0x07): inst.RLCA(); break;
         case (0x08): inst.EX_AF_AF2(); break;
         case (0x09): inst.ADD_HL_n(BC); break;
         case (0x0A): inst.LD_A_n(c_BC); break;
@@ -217,22 +217,22 @@ void CPU::ExecuteOpcode(u8 opcode, Instructions &inst) {
         case (0x9E): inst.SBC_A(c_HL); break;
         case (0x9F): inst.SBC_A(A); break;
 
-        case (0xA0): inst.AND(B); break;
-        case (0xA1): inst.AND(C); break;
-        case (0xA2): inst.AND(D); break;
-        case (0xA3): inst.AND(E); break;
-        case (0xA4): inst.AND(H); break;
-        case (0xA5): inst.AND(L); break;
-        case (0xA6): inst.AND(c_HL); break;
-        case (0xA7): inst.AND(A); break;
-        case (0xA8): inst.XOR_n(B); break;
-        case (0xA9): inst.XOR_n(C); break;
-        case (0xAA): inst.XOR_n(D); break;
-        case (0xAB): inst.XOR_n(E); break;
-        case (0xAC): inst.XOR_n(H); break;
-        case (0xAD): inst.XOR_n(L); break;
-        case (0xAE): inst.XOR_n(c_HL); break;
-        case (0xAF): inst.XOR_n(A); break;
+        case (0xA0): inst.AND(GetB()); break;
+        case (0xA1): inst.AND(GetC()); break;
+        case (0xA2): inst.AND(GetD()); break;
+        case (0xA3): inst.AND(GetE()); break;
+        case (0xA4): inst.AND(GetH()); break;
+        case (0xA5): inst.AND(GetL()); break;
+        case (0xA6): inst.AND(MemR(GetHL())); break;
+        case (0xA7): inst.AND(GetA()); break;
+        case (0xA8): inst.XOR(GetB()); break;
+        case (0xA9): inst.XOR(GetC()); break;
+        case (0xAA): inst.XOR(GetD()); break;
+        case (0xAB): inst.XOR(GetE()); break;
+        case (0xAC): inst.XOR(GetH()); break;
+        case (0xAD): inst.XOR(GetL()); break;
+        case (0xAE): inst.XOR(MemR(GetHL())); break;
+        case (0xAF): inst.XOR(GetA()); break;
 
         case (0xB0): inst.OR(GetB()); break;
         case (0xB1): inst.OR(GetC()); break;
@@ -289,14 +289,14 @@ void CPU::ExecuteOpcode(u8 opcode, Instructions &inst) {
         case (0xE1): inst.POP_nn(HL); break;
         case (0xE3): inst.EX_cSP_HL(); break;
         case (0xE5): inst.PUSH_nn(HL); break;
-        case (0xE6): inst.AND($); break;
+        case (0xE6): inst.AND(Get8BitsInmValue(1)); break;
         case (0xE7): inst.RST_n(0x20); break;
         case (0xE8): inst.RET_cc(f_PV, 1); break;
         case (0xE9): inst.JP_HL(); break;
         case (0xEA): inst.JP_cc_nn(f_PV, 1); break;
         case (0xEB): inst.EX_DE_HL(); break;
         case (0xED): OpcodeED(inst, executed); break;; break;
-        case (0xEE): inst.XOR_n($); break;
+        case (0xEE): inst.XOR(Get8BitsInmValue(1)); break;
         case (0xEF): inst.RST_n(0x28); break;
 
         case (0xF0): inst.RET_cc(f_S, 0); break;
@@ -338,14 +338,14 @@ void CPU::OpcodeCB(Instructions &inst, bool &executed)
 
     switch (opcode)
     {
-		case (0x00): inst.RLC_n(B); break;
-		case (0x01): inst.RLC_n(C); break;
-		case (0x02): inst.RLC_n(D); break;
-		case (0x03): inst.RLC_n(E); break;
-		case (0x04): inst.RLC_n(H); break;
-		case (0x05): inst.RLC_n(L); break;
-		case (0x06): inst.RLC_n(c_HL); break;
-		case (0x07): inst.RLC_n(A); break;
+		case (0x00): inst.RLC(PtrB()); break;
+		case (0x01): inst.RLC(PtrC()); break;
+		case (0x02): inst.RLC(PtrD()); break;
+		case (0x03): inst.RLC(PtrE()); break;
+		case (0x04): inst.RLC(PtrH()); break;
+		case (0x05): inst.RLC(PtrL()); break;
+		case (0x06): inst.RLC_Mem(GetHL()); break;
+		case (0x07): inst.RLC(PtrA()); break;
 		case (0x08): inst.RRC_n(B); break;
 		case (0x09): inst.RRC_n(C); break;
 		case (0x0A): inst.RRC_n(D); break;
@@ -694,6 +694,13 @@ void CPU::OpcodeDD(Instructions &inst, bool &executed)
         case 0x95: inst.SUB(GetIXl()); break;
         case 0x96: inst.SUB(MemR(GetIXPlusD(2))); break;
             
+        case 0xA4: inst.AND(GetIXh());  break;
+        case 0xA5: inst.AND(GetIXl());  break;
+        case 0xA6: inst.AND(MemR(GetIXPlusD(2)));  break;
+        case 0xAC: inst.XOR(GetIXh());  break;
+        case 0xAD: inst.XOR(GetIXl());  break;
+        case 0xAE: inst.XOR(MemR(GetIXPlusD(2)));  break;
+            
         case 0xB4: inst.OR(GetIXh());  break;
         case 0xB5: inst.OR(GetIXl());  break;
         case 0xB6: inst.OR(MemR(GetIXPlusD(2)));  break;
@@ -819,10 +826,13 @@ void CPU::OpcodeFD(Instructions &inst, bool &executed)
         case 0x21: inst.LD(PtrIY(), Get16BitsInmValue(2)); break;
         case 0x22: inst.LD_Mem(Get16BitsInmValue(2), GetIY()); break;
         case 0x23: inst.INC_NoFlags(PtrIY()); break;
+        case 0x24: inst.INC(PtrIYh()); break;
         case 0x25: inst.DEC(PtrIYh()); break;
         case 0x26: inst.LD(PtrIYh(), Get8BitsInmValue(2)); break;
         case 0x29: inst.ADD(PtrIY(), GetIY()); break;
         case 0x2A: inst.LD_Content(PtrIY(), Get16BitsInmValue(2)); break;
+        case 0x2C: inst.INC(PtrIYl()); break;
+        case 0x2D: inst.DEC(PtrIYl()); break;
         case 0x2E: inst.LD(PtrIYl(), Get8BitsInmValue(2)); break;
             
         case 0x36: inst.LD_Mem(GetIYPlusD(2), Get8BitsInmValue(3)); break;
@@ -870,6 +880,13 @@ void CPU::OpcodeFD(Instructions &inst, bool &executed)
         case 0x95: inst.SUB(GetIYl()); break;
         case 0x96: inst.SUB(MemR(GetIYPlusD(2))); break;
           
+        case 0xA4: inst.AND(GetIYh());  break;
+        case 0xA5: inst.AND(GetIYl());  break;
+        case 0xA6: inst.AND(MemR(GetIYPlusD(2)));  break;
+        case 0xAC: inst.XOR(GetIYh());  break;
+        case 0xAD: inst.XOR(GetIYl());  break;
+        case 0xAE: inst.XOR(MemR(GetIYPlusD(2)));  break;
+            
         case 0xB4: inst.OR(GetIYh());  break;
         case 0xB5: inst.OR(GetIYl());  break;
         case 0xB6: inst.OR(MemR(GetIYPlusD(2)));  break;
@@ -905,6 +922,15 @@ void CPU::OpcodeDDCB(Instructions &inst, bool &executed)
     
     switch (opcode)
     {
+        case 0x00: inst.RLC_Mem(PtrB(), MemR(GetIXPlusD(2))); break;
+        case 0x01: inst.RLC_Mem(PtrC(), MemR(GetIXPlusD(2))); break;
+        case 0x02: inst.RLC_Mem(PtrD(), MemR(GetIXPlusD(2))); break;
+        case 0x03: inst.RLC_Mem(PtrE(), MemR(GetIXPlusD(2))); break;
+        case 0x04: inst.RLC_Mem(PtrH(), MemR(GetIXPlusD(2))); break;
+        case 0x05: inst.RLC_Mem(PtrL(), MemR(GetIXPlusD(2))); break;
+        case 0x06: inst.RLC_Mem(MemR(GetIXPlusD(2))); break;
+        case 0x07: inst.RLC_Mem(PtrA(), MemR(GetIXPlusD(2))); break;
+            
         case 0x40:
         case 0x41:
         case 0x42:
@@ -1130,6 +1156,15 @@ void CPU::OpcodeFDCB(Instructions &inst, bool &executed)
     
     switch (opcode)
     {
+        case 0x00: inst.RLC_Mem(PtrB(), MemR(GetIYPlusD(2))); break;
+        case 0x01: inst.RLC_Mem(PtrC(), MemR(GetIYPlusD(2))); break;
+        case 0x02: inst.RLC_Mem(PtrD(), MemR(GetIYPlusD(2))); break;
+        case 0x03: inst.RLC_Mem(PtrE(), MemR(GetIYPlusD(2))); break;
+        case 0x04: inst.RLC_Mem(PtrH(), MemR(GetIYPlusD(2))); break;
+        case 0x05: inst.RLC_Mem(PtrL(), MemR(GetIYPlusD(2))); break;
+        case 0x06: inst.RLC_Mem(MemR(GetIYPlusD(2))); break;
+        case 0x07: inst.RLC_Mem(PtrA(), MemR(GetIYPlusD(2))); break;
+            
         case 0x40:
         case 0x41:
         case 0x42:

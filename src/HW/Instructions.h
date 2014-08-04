@@ -28,7 +28,6 @@ public:
 	~Instructions(void);
 	
 	void ADD_HL_n(e_registers place);
-	void AND(e_registers place);
 	void CALL_nn();
 	void CALL_cc_nn(e_registers flag, u8 value2check);
 	void CPL();
@@ -56,8 +55,6 @@ public:
     void RET_cc(e_registers flag, u8 value2check);
 	void RL_n(e_registers place);
 	//void RLA();
-	void RLCA();
-	void RLC_n(e_registers place);
 	void RR_n(e_registers place);
 	void RRC_n(e_registers place);
 	//void RRCA();
@@ -68,7 +65,6 @@ public:
     void SLA_n(e_registers place);
 	void SRA_n(e_registers place);
     void SRL_n(e_registers place);
-	void XOR_n(e_registers place);
     
     void IM(u8 mode);
     void DJNZ();
@@ -93,7 +89,7 @@ public:
     void POP(u16 *reg);
     void LD_HL_cNN();
     void ADD(u16 *reg, u16 value);
-    void LD(u8  *reg, u8  value);
+    void LD(u8  *reg, u8 value);
     void LD(u16 *reg, u16 value);
     void LD_Content(u16 *reg, u16 address);
     void CPI();
@@ -119,6 +115,12 @@ public:
     void SUB(u8 value);
     void OUTD();
     void OTDR();
+    void RLCA();
+    void RLC(u8 *reg);
+    void RLC_Mem(u16 address);
+    void RLC_Mem(u8 *reg, u16 address);
+    void AND(u8 value);
+    void XOR(u8 value);
     
 private:
 	Registers   *m_reg;
