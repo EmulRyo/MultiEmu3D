@@ -35,9 +35,7 @@ public:
 	void DI();
 	void EI();
 	void HALT();
-	void JP_nn();
 	void JP_cc_nn(e_registers flag, u8 value2check);
-	void JP_HL();
 	void JR();
     void JR_CC_n(e_registers flag, u8 value2check);
 	void LD_n_A(e_registers place);
@@ -54,12 +52,8 @@ public:
 	void RETI();
     void RET_cc(e_registers flag, u8 value2check);
 	void RL_n(e_registers place);
-	//void RLA();
 	void RR_n(e_registers place);
-	void RRC_n(e_registers place);
-	//void RRCA();
 	void RST_n(u8 desp);
-    void SBC_A(e_registers place);
 	void SET_b_r(u8 bit, e_registers place);
 	void SCF();
     void SLA_n(e_registers place);
@@ -78,7 +72,6 @@ public:
     void CCF();
     void IN_A_n();
     void IN(e_registers place);
-    void SBC_HL(e_registers place);
     void LD_R_A();
     void LD_A_R();
     void EX_DE_HL();
@@ -121,6 +114,13 @@ public:
     void RLC_Mem(u8 *reg, u16 address);
     void AND(u8 value);
     void XOR(u8 value);
+    void RRCA();
+    void RRC(u8 *reg);
+    void RRC_Mem(u16 address);
+    void RRC_Mem(u8 *reg, u16 address);
+    void JP(u16 value);
+    void SBC(u8  value);
+    void SBC(u16 value);
     
 private:
 	Registers   *m_reg;
