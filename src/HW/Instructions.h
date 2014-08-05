@@ -51,14 +51,9 @@ public:
 	void RET();
 	void RETI();
     void RET_cc(e_registers flag, u8 value2check);
-	void RL_n(e_registers place);
-	void RR_n(e_registers place);
 	void RST_n(u8 desp);
 	void SET_b_r(u8 bit, e_registers place);
 	void SCF();
-    void SLA_n(e_registers place);
-	void SRA_n(e_registers place);
-    void SRL_n(e_registers place);
     
     void IM(u8 mode);
     void DJNZ();
@@ -68,7 +63,6 @@ public:
     void OUT(e_registers placePort, e_registers placeValue);
     void OUTI();
     void OTIR();
-    void SLL_n(e_registers place);
     void CCF();
     void IN_A_n();
     void IN(e_registers place);
@@ -77,7 +71,6 @@ public:
     void EX_DE_HL();
     void EX_AF_AF2();
     void EXX();
-    void EX_cSP_HL();
     void PUSH(u16 value);
     void POP(u16 *reg);
     void LD_HL_cNN();
@@ -121,6 +114,28 @@ public:
     void JP(u16 value);
     void SBC(u8  value);
     void SBC(u16 value);
+    void EX_cSP(u16 *value);
+    void RLD();
+    void RLA();
+    void RL(u8 *reg);
+    void RL_Mem(u16 address);
+    void RL_Mem(u8 *reg, u16 address);
+    void RRA();
+    void RR(u8 *reg);
+    void RR_Mem(u16 address);
+    void RR_Mem(u8 *reg, u16 address);
+    void SRA(u8 *reg);
+    void SRA_Mem(u16 address);
+    void SRA_Mem(u8 *reg, u16 address);
+    void SLA(u8 *reg);
+    void SLA_Mem(u16 address);
+    void SLA_Mem(u8 *reg, u16 address);
+    void SLL(u8 *reg);
+    void SLL_Mem(u16 address);
+    void SLL_Mem(u8 *reg, u16 address);
+    void SRL(u8 *reg);
+    void SRL_Mem(u16 address);
+    void SRL_Mem(u8 *reg, u16 address);
     
 private:
 	Registers   *m_reg;

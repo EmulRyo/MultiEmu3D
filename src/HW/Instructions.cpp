@@ -342,77 +342,6 @@ void Instructions::EI()
 	m_reg->SetIntPending(true);
 }
 
-void Instructions::SLA_n(e_registers place)
-{
-	u8 bit7, value;
-
-	if (place == c_HL)
-	{
-		bit7 = BIT7(m_mem->MemR(m_reg->GetHL())) >> 7;
-		value = m_mem->MemR(m_reg->GetHL()) << 1;
-		m_mem->MemW(m_reg->GetHL(), value);
-	}
-	else
-	{
-		bit7 = BIT7(m_reg->GetReg(place)) >> 7;
-		value = m_reg->GetReg(place) << 1;
-		m_reg->SetReg(place, value);
-	}
-
-	m_reg->SetFlagZ(!value ? 1 : 0);
-	m_reg->SetFlagN(0);
-	m_reg->SetFlagH(0);
-	m_reg->SetFlagC(bit7);
-}
-
-void Instructions::SRA_n(e_registers place)
-{
-    u8 bit0, bit7, value;
-
-	if (place == c_HL)
-	{
-		bit0 = BIT0(m_mem->MemR(m_reg->GetHL()));
-		bit7 = BIT7(m_mem->MemR(m_reg->GetHL()));
-		m_mem->MemW(m_reg->GetHL(), bit7 | (m_mem->MemR(m_reg->GetHL()) >> 1));
-		value = m_mem->MemR(m_reg->GetHL());
-	}
-	else
-	{
-		bit0 = BIT0(m_reg->GetReg(place));
-		bit7 = BIT7(m_reg->GetReg(place));
-		m_reg->SetReg(place, bit7 | (m_reg->GetReg(place) >> 1));
-		value = (u8)m_reg->GetReg(place);
-	}
-
-	m_reg->SetFlagZ(!value ? 1 : 0);
-	m_reg->SetFlagN(0);
-	m_reg->SetFlagH(0);
-	m_reg->SetFlagC(bit0);
-}
-
-void Instructions::SRL_n(e_registers place)
-{
-    u8 bit0, value;
-
-	if (place == c_HL)
-	{
-		bit0 = BIT0(m_mem->MemR(m_reg->GetHL()));
-		value = m_mem->MemR(m_reg->GetHL()) >> 1;
-		m_mem->MemW(m_reg->GetHL(), value);
-	}
-	else
-	{
-		bit0 = BIT0(m_reg->GetReg(place));
-		value = m_reg->GetReg(place) >> 1;
-		m_reg->SetReg(place, value);
-	}
-
-	m_reg->SetFlagZ(!value ? 1 : 0);
-	m_reg->SetFlagN(0);
-	m_reg->SetFlagH(0);
-	m_reg->SetFlagC(bit0);
-}
-
 void Instructions::SCF()
 {
 	m_reg->SetFlagN(0);
@@ -446,60 +375,6 @@ void Instructions::JP_cc_nn(e_registers flag, u8 value2check)
 		JP(nn);
         m_reg->SetConditionalTaken(true);
     }
-}
-
-void Instructions::RL_n(e_registers place)
-{
-	u8 oldBit7, value;
-
-	if (place == c_HL)
-	{
-		oldBit7 = BIT7(m_mem->MemR(m_reg->GetHL())) >> 7;
-		value = (m_mem->MemR(m_reg->GetHL()) << 1) | m_reg->GetFlagC();
-		m_mem->MemW(m_reg->GetHL(), value);
-	}
-	else
-	{
-		oldBit7 = BIT7(m_reg->GetReg(place)) >> 7;
-		value = (m_reg->GetReg(place) << 1) | m_reg->GetFlagC();
-		m_reg->SetReg(place, value);
-	}
-
-	m_reg->SetFlagZ(0);
-	m_reg->SetFlagN(0);
-	m_reg->SetFlagH(0);
-	m_reg->SetFlagC(oldBit7);
-
-	if (m_mem->MemR(m_reg->GetPC()) == 0xCB)
-        m_reg->SetFlagZ(value ? 0 : 1);
-}
-
-void Instructions::RR_n(e_registers place)
-{
-	u8 bit0, value;
-
-	if (place == c_HL)
-	{
-		value = m_mem->MemR(m_reg->GetHL());
-		bit0 = BIT0(value);
-		value = (m_reg->GetFlagC() << 7) | (value >> 1);
-		m_mem->MemW(m_reg->GetHL(), value);
-	}
-	else
-	{
-		value = (u8)m_reg->GetReg(place);
-		bit0 = BIT0(value);
-		value = (m_reg->GetFlagC() << 7) | (value >> 1);
-		m_reg->SetReg(place, value);
-	}
-
-	m_reg->SetFlagZ(0);
-	m_reg->SetFlagN(0);
-	m_reg->SetFlagH(0);
-	m_reg->SetFlagC(bit0);
-
-	if (m_mem->MemR(m_reg->GetPC()) == 0xCB)
-        m_reg->SetFlagZ(value ? 0 : 1);
 }
 
 void Instructions::RST_n(u8 desp)
@@ -600,30 +475,6 @@ u8 Instructions::EvenBitsSet(u8 v) {
     return (c % 2);
 }
 
-void Instructions::SLL_n(e_registers place)
-{
-	u8 bit7, value;
-    
-	if (place == c_HL)
-	{
-		bit7 = BIT7(m_mem->MemR(m_reg->GetHL())) >> 7;
-		value = (m_mem->MemR(m_reg->GetHL()) << 1) | 1;
-		m_mem->MemW(m_reg->GetHL(), value);
-	}
-	else
-	{
-		bit7 = BIT7(m_reg->GetReg(place)) >> 7;
-		value = (m_reg->GetReg(place) << 1) | 1;
-		m_reg->SetReg(place, value);
-	}
-    
-	m_reg->SetFlagZ(!value ? 1 : 0);
-	m_reg->SetFlagN(0);
-	m_reg->SetFlagH(0);
-	m_reg->SetFlagC(bit7);
-    m_reg->SetFlagPV(EvenBitsSet(value));
-}
-
 void Instructions::CCF() {
     u8 c = m_reg->GetFlagC();
     m_reg->SetFlagH(c);
@@ -698,14 +549,13 @@ void Instructions::EXX() {
     m_reg->SetHL2(hl);
 }
 
-void Instructions::EX_cSP_HL() {
-    u8 h = m_reg->GetH();
-    u8 l = m_reg->GetL();
+void Instructions::EX_cSP(u16 *value) {
+    u8 h = (*value) >> 8;
+    u8 l = (*value) & 0x00FF;
     u8 sp1 = m_mem->MemR(m_reg->GetSP());
     u8 sp2 = m_mem->MemR(m_reg->GetSP()+1);
     
-    m_reg->SetH(sp2);
-    m_reg->SetL(sp1);
+    *value = (sp2 << 8) | sp1;
     m_mem->MemW(m_reg->GetSP(), l);
     m_mem->MemW(m_reg->GetSP()+1, h);
 }
@@ -1154,4 +1004,279 @@ void Instructions::SBC(u16 value) {
     m_reg->SetFlagC((sum > m_reg->GetHL()) ? 1 : 0);
     
 	m_reg->SetHL(result);
+}
+
+void Instructions::RLD() {
+    u8 memValue = m_mem->MemR(m_reg->GetHL());
+    u8 a = m_reg->GetA();
+    
+    m_mem->MemW(m_reg->GetHL(), (memValue << 4) | (a & 0x0F));
+    m_reg->SetA((a & 0xF0) | (memValue >> 4));
+    
+    m_reg->SetFlagS(m_reg->GetA() >> 7);
+    m_reg->SetFlagZ(m_reg->GetA() ? 0 : 1);
+    m_reg->SetFlagH(0);
+    m_reg->SetFlagPV(EvenBitsSet(m_reg->GetA()));
+    m_reg->SetFlagN(0);
+}
+
+void Instructions::RLA() {
+    u8 bit7 = BIT7(m_reg->GetA()) >> 7;
+    m_reg->SetA((m_reg->GetA() << 1) | m_reg->GetFlagC());
+    
+    m_reg->SetFlagH(0);
+	m_reg->SetFlagN(0);
+	m_reg->SetFlagC(bit7);
+}
+
+void Instructions::RL(u8 *reg) {
+	u8 bit7 = BIT7(*reg) >> 7;
+    *reg = ((*reg) << 1) | m_reg->GetFlagC();
+    
+    m_reg->SetFlagS(*reg >> 7);
+	m_reg->SetFlagZ((*reg) ? 0 : 1);
+    m_reg->SetFlagH(0);
+    m_reg->SetFlagPV(EvenBitsSet(*reg));
+	m_reg->SetFlagN(0);
+	m_reg->SetFlagC(bit7);
+}
+
+void Instructions::RL_Mem(u16 address) {
+    u8 value = m_mem->MemR(address);
+    u8 bit7 = BIT7(value) >> 7;
+    value = (value << 1) | m_reg->GetFlagC();
+    m_mem->MemW(address, value);
+    
+    m_reg->SetFlagS(value >> 7);
+	m_reg->SetFlagZ(value ? 0 : 1);
+    m_reg->SetFlagH(0);
+    m_reg->SetFlagPV(EvenBitsSet(value));
+	m_reg->SetFlagN(0);
+	m_reg->SetFlagC(bit7);
+}
+
+void Instructions::RL_Mem(u8 *reg, u16 address) {
+    u8 value = m_mem->MemR(address);
+    u8 bit7 = BIT7(value) >> 7;
+    value = (value << 1) | m_reg->GetFlagC();
+    *reg = value;
+    
+    m_reg->SetFlagS(value >> 7);
+	m_reg->SetFlagZ(value ? 0 : 1);
+    m_reg->SetFlagH(0);
+    m_reg->SetFlagPV(EvenBitsSet(value));
+	m_reg->SetFlagN(0);
+	m_reg->SetFlagC(bit7);
+}
+
+void Instructions::RRA() {
+    u8 bit0 = BIT0(m_reg->GetA());
+    m_reg->SetA((m_reg->GetFlagC() << 7) | (m_reg->GetA() >> 1));
+    
+    m_reg->SetFlagH(0);
+	m_reg->SetFlagN(0);
+	m_reg->SetFlagC(bit0);
+}
+
+void Instructions::RR(u8 *reg) {
+	u8 bit0 = BIT0(*reg);
+    *reg = (m_reg->GetFlagC() << 7) | ((*reg) >> 1);
+    
+    m_reg->SetFlagS(*reg >> 7);
+	m_reg->SetFlagZ((*reg) ? 0 : 1);
+    m_reg->SetFlagH(0);
+    m_reg->SetFlagPV(EvenBitsSet(*reg));
+	m_reg->SetFlagN(0);
+	m_reg->SetFlagC(bit0);
+}
+
+void Instructions::RR_Mem(u16 address) {
+    u8 value = m_mem->MemR(address);
+    u8 bit0 = BIT0(value);
+    value = (m_reg->GetFlagC() << 7) | (value >> 1);
+    m_mem->MemW(address, value);
+    
+    m_reg->SetFlagS(value >> 7);
+	m_reg->SetFlagZ(value ? 0 : 1);
+    m_reg->SetFlagH(0);
+    m_reg->SetFlagPV(EvenBitsSet(value));
+	m_reg->SetFlagN(0);
+	m_reg->SetFlagC(bit0);
+}
+
+void Instructions::RR_Mem(u8 *reg, u16 address) {
+    u8 value = m_mem->MemR(address);
+    u8 bit0 = BIT0(value);
+    value = (m_reg->GetFlagC() << 7) | (value >> 1);
+    *reg = value;
+    
+    m_reg->SetFlagS(value >> 7);
+	m_reg->SetFlagZ(value ? 0 : 1);
+    m_reg->SetFlagH(0);
+    m_reg->SetFlagPV(EvenBitsSet(value));
+	m_reg->SetFlagN(0);
+	m_reg->SetFlagC(bit0);
+}
+
+void Instructions::SLA(u8 *reg) {
+    u8 bit7 = BIT7(*reg);
+    *reg = (*reg) << 1;
+    
+    m_reg->SetFlagS(*reg >> 7);
+	m_reg->SetFlagZ((*reg) ? 0 : 1);
+    m_reg->SetFlagH(0);
+    m_reg->SetFlagPV(EvenBitsSet(*reg));
+	m_reg->SetFlagN(0);
+	m_reg->SetFlagC(bit7);
+}
+
+void Instructions::SLA_Mem(u16 address) {
+    u8 value = m_mem->MemR(address);
+    u8 bit7 = BIT7(value);
+    value = value << 1;
+    m_mem->MemW(address, value);
+    
+    m_reg->SetFlagS(value >> 7);
+	m_reg->SetFlagZ(value ? 0 : 1);
+    m_reg->SetFlagH(0);
+    m_reg->SetFlagPV(EvenBitsSet(value));
+	m_reg->SetFlagN(0);
+	m_reg->SetFlagC(bit7);
+}
+
+void Instructions::SLA_Mem(u8 *reg, u16 address) {
+    u8 value = m_mem->MemR(address);
+    u8 bit7 = BIT7(value);
+    value = value << 1;
+    *reg = value;
+    
+    m_reg->SetFlagS(value >> 7);
+	m_reg->SetFlagZ(value ? 0 : 1);
+    m_reg->SetFlagH(0);
+    m_reg->SetFlagPV(EvenBitsSet(value));
+	m_reg->SetFlagN(0);
+	m_reg->SetFlagC(bit7);
+}
+
+void Instructions::SRA(u8 *reg) {
+	u8 bit0 = BIT0(*reg);
+    u8 bit7 = BIT7(*reg);
+    *reg = bit7 | ((*reg) >> 1);
+    
+    m_reg->SetFlagS(*reg >> 7);
+	m_reg->SetFlagZ((*reg) ? 0 : 1);
+    m_reg->SetFlagH(0);
+    m_reg->SetFlagPV(EvenBitsSet(*reg));
+	m_reg->SetFlagN(0);
+	m_reg->SetFlagC(bit0);
+}
+
+void Instructions::SRA_Mem(u16 address) {
+    u8 value = m_mem->MemR(address);
+    u8 bit0 = BIT0(value);
+    u8 bit7 = BIT7(value);
+    value = bit7 | (value >> 1);
+    m_mem->MemW(address, value);
+    
+    m_reg->SetFlagS(value >> 7);
+	m_reg->SetFlagZ(value ? 0 : 1);
+    m_reg->SetFlagH(0);
+    m_reg->SetFlagPV(EvenBitsSet(value));
+	m_reg->SetFlagN(0);
+	m_reg->SetFlagC(bit0);
+}
+
+void Instructions::SRA_Mem(u8 *reg, u16 address) {
+    u8 value = m_mem->MemR(address);
+    u8 bit0 = BIT0(value);
+    u8 bit7 = BIT7(value);
+    value = bit7 | (value >> 1);
+    *reg = value;
+    
+    m_reg->SetFlagS(value >> 7);
+	m_reg->SetFlagZ(value ? 0 : 1);
+    m_reg->SetFlagH(0);
+    m_reg->SetFlagPV(EvenBitsSet(value));
+	m_reg->SetFlagN(0);
+	m_reg->SetFlagC(bit0);
+}
+
+void Instructions::SRL(u8 *reg) {
+	u8 bit0 = BIT0(*reg);
+    *reg = (*reg) >> 1;
+    
+    m_reg->SetFlagS(*reg >> 7);
+	m_reg->SetFlagZ((*reg) ? 0 : 1);
+    m_reg->SetFlagH(0);
+    m_reg->SetFlagPV(EvenBitsSet(*reg));
+	m_reg->SetFlagN(0);
+	m_reg->SetFlagC(bit0);
+}
+
+void Instructions::SRL_Mem(u16 address) {
+    u8 value = m_mem->MemR(address);
+    u8 bit0 = BIT0(value);
+    value = value >> 1;
+    m_mem->MemW(address, value);
+    
+    m_reg->SetFlagS(value >> 7);
+	m_reg->SetFlagZ(value ? 0 : 1);
+    m_reg->SetFlagH(0);
+    m_reg->SetFlagPV(EvenBitsSet(value));
+	m_reg->SetFlagN(0);
+	m_reg->SetFlagC(bit0);
+}
+
+void Instructions::SRL_Mem(u8 *reg, u16 address) {
+    u8 value = m_mem->MemR(address);
+    u8 bit0 = BIT0(value);
+    value = value >> 1;
+    *reg = value;
+    
+    m_reg->SetFlagS(value >> 7);
+	m_reg->SetFlagZ(value ? 0 : 1);
+    m_reg->SetFlagH(0);
+    m_reg->SetFlagPV(EvenBitsSet(value));
+	m_reg->SetFlagN(0);
+	m_reg->SetFlagC(bit0);
+}
+
+void Instructions::SLL(u8 *reg) {
+	u8 bit7 = BIT7(*reg);
+    *reg = (*reg) << 1;
+    
+    m_reg->SetFlagS(*reg >> 7);
+	m_reg->SetFlagZ((*reg) ? 0 : 1);
+    m_reg->SetFlagH(0);
+    m_reg->SetFlagPV(EvenBitsSet(*reg));
+	m_reg->SetFlagN(0);
+	m_reg->SetFlagC(bit7);
+}
+
+void Instructions::SLL_Mem(u16 address) {
+    u8 value = m_mem->MemR(address);
+    u8 bit7 = BIT7(value);
+    value = value << 1;
+    m_mem->MemW(address, value);
+    
+    m_reg->SetFlagS(value >> 7);
+	m_reg->SetFlagZ(value ? 0 : 1);
+    m_reg->SetFlagH(0);
+    m_reg->SetFlagPV(EvenBitsSet(value));
+	m_reg->SetFlagN(0);
+	m_reg->SetFlagC(bit7);
+}
+
+void Instructions::SLL_Mem(u8 *reg, u16 address) {
+    u8 value = m_mem->MemR(address);
+    u8 bit7 = BIT7(value);
+    value = value << 1;
+    *reg = value;
+    
+    m_reg->SetFlagS(value >> 7);
+	m_reg->SetFlagZ(value ? 0 : 1);
+    m_reg->SetFlagH(0);
+    m_reg->SetFlagPV(EvenBitsSet(value));
+	m_reg->SetFlagN(0);
+	m_reg->SetFlagC(bit7);
 }
