@@ -36,6 +36,10 @@ void Registers::ResetRegs()
     SetIY(0x0000);
 	SetSP(0xDFF0);
     SetR(0);
+    SetAF2(0x0000);
+    SetBC2(0x0000);
+    SetDE2(0x0000);
+    SetHL2(0x0000);
 	SetHalt(false);
 	SetStop(false);
 	SetIFF1(false);
