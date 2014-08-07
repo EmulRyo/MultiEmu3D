@@ -23,6 +23,9 @@
 #define ABS(x) ((x) < 0 ? -(x) : (x))
 #define MEMR(address) (m_mem->memory[(address)])
 
+#define XSCROLL 8
+#define YSCROLL 9
+
 using namespace std;
 
 Video::Video(ISMSScreenDrawable *screen)
@@ -170,6 +173,9 @@ void Video::Update(u8 cycles) {
     // 55227 / 224 = 247 ciclos cada linea
     
     m_cycles += cycles;
+    
+    m_irqVInLastUpdate = false;
+    m_irqLInLastUpdate = false;
 
     if (m_cycles > 59659) {
         m_cycles -= 59659;
@@ -188,13 +194,16 @@ void Video::Update(u8 cycles) {
             UpdateLine(m_line);
             
             m_lineIrqCounter--;
-            if (m_lineIrqCounter < 0)
+            if (m_lineIrqCounter < 0) {
                 m_status |= 0x40;
+                m_irqLInLastUpdate = true;
+            }
         }
         else if (m_line == SMS_SCREEN_H) {
             RefreshScreen();
             // Bit 7 status flag
             m_status |= 0x80;
+            m_irqVInLastUpdate = true;
         }
         m_line++;
     }
@@ -219,7 +228,7 @@ void Video::UpdateBG(u8 y) {
 	for (x=0; x<SMS_SCREEN_W; x++)
 	{
 		m_pixel->x = x;
-		m_pixel->xScrolled = (x + 0);
+		m_pixel->xScrolled = (x + (255-m_regs[XSCROLL]));
 		if (m_pixel->xScrolled > 255)
 			m_pixel->xScrolled -= 256;
         
@@ -386,11 +395,20 @@ void Video::GetTile(u8 *buffer, int widthSize, int tile)
 }
 
 bool Video::Interrupt() {
+    /*
     if (BIT7(m_status) && BIT5(m_regs[1])) {
         m_status &= 0x7F;
         return true;
     } else if (BIT6(m_status) && BIT4(m_regs[0])) {
         m_status &= 0xBF;
+        return true;
+    } else
+        return false;
+    */
+    
+    if (m_irqVInLastUpdate && BIT5(m_regs[1])) {
+        return true;
+    } else if (m_irqLInLastUpdate && BIT4(m_regs[0])) {
         return true;
     } else
         return false;

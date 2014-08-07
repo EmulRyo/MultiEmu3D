@@ -77,6 +77,8 @@ private:
     bool m_vramAddress;
 	ISMSScreenDrawable *m_screen;
 	VideoPixel *m_pixel;
+    bool m_irqLInLastUpdate;
+    bool m_irqVInLastUpdate;
 
     void UpdateLine(u8 line);
 	void UpdateBG(u8 y);
