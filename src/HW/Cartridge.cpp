@@ -72,6 +72,11 @@ void Cartridge::Init(string batteriesPath)
     
     m_ram.enabled = false;
     m_ram.page = &m_ram.mem[0x0000];
+    
+    // Estas lineas permiten arrancar la BIOS de Alex Kidd
+    //m_mem[0x17EDE] = 0x00;
+    //m_mem[0x17EDF] = 0x00;
+    //m_mem[0x17EE0] = 0x00;
 }
 
 void Cartridge::LoadFile(string fileName, string batteriesPath) {
