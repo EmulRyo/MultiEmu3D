@@ -136,6 +136,11 @@ public:
     void SRL(u8 *reg);
     void SRL_Mem(u16 address);
     void SRL_Mem(u8 *reg, u16 address);
+    void INI();
+    void INIR();
+    void CPIR();
+    void CPD();
+    void CPDR();
     
 private:
 	Registers   *m_reg;

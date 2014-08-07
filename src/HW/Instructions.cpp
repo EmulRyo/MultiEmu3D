@@ -641,13 +641,10 @@ void Instructions::LD_Content(u16 *reg, u16 address) {
     *reg = (valueH << 8) | valueL;
 }
 
-void Instructions::BIT(u8 bit, u8 value)
-{
-	if (!(value & (1 << bit)))
-		m_reg->SetFlagZ(1);
-	else
-		m_reg->SetFlagZ(0);
+void Instructions::BIT(u8 bit, u8 value) {
+    value &= (1 << bit);
     
+	m_reg->SetFlagZ(value ? 0 : 1);
 	m_reg->SetFlagN(0);
 	m_reg->SetFlagH(1);
 }
@@ -668,9 +665,9 @@ void Instructions::LDD() {
     u8 value = m_mem->MemR(m_reg->GetHL());
     m_mem->MemW(m_reg->GetDE(), value);
     
-    m_reg->SetHL(m_reg->GetHL()-1);
-    m_reg->SetDE(m_reg->GetDE()-1);
     m_reg->SetBC(m_reg->GetBC()-1);
+    m_reg->SetDE(m_reg->GetDE()-1);
+    m_reg->SetHL(m_reg->GetHL()-1);
     
     m_reg->SetFlagH(0);
     m_reg->SetFlagPV(m_reg->GetBC() ? 1 : 0);
@@ -679,7 +676,7 @@ void Instructions::LDD() {
 
 void Instructions::LDDR() {
     LDD();
-    if(!m_reg->GetB()) // Si no se cumple la condición evitar que salte
+    if(m_reg->GetBC()) // Si se cumple la condición evitar que salte
         m_reg->SetIncPC(false);
 }
 
@@ -1243,7 +1240,7 @@ void Instructions::SRL_Mem(u8 *reg, u16 address) {
 
 void Instructions::SLL(u8 *reg) {
 	u8 bit7 = BIT7(*reg);
-    *reg = (*reg) << 1;
+    *reg = ((*reg) << 1) | 1;
     
     m_reg->SetFlagS(*reg >> 7);
 	m_reg->SetFlagZ((*reg) ? 0 : 1);
@@ -1256,7 +1253,7 @@ void Instructions::SLL(u8 *reg) {
 void Instructions::SLL_Mem(u16 address) {
     u8 value = m_mem->MemR(address);
     u8 bit7 = BIT7(value);
-    value = value << 1;
+    value = (value << 1) | 1;
     m_mem->MemW(address, value);
     
     m_reg->SetFlagS(value >> 7);
@@ -1270,7 +1267,7 @@ void Instructions::SLL_Mem(u16 address) {
 void Instructions::SLL_Mem(u8 *reg, u16 address) {
     u8 value = m_mem->MemR(address);
     u8 bit7 = BIT7(value);
-    value = value << 1;
+    value = (value << 1) | 1;
     *reg = value;
     
     m_reg->SetFlagS(value >> 7);
@@ -1279,4 +1276,45 @@ void Instructions::SLL_Mem(u8 *reg, u16 address) {
     m_reg->SetFlagPV(EvenBitsSet(value));
 	m_reg->SetFlagN(0);
 	m_reg->SetFlagC(bit7);
+}
+
+void Instructions::INI() {
+    u8 value = m_mem->PortR(m_reg->GetC());
+    m_mem->MemW(m_reg->GetHL(), value);
+    m_reg->SetHL(m_reg->GetHL()+1);
+    m_reg->SetB(m_reg->GetB()-1);
+    
+    m_reg->SetFlagZ(m_reg->GetB() ? 0 : 1);
+    m_reg->SetFlagN(1);
+}
+
+void Instructions::INIR() {
+    INI();
+    if (m_reg->GetB())   // Si se cumple la condición evitar que salte
+        m_reg->SetIncPC(false);
+}
+
+void Instructions::CPIR() {
+    CPI();
+    if (m_reg->GetBC())   // Si se cumple la condición evitar que salte
+        m_reg->SetIncPC(false);
+}
+
+void Instructions::CPD() {
+    u8 value = m_mem->MemR(m_reg->GetHL());
+    u8 result = m_reg->GetA() - value;
+    m_reg->SetHL(m_reg->GetHL()-1);
+    m_reg->SetBC(m_reg->GetBC()-1);
+    
+    m_reg->SetFlagS(result >> 7);
+	m_reg->SetFlagZ(result ? 0 : 1);
+    m_reg->SetFlagH((result & 0x0F) > (value & 0x0F));
+    m_reg->SetFlagPV(m_reg->GetBC() ? 0 : 1);
+	m_reg->SetFlagN(1);
+}
+
+void Instructions::CPDR() {
+    CPD();
+    if (m_reg->GetBC() && (!m_reg->GetFlagZ()))   // Si se cumple la condición evitar que salte
+        m_reg->SetIncPC(false);
 }
