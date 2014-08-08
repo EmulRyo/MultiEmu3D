@@ -23,8 +23,11 @@
 #define ABS(x) ((x) < 0 ? -(x) : (x))
 #define MEMR(address) (m_mem->memory[(address)])
 
-#define XSCROLL 8
-#define YSCROLL 9
+#define NAMEBASE    2
+#define SPRITEBASE  5
+#define TILEBASE    6
+#define XSCROLL     8
+#define YSCROLL     9
 
 using namespace std;
 
@@ -217,9 +220,9 @@ void Video::UpdateLine(u8 line) {
 void Video::UpdateBG(u8 y) {
     int x, yScrolled;
     
-    m_pixel->mapIni = 0x3800;
+    m_pixel->mapIni = (m_regs[NAMEBASE] & 0x0E) << 10;
     
-	yScrolled = (y + 0);
+	yScrolled = (y + m_regs[YSCROLL]) % 224;
 	
     m_pixel->y = y;
 	m_pixel->yTile = yScrolled % 8;
@@ -239,8 +242,8 @@ void Video::UpdateBG(u8 y) {
 }
 
 void Video::UpdateSprites(u8 y) {
-    u16 spriteBase = 0x3F00;
-    u8  hSprite = 8;
+    u16 spriteBase = (m_regs[SPRITEBASE] & 0x7E) << 7;
+    u8  hSprite = (m_regs[1] & 0x02) ? 16 : 8;
     u8  tileData[4];
     
     u8 paletteOffset = 16;
@@ -255,7 +258,7 @@ void Video::UpdateSprites(u8 y) {
         if ((ySprite > y-hSprite) && (ySprite <= y)) {
             u8 xSprite = m_memory[spriteBase + 128 + numSprite*2];
             u8 numTile = m_memory[spriteBase + 129 + numSprite*2];
-            u16 addressTile = numTile * 32;;
+            u16 addressTile = numTile * 32 + ((m_regs[TILEBASE]&0x04) ? 0x2000 : 0x0000);
             
             u8 yTile = y - ySprite;
             
@@ -301,14 +304,12 @@ inline void Video::GetColor(VideoPixel *p)
 	int xTile, tileData[4], addressIdTile, addressTile, yTile, idMapTile, bgPriority;
 	
     idMapTile = p->rowMap + p->xScrolled/8;
-    //printf("[%d, %d]: %d\n", p->xScrolled, p->y, idMapTile);
     
 	addressIdTile = p->mapIni + idMapTile*2;
     u8 data1 = m_memory[addressIdTile + 0];
     u8 data2 = m_memory[addressIdTile + 1];
     
     u16 tileNumber = (data2 & 0x01) << 8 | data1;
-    //printf("[0x%X]: %d\n", addressIdTile, tileNumber);
 	
 	addressTile = tileNumber * 32;
     
