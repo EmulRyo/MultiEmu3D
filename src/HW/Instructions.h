@@ -116,6 +116,7 @@ public:
     void SBC(u16 value);
     void EX_cSP(u16 *value);
     void RLD();
+    void RRD();
     void RLA();
     void RL(u8 *reg);
     void RL_Mem(u16 address);
