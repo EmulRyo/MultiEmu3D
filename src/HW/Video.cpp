@@ -285,13 +285,15 @@ void Video::UpdateSprites(u8 y) {
                    indexColor |= (((tileData[1] & (0x01 << pixX)) >> pixX) << 1);
                    indexColor |=  ((tileData[0] & (0x01 << pixX)) >> pixX);
                 
-                indexColor += paletteOffset;
-                
-                u8 r = m_rgbPalettes[indexColor][0];
-                u8 g = m_rgbPalettes[indexColor][1];
-                u8 b = m_rgbPalettes[indexColor][2];
-                
-                m_screen->OnDrawPixel(r, g, b, xSprite + countX, ySprite + countY);
+                if (indexColor != 0) {
+                    indexColor += paletteOffset;
+                    
+                    u8 r = m_rgbPalettes[indexColor][0];
+                    u8 g = m_rgbPalettes[indexColor][1];
+                    u8 b = m_rgbPalettes[indexColor][2];
+                    
+                    m_screen->OnDrawPixel(r, g, b, xSprite + countX, ySprite + countY);
+                }
                 
                 countX++;
             }
