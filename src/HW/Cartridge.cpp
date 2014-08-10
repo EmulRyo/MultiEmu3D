@@ -32,6 +32,7 @@ using namespace std;
  */
 Cartridge::Cartridge(string fileName, string batteriesPath)
 {
+    m_buffer = NULL;
 	m_mem = NULL;
 	LoadFile(fileName, batteriesPath);
 }
@@ -42,6 +43,7 @@ Cartridge::Cartridge(string fileName, string batteriesPath)
 Cartridge::Cartridge(u8 *cartridgeBuffer, unsigned long size, string batteriesPath)
 {
 	m_romSize = size;
+    m_buffer = cartridgeBuffer;
 	m_mem = cartridgeBuffer;
 	
 	Init(batteriesPath);
@@ -51,18 +53,20 @@ Cartridge::Cartridge(u8 *cartridgeBuffer, unsigned long size, string batteriesPa
 
 Cartridge::~Cartridge(void)
 {
-	if (m_mem)
-		delete [] m_mem;
+	if (m_buffer)
+		delete [] m_buffer;
+    
+    m_buffer = NULL;
+	m_mem = NULL;
 }
 
 void Cartridge::Init(string batteriesPath)
 {
-    m_offset = 0;
-	m_name = string("");
+    m_name = string("");
 	
 	//CheckRomSize((int)m_memCartridge[CART_ROM_SIZE], m_romSize);
-    if (m_romSize == 33280)
-        m_offset = 0x200;
+    if ((m_romSize % 32768) == 0x200)
+        m_mem += 0x200;
     
     m_maskPages = (m_romSize-1) >> 14;
     
@@ -182,7 +186,6 @@ void Cartridge::Extract() {
 }
 
 u8 Cartridge::Read(u16 address) {
-    address += m_offset;
     if (address < 0x400)
         return m_mem[address];
     else if (address < 0x4000)

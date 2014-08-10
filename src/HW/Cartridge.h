@@ -34,8 +34,8 @@ private:
 	unsigned long m_romSize;
 	std::string m_name;
 	bool m_isLoaded;
-	u8  *m_mem;
-    long m_offset;
+	u8  *m_buffer;
+    u8  *m_mem;
     u8  *m_pages[3];
     u8   m_maskPages;
     Ram  m_ram;
