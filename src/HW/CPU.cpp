@@ -128,6 +128,7 @@ void CPU::Interrupts(Instructions &inst)
             SetPC(0x38);
             SetIFF1(false);
             SetIFF2(false);
+            SetHalt(false);
         }
     }
     
@@ -135,7 +136,6 @@ void CPU::Interrupts(Instructions &inst)
         SetIFF1(true);
         SetIFF2(true);
         SetIntPending(false);
-        SetHalt(false);
     }
 }
 
