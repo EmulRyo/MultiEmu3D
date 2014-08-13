@@ -236,6 +236,15 @@ void Video::UpdateLine(u8 line) {
     if (BIT6(m_regs[1])) {
         UpdateBG(line);
         UpdateSprites(line);
+        if (BIT5(m_regs[0])) {
+            // Pintar columna de 8 pixeles de un color sólido
+            u8 indexColor = (m_regs[BACKDROPCOLOR] & 0x0F) + 16;
+            u8 r = m_rgbPalettes[indexColor][0];
+            u8 g = m_rgbPalettes[indexColor][1];
+            u8 b = m_rgbPalettes[indexColor][2];
+            for (int x=0; x<8; x++)
+                m_screen->OnDrawPixel(r, g, b, x, line);
+        }
     }
     else {
         for (int x=0; x<SMS_SCREEN_W; x++)
@@ -260,22 +269,12 @@ void Video::UpdateBG(u8 y) {
         scrollX = 256-m_regs[XSCROLL];
     
 	for (x=0; x<SMS_SCREEN_W; x++) {
-        if ((BIT5(m_regs[0])) && (x < 8)) {
-            // Pintar columna de 8 pixeles de un color sólido
-            u8 indexColor = (m_regs[BACKDROPCOLOR] & 0x0F) + 16;
-            m_pixel->r = m_rgbPalettes[indexColor][0];
-            m_pixel->g = m_rgbPalettes[indexColor][1];
-            m_pixel->b = m_rgbPalettes[indexColor][2];
-        }
-        else {
-            // Pintar de manera normal
-            m_pixel->x = x;
-            m_pixel->xScrolled = (x + scrollX);
-            if (m_pixel->xScrolled > 255)
-                m_pixel->xScrolled -= 256;
-            
-            GetColor(m_pixel);
-        }
+        m_pixel->x = x;
+        m_pixel->xScrolled = (x + scrollX);
+        if (m_pixel->xScrolled > 255)
+            m_pixel->xScrolled -= 256;
+        
+        GetColor(m_pixel);
         
         m_screen->OnDrawPixel(m_pixel->r, m_pixel->g, m_pixel->b, x, y);
 	}
@@ -325,14 +324,17 @@ void Video::UpdateSprites(u8 y) {
                    indexColor |= (((tileData[1] & (0x01 << pixX)) >> pixX) << 1);
                    indexColor |=  ((tileData[0] & (0x01 << pixX)) >> pixX);
                 
-                if (indexColor != 0) {
+                u8 x1 = xSprite + countX;
+                u8 y1 = ySprite + countY;
+                
+                if ((indexColor != 0) && (m_priorityBG[x1][y1] == false)){
                     indexColor += paletteOffset;
                     
                     u8 r = m_rgbPalettes[indexColor][0];
                     u8 g = m_rgbPalettes[indexColor][1];
                     u8 b = m_rgbPalettes[indexColor][2];
                     
-                    m_screen->OnDrawPixel(r, g, b, xSprite + countX, ySprite + countY);
+                    m_screen->OnDrawPixel(r, g, b, x1, y1);
                 }
                 
                 countX++;
@@ -355,7 +357,6 @@ inline void Video::GetColor(VideoPixel *p)
 	
 	addressTile = tileNumber * 32;
     
-    bgPriority = 0;
     xTile = p->xScrolled % 8;
     yTile = p->yTile;
     
@@ -365,7 +366,6 @@ inline void Video::GetColor(VideoPixel *p)
         yTile = ABS(yTile - 7);
     bgPriority = BIT4(data2);
     u8 paletteOffset = BIT3(data2) ? 16 : 0;
-    
 	
 	int addressLineTile = addressTile + (yTile * 4); //yTile * 4 porque cada linea de 1 tile ocupa 4 bytes
 	
@@ -384,6 +384,8 @@ inline void Video::GetColor(VideoPixel *p)
     p->indexColor |=  ((tileData[0] & (0x01 << pixX)) >> pixX);
     
     p->indexColor += paletteOffset;
+    
+    m_priorityBG[p->x][p->y] = (bgPriority  && p->indexColor) ? true : false;
     
     p->r = m_rgbPalettes[p->indexColor][0];
     p->g = m_rgbPalettes[p->indexColor][1];

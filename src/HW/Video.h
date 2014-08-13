@@ -87,6 +87,7 @@ private:
     bool m_irqLInLastUpdate;
     bool m_irqVInLastUpdate;
     t_VDPMODES m_mode;
+    bool m_priorityBG[SMS_SCREEN_W][SMS_SCREEN_H];
 
     void UpdateLine(u8 line);
 	void UpdateBG(u8 y);
