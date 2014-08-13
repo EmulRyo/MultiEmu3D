@@ -23,6 +23,13 @@
 
 #define VDP_MEM 0x4000
 
+enum t_VDPMODES {
+    GRAPHIC_1, GRAPHIC_2, MODE_12, MODE_13, MODE_23, MODE_123,
+    MULTICOLOR,
+    MODE_4_192, MODE_4_224, MODE_4_240,
+    TEXT, INVALID_TEXT
+};
+
 class Memory;
 class ISMSScreenDrawable;
 
@@ -79,12 +86,14 @@ private:
 	VideoPixel *m_pixel;
     bool m_irqLInLastUpdate;
     bool m_irqVInLastUpdate;
+    t_VDPMODES m_mode;
 
     void UpdateLine(u8 line);
 	void UpdateBG(u8 y);
 	void UpdateSprites(u8 y);
 	inline void GetColor(VideoPixel * p);
     void UpdatePalette(u8 numPalette);
+    void CheckReg(u8 reg);
 };
 
 #endif

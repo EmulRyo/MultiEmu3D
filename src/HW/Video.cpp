@@ -23,11 +23,31 @@
 #define ABS(x) ((x) < 0 ? -(x) : (x))
 #define MEMR(address) (m_mem->memory[(address)])
 
-#define NAMEBASE    2
-#define SPRITEBASE  5
-#define TILEBASE    6
-#define XSCROLL     8
-#define YSCROLL     9
+#define NAMEBASE        2
+#define SPRITEBASE      5
+#define TILEBASE        6
+#define BACKDROPCOLOR   7
+#define XSCROLL         8
+#define YSCROLL         9
+
+const t_VDPMODES SMS2Modes[16] = {
+    GRAPHIC_1,
+    TEXT,
+    GRAPHIC_2,
+    MODE_12,
+    MULTICOLOR,
+    MODE_13,
+    MODE_23,
+    MODE_123,
+    MODE_4_192,
+    INVALID_TEXT,
+    MODE_4_192,
+    MODE_4_224,
+    MODE_4_192,
+    INVALID_TEXT,
+    MODE_4_240,
+    MODE_4_192
+};
 
 using namespace std;
 
@@ -94,21 +114,19 @@ void Video::SetControl(u8 value) {
             case 0x01:
             {
                 m_address = ((value & 0x3F) << 8) | m_partialAddress;
-                //printf("VRAM address: 0x%X\n", address);
                 m_vramAddress = true;
                 break;
             }
             case 0x02:
             {
                 u8 reg = value & 0x0F;
-                //printf("VDP reg: %d = 0x%X\n", reg, m_firstValueAddress);
                 m_regs[reg] = m_partialAddress;
+                CheckReg(reg);
                 break;
             }
             case 0x03:
             {
                 m_address = m_partialAddress & 0x1F;
-                //printf("VDP palette: %d\n", address);
                 m_vramAddress = false;
                 break;
             }
@@ -190,7 +208,8 @@ void Video::Update(u8 cycles) {
     m_cyclesLine += cycles;
     if (m_cyclesLine > 247) {
         m_cyclesLine -= 247;
-        if (m_line < SMS_SCREEN_H) {
+        u8 h = (m_mode == MODE_4_240) ? 240 : (m_mode == MODE_4_224) ? 244 : 192;
+        if (m_line < h) {
             if (m_lineIrqCounter < 0)
                 m_lineIrqCounter = m_regs[10];
             
@@ -213,29 +232,50 @@ void Video::Update(u8 cycles) {
 }
 
 void Video::UpdateLine(u8 line) {
-    UpdateBG(line);
-	UpdateSprites(line);
+    // Si display encendido
+    if (BIT6(m_regs[1])) {
+        UpdateBG(line);
+        UpdateSprites(line);
+    }
+    else {
+        for (int x=0; x<SMS_SCREEN_W; x++)
+            m_screen->OnDrawPixel(0, 0, 0, x, line);
+    }
 }
 
 void Video::UpdateBG(u8 y) {
-    int x, yScrolled;
+    int x, yScrolled, scrollX;
     
     m_pixel->mapIni = (m_regs[NAMEBASE] & 0x0E) << 10;
     
-	yScrolled = (y + m_regs[YSCROLL]) % 224;
+    yScrolled = (y + m_regs[YSCROLL]) % 224;
 	
     m_pixel->y = y;
 	m_pixel->yTile = yScrolled % 8;
 	m_pixel->rowMap = ((yScrolled/8) * 32);
-	
-	for (x=0; x<SMS_SCREEN_W; x++)
-	{
-		m_pixel->x = x;
-		m_pixel->xScrolled = (x + (255-m_regs[XSCROLL]));
-		if (m_pixel->xScrolled > 255)
-			m_pixel->xScrolled -= 256;
-        
-		GetColor(m_pixel);
+    
+    if ((y < 16) && (BIT6(m_regs[0])))
+        scrollX = 0;
+    else
+        scrollX = 256-m_regs[XSCROLL];
+    
+	for (x=0; x<SMS_SCREEN_W; x++) {
+        if ((BIT5(m_regs[0])) && (x < 8)) {
+            // Pintar columna de 8 pixeles de un color sólido
+            u8 indexColor = (m_regs[BACKDROPCOLOR] & 0x0F) + 16;
+            m_pixel->r = m_rgbPalettes[indexColor][0];
+            m_pixel->g = m_rgbPalettes[indexColor][1];
+            m_pixel->b = m_rgbPalettes[indexColor][2];
+        }
+        else {
+            // Pintar de manera normal
+            m_pixel->x = x;
+            m_pixel->xScrolled = (x + scrollX);
+            if (m_pixel->xScrolled > 255)
+                m_pixel->xScrolled -= 256;
+            
+            GetColor(m_pixel);
+        }
         
         m_screen->OnDrawPixel(m_pixel->r, m_pixel->g, m_pixel->b, x, y);
 	}
@@ -398,17 +438,6 @@ void Video::GetTile(u8 *buffer, int widthSize, int tile)
 }
 
 bool Video::Interrupt() {
-    /*
-    if (BIT7(m_status) && BIT5(m_regs[1])) {
-        m_status &= 0x7F;
-        return true;
-    } else if (BIT6(m_status) && BIT4(m_regs[0])) {
-        m_status &= 0xBF;
-        return true;
-    } else
-        return false;
-    */
-    
     if (m_irqVInLastUpdate && BIT5(m_regs[1])) {
         return true;
     } else if (m_irqLInLastUpdate && BIT4(m_regs[0])) {
@@ -427,4 +456,28 @@ u8 Video::RegR(u8 reg) {
 
 u8 Video::PalR(u8 pal) {
     return m_palettes[pal];
+}
+
+void Video::CheckReg(u8 reg) {
+    switch (reg) {
+        case 0x0:
+        case 0x1:
+            u8 m1 = BIT4(m_regs[1]) >> 4;
+            u8 m2 = BIT1(m_regs[0]);
+            u8 m3 = BIT3(m_regs[1]) >> 1;
+            u8 m4 = BIT2(m_regs[0]) << 1;
+            
+            u8 numMode = m4 | m3 | m2 | m1;
+            m_mode = SMS2Modes[numMode];
+            
+            if ((m_mode != MODE_4_192) && (m_mode != MODE_4_224) && (m_mode != MODE_4_240))
+                printf("VDP mode not emulated\n");
+            
+            if (m_mode == MODE_4_224)
+                printf("MODE 4 (224-line display)\n");
+            else if (m_mode == MODE_4_240)
+                printf("MODE 4 (240-line display)\n");
+            
+            break;
+    }
 }
