@@ -27,7 +27,7 @@
 #include "SettingsDialog.h"
 #include "IDControls.h"
 #include "InputTextCtrl.h"
-#include "../Pad.h"
+#include "../HW/Pad.h"
 
 
 BEGIN_EVENT_TABLE(SettingsDialog, wxPropertySheetDialog)

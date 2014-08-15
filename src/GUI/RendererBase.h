@@ -39,7 +39,6 @@ public:
 	void OnClear();
 	void OnRefreshGBScreen();
     void OnRefreshRealScreen();
-	void OnDrawPixel(int idColor, int x, int y);
     void OnDrawPixel(u8 r, u8 g, u8 b, int x, int y);
     virtual void OnChangeView() = 0;
     

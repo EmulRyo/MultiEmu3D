@@ -18,23 +18,7 @@
 #include "Settings.h"
 #include "MainFrame.h"
 #include "RendererBase.h"
-#include "../Def.h"
-
-static u8 palettes[][4][3] =
-{
-	{
-		{ 16,  57,  16},
-		{ 49,  99,  49},
-		{140, 173,  16},
-		{156, 189,  16}
-	},
-	{
-		{  0,   0,   0},
-		{ 85,  85,  85},
-		{170, 170, 170},
-		{255, 255, 255}
-	}
-};
+#include "../HW/Def.h"
 
 RendererBase::RendererBase()
 {
@@ -112,15 +96,6 @@ void RendererBase::OnRefreshRealScreen() {
         winRenderer->Refresh(false);
         winRenderer->Update();
     }
-}
-
-void RendererBase::OnDrawPixel(int idColor, int x, int y)
-{
-	u8 r = palettes[selPalette][idColor][0];
-	u8 g = palettes[selPalette][idColor][1];
-	u8 b = palettes[selPalette][idColor][2];
-	
-	OnDrawPixel(r, g, b, x, y);
 }
 
 void RendererBase::OnDrawPixel(u8 r, u8 g, u8 b, int x, int y)

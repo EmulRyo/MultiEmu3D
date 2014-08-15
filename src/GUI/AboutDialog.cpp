@@ -25,7 +25,7 @@
 #endif
 #include "AboutDialog.h"
 #include "Xpm/gb64.xpm"          // app icon bitmap
-#include "../Def.h"
+#include "../HW/Def.h"
 
 
 AboutDialog::AboutDialog (wxWindow *parent)

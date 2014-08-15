@@ -19,7 +19,7 @@
 #include <wx/listctrl.h>
 #include "IDControls.h"
 #include "BreakpointsDialog.h"
-#include "../Debugger.h"
+#include "../HW/Debugger.h"
 
 using namespace std;
 
@@ -86,7 +86,7 @@ void BreakpointsDialog::UpdateUI() {
     m_breakpointsView->DeleteAllItems();
     int numBreakpoints = m_debugger->GetNumBreakpoints();
     for (int i=0; i<numBreakpoints; i++) {
-        WORD address = m_debugger->GetBreakpoint(i);
+        u16 address = m_debugger->GetBreakpoint(i);
         string value = m_debugger->ToHex(address, 4, '0');
         m_breakpointsView->InsertItem(i, "");
         m_breakpointsView->SetItem(i, 0, value);

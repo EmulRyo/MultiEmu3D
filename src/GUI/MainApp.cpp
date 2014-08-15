@@ -28,7 +28,7 @@
 #include "MainFrame.h"
 #include "SettingsDialog.h"
 #include "Settings.h"
-#include "../Def.h"
+#include "../HW/Def.h"
 
 IMPLEMENT_APP(MainApp)
 

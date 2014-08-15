@@ -285,7 +285,7 @@ void DebuggerDialog::UpdateRegisters() {
 void DebuggerDialog::UpdateVideoRegs() {
     m_videoView->DeleteAllItems();
     
-    for (int i=0; i<0x10; i++) {
+    for (int i=0; i<11; i++) {
         m_videoView->InsertItem(i, "");
         m_videoView->SetItem(i, 0, "Reg "+IntToString(i, 2));
         m_videoView->SetItem(i, 1, m_debugger->GetVReg(i));
@@ -293,7 +293,7 @@ void DebuggerDialog::UpdateVideoRegs() {
     }
     
     for (int i=0; i<0x20; i++) {
-        int pos = i+0x10;
+        int pos = i+11;
         m_videoView->InsertItem(pos, "");
         m_videoView->SetItem(pos, 0, "Pal "+IntToString(i, 2));
         m_videoView->SetItem(pos, 1, m_debugger->GetPal(i));
