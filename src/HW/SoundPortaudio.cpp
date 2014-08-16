@@ -44,6 +44,7 @@ bool SoundPortaudio::Start(long sampleRate, int numChannels)
 	m_writeBuf = 0;
 	m_writePos = 0;
 	m_readBuf = 0;
+    m_numChannels = numChannels;
 	
 	m_bufs = new short[(long) bufSize * numBuffers];
 	if (!m_bufs)
@@ -176,7 +177,7 @@ void SoundPortaudio::Write(const short* in, int count)
 int SoundPortaudio::FillBuffer(void *outputBuffer, unsigned long framesPerBuffer)
 {
     short * out = (short *)outputBuffer;
-    size_t copyBytes = framesPerBuffer*2 * sizeof(short);
+    size_t copyBytes = framesPerBuffer*m_numChannels * sizeof(short);
     
     // si hay por lo menos un buffer para reproducir
 	if ( m_fullBuffers > 0 )

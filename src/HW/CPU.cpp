@@ -49,10 +49,6 @@ void CPU::Init(Video *v, Pad *p)
     // 3,546893 Mhz PAL
     m_cyclesFrame = 59659;
 	ResetGlobalVariables();
-	
-#ifdef MAKEGBLOG
-	m_log = new QueueLog(1000000);
-#endif
 }
 
 
@@ -79,7 +75,9 @@ void CPU::Reset()
 }
 
 int CPU::ExecuteOneFrame() {
-    return Execute(m_cyclesFrame);
+    int cycles = Execute(m_cyclesFrame);
+    m_s->EndFrame(cycles);
+    return cycles;
 }
 
 int CPU::Execute(int cyclesToExecute)
@@ -87,12 +85,12 @@ int CPU::Execute(int cyclesToExecute)
 	if (!m_c)
 		return 0;
 	
-    int cycles = 0;
+    m_cycles = 0;
 	u8 opcode = 0, nextOpcode = 0, lastOpcode = 0;
 
 	Instructions inst(GetPtrRegisters(), GetPtrMemory());
 
-    while (cycles < cyclesToExecute)
+    while (m_cycles < cyclesToExecute)
     {
 		m_numInstructions++;
 		lastOpcode = opcode;
@@ -112,12 +110,16 @@ int CPU::Execute(int cyclesToExecute)
         
         Interrupts(inst);
         
-        cycles += m_lastCycles;
+        m_cycles += m_lastCycles;
         m_lastCycles -= tmpCycles;
 		
 	}//end while
     
-    return cycles;
+    return m_cycles;
+}
+
+int  CPU::GetElapsedCycles() {
+    return m_cycles;
 }
 
 void CPU::Interrupts(Instructions &inst)
@@ -138,22 +140,6 @@ void CPU::Interrupts(Instructions &inst)
         SetIntPending(false);
     }
 }
-
-void CPU::OnEndFrame()
-{
-	m_v->RefreshScreen();
-	if (m_s)
-		m_s->EndFrame();
-}
-
-#ifdef MAKEGBLOG
-
-void CPU::SaveLog()
-{
-	log->Save("log.txt");
-}
-
-#endif
 
 void CPU::SaveState(string saveDirectory, int numSlot)
 {

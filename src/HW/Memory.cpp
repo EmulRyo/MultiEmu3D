@@ -67,54 +67,57 @@ void Memory::MemW(u16 address, u8 value)
 }
 
 void Memory::PortW(u8 port, u8 value) {
-    // 0x3F - Language detect?
-    // 0xDE - Unknown
-    // 0xDF - Unknown
-    // 0x7E - Sound
-    // 0x7F - Sound
-    // 0xF0 - FM Sound register
-    // 0xF1 - FM Sound data
-    // 0xF2 - FM Sound detect
-    switch (port) {
+    u8 portF = port & 0xC1;
+    switch (portF) {
+        // 0x3F - Region detect
+        case 0x01:
+            m_pad->SetRegionData(value);
+            break;
+            
+        // 0x7E - Sound
+        // 0x7F - Sound
+        case 0x40:
+        case 0x41:
+            m_s->WritePort(port, value, m_cpu->GetElapsedCycles());
+            break;
+            
         // 0xBE - Video data
-        case 0xBE:
+        case 0x80:
             m_video->SetData(value);
             break;
-        
-        // 0xBF - Video registers
-        case 0xBF:
+            
+            // 0xBF - Video registers
+        case 0x81:
             m_video->SetControl(value);
-            break;
-        
-            // 0xDC: Joystick 1
-            // 0xDD: Joystick 2
-        case 0xDC:
-        case 0xDD:
-            m_pad->SetData(port, value);
             break;
             
         default:
+            printf("PortW: 0x%X = 0x%X", port, value);
             break;
     }
 };
 
 u8 Memory::PortR(u8 port) {
-    
-    switch (port) {
-        case 0x7E:
-            return m_video->GetLine();
+    u8 portF = port & 0xC1;
+    switch (portF) {
+        case 0x40:
+            return m_video->GetV();
             
-        case 0xBE:
+        case 0x41:
+            return m_video->GetH();
+            
+        case 0x80:
             return m_video->GetData();
             
-        case 0xBF:
+        case 0x81:
             return m_video->GetControl();
-        
-        case 0xDC:
-        case 0xDD:
+            
+        case 0xC0:
+        case 0xC1:
             return m_pad->GetData(port);
             
         default:
+            printf("PortR: 0x%X", port);
             return 0;
     }
 }

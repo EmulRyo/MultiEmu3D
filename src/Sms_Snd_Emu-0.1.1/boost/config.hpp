@@ -6,8 +6,6 @@
 
 #define BOOST_MINIMAL 1
 
-#define BLARGG_BEGIN_NAMESPACE( name )
-#define BLARGG_END_NAMESPACE
+#define BOOST
 
 #endif
-

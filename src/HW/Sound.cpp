@@ -17,9 +17,9 @@
 
 #include <iostream>
 // Definir la siguiente linea para que en Visual Studio no haya conflicto
-// entre SDL y GB_Snd_Emu al definir tipos basicos
+// entre SDL y Sms_Snd_Emu al definir tipos basicos
 #define BLARGG_COMPILER_HAS_NAMESPACE 1
-#include "Basic_Gb_Apu.h"
+#include "Sms_Apu.h"
 #ifdef __WXMSW__
 #include "SoundSDL.h"
 #else
@@ -28,18 +28,6 @@
 #include "Sound.h"
 
 using namespace std;
-
-u8 soundMask[] = {
-    0x80, 0x3F, 0x00, 0xFF, 0xBF, // NR10-NR14 (0xFF10-0xFF14)
-    0xFF, 0x3F, 0x00, 0xFF, 0xBF, // NR20-NR24 (0xFF15-0xFF19)
-    0x7F, 0xFF, 0x9F, 0xFF, 0xBF, // NR30-NR34 (0xFF1A-0xFF1E)
-    0xFF, 0xFF, 0x00, 0x00, 0xBF, // NR40-NR44 (0xFF1F-0xFF23)
-    0x00, 0x00, 0x70, 0xFF, 0xFF, // NR50-NR54 (0xFF24-0xFF28)
-    0xFF, 0xFF, 0xFF, 0xFF, 0xFF, // --------- (0xFF29-0xFF2D)
-    0xFF, 0xFF,                   // --------- (0xFF2E-0xFF2F)
-    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, // WaveRAM (0xFF30-0xFF37)
-    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, // WaveRAM (0xFF38-0xFF3F)
-};
 
 enum SoundError { ERROR, NO_ERROR };
 
@@ -58,21 +46,25 @@ Sound::Sound()
 {
 	m_enabled = false;
 	m_initialized = true;
-	m_sampleRate = 44100;//22050;
+	m_sampleRate = 44100;
 
 #ifdef __WXMSW__
-	sound = new SoundSDL();
+	m_sound = new SoundSDL();
 #else
-    sound = new SoundPortaudio();
+    m_sound = new SoundPortaudio();
 #endif
     
-    apu = new Basic_Gb_Apu();
+    m_apu = new Sms_Apu();
+    m_buf = new Blip_Buffer();
 	
 	if (ChangeSampleRate(m_sampleRate) == ERROR)
 	{
 		m_initialized = false;
 		return;
 	}
+    
+    m_buf->clock_rate(3579545);
+    m_apu->output(m_buf);
 	
 	if (Start() == ERROR)
 	{
@@ -83,8 +75,9 @@ Sound::Sound()
 
 Sound::~Sound()
 {
-    delete sound;
-    delete apu;
+    delete m_sound;
+    delete m_apu;
+    delete m_buf;
 }
 
 int Sound::ChangeSampleRate(long newSampleRate)
@@ -99,7 +92,7 @@ int Sound::ChangeSampleRate(long newSampleRate)
 		Stop();
 	
 	// Set sample rate and check for out of memory error
-	if (HandleError( apu->set_sample_rate(m_sampleRate) ) == ERROR)
+	if (!m_buf->sample_rate(m_sampleRate))
 		return ERROR;
 	
 	if (wasEnabled)
@@ -119,7 +112,7 @@ int Sound::Start()
 	if (!m_enabled)
 	{
 		// Generate a few seconds of sound and play using SDL
-		if (sound->Start(m_sampleRate, 2) == false)
+		if (m_sound->Start(m_sampleRate, 1) == false)
 			return ERROR;
 	}
 	m_enabled = true;
@@ -133,7 +126,7 @@ int Sound::Stop()
 		return NO_ERROR;
 	
 	if (m_enabled)
-		sound->Stop();
+		m_sound->Stop();
 	
 	m_enabled = false;
 	
@@ -153,32 +146,30 @@ void Sound::SetEnabled(bool enabled)
 		Stop();
 }
 
-void Sound::EndFrame()
-{
+void Sound::EndFrame(u32 cyclesElapsed) {
+    
 	if ((!m_initialized) || (!m_enabled))
 		return;
 	
-	apu->end_frame();
+	m_apu->end_frame(cyclesElapsed);
+    m_buf->end_frame(cyclesElapsed);
 	
-	int const bufSize = apu->samples_avail();
-	blip_sample_t * buf = new blip_sample_t[bufSize];
+	int const bufSize = m_buf->samples_avail();
+	blip_sample_t *buf = new blip_sample_t[bufSize];
 	
     // Play whatever samples are available
-    long count = apu->read_samples(buf, bufSize);
+    long count = m_buf->read_samples(buf, bufSize);
     
-    sound->Write(buf, count);
+    m_sound->Write(buf, count);
 
 	delete[] buf;
 }
-void Sound::WriteRegister(u16 address, u8 value)
-{
-    if (m_enabled)
-    {
-        
-    }
-}
 
-u8 Sound::ReadRegister(u16 address)
-{
-    return 0;
+void Sound::WritePort(u8 port, u8 value, u32 cyclesElapsed) {
+    if (m_enabled) {
+        if (port == 0x06)
+            m_apu->write_ggstereo(cyclesElapsed, value);
+        else if ((port & 0xC0) == 0x40)
+            m_apu->write_data(cyclesElapsed, value);
+    }
 }

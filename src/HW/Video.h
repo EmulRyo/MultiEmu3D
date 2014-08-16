@@ -55,7 +55,8 @@ public:
 	void ClearScreen();
     bool Interrupt();
     
-    u8   GetLine();             //0x7F
+    u8   GetV();                //0x7E
+    u8   GetH();                //0x7F
     u8   GetData();             //0xBE
     void SetData(u8 value);     //0xBE
     u8   GetControl();          //0xBF

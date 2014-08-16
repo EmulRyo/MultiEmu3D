@@ -183,8 +183,12 @@ u8 Video::GetData() {
     }
 }
 
-u8 Video::GetLine() {
+u8 Video::GetV() {
     return m_line;
+}
+
+u8 Video::GetH() {
+    return m_cyclesLine / 247.0f * 256.0f;
 }
 
 void Video::Update(u8 cycles) {

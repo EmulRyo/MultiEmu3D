@@ -27,7 +27,7 @@ public:
     void SetButtonsStatePad1(bool buttonsState[6]);
     void SetButtonsStatePad2(bool buttonsState[6]);
     u8   GetData(u8 port);              //0xDC, 0xDD
-    void SetData(u8 port, u8 value);    //0xDC, 0xDD
+    void SetRegionData(u8 value);
     
 private:
     bool m_buttonsStatePad1[6];

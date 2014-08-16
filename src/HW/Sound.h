@@ -20,7 +20,8 @@
 
 #include "Def.h"
 
-class Basic_Gb_Apu;
+class Sms_Apu;
+class Blip_Buffer;
 #ifdef __WXMSW__
 class SoundSDL;
 #else
@@ -30,11 +31,12 @@ class SoundPortaudio;
 class Sound
 {
 private:
-	Basic_Gb_Apu * apu;
+	Sms_Apu * m_apu;
+    Blip_Buffer *m_buf;
 #ifdef __WXMSW__
-	SoundSDL * sound;
+	SoundSDL *m_sound;
 #else
-    SoundPortaudio * sound;
+    SoundPortaudio *m_sound;
 #endif
 	bool m_initialized;
 	bool m_enabled;
@@ -50,9 +52,8 @@ public:
 	int Stop();
 	bool GetEnabled();
 	void SetEnabled(bool enabled);
-	void WriteRegister(u16 address, u8 value);
-	u8   ReadRegister(u16 address);
-	void EndFrame();
+	void WritePort(u8 port, u8 value, u32 cyclesElapsed);
+	void EndFrame(u32 cyclesElapsed);
 };
 
 #endif

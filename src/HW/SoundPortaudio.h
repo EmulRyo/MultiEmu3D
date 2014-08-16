@@ -52,6 +52,7 @@ private:
 	int m_writePos;
     int m_fullBuffers;
 	bool m_soundOpen;
+    int  m_numChannels;
 	
 	short* GetBufPtr(int index);
 	int FillBuffer(void *outputBuffer, unsigned long framesPerBuffer);

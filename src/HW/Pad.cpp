@@ -43,12 +43,21 @@ void Pad::SetButtonsStatePad1(bool buttonsState[6]) {
 }
 
 u8 Pad::GetData(u8 port) {
-    if (port == 0xDC)
+    port &= 0xC1;
+    if (port == 0xC0)
         return m_data1;
     else
         return m_data2;
 }
 
-void Pad::SetData(u8 port, u8 value) {
+void Pad::SetRegionData(u8 value) {
+    if (value & 0x04)
+        m_data2 = (m_data2 & 0x7F) | (value & 0x80);
+    else
+        m_data2 = (m_data2 & 0x7F) | 0x80;
     
+    if (value & 0x01)
+        m_data2 = (m_data2 & 0xBF) | ((value & 0x20) << 1);
+    else
+        m_data2 = (m_data2 & 0xBF) | 0x20;
 }

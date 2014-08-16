@@ -32,13 +32,10 @@ class CPU: public Registers, public Memory
 private:
 	unsigned long m_numInstructions;
 	u8 m_lastCycles;
-
+    int m_cycles;
     int m_cyclesFrame;
 	Video *m_v;
     Pad *m_p;
-#ifdef MAKEGBLOG
-	QueueLog *m_log;
-#endif
 
 public:
 	CPU(Video *v, Pad *p, Sound *s);
@@ -48,16 +45,14 @@ public:
     int  Execute(int cyclesToExecute);
 	int  ExecuteOneFrame();
 	void Reset();
-#ifdef MAKEGBLOG
-	void SaveLog();
-#endif
+    int  GetElapsedCycles();
 	void SaveState(std::string saveDirectory, int numSlot);
 	void LoadState(std::string loadDirectory, int numSlot);
+    
 private:
 	void Init(Video *v, Pad *p);
     void ResetGlobalVariables();
     void Interrupts(Instructions &inst);
-	void OnEndFrame();
     
     void ExecuteOpcode(u8 opcode, Instructions &inst);
 	void OpcodeCB(Instructions &inst, bool &executed);
