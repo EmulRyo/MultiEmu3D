@@ -21,7 +21,7 @@
 #include "Def.h"
 
 class Sms_Apu;
-class Blip_Buffer;
+class Stereo_Buffer;
 #ifdef __WXMSW__
 class SoundSDL;
 #else
@@ -32,7 +32,7 @@ class Sound
 {
 private:
 	Sms_Apu * m_apu;
-    Blip_Buffer *m_buf;
+    Stereo_Buffer *m_mixer;
 #ifdef __WXMSW__
 	SoundSDL *m_sound;
 #else

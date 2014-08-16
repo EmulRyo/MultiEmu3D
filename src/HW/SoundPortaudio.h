@@ -42,8 +42,8 @@ public:
 private:
     PaStream *m_stream;
     
-    enum { bufSize = 2048 };
-	enum { numBuffers = 10 };
+    enum { bufSize = 1024 };
+	enum { numBuffers = 8 };
 	short* volatile m_bufs;
 	wxSemaphore* volatile m_semaphore;
     wxMutex* m_mutex;

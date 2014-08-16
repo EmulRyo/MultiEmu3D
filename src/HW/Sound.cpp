@@ -20,6 +20,7 @@
 // entre SDL y Sms_Snd_Emu al definir tipos basicos
 #define BLARGG_COMPILER_HAS_NAMESPACE 1
 #include "Sms_Apu.h"
+#include "Stereo_Buffer.h"
 #ifdef __WXMSW__
 #include "SoundSDL.h"
 #else
@@ -55,7 +56,7 @@ Sound::Sound()
 #endif
     
     m_apu = new Sms_Apu();
-    m_buf = new Blip_Buffer();
+    m_mixer = new Stereo_Buffer();
 	
 	if (ChangeSampleRate(m_sampleRate) == ERROR)
 	{
@@ -63,8 +64,8 @@ Sound::Sound()
 		return;
 	}
     
-    m_buf->clock_rate(3579545);
-    m_apu->output(m_buf);
+    m_mixer->clock_rate(3579545);
+    m_apu->output(m_mixer->center(), m_mixer->left(), m_mixer->right());
 	
 	if (Start() == ERROR)
 	{
@@ -77,7 +78,7 @@ Sound::~Sound()
 {
     delete m_sound;
     delete m_apu;
-    delete m_buf;
+    delete m_mixer;
 }
 
 int Sound::ChangeSampleRate(long newSampleRate)
@@ -92,7 +93,7 @@ int Sound::ChangeSampleRate(long newSampleRate)
 		Stop();
 	
 	// Set sample rate and check for out of memory error
-	if (!m_buf->sample_rate(m_sampleRate))
+	if (!m_mixer->sample_rate(m_sampleRate))
 		return ERROR;
 	
 	if (wasEnabled)
@@ -112,7 +113,7 @@ int Sound::Start()
 	if (!m_enabled)
 	{
 		// Generate a few seconds of sound and play using SDL
-		if (m_sound->Start(m_sampleRate, 1) == false)
+		if (m_sound->Start(m_sampleRate, 2) == false)
 			return ERROR;
 	}
 	m_enabled = true;
@@ -152,13 +153,13 @@ void Sound::EndFrame(u32 cyclesElapsed) {
 		return;
 	
 	m_apu->end_frame(cyclesElapsed);
-    m_buf->end_frame(cyclesElapsed);
+    m_mixer->end_frame(cyclesElapsed);
 	
-	int const bufSize = m_buf->samples_avail();
+	int const bufSize = m_mixer->samples_avail();
 	blip_sample_t *buf = new blip_sample_t[bufSize];
 	
     // Play whatever samples are available
-    long count = m_buf->read_samples(buf, bufSize);
+    long count = m_mixer->read_samples(buf, bufSize);
     
     m_sound->Write(buf, count);
 

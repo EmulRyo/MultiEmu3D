@@ -86,13 +86,13 @@ void Memory::PortW(u8 port, u8 value) {
             m_video->SetData(value);
             break;
             
-            // 0xBF - Video registers
+        // 0xBF - Video registers
         case 0x81:
             m_video->SetControl(value);
             break;
             
         default:
-            printf("PortW: 0x%X = 0x%X", port, value);
+            printf("PortW: 0x%X = 0x%X\n", port, value);
             break;
     }
 };
