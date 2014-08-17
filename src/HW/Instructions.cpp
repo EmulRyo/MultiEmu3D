@@ -31,7 +31,6 @@ Instructions::Instructions(Registers* reg, Memory* mem)
 {
 	m_reg = reg;
 	m_mem = mem;
-    m_opcode = 0x00;
 }
 
 Instructions::~Instructions(void)
@@ -79,189 +78,95 @@ void Instructions::CALL_cc_nn(e_registers flag, u8 value2check) {
     }
 }
 
-void Instructions::ADD_HL_n(e_registers place)
-{
-	u16 value, hl;
-	
-	value = m_reg->GetReg(place);
-    hl = m_reg->GetHL();
-	
-	m_reg->SetFlagN(0);
-	m_reg->SetFlagH((((hl & 0x0FFF) + (value & 0x0FFF)) > 0x0FFF) ? 1 : 0);
-	m_reg->SetFlagC(((hl + value) > 0xFFFF) ? 1 : 0);
-	
-    m_reg->SetHL(hl + value);
-}
-
-void Instructions::DAA()
-{
-	/*
-	 http://www.emutalk.net/showthread.php?t=41525&page=108
-	 
-	 Detailed info DAA
-	 Instruction Format:
-	 OPCODE                    CYCLES
-	 --------------------------------
-	 27h                       4
-	 
-	 
-	 Description:
-	 This instruction conditionally adjusts the accumulator for BCD addition
-	 and subtraction operations. For addition (ADD, ADC, INC) or subtraction
-	 (SUB, SBC, DEC, NEC), the following table indicates the operation performed:
-	 
-	 --------------------------------------------------------------------------------
-	 |           | C Flag  | HEX value in | H Flag | HEX value in | Number  | C flag|
-	 | Operation | Before  | upper digit  | Before | lower digit  | added   | After |
-	 |           | DAA     | (bit 7-4)    | DAA    | (bit 3-0)    | to u8   | DAA   |
-	 |------------------------------------------------------------------------------|
-	 |           |    0    |     0-9      |   0    |     0-9      |   00    |   0   |
-	 |   ADD     |    0    |     0-8      |   0    |     A-F      |   06    |   0   |
-	 |           |    0    |     0-9      |   1    |     0-3      |   06    |   0   |
-	 |   ADC     |    0    |     A-F      |   0    |     0-9      |   60    |   1   |
-	 |           |    0    |     9-F      |   0    |     A-F      |   66    |   1   |
-	 |   INC     |    0    |     A-F      |   1    |     0-3      |   66    |   1   |
-	 |           |    1    |     0-2      |   0    |     0-9      |   60    |   1   |
-	 |           |    1    |     0-2      |   0    |     A-F      |   66    |   1   |
-	 |           |    1    |     0-3      |   1    |     0-3      |   66    |   1   |
-	 |------------------------------------------------------------------------------|
-	 |   SUB     |    0    |     0-9      |   0    |     0-9      |   00    |   0   |
-	 |   SBC     |    0    |     0-8      |   1    |     6-F      |   FA    |   0   |
-	 |   DEC     |    1    |     7-F      |   0    |     0-9      |   A0    |   1   |
-	 |   NEG     |    1    |     6-F      |   1    |     6-F      |   9A    |   1   |
-	 |------------------------------------------------------------------------------|
-	 
-	 
-	 Flags:
-	 C:   See instruction.
-	 N:   Unaffected.
-	 P/V: Set if Acc. is even parity after operation, reset otherwise.
-	 H:   See instruction.
-	 Z:   Set if Acc. is Zero after operation, reset otherwise.
-	 S:   Set if most significant bit of Acc. is 1 after operation, reset otherwise.
-	 
-	 Example:
-	 
-	 If an addition operation is performed between 15 (BCD) and 27 (BCD), simple decimal
-	 arithmetic gives this result:
-	 
-	 15
-	 +27
-	 ----
-	 42
-	 
-	 But when the binary representations are added in the Accumulator according to
-	 standard binary arithmetic:
-	 
-	 0001 0101  15
-	 +0010 0111  27
-	 ---------------
-	 0011 1100  3C
-	 
-	 The sum is ambiguous. The DAA instruction adjusts this result so that correct
-	 BCD representation is obtained:
-	 
-	 0011 1100  3C result
-	 +0000 0110  06 +error
-	 ---------------
-	 0100 0010  42 Correct BCD!
-	*/
+void Instructions::DAA() {
+	u8 a = m_reg->GetA();
+    u8 lowNibble = a & 0x0F;
+    u8 newC = m_reg->GetFlagC();
+    u8 newH = 0;
     
-    int a = m_reg->GetA();
-    
-    if (m_reg->GetFlagN() == 0)
-    {
-        if (m_reg->GetFlagH() || ((a & 0xF) > 9))
+    // La operación anterior fue de suma
+    if (m_reg->GetFlagN() == 0) {
+        newC = 0;
+        newH = (lowNibble > 9) ? 1 : 0;
+        if (m_reg->GetFlagH() || (lowNibble > 9))
             a += 0x06;
         
-        if (m_reg->GetFlagC() || (a > 0x9F))
+        if (m_reg->GetFlagC() || (a > 0x9F)) {
             a += 0x60;
+            newC = 1;
+        }
     }
-    else
-    {
-        if (m_reg->GetFlagH())
+    else { // la operacion anterior fue de resta
+        if (m_reg->GetFlagH()) {
+            newH = (lowNibble < 6) ? 1 : 0;
             a = (a - 6) & 0xFF;
+        }
         
         if (m_reg->GetFlagC())
             a -= 0x60;
     }
     
-    m_reg->SetFlagH(0);
-    m_reg->SetFlagZ(0);
-    
-    if ((a & 0x100) == 0x100)
-        m_reg->SetFlagC(1);
-    
-    a &= 0xFF;
-    
-    if (a == 0)
-        m_reg->SetFlagZ(1);
+    m_reg->SetFlagS(a >> 7);
+    m_reg->SetFlagZ(a ? 0 : 1);
+    m_reg->SetFlagH(newH);
+    m_reg->SetFlagPV(EvenBitsSet(a));
+    m_reg->SetFlagC(newC);
     
     m_reg->SetA(a);
 }
 
-void Instructions::RET()
-{
+void Instructions::RET() {
 	m_reg->SetPC((m_mem->MemR(m_reg->GetSP() + 1) << 8) | m_mem->MemR(m_reg->GetSP()));
 	m_reg->AddSP(2);
     m_reg->SetIncPC(false);
 }
 
-void Instructions::RETI()
-{
+void Instructions::RETI() {
 	EI();
 	RET();
 }
 
-void Instructions::RET_cc(e_registers flag, u8 value2check)
-{
+void Instructions::RET_cc(e_registers flag, u8 value2check) {
 	if (m_reg->GetFlag(flag) == value2check) {
 		RET();
         m_reg->SetConditionalTaken(true);
     }
 }
 
-void Instructions::SET_b_r(u8 bit, e_registers place)
-{
+void Instructions::SET_b_r(u8 bit, e_registers place) {
 	if (place == c_HL)
 		m_mem->MemW(m_reg->GetHL(), m_mem->MemR(m_reg->GetHL()) | (1 << bit));
 	else
 		m_reg->SetReg(place, m_reg->GetReg(place) | (1 << bit));
 }
 
-void Instructions::RES_b_r(u8 bit, e_registers place)
-{
+void Instructions::RES_b_r(u8 bit, e_registers place) {
     if (place == c_HL)
 		m_mem->MemW(m_reg->GetHL(), m_mem->MemR(m_reg->GetHL()) & ~(1 << bit));
 	else
 		m_reg->SetReg(place, m_reg->GetReg(place) & ~(1 << bit));
 }
 
-void Instructions::DI()
-{
+void Instructions::DI() {
 	m_reg->SetIFF1(false);
     m_reg->SetIFF2(false);
 }
 
-void Instructions::EI()
-{
+void Instructions::EI() {
 	m_reg->SetIntPending(true);
 }
 
-void Instructions::SCF()
-{
+void Instructions::SCF() {
 	m_reg->SetFlagN(0);
 	m_reg->SetFlagH(0);
 	m_reg->SetFlagC(1);
 }
 
-void Instructions::HALT()
-{
+void Instructions::HALT() {
 	m_reg->SetHalt(true);
 }
 
-void Instructions::JP_cc_nn(e_registers flag, u8 value2check)
-{
+void Instructions::JP_cc_nn(e_registers flag, u8 value2check) {
 	if (m_reg->GetFlag(flag) == value2check) {
         u16 nn = _16bitsInmValue;
 		JP(nn);
@@ -269,8 +174,7 @@ void Instructions::JP_cc_nn(e_registers flag, u8 value2check)
     }
 }
 
-void Instructions::RST_n(u8 desp)
-{
+void Instructions::RST_n(u8 desp) {
 	//Queremos que se guarde la siquiente instruccion a ejecutar
 	PUSH(m_reg->GetPC()+1);
 
@@ -295,15 +199,6 @@ void Instructions::DJNZ() {
         JR();
         m_reg->SetConditionalTaken(true);
     }
-}
-
-void Instructions::LD_cNN_n(e_registers place) {
-    assert((place == A) || (place == B) || (place == C) ||
-           (place == D) || (place == E) || (place == F));
-    
-    u16 address = _16bitsInmValue;
-    u8  value = m_reg->GetReg(place);
-    m_mem->MemW(address, value);
 }
 
 void Instructions::LDI() {

@@ -27,7 +27,6 @@ public:
 	Instructions(Registers *reg, Memory *mem);
 	~Instructions(void);
 	
-	void ADD_HL_n(e_registers place);
 	void CALL_nn();
 	void CALL_cc_nn(e_registers flag, u8 value2check);
 	void CPL();
@@ -49,7 +48,6 @@ public:
     
     void IM(u8 mode);
     void DJNZ();
-    void LD_cNN_n(e_registers place);
     void LDI();
     void LDIR();
     void OUT(u8 port, u8 value);
@@ -139,7 +137,6 @@ public:
 private:
 	Registers   *m_reg;
 	Memory      *m_mem;
-    u8          m_opcode;
     
     u8 EvenBitsSet(u8 v);
 };
