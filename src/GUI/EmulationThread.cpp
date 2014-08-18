@@ -50,6 +50,8 @@ EmulationThread::EmulationThread()
     keysUsed[4] = (wxKeyCode)'A';
     keysUsed[5] = (wxKeyCode)'S';
     
+    keysUsed[12] = WXK_RETURN;
+    
     ApplySettings();
     
     SetState(NotStartedYet);
@@ -261,6 +263,7 @@ void EmulationThread::UpdatePad()
         joystick->UpdateButtonsState(buttonsState);
         
         pad->SetButtonsStatePad1(buttonsState);
+        pad->SetPauseState(wxGetKeyState(keysUsed[12]));
     }
 }
 

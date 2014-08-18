@@ -63,7 +63,7 @@ private:
     Joystick *joystick;
     wxMutex *mutex;
     wxStopWatch swFrame;
-    wxKeyCode keysUsed[6];
+    wxKeyCode keysUsed[13];
     bool m_finished;
     
 	enumEmuStates emuState;

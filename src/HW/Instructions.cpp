@@ -283,8 +283,15 @@ void Instructions::IN_OnlyFlags() {
     IN(&tmp);
 }
 
-void Instructions::LD_R_A() {
-    m_reg->SetR(m_reg->GetA());
+void Instructions::LD_A_I() {
+    u8 i = m_reg->GetI();
+    m_reg->SetA(i);
+    
+    m_reg->SetFlagS(i >> 7);
+    m_reg->SetFlagZ(i ? 0 : 1);
+    m_reg->SetFlagH(0);
+    m_reg->SetFlagPV(m_reg->GetIFF2());
+    m_reg->SetFlagN(0);
 }
 
 void Instructions::LD_A_R() {
@@ -973,4 +980,9 @@ void Instructions::CPDR() {
     CPD();
     if (m_reg->GetBC() && (!m_reg->GetFlagZ()))   // Si se cumple la condición evitar que salte
         m_reg->SetIncPC(false);
+}
+
+void Instructions::RETN() {
+    RET();
+    m_reg->SetIFF1(m_reg->GetIFF2());
 }

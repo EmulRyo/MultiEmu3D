@@ -57,7 +57,6 @@ public:
     void IN_A_n();
     void IN(u8 *reg);
     void IN_OnlyFlags();
-    void LD_R_A();
     void LD_A_R();
     void EX_DE_HL();
     void EX_AF_AF2();
@@ -133,6 +132,8 @@ public:
     void CPIR();
     void CPD();
     void CPDR();
+    void LD_A_I();
+    void RETN();
     
 private:
 	Registers   *m_reg;

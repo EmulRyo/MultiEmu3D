@@ -122,8 +122,16 @@ int  CPU::GetElapsedCycles() {
     return m_cycles;
 }
 
-void CPU::Interrupts(Instructions &inst)
-{
+void CPU::Interrupts(Instructions &inst) {
+    if (m_pad->PauseInterrupt()) {
+        inst.PUSH(GetPC());
+        SetPC(0x66);
+        SetIFF2(GetIFF1());
+        SetIFF1(false);
+        SetHalt(false);
+        SetIntPending(false);
+    }
+    
     if (GetIFF1()) {
         if (m_video->Interrupt()) {
             inst.PUSH(GetPC());

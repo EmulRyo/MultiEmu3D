@@ -24,6 +24,8 @@ Pad::Pad() {
         m_buttonsStatePad1[i] = false;
         m_buttonsStatePad2[i] = false;
     }
+    m_pauseState = false;
+    m_interrupt  = false;
     
     m_data1 = 0xFF;
     m_data2 = 0xFF;
@@ -40,6 +42,17 @@ void Pad::SetButtonsStatePad1(bool buttonsState[6]) {
     m_data1 |= m_buttonsStatePad1[RIGHT] ? 0x00 : 0x08;
     m_data1 |= m_buttonsStatePad1[B1]    ? 0x00 : 0x10;
     m_data1 |= m_buttonsStatePad1[B2]    ? 0x00 : 0x20;
+}
+
+void Pad::SetPauseState(bool state) {
+    m_interrupt = (state && (!m_pauseState));
+    m_pauseState = state;
+}
+
+bool Pad::PauseInterrupt() {
+    bool value = m_interrupt;
+    m_interrupt = false;
+    return value;
 }
 
 u8 Pad::GetData(u8 port) {
