@@ -65,10 +65,12 @@ void Cartridge::Init(string batteriesPath)
     m_name = string("");
 	
 	//CheckRomSize((int)m_memCartridge[CART_ROM_SIZE], m_romSize);
-    if ((m_romSize % 32768) == 0x200)
+    if ((m_romSize % 32768) == 0x200) {
         m_mem += 0x200;
-    
-    m_maskPages = (m_romSize-1) >> 14;
+        m_maskPages = ((m_romSize-0x200)-1) >> 14;
+    }
+    else
+        m_maskPages = (m_romSize-1) >> 14;
     
     m_pages[0] = &m_mem[0x0000];
     m_pages[1] = &m_mem[0x4000];
@@ -90,9 +92,10 @@ void Cartridge::LoadFile(string fileName, string batteriesPath) {
 	{
 		size = file.tellg();
 		m_romSize = (unsigned long)size;
-		m_mem = new u8 [size];
+		m_buffer = new u8 [size];
+        m_mem = m_buffer;
 		file.seekg (0, ios::beg);
-		file.read((char *)m_mem, (streamsize)size);
+		file.read((char *)m_buffer, (streamsize)size);
 		file.close();
         
 		cout << fileName << ":\nFile loaded in memory correctly" << endl;
@@ -100,7 +103,6 @@ void Cartridge::LoadFile(string fileName, string batteriesPath) {
 		Init(batteriesPath);
 		
 		m_isLoaded = true;
-        
 	}
 	else
 	{
