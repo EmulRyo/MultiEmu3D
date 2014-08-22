@@ -22,7 +22,8 @@
 #include "Video.h"
 #include "CPU.h"
 #include "Cartridge.h"
-#include "InstructionsDef.h"
+#include "InstructionsLength.h"
+#include "InstructionsName.h"
 #include "Debugger.h"
 
 using namespace std;

@@ -19,7 +19,8 @@
 #include <sstream>
 #include "CPU.h"
 #include "Instructions.h"
-#include "InstructionsDef.h"
+#include "InstructionsLength.h"
+#include "InstructionsCycles.h"
 #include "SMSException.h"
 
 using namespace std;
@@ -41,8 +42,14 @@ u16 CPU::GetIYPlusD(u8 offset) {
 }
 
 void CPU::ExecuteOpcode(u8 opcode, Instructions &inst) {
+    if (GetHalt()) {
+        m_lastCycles += 4;
+        return;
+    }
+    
     bool executed = false;
     SetIncPC(true);
+    SetConditionalTaken(false);
     AddR(1);
     
     switch(opcode)
@@ -329,6 +336,11 @@ void CPU::ExecuteOpcode(u8 opcode, Instructions &inst) {
     if (!executed) {
         if (GetIncPC())
             AddPC(GetInstructionLength(opcode));
+        
+        if (GetConditionalTaken())
+            m_lastCycles += GetInstructionCondicionalCycles(opcode);
+        else
+            m_lastCycles += GetInstructionCycles(opcode);
 
         executed = true;
     }
@@ -624,6 +636,7 @@ void CPU::OpcodeCB(Instructions &inst, bool &executed)
     
     if (!executed) {
         AddPC(GetInstructionCBLength(opcode));
+        m_lastCycles += GetInstructionCyclesCB(opcode);
         executed = true;
     }
 }
@@ -748,6 +761,7 @@ void CPU::OpcodeDD(Instructions &inst, bool &executed)
         if (GetIncPC())
             AddPC(GetInstructionDDLength(opcode));
         
+        m_lastCycles += GetInstructionCyclesXD(opcode);
         executed = true;
     }
 }
@@ -849,6 +863,11 @@ void CPU::OpcodeED(Instructions &inst, bool &executed)
     if (!executed) {
         if (GetIncPC())
             AddPC(GetInstructionEDLength(opcode));
+        
+        if (GetConditionalTaken())
+            m_lastCycles += GetInstructionCondicionalCyclesED(opcode);
+        else
+            m_lastCycles += GetInstructionCyclesED(opcode);
         
         executed = true;
     }
@@ -973,6 +992,8 @@ void CPU::OpcodeFD(Instructions &inst, bool &executed)
     if (!executed) {
         if (GetIncPC())
             AddPC(GetInstructionFDLength(opcode));
+        
+        m_lastCycles += GetInstructionCyclesXD(opcode);
         
         executed = true;
     }
@@ -1267,6 +1288,7 @@ void CPU::OpcodeDDCB(Instructions &inst, bool &executed)
     
     if (!executed) {
         AddPC(GetInstructionDDCBLength(opcode));
+        m_lastCycles += GetInstructionCyclesXDCB(opcode);
         executed = true;
     }
 }
@@ -1560,6 +1582,7 @@ void CPU::OpcodeFDCB(Instructions &inst, bool &executed)
     
     if (!executed) {
         AddPC(GetInstructionFDCBLength(opcode));
+        m_lastCycles += GetInstructionCyclesXDCB(opcode);
         executed = true;
     }
 }

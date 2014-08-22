@@ -202,16 +202,16 @@ void Video::Update(u8 cycles) {
     m_irqVInLastUpdate = false;
     m_irqLInLastUpdate = false;
 
-    if (m_cycles > 59659) {
-        m_cycles -= 59659;
+    if (m_cycles > 59719) {
+        m_cycles -= 59719;
         m_cyclesLine = 0;
         m_line = 0;
         m_lineIrqCounter = m_regs[10];
     }
     
     m_cyclesLine += cycles;
-    if (m_cyclesLine > 247) {
-        m_cyclesLine -= 247;
+    if (m_cyclesLine > 228) {
+        m_cyclesLine -= 228;
         u8 h = (m_mode == MODE_4_240) ? 240 : (m_mode == MODE_4_224) ? 244 : 192;
         if (m_line < h) {
             if (m_lineIrqCounter < 0)
@@ -225,7 +225,8 @@ void Video::Update(u8 cycles) {
                 m_irqLInLastUpdate = true;
             }
         }
-        else if (m_line == SMS_SCREEN_H) {
+        
+        if (m_line == (SMS_SCREEN_H-1)) {
             RefreshScreen();
             // Bit 7 status flag
             m_status |= 0x80;

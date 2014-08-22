@@ -38,6 +38,8 @@
 		6E81E4691914011900725E92 /* dmgboy.mo in CopyFiles */ = {isa = PBXBuildFile; fileRef = 6E81E4681914011900725E92 /* dmgboy.mo */; };
 		6E82ED74194391BF001D8B2D /* Joystick.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 6E82ED72194391BF001D8B2D /* Joystick.cpp */; };
 		6E88103918392B9C00E5F636 /* gb.3di in CopyFiles */ = {isa = PBXBuildFile; fileRef = 6E88103618390F1700E5F636 /* gb.3di */; };
+		6E8B2F5A19A74F3E0021AF2A /* InstructionsCycles.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 6E8B2F5619A74F3E0021AF2A /* InstructionsCycles.cpp */; };
+		6E8B2F5B19A74F3E0021AF2A /* InstructionsLength.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 6E8B2F5819A74F3E0021AF2A /* InstructionsLength.cpp */; };
 		6E90991018D8D822005DF1C1 /* BreakpointsDialog.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 6E90990E18D8D822005DF1C1 /* BreakpointsDialog.cpp */; };
 		6EABFB9E193A7B09005A0457 /* dmgboy.mo in Resources */ = {isa = PBXBuildFile; fileRef = 6EABFB9D193A7B09005A0457 /* dmgboy.mo */; };
 		6EABFB9F193A7B3E005A0457 /* dmgboy.mo in CopyFiles */ = {isa = PBXBuildFile; fileRef = 6EABFB9D193A7B09005A0457 /* dmgboy.mo */; };
@@ -47,7 +49,7 @@
 		6ED4CF69195381BA0003C70B /* Debugger.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 6ED4CF49195381BA0003C70B /* Debugger.cpp */; };
 		6ED4CF6A195381BA0003C70B /* SMSException.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 6ED4CF4C195381BA0003C70B /* SMSException.cpp */; };
 		6ED4CF6B195381BA0003C70B /* Instructions.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 6ED4CF4F195381BA0003C70B /* Instructions.cpp */; };
-		6ED4CF6C195381BA0003C70B /* InstructionsDef.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 6ED4CF51195381BA0003C70B /* InstructionsDef.cpp */; };
+		6ED4CF6C195381BA0003C70B /* InstructionsName.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 6ED4CF51195381BA0003C70B /* InstructionsName.cpp */; };
 		6ED4CF6D195381BA0003C70B /* Log.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 6ED4CF53195381BA0003C70B /* Log.cpp */; };
 		6ED4CF6F195381BA0003C70B /* Memory.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 6ED4CF57195381BA0003C70B /* Memory.cpp */; };
 		6ED4CF70195381BA0003C70B /* Pad.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 6ED4CF59195381BA0003C70B /* Pad.cpp */; };
@@ -170,6 +172,10 @@
 		6E82ED72194391BF001D8B2D /* Joystick.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Joystick.cpp; sourceTree = "<group>"; };
 		6E82ED73194391BF001D8B2D /* Joystick.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Joystick.h; sourceTree = "<group>"; };
 		6E88103618390F1700E5F636 /* gb.3di */ = {isa = PBXFileReference; lastKnownFileType = file; name = gb.3di; path = ../../../src/GUI/3D/gb.3di; sourceTree = "<group>"; };
+		6E8B2F5619A74F3E0021AF2A /* InstructionsCycles.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = InstructionsCycles.cpp; path = ../../../src/HW/InstructionsCycles.cpp; sourceTree = "<group>"; };
+		6E8B2F5719A74F3E0021AF2A /* InstructionsCycles.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = InstructionsCycles.h; path = ../../../src/HW/InstructionsCycles.h; sourceTree = "<group>"; };
+		6E8B2F5819A74F3E0021AF2A /* InstructionsLength.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = InstructionsLength.cpp; path = ../../../src/HW/InstructionsLength.cpp; sourceTree = "<group>"; };
+		6E8B2F5919A74F3E0021AF2A /* InstructionsLength.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = InstructionsLength.h; path = ../../../src/HW/InstructionsLength.h; sourceTree = "<group>"; };
 		6E90990E18D8D822005DF1C1 /* BreakpointsDialog.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = BreakpointsDialog.cpp; sourceTree = "<group>"; };
 		6E90990F18D8D822005DF1C1 /* BreakpointsDialog.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BreakpointsDialog.h; sourceTree = "<group>"; };
 		6E97934213C8CBCE0078E8EC /* RendererBase.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = RendererBase.cpp; sourceTree = "<group>"; };
@@ -192,8 +198,8 @@
 		6ED4CF4E195381BA0003C70B /* ISMSScreenDrawable.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ISMSScreenDrawable.h; path = ../../../src/HW/ISMSScreenDrawable.h; sourceTree = "<group>"; };
 		6ED4CF4F195381BA0003C70B /* Instructions.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Instructions.cpp; path = ../../../src/HW/Instructions.cpp; sourceTree = "<group>"; };
 		6ED4CF50195381BA0003C70B /* Instructions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Instructions.h; path = ../../../src/HW/Instructions.h; sourceTree = "<group>"; };
-		6ED4CF51195381BA0003C70B /* InstructionsDef.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = InstructionsDef.cpp; path = ../../../src/HW/InstructionsDef.cpp; sourceTree = "<group>"; };
-		6ED4CF52195381BA0003C70B /* InstructionsDef.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = InstructionsDef.h; path = ../../../src/HW/InstructionsDef.h; sourceTree = "<group>"; };
+		6ED4CF51195381BA0003C70B /* InstructionsName.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = InstructionsName.cpp; path = ../../../src/HW/InstructionsName.cpp; sourceTree = "<group>"; };
+		6ED4CF52195381BA0003C70B /* InstructionsName.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = InstructionsName.h; path = ../../../src/HW/InstructionsName.h; sourceTree = "<group>"; };
 		6ED4CF53195381BA0003C70B /* Log.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Log.cpp; path = ../../../src/HW/Log.cpp; sourceTree = "<group>"; };
 		6ED4CF54195381BA0003C70B /* Log.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Log.h; path = ../../../src/HW/Log.h; sourceTree = "<group>"; };
 		6ED4CF57195381BA0003C70B /* Memory.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Memory.cpp; path = ../../../src/HW/Memory.cpp; sourceTree = "<group>"; };
@@ -345,8 +351,12 @@
 				6ED4CF4E195381BA0003C70B /* ISMSScreenDrawable.h */,
 				6ED4CF4F195381BA0003C70B /* Instructions.cpp */,
 				6ED4CF50195381BA0003C70B /* Instructions.h */,
-				6ED4CF51195381BA0003C70B /* InstructionsDef.cpp */,
-				6ED4CF52195381BA0003C70B /* InstructionsDef.h */,
+				6ED4CF51195381BA0003C70B /* InstructionsName.cpp */,
+				6ED4CF52195381BA0003C70B /* InstructionsName.h */,
+				6E8B2F5619A74F3E0021AF2A /* InstructionsCycles.cpp */,
+				6E8B2F5719A74F3E0021AF2A /* InstructionsCycles.h */,
+				6E8B2F5819A74F3E0021AF2A /* InstructionsLength.cpp */,
+				6E8B2F5919A74F3E0021AF2A /* InstructionsLength.h */,
 				6ED4CF53195381BA0003C70B /* Log.cpp */,
 				6ED4CF54195381BA0003C70B /* Log.h */,
 				6ED4CF57195381BA0003C70B /* Memory.cpp */,
@@ -536,9 +546,10 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				6ED4CF6C195381BA0003C70B /* InstructionsDef.cpp in Sources */,
+				6ED4CF6C195381BA0003C70B /* InstructionsName.cpp in Sources */,
 				6ED4CF73195381BA0003C70B /* Sound.cpp in Sources */,
 				6ED4CF68195381BA0003C70B /* CPU.cpp in Sources */,
+				6E8B2F5B19A74F3E0021AF2A /* InstructionsLength.cpp in Sources */,
 				6ED4CF71195381BA0003C70B /* Registers.cpp in Sources */,
 				6ED4CF6B195381BA0003C70B /* Instructions.cpp in Sources */,
 				6ED4CF6F195381BA0003C70B /* Memory.cpp in Sources */,
@@ -555,6 +566,7 @@
 				6E6A9320199D5E040034D49C /* Sms_Apu.cpp in Sources */,
 				6E47554A1719970B00602FE1 /* InputTextCtrl.cpp in Sources */,
 				6ED4CF69195381BA0003C70B /* Debugger.cpp in Sources */,
+				6E8B2F5A19A74F3E0021AF2A /* InstructionsCycles.cpp in Sources */,
 				6E90991018D8D822005DF1C1 /* BreakpointsDialog.cpp in Sources */,
 				6ED4CF70195381BA0003C70B /* Pad.cpp in Sources */,
 				6ED4CF6A195381BA0003C70B /* SMSException.cpp in Sources */,

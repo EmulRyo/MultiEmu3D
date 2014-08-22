@@ -22,7 +22,6 @@
 #include "Video.h"
 #include "Pad.h"
 #include "SMSException.h"
-#include "InstructionsDef.h"
 
 #ifdef MAKEGBLOG
 #include "Log.h"
@@ -45,9 +44,9 @@ void CPU::Init(Video *v, Pad *p)
 {
     m_v = v;
     m_p = p;
-    // 3,579545 Mhz NTSC
+    // 3,579545 Mhz NTSC (59.94Hz = 59718,802)
     // 3,546893 Mhz PAL
-    m_cyclesFrame = 59659;
+    m_cyclesFrame = 59719;
 	ResetGlobalVariables();
 }
 
@@ -97,12 +96,7 @@ int CPU::Execute(int cyclesToExecute)
 		opcode = MemR(GetPC());
         nextOpcode = MemR(GetPC() + 1);
 		
-		if (!GetHalt())
-			ExecuteOpcode(opcode, inst);
-        
-        m_lastCycles += GetInstructionCycles(opcode);
-        if (m_lastCycles == 0)
-            m_lastCycles = 2;
+		ExecuteOpcode(opcode, inst);
         
         int tmpCycles = m_lastCycles;
         

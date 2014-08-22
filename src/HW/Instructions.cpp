@@ -170,7 +170,6 @@ void Instructions::JP_cc_nn(e_registers flag, u8 value2check) {
 	if (m_reg->GetFlag(flag) == value2check) {
         u16 nn = _16bitsInmValue;
 		JP(nn);
-        m_reg->SetConditionalTaken(true);
     }
 }
 
@@ -220,6 +219,8 @@ void Instructions::LDIR() {
     LDI();
     if (m_reg->GetBC()) // Si se cumple la condición evitar que salte
         m_reg->SetIncPC(false);
+    else
+        m_reg->SetConditionalTaken(true);
 }
 
 void Instructions::OUT(u8 port, u8 value) {
@@ -243,6 +244,8 @@ void Instructions::OTIR() {
     OUTI();
     if(m_reg->GetB()) // Si se cumple la condición evitar que salte
         m_reg->SetIncPC(false);
+    else
+        m_reg->SetConditionalTaken(true);
 }
 
 u8 Instructions::EvenBitsSet(u8 v) {
@@ -463,6 +466,8 @@ void Instructions::LDDR() {
     LDD();
     if(m_reg->GetBC()) // Si se cumple la condición evitar que salte
         m_reg->SetIncPC(false);
+    else
+        m_reg->SetConditionalTaken(true);
 }
 
 void Instructions::OR(u8 value) {
@@ -619,8 +624,10 @@ void Instructions::OUTD() {
 
 void Instructions::OTDR() {
     OUTD();
-    if(m_reg->GetB()) // Si se cumple la condición evitar que salte
+    if(m_reg->GetB()) { // Si se cumple la condición evitar que salte
         m_reg->SetIncPC(false);
+        m_reg->SetConditionalTaken(true);
+    }
 }
 
 void Instructions::RLCA() {
@@ -953,14 +960,18 @@ void Instructions::INI() {
 
 void Instructions::INIR() {
     INI();
-    if (m_reg->GetB())   // Si se cumple la condición evitar que salte
+    if (m_reg->GetB())  // Si se cumple la condición evitar que salte
         m_reg->SetIncPC(false);
+    else
+        m_reg->SetConditionalTaken(true);
 }
 
 void Instructions::CPIR() {
     CPI();
-    if (m_reg->GetBC() && (!m_reg->GetFlagZ()))   // Si se cumple la condición evitar que salte
+    if (m_reg->GetBC() && (!m_reg->GetFlagZ())) // Si se cumple la condición evitar que salte
         m_reg->SetIncPC(false);
+    else
+        m_reg->SetConditionalTaken(true);
 }
 
 void Instructions::CPD() {
@@ -978,8 +989,10 @@ void Instructions::CPD() {
 
 void Instructions::CPDR() {
     CPD();
-    if (m_reg->GetBC() && (!m_reg->GetFlagZ()))   // Si se cumple la condición evitar que salte
+    if (m_reg->GetBC() && (!m_reg->GetFlagZ())) // Si se cumple la condición evitar que salte
         m_reg->SetIncPC(false);
+    else
+        m_reg->SetConditionalTaken(true);
 }
 
 void Instructions::RETN() {
