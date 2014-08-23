@@ -757,7 +757,7 @@ void Instructions::SBC(u16 value) {
 	m_reg->SetHL(result);
 }
 
-void Instructions::RLD() {
+void Instructions::RRD() {
     u8 memValue = m_mem->MemR(m_reg->GetHL());
     u8 a = m_reg->GetA();
     
@@ -771,7 +771,7 @@ void Instructions::RLD() {
     m_reg->SetFlagN(0);
 }
 
-void Instructions::RRD() {
+void Instructions::RLD() {
     u8 memValue = m_mem->MemR(m_reg->GetHL());
     u8 a = m_reg->GetA();
     
