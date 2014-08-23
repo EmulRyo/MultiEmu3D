@@ -184,11 +184,21 @@ u8 Video::GetData() {
 }
 
 u8 Video::GetV() {
-    return m_line;
+    switch (m_mode) {
+        case MODE_4_192:
+            if (m_line < 0xDB)
+                return m_line;
+            else
+                return m_line - 6;
+            break;
+            
+        default:
+            return m_line;
+    }
 }
 
 u8 Video::GetH() {
-    return m_cyclesLine / 247.0f * 256.0f;
+    return m_cyclesLine;
 }
 
 void Video::Update(u8 cycles) {
