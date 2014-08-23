@@ -228,7 +228,7 @@ void Debugger::DisassembleOne(u16 address, u16 &nextAddress, std::string &name, 
             
         case 0xDD:
             if (opcode2 == 0xCB) {
-                u8 opcode3 = m_cpu->MemR(address+4);
+                u8 opcode3 = m_cpu->MemR(address+3);
                 ss1 << GetInstructionDDCBName(opcode3);
                 length += GetInstructionDDCBLength(opcode3);
             }
@@ -245,7 +245,7 @@ void Debugger::DisassembleOne(u16 address, u16 &nextAddress, std::string &name, 
         
         case 0xFD:
             if (opcode2 == 0xCB) {
-                u8 opcode3 = m_cpu->MemR(address+4);
+                u8 opcode3 = m_cpu->MemR(address+3);
                 ss1 << GetInstructionFDCBName(opcode3);
                 length += GetInstructionFDCBLength(opcode3);
             }
