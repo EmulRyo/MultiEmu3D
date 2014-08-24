@@ -34,11 +34,11 @@ u16 CPU::Get16BitsInmValue(u8 offset) {
 }
 
 u16 CPU::GetIXPlusD(u8 offset) {
-    return GetIX()+Get8BitsInmValue(offset);
+    return GetIX()+(s8)Get8BitsInmValue(offset);
 }
 
 u16 CPU::GetIYPlusD(u8 offset) {
-    return GetIY()+Get8BitsInmValue(offset);
+    return GetIY()+(s8)Get8BitsInmValue(offset);
 }
 
 void CPU::ExecuteOpcode(u8 opcode, Instructions &inst) {

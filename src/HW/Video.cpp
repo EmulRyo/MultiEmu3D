@@ -202,11 +202,6 @@ u8 Video::GetH() {
 }
 
 void Video::Update(u8 cycles) {
-    // 486 lineas visibles de 525 en NTSC. => 92.5714 % son visibles
-    // 0,925714 * 59659 = 55227 ciclos en lineas visibles
-    // 59659 - 55227 = 4432 ciclos en VBlank
-    // 55227 / 224 = 247 ciclos cada linea
-    
     m_cycles += cycles;
     
     m_irqVInLastUpdate = false;
