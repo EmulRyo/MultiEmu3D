@@ -79,6 +79,16 @@ std::string Debugger::GetRegPC()
     return ToHex(m_cpu->GetPC(), 4, '0');
 }
 
+std::string Debugger::GetRegIX()
+{
+    return ToHex(m_cpu->GetIX(), 4, '0');
+}
+
+std::string Debugger::GetRegIY()
+{
+    return ToHex(m_cpu->GetIY(), 4, '0');
+}
+
 std::string Debugger::GetRegs()
 {
     string regs;
@@ -87,7 +97,9 @@ std::string Debugger::GetRegs()
     regs += "DE: " + GetRegDE() + "\n";
     regs += "HL: " + GetRegHL() + "\n";
     regs += "PC: " + GetRegPC() + "\n";
-    regs += "SP: " + GetRegSP();
+    regs += "SP: " + GetRegSP() + "\n";
+    regs += "SP: " + GetRegIX() + "\n";
+    regs += "SP: " + GetRegIY();
     
     return regs;
 }

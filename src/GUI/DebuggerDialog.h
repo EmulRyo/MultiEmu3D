@@ -20,6 +20,7 @@
 
 #include <wx/wx.h>
 #include <wx/listctrl.h>
+#include "../HW/Def.h"
 
 class Debugger;
 class wxListView;
@@ -50,12 +51,16 @@ private:
     wxListView *m_disassemblerView;
     wxRadioBox* m_memSelRBox;
     wxFont* m_font;
+    u16 m_disassemblerFirst;
+    u16 m_disassemblerLast;
     
     void CreateToolBar();
     void UpdateUI();
     void UpdateRegisters();
     void UpdateMemory();
-    void UpdateDissassembler();
+    void UpdateDisassembler();
+    void InitDisassemblerVars(u16 &currentAddress, u16 &nextAddress, std::string &name, std::string &data, u16 &pc);
+    void UpdateDisassemblerIcon(int numItem, u16 currentAddress, u16 pc);
     void UpdateVideoRegs();
     void UpdateOtherRegs();
     void OnReset(wxCommandEvent &);

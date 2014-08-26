@@ -94,8 +94,8 @@ DebuggerDialog::DebuggerDialog(wxWindow *parent, Debugger *debugger)
 #endif
 #ifdef __WXMAC__
     m_font = new wxFont(12, wxTELETYPE, wxNORMAL, wxNORMAL);
-    int height1 = 132;
-    int height2 = 340;
+    int height1 = 170;
+    int height2 = 396;
 #endif
     
     m_regsView = new wxListView(this, wxID_ANY, wxDefaultPosition, wxSize(82, height1), wxLC_REPORT);
@@ -126,6 +126,9 @@ DebuggerDialog::DebuggerDialog(wxWindow *parent, Debugger *debugger)
     m_disassemblerView->SetColumnWidth (2, 130);
     m_disassemblerView->InsertColumn (3, "Data");
     m_disassemblerView->SetColumnWidth (3, 90);
+    
+    m_disassemblerFirst = 0;
+    m_disassemblerLast  = 0;
     
     wxStaticText *videoText = new wxStaticText(this, -1, wxT("Video registers:"));
     m_videoView = new wxListView(this, wxID_ANY, wxDefaultPosition, wxSize(110, height2), wxLC_REPORT);
@@ -238,7 +241,7 @@ std::string DebuggerDialog::IntToString(int value, int width)
 void DebuggerDialog::UpdateUI() {
     UpdateRegisters();
     UpdateMemory();
-    UpdateDissassembler();
+    UpdateDisassembler();
     UpdateVideoRegs();
     UpdateOtherRegs();
 }
@@ -264,11 +267,11 @@ void DebuggerDialog::UpdateMemory() {
 }
 
 void DebuggerDialog::UpdateRegisters() {
-    const char *names[] = { "AF", "BC", "DE", "HL", "PC", "SP" };
+    const char *names[] = { "AF", "BC", "DE", "HL", "PC", "SP", "IX", "IY" };
     
     m_regsView->DeleteAllItems();
     
-    for (int i=0; i<6; i++) {
+    for (int i=0; i<8; i++) {
         m_regsView->InsertItem(i, "");
         m_regsView->SetItem(i, 0, names[i]);
         m_regsView->SetItemFont(i, *m_font);
@@ -280,6 +283,8 @@ void DebuggerDialog::UpdateRegisters() {
     m_regsView->SetItem(3, 1, m_debugger->GetRegHL());
     m_regsView->SetItem(4, 1, m_debugger->GetRegPC());
     m_regsView->SetItem(5, 1, m_debugger->GetRegSP());
+    m_regsView->SetItem(6, 1, m_debugger->GetRegIX());
+    m_regsView->SetItem(7, 1, m_debugger->GetRegIY());
 }
 
 void DebuggerDialog::UpdateVideoRegs() {
@@ -305,36 +310,57 @@ void DebuggerDialog::UpdateOtherRegs() {
     
 }
 
-void DebuggerDialog::UpdateDissassembler() {
-    u16 currentAddress, nextAddress;
-    string address, name, data;
-    
+void DebuggerDialog::UpdateDisassemblerIcon(int numItem, u16 currentAddress, u16 pc) {
+    if (currentAddress == pc) {
+        if (m_debugger->HasBreakpoint(currentAddress))
+            m_disassemblerView->SetItemColumnImage(numItem, 0, 2);
+        else
+            m_disassemblerView->SetItemColumnImage(numItem, 0, 0);
+    }
+    else if (m_debugger->HasBreakpoint(currentAddress))
+        m_disassemblerView->SetItemColumnImage(numItem, 0, 1);
+    else
+        m_disassemblerView->SetItemColumnImage(numItem, 0, -1);
+}
+
+void DebuggerDialog::InitDisassemblerVars(u16 &currentAddress, u16 &nextAddress, string &name, string &data, u16 &pc) {
     m_debugger->DisassembleNext(currentAddress, nextAddress, name, data);
+    pc = currentAddress;
+    if ((currentAddress >= m_disassemblerFirst) && (currentAddress <= m_disassemblerLast)) {
+        currentAddress = m_disassemblerFirst;
+        m_debugger->DisassembleOne(currentAddress, nextAddress, name, data);
+    } else
+        m_disassemblerFirst = currentAddress;
+}
+
+void DebuggerDialog::UpdateDisassembler() {
+    u16 currentAddress, nextAddress, pc, second;
+    string address, name, data;
+    const int lines = 8;
+    
+    InitDisassemblerVars(currentAddress, nextAddress, name, data, pc);
     
     m_disassemblerView->DeleteAllItems();
-    for (int i=0; i<6; i++) {
+    for (int i=0; i<lines; i++) {
         address = m_debugger->ToHex(currentAddress, 4, '0');
         
+        if (i == 1)
+            second = currentAddress;
+        
+        if ((currentAddress == pc) && (i >= ((lines/2)-1)))
+            m_disassemblerFirst = second;
+        
         m_disassemblerView->InsertItem(i, "");
-        if (i == 0) {
-            if (m_debugger->HasBreakpoint(currentAddress))
-                m_disassemblerView->SetItemColumnImage(i, 0, 2);
-            else
-                m_disassemblerView->SetItemColumnImage(i, 0, 0);
-        }
-        else if (m_debugger->HasBreakpoint(currentAddress))
-            m_disassemblerView->SetItemColumnImage(i, 0, 1);
-		else
-			m_disassemblerView->SetItemColumnImage(i, 0, -1);
-            
         m_disassemblerView->SetItem(i, 1, address);
         m_disassemblerView->SetItem(i, 2, name);
         m_disassemblerView->SetItem(i, 3, data);
         m_disassemblerView->SetItemFont(i, *m_font);
+        UpdateDisassemblerIcon(i, currentAddress, pc);
         
         if (nextAddress < currentAddress)
             break;
         else {
+            m_disassemblerLast = currentAddress;
             currentAddress = nextAddress;
             m_debugger->DisassembleOne(currentAddress, nextAddress, name, data);
         }
@@ -392,7 +418,7 @@ void DebuggerDialog::OnActivated(wxListEvent &event) {
             m_debugger->DelBreakpoint(value);
         else
             m_debugger->AddBreakpoint(value);
-        UpdateDissassembler();
+        UpdateDisassembler();
     }
 }
 

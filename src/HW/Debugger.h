@@ -41,6 +41,9 @@ public:
     std::string GetRegSP();
     std::string GetRegPC();
     
+    std::string GetRegIX();
+    std::string GetRegIY();
+    
     std::string GetRegs();
     std::string GetVReg(u8 reg);
     std::string GetPal(u8 pal);
