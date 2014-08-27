@@ -299,7 +299,7 @@ void Video::UpdateSprites(u8 y) {
     
 	for (u8 numSprite = 0; numSprite<64; numSprite++) {
         u8 ySprite = m_memory[spriteBase + numSprite];
-        if (ySprite == 0xD0)
+        if ((ySprite == 0xD0) && (m_mode == MODE_4_192))
             break;
         
         // La y se almacena como y+1 (nunca se podrá poner un sprite en y == 0)
@@ -334,10 +334,13 @@ void Video::UpdateSprites(u8 y) {
                    indexColor |= (((tileData[1] & (0x01 << pixX)) >> pixX) << 1);
                    indexColor |=  ((tileData[0] & (0x01 << pixX)) >> pixX);
                 
-                u8 x1 = xSprite + countX;
-                u8 y1 = ySprite + countY;
+                s16 x1 = xSprite + countX;
+                s16 y1 = ySprite + countY;
                 
-                if ((indexColor != 0) && (m_priorityBG[x1][y1] == false)){
+                if (BIT3(m_regs[0]))
+                    x1 -= 8;
+                
+                if ((indexColor != 0) && (m_priorityBG[x1][y1] == false) && (x1 >= 0)){
                     indexColor += paletteOffset;
                     
                     u8 r = m_rgbPalettes[indexColor][0];
