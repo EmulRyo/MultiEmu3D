@@ -40,8 +40,7 @@ CPU::CPU(Video *v, Pad *p, Cartridge *c, Sound *s): Memory(this, v, p, s)
 	Init(v, p);
 }
 
-void CPU::Init(Video *v, Pad *p)
-{
+void CPU::Init(Video *v, Pad *p) {
     m_v = v;
     m_p = p;
     // 3,579545 Mhz NTSC (59.94Hz = 59718,802)
@@ -53,14 +52,11 @@ void CPU::Init(Video *v, Pad *p)
 
 CPU::~CPU() {}
 
-void CPU::ResetGlobalVariables()
-{
+void CPU::ResetGlobalVariables() {
     m_numInstructions = 0;
-    
 }
 
-void CPU::Reset()
-{
+void CPU::Reset() {
     ResetGlobalVariables();
 	ResetRegs();
 	ResetMem();

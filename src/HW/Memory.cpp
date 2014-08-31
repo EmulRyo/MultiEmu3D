@@ -50,6 +50,8 @@ void Memory::LoadCartridge(Cartridge *c)
 void Memory::ResetMem()
 {
 	memset(&memory, 0x00, SIZE_MEM);
+    if (m_c)
+        m_c->Reset();
 }
 
 void Memory::MemW(u16 address, u8 value)

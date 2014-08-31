@@ -35,6 +35,8 @@ Cartridge::Cartridge(string fileName, string batteriesPath)
     m_buffer = NULL;
 	m_mem = NULL;
 	LoadFile(fileName, batteriesPath);
+    
+    Reset();
 }
 
 /*
@@ -45,10 +47,9 @@ Cartridge::Cartridge(u8 *cartridgeBuffer, unsigned long size, string batteriesPa
 	m_romSize = size;
     m_buffer = cartridgeBuffer;
 	m_mem = cartridgeBuffer;
-	
-	Init(batteriesPath);
-	
 	m_isLoaded = true;
+    
+    Reset();
 }
 
 Cartridge::~Cartridge(void)
@@ -60,23 +61,27 @@ Cartridge::~Cartridge(void)
 	m_mem = NULL;
 }
 
-void Cartridge::Init(string batteriesPath)
+void Cartridge::Reset()
 {
     m_name = string("");
 	
 	//CheckRomSize((int)m_memCartridge[CART_ROM_SIZE], m_romSize);
     if ((m_romSize % 32768) == 0x200) {
-        m_mem += 0x200;
+        m_mem = m_buffer + 0x200;
         m_maskPages = ((m_romSize-0x200)-1) >> 14;
     }
     else
         m_maskPages = (m_romSize-1) >> 14;
     
+    m_numBanks[0] = 0;
+    m_numBanks[1] = 1;
+    m_numBanks[2] = 2;
     m_pages[0] = &m_mem[0x0000];
     m_pages[1] = &m_mem[0x4000];
     m_pages[2] = &m_mem[0x8000];
     
     m_ram.enabled = false;
+    m_ram.numBank = 0;
     m_ram.page = &m_ram.mem[0x0000];
     
     // Estas lineas permiten arrancar la BIOS de Alex Kidd
@@ -99,9 +104,6 @@ void Cartridge::LoadFile(string fileName, string batteriesPath) {
 		file.close();
         
 		cout << fileName << ":\nFile loaded in memory correctly" << endl;
-		
-		Init(batteriesPath);
-		
 		m_isLoaded = true;
 	}
 	else
@@ -206,11 +208,21 @@ void Cartridge::Write(u16 address, u8 value) {
     switch (address) {
         case 0xFFFC:
             m_ram.enabled = BIT3(value) != 0;
+            m_ram.numBank = BIT2(value) ? 1 : 0;
             m_ram.page = BIT2(value) ? &m_ram.mem[0x4000] : &m_ram.mem[0];
             break;
-        case 0xFFFD: m_pages[0] = &m_mem[(value&m_maskPages)*0x4000]; break;
-        case 0xFFFE: m_pages[1] = &m_mem[(value&m_maskPages)*0x4000]; break;
-        case 0xFFFF: m_pages[2] = &m_mem[(value&m_maskPages)*0x4000]; break;
+        case 0xFFFD:
+            m_numBanks[0] = value&m_maskPages;
+            m_pages[0] = &m_mem[m_numBanks[0]*0x4000];
+            break;
+        case 0xFFFE:
+            m_numBanks[1] = value&m_maskPages;
+            m_pages[1] = &m_mem[m_numBanks[1]*0x4000];
+            break;
+        case 0xFFFF:
+            m_numBanks[2] = value&m_maskPages;
+            m_pages[2] = &m_mem[m_numBanks[2]*0x4000];
+            break;
             
         default:
             if (m_ram.enabled && (address >= 0x8000) && ((address < 0xC000)))
@@ -218,3 +230,15 @@ void Cartridge::Write(u16 address, u8 value) {
             break;
     }
 };
+
+u8 Cartridge::GetNumBank(u8 bank) {
+    return m_numBanks[bank & 0x03];
+}
+
+bool Cartridge::GetRAMEnabled() {
+    return m_ram.enabled;
+}
+
+u8 Cartridge::GetRAMNumBank() {
+    return m_ram.numBank;
+}

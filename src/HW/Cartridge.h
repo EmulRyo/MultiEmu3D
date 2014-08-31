@@ -27,6 +27,7 @@ class Cartridge
     {
         u8   mem[0x8000];
         bool enabled;
+        u8   numBank;
         u8  *page;
     };
     
@@ -37,17 +38,19 @@ private:
 	u8  *m_buffer;
     u8  *m_mem;
     u8  *m_pages[3];
+    u8   m_numBanks[3];
     u8   m_maskPages;
     Ram  m_ram;
 
     void LoadFile(std::string fileName, std::string batteriesPath);
-	void Init(std::string batteriesPath="");
 	int  CheckRomSize(int numHeaderSize, int fileSize);
     
 public:
 	Cartridge(std::string fileName, std::string batteriesPath="");
 	Cartridge(u8 *cartridgeBuffer, unsigned long size, std::string batteriesPath="");
 	~Cartridge();
+    
+    void Reset();
 	
 	u8 *GetData();
 	unsigned int GetSize();
@@ -62,6 +65,10 @@ public:
 	void LoadStateMBC(std::ifstream *file);
     
     void Extract();
+    
+    u8   GetNumBank(u8 bank);
+    bool GetRAMEnabled();
+    u8   GetRAMNumBank();
 };
 
 #endif
