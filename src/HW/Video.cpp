@@ -54,6 +54,7 @@ using namespace std;
 Video::Video(ISMSScreenDrawable *screen)
 {
     m_pixel = new VideoPixel();
+    Reset();
 	SetScreen(screen);
 }
 
@@ -78,6 +79,7 @@ void Video::Reset() {
     m_cycles = 0;
     m_cyclesLine = 0;
     m_vramAddress = true;
+    m_status = 0;
     m_regs[ 0] = 0x36;
     m_regs[ 1] = 0x80;
     m_regs[ 2] = 0xFF;
@@ -161,7 +163,7 @@ void Video::SetData(u8 value) {
 u8 Video::GetControl() {
     m_numWrite = 0;
     u8 status = m_status;
-    m_status &= 0x3F;
+    m_status &= 0x1F;
     return status;
 }
 
@@ -198,15 +200,12 @@ u8 Video::GetV() {
 }
 
 u8 Video::GetH() {
-    return m_cyclesLine;
+    return m_cyclesLine / 228.0f * 0xFF;
 }
 
 void Video::Update(u8 cycles) {
     m_cycles += cycles;
     
-    m_irqVInLastUpdate = false;
-    m_irqLInLastUpdate = false;
-
     if (m_cycles > 59719) {
         m_cycles -= 59719;
         m_cyclesLine = 0;
@@ -225,17 +224,15 @@ void Video::Update(u8 cycles) {
             UpdateLine(m_line);
             
             m_lineIrqCounter--;
-            if (m_lineIrqCounter < 0) {
-                m_status |= 0x40;
-                m_irqLInLastUpdate = true;
-            }
+            if (m_lineIrqCounter < 0)
+                m_pendingLIRQ = true;
         }
         
         if (m_line == (SMS_SCREEN_H-1)) {
             RefreshScreen();
             // Bit 7 status flag
             m_status |= 0x80;
-            m_irqVInLastUpdate = true;
+            m_pendingVIRQ = true;
         }
         m_line++;
     }
@@ -453,9 +450,11 @@ void Video::GetTile(u8 *buffer, int widthSize, int tile)
 }
 
 bool Video::Interrupt() {
-    if (m_irqVInLastUpdate && BIT5(m_regs[1])) {
+    if (m_pendingVIRQ && BIT7(m_status) && GetIE0()) {
+        m_pendingVIRQ = false;
         return true;
-    } else if (m_irqLInLastUpdate && BIT4(m_regs[0])) {
+    } else if (m_pendingLIRQ && GetIE1()) {
+        m_pendingLIRQ = false;
         return true;
     } else
         return false;
@@ -495,4 +494,24 @@ void Video::CheckReg(u8 reg) {
             
             break;
     }
+}
+
+u16 Video::GetLine() {
+    return m_line;
+}
+
+u8 Video::GetStatus() {
+    return m_status;
+}
+
+u8 Video::GetCyclesLine() {
+    return m_cyclesLine;
+}
+
+bool Video::GetIE0() {
+    return (BIT5(m_regs[1]) != 0);
+}
+
+bool Video::GetIE1() {
+    return (BIT4(m_regs[0]) != 0);
 }

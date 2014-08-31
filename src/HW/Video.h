@@ -69,6 +69,12 @@ public:
     
     void Update(u8 cycles);
     
+    u16  GetLine();
+    u8   GetCyclesLine();
+    u8   GetStatus();
+    bool GetIE0();
+    bool GetIE1();
+    
 private:
 	u8  m_memory[VDP_MEM];
     u8  m_regs[16];
@@ -77,7 +83,7 @@ private:
     u16 m_address;
     u8  m_numWrite;
     u8  m_partialAddress;
-    u8  m_line;
+    u16 m_line;
     u32 m_cycles;
     u16 m_cyclesLine;
     u8  m_status;
@@ -85,8 +91,8 @@ private:
     bool m_vramAddress;
 	ISMSScreenDrawable *m_screen;
 	VideoPixel *m_pixel;
-    bool m_irqLInLastUpdate;
-    bool m_irqVInLastUpdate;
+    bool m_pendingVIRQ;
+    bool m_pendingLIRQ;
     t_VDPMODES m_mode;
     bool m_priorityBG[SMS_SCREEN_W][SMS_SCREEN_H];
 
