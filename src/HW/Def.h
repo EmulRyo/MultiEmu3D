@@ -41,7 +41,7 @@ typedef long            s64;
 #define SMS_SCREEN_W 256
 #define SMS_SCREEN_H 224
 
-#define FRAME_CYCLES    70224
+#define FRAME_CYCLES    59719
 
 #define BIT0(value)	((value) & 0x01)
 #define BIT1(value)	((value) & 0x02)

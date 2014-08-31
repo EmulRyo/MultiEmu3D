@@ -57,6 +57,15 @@ public:
     std::string Disassemble(int numInstructions);
     void DisassembleNext(u16 &currentAddress, u16 &nextAddress, std::string &name, std::string &data);
     void DisassembleOne(u16 address, u16 &nextAddress, std::string &name, std::string &data);
+    u8   GetIPeriod();
+    u8   GetVDPStatus();
+    u16  GetLine();
+    bool GetIE();
+    bool GetIE0();
+    bool GetIE1();
+    u8   GetNumBank(u8 bank);
+    bool GetRAMEnabled();
+    u8   GetRAMNumBank();
     
     void Reset();
     void StepInto();

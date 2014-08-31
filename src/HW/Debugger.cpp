@@ -432,3 +432,39 @@ void Debugger::ClearBreakpoints() {
     m_firstBreakpoint = NULL;
     m_lastBreakpoint  = NULL;
 }
+
+u8 Debugger::GetIPeriod() {
+    return 228 - m_video->GetCyclesLine();
+}
+
+u8 Debugger::GetVDPStatus() {
+    return m_video->GetStatus();
+}
+
+u16 Debugger::GetLine() {
+    return m_video->GetLine();
+}
+
+bool Debugger::GetIE() {
+    return m_cpu->GetIFF1();
+}
+
+bool Debugger::GetIE0() {
+    return m_video->GetIE0();
+}
+
+bool Debugger::GetIE1() {
+    return m_video->GetIE1();
+}
+
+u8 Debugger::GetNumBank(u8 bank) {
+    return m_cartridge->GetNumBank(bank);
+}
+
+bool Debugger::GetRAMEnabled() {
+    return m_cartridge->GetRAMEnabled();
+}
+
+u8 Debugger::GetRAMNumBank() {
+    return m_cartridge->GetRAMNumBank();
+}

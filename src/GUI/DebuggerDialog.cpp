@@ -138,13 +138,11 @@ DebuggerDialog::DebuggerDialog(wxWindow *parent, Debugger *debugger)
     m_videoView->SetColumnWidth (1, 38);
     
     wxStaticText *othersText = new wxStaticText(this, -1, wxT("Other registers:"));
-    m_othersView = new wxListView(this, wxID_ANY, wxDefaultPosition, wxSize(130, height2), wxLC_REPORT);
+    m_othersView = new wxListView(this, wxID_ANY, wxDefaultPosition, wxSize(110, height2), wxLC_REPORT);
     m_othersView->InsertColumn (0, "Name");
-    m_othersView->SetColumnWidth (0, 44);
-    m_othersView->InsertColumn (1, "Address");
-    m_othersView->SetColumnWidth (1, 49);
-    m_othersView->InsertColumn (2, "Value");
-    m_othersView->SetColumnWidth (2, 37);
+    m_othersView->SetColumnWidth (0, 72);
+    m_othersView->InsertColumn (1, "Value");
+    m_othersView->SetColumnWidth (1, 38);
     
     wxTextValidator *validator = new wxTextValidator(wxFILTER_INCLUDE_CHAR_LIST);
     validator->SetCharIncludes(wxT("0123456789ABCDEFabcdef"));
@@ -288,26 +286,57 @@ void DebuggerDialog::UpdateRegisters() {
 }
 
 void DebuggerDialog::UpdateVideoRegs() {
+    const char *names[] = { "Status", "IE0", "IE1", "IPeriod", "Line" };
+    int pos = 0;
+    
     m_videoView->DeleteAllItems();
     
+    for (int i=0; i<5; i++) {
+        m_videoView->InsertItem(pos, "");
+        m_videoView->SetItem(pos, 0, names[pos]);
+        m_videoView->SetItemFont(pos, *m_font);
+        pos++;
+    }
+    m_videoView->SetItem(0, 1, m_debugger->ToHex(m_debugger->GetVDPStatus(), 2, '0'));
+    m_videoView->SetItem(1, 1, m_debugger->GetIE0() ? "1" : "0");
+    m_videoView->SetItem(2, 1, m_debugger->GetIE1() ? "1" : "0");
+    m_videoView->SetItem(3, 1, IntToString(m_debugger->GetIPeriod(), 1));
+    m_videoView->SetItem(4, 1, IntToString(m_debugger->GetLine(), 1));
+    
     for (int i=0; i<11; i++) {
-        m_videoView->InsertItem(i, "");
-        m_videoView->SetItem(i, 0, "Reg "+IntToString(i, 2));
-        m_videoView->SetItem(i, 1, m_debugger->GetVReg(i));
-        m_videoView->SetItemFont(i, *m_font);
+        m_videoView->InsertItem(pos, "");
+        m_videoView->SetItem(pos, 0, "Reg "+IntToString(i, 2));
+        m_videoView->SetItem(pos, 1, m_debugger->GetVReg(i));
+        m_videoView->SetItemFont(pos, *m_font);
+        pos++;
     }
     
     for (int i=0; i<0x20; i++) {
-        int pos = i+11;
         m_videoView->InsertItem(pos, "");
         m_videoView->SetItem(pos, 0, "Pal "+IntToString(i, 2));
         m_videoView->SetItem(pos, 1, m_debugger->GetPal(i));
         m_videoView->SetItemFont(pos, *m_font);
+        pos++;
     }
 }
 
 void DebuggerDialog::UpdateOtherRegs() {
+    const char *names[] = { "IE", "Bank 0", "Bank 1", "Bank 2", "Ram Enab", "Ram Bank" };
     
+    m_othersView->DeleteAllItems();
+    
+    for (int i=0; i<6; i++) {
+        m_othersView->InsertItem(i, "");
+        m_othersView->SetItem(i, 0, names[i]);
+        m_othersView->SetItemFont(i, *m_font);
+    }
+    
+    m_othersView->SetItem(0, 1, m_debugger->GetIE() ? "1" : "0");
+    m_othersView->SetItem(1, 1, IntToString(m_debugger->GetNumBank(0), 1));
+    m_othersView->SetItem(2, 1, IntToString(m_debugger->GetNumBank(1), 1));
+    m_othersView->SetItem(3, 1, IntToString(m_debugger->GetNumBank(2), 1));
+    m_othersView->SetItem(4, 1, m_debugger->GetRAMEnabled() ? "1" : "0");
+    m_othersView->SetItem(5, 1, IntToString(m_debugger->GetRAMNumBank(), 1));
 }
 
 void DebuggerDialog::UpdateDisassemblerIcon(int numItem, u16 currentAddress, u16 pc) {
