@@ -104,7 +104,6 @@ inline void Sms_Noise::reset() {
 
 void Sms_Noise::run( sms_time_t time, sms_time_t end_time )
 {
-	int cur_amp = 0;
 	int period = *this->period * 2;
 	if ( !volume ) {
 		if ( last_amp ) {
@@ -184,7 +183,8 @@ void Sms_Apu::output( Blip_Buffer* center, Blip_Buffer* left, Blip_Buffer* right
 void Sms_Apu::osc_output( int index, Blip_Buffer* center, Blip_Buffer* left,
 		Blip_Buffer* right )
 {
-	assert(( "Sms_Apu::osc_output(): Index out of range", 0 <= index && index < osc_count ));
+    //"Sms_Apu::osc_output(): Index out of range"
+	assert(0 <= index && index < osc_count);
 	
 	Sms_Osc& osc = *oscs [index];
 	if ( center && !left && !right ) {
@@ -217,7 +217,8 @@ void Sms_Apu::run_until( sms_time_t end_time )
 {
 	if ( end_time == last_time )
 		return;
-	assert(( "Sms_Apu::run_until(): End time is before current time", last_time < end_time ));
+    //"Sms_Apu::run_until(): End time is before current time"
+	assert(last_time < end_time);
 	
 	// run oscillators
 	for ( int i = 0; i < osc_count; ++i ) {
@@ -244,7 +245,8 @@ bool Sms_Apu::end_frame( sms_time_t end_time )
 
 void Sms_Apu::write_ggstereo( sms_time_t time, int data )
 {
-	assert(( "Sms_Apu::write_ggstereo(): Data out of range",  0 <= data && data <= 0xFF ));
+    //"Sms_Apu::write_ggstereo(): Data out of range"
+	assert(0 <= data && data <= 0xFF);
 	
 	run_until( time );
 	
@@ -270,7 +272,8 @@ static const char volumes [16] = {
 
 void Sms_Apu::write_data( sms_time_t time, int data )
 {
-	assert(( "Sms_Apu::write_data(): Data out of range",  0 <= data && data <= 0xFF ));
+    //"Sms_Apu::write_data(): Data out of range"
+	assert(0 <= data && data <= 0xFF);
 	
 	run_until( time );
 	
