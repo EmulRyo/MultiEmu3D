@@ -61,6 +61,16 @@ Cartridge::~Cartridge(void)
 	m_mem = NULL;
 }
 
+u32 RoundUpPowerOf2(u32 v) {
+    v--;
+    v |= v >> 1;
+    v |= v >> 2;
+    v |= v >> 4;
+    v |= v >> 8;
+    v |= v >> 16;
+    return v++;
+}
+
 void Cartridge::Reset()
 {
     m_name = string("");
@@ -68,10 +78,10 @@ void Cartridge::Reset()
 	//CheckRomSize((int)m_memCartridge[CART_ROM_SIZE], m_romSize);
     if ((m_romSize % 32768) == 0x200) {
         m_mem = m_buffer + 0x200;
-        m_maskPages = ((m_romSize-0x200)-1) >> 14;
+        m_maskPages = (RoundUpPowerOf2(m_romSize-0x200)-1) >> 14;
     }
     else
-        m_maskPages = (m_romSize-1) >> 14;
+        m_maskPages = (RoundUpPowerOf2(m_romSize)-1) >> 14;;
     
     m_numBanks[0] = 0;
     m_numBanks[1] = 1;
