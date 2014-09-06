@@ -162,6 +162,8 @@ void Video::SetData(u8 value) {
 
 u8 Video::GetControl() {
     m_numWrite = 0;
+    m_pendingLIRQ = false;
+    m_pendingVIRQ = false;
     u8 status = m_status;
     m_status &= 0x1F;
     return status;
@@ -218,21 +220,23 @@ void Video::Update(u8 cycles) {
         m_cyclesLine -= 228;
         u8 h = (m_mode == MODE_4_240) ? 240 : (m_mode == MODE_4_224) ? 244 : 192;
         if (m_line < h) {
-            if (m_lineIrqCounter < 0)
-                m_lineIrqCounter = m_regs[10];
-            
             UpdateLine(m_line);
             
             m_lineIrqCounter--;
-            if (m_lineIrqCounter < 0)
-                m_pendingLIRQ = true;
         }
-        
-        if (m_line == (SMS_SCREEN_H-1)) {
+        else if (m_line == h) {
             RefreshScreen();
+            
             // Bit 7 status flag
             m_status |= 0x80;
             m_pendingVIRQ = true;
+            
+            m_lineIrqCounter--;
+        }
+        
+        if (m_lineIrqCounter < 0) {
+            m_pendingLIRQ = true;
+            m_lineIrqCounter = m_regs[10];
         }
         m_line++;
     }
@@ -450,7 +454,7 @@ void Video::GetTile(u8 *buffer, int widthSize, int tile)
 }
 
 bool Video::Interrupt() {
-    if (m_pendingVIRQ && BIT7(m_status) && GetIE0()) {
+    if (m_pendingVIRQ && GetIE0()) {
         m_pendingVIRQ = false;
         return true;
     } else if (m_pendingLIRQ && GetIE1()) {
