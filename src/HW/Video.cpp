@@ -264,7 +264,7 @@ void Video::UpdateLine(u8 line) {
 }
 
 void Video::UpdateBG(u8 y) {
-    int x, yScrolled, scrollX;
+    int x, yScrolled, scrollX, yTile2, rowMap2;
     
     m_pixel->mapIni = (m_regs[NAMEBASE] & 0x0E) << 10;
     
@@ -273,6 +273,12 @@ void Video::UpdateBG(u8 y) {
     m_pixel->y = y;
 	m_pixel->yTile = yScrolled % 8;
 	m_pixel->rowMap = ((yScrolled/8) * 32);
+    
+    // Preparar valores para deshabilitar scroll vertical
+    if (BIT7(m_regs[0])) {
+        yTile2 = y % 8;
+        rowMap2 = (y/8) * 32;
+    }
     
     if ((y < 16) && (BIT6(m_regs[0])))
         scrollX = 0;
@@ -284,6 +290,12 @@ void Video::UpdateBG(u8 y) {
         m_pixel->xScrolled = (x + scrollX);
         if (m_pixel->xScrolled > 255)
             m_pixel->xScrolled -= 256;
+        
+        // Si bit activado deshabilitar scroll vertical en las columnas de la derecha
+        if (BIT7(m_regs[0]) && (x>191)) {
+            m_pixel->yTile = yTile2;
+            m_pixel->rowMap = rowMap2;
+        }
         
         GetColor(m_pixel);
         
