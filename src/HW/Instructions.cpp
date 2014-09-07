@@ -253,7 +253,7 @@ u8 Instructions::EvenBitsSet(u8 v) {
     for (c = 0; v; c++)
         v &= v - 1; // clear the least significant bit set
     
-    return (c % 2);
+    return ((c % 2) == 0);
 }
 
 void Instructions::CCF() {
@@ -433,8 +433,8 @@ void Instructions::BIT(u8 bit, u8 value) {
     value &= (1 << bit);
     
 	m_reg->SetFlagZ(value ? 0 : 1);
-	m_reg->SetFlagN(0);
 	m_reg->SetFlagH(1);
+    m_reg->SetFlagN(0);
 }
 
 void Instructions::SET_Mem(u8 bit, u16 address) {
