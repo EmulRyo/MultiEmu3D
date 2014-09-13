@@ -434,6 +434,7 @@ void Instructions::BIT(u8 bit, u8 value) {
     
 	m_reg->SetFlagZ(value ? 0 : 1);
 	m_reg->SetFlagH(1);
+    m_reg->SetFlagPV(m_reg->GetFlagZ());
     m_reg->SetFlagN(0);
 }
 

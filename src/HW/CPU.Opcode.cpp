@@ -670,19 +670,39 @@ void CPU::OpcodeDD(Instructions &inst, bool &executed)
         case 0x36: inst.LD_Mem(GetIXPlusD(2), Get8BitsInmValue(3)); break;
         case 0x39: inst.ADD(PtrIX(), GetSP()); break;
         
+        case 0x40: inst.LD(PtrB(), GetB()); break;
+        case 0x41: inst.LD(PtrB(), GetC()); break;
+        case 0x42: inst.LD(PtrB(), GetD()); break;
+        case 0x43: inst.LD(PtrB(), GetE()); break;
         case 0x44: inst.LD(PtrB(), GetIXh()); break;
         case 0x45: inst.LD(PtrB(), GetIXl()); break;
         case 0x46: inst.LD(PtrB(), MemR(GetIXPlusD(2))); break;
+        case 0x47: inst.LD(PtrB(), GetA()); break;
+        case 0x48: inst.LD(PtrC(), GetB()); break;
+        case 0x49: inst.LD(PtrC(), GetC()); break;
+        case 0x4A: inst.LD(PtrC(), GetD()); break;
+        case 0x4B: inst.LD(PtrC(), GetE()); break;
         case 0x4C: inst.LD(PtrC(), GetIXh()); break;
         case 0x4D: inst.LD(PtrC(), GetIXl()); break;
         case 0x4E: inst.LD(PtrC(), MemR(GetIXPlusD(2))); break;
-            
+        case 0x4F: inst.LD(PtrC(), GetA()); break;
+          
+        case 0x50: inst.LD(PtrD(), GetB()); break;
+        case 0x51: inst.LD(PtrD(), GetC()); break;
+        case 0x52: inst.LD(PtrD(), GetD()); break;
+        case 0x53: inst.LD(PtrD(), GetE()); break;
         case 0x54: inst.LD(PtrD(), GetIXh()); break;
         case 0x55: inst.LD(PtrD(), GetIXl()); break;
         case 0x56: inst.LD(PtrD(), MemR(GetIXPlusD(2))); break;
+        case 0x57: inst.LD(PtrD(), GetA()); break;
+        case 0x58: inst.LD(PtrE(), GetB()); break;
+        case 0x59: inst.LD(PtrE(), GetC()); break;
+        case 0x5A: inst.LD(PtrE(), GetD()); break;
+        case 0x5B: inst.LD(PtrE(), GetE()); break;
         case 0x5C: inst.LD(PtrE(), GetIXh()); break;
         case 0x5D: inst.LD(PtrE(), GetIXl()); break;
         case 0x5E: inst.LD(PtrE(), MemR(GetIXPlusD(2))); break;
+        case 0x5F: inst.LD(PtrE(), GetA()); break;
             
         case 0x60: inst.LD(PtrIXh(), GetB()); break;
         case 0x61: inst.LD(PtrIXh(), GetC()); break;
@@ -708,9 +728,14 @@ void CPU::OpcodeDD(Instructions &inst, bool &executed)
         case 0x74: inst.LD_Mem(GetIXPlusD(2), GetH()); break;
         case 0x75: inst.LD_Mem(GetIXPlusD(2), GetL()); break;
         case 0x77: inst.LD_Mem(GetIXPlusD(2), GetA()); break;
+        case 0x78: inst.LD(PtrA(), GetB()); break;
+        case 0x79: inst.LD(PtrA(), GetC()); break;
+        case 0x7A: inst.LD(PtrA(), GetD()); break;
+        case 0x7B: inst.LD(PtrA(), GetE()); break;
         case 0x7C: inst.LD(PtrA(), GetIXh()); break;
         case 0x7D: inst.LD(PtrA(), GetIXl()); break;
         case 0x7E: inst.LD(PtrA(), MemR(GetIXPlusD(2))); break;
+        case 0x7F: inst.LD(PtrA(), GetA()); break;
         
         case 0x84: inst.ADD(GetIXh());  break;
         case 0x85: inst.ADD(GetIXl());  break;
@@ -902,19 +927,39 @@ void CPU::OpcodeFD(Instructions &inst, bool &executed)
         case 0x36: inst.LD_Mem(GetIYPlusD(2), Get8BitsInmValue(3)); break;
         case 0x39: inst.ADD(PtrIY(), GetSP()); break;
         
+        case 0x40: inst.LD(PtrB(), GetB()); break;
+        case 0x41: inst.LD(PtrB(), GetC()); break;
+        case 0x42: inst.LD(PtrB(), GetD()); break;
+        case 0x43: inst.LD(PtrB(), GetE()); break;
         case 0x44: inst.LD(PtrB(), GetIYh()); break;
         case 0x45: inst.LD(PtrB(), GetIYl()); break;
         case 0x46: inst.LD(PtrB(), MemR(GetIYPlusD(2))); break;
+        case 0x47: inst.LD(PtrB(), GetA()); break;
+        case 0x48: inst.LD(PtrC(), GetB()); break;
+        case 0x49: inst.LD(PtrC(), GetC()); break;
+        case 0x4A: inst.LD(PtrC(), GetD()); break;
+        case 0x4B: inst.LD(PtrC(), GetE()); break;
         case 0x4C: inst.LD(PtrC(), GetIYh()); break;
         case 0x4D: inst.LD(PtrC(), GetIYl()); break;
         case 0x4E: inst.LD(PtrC(), MemR(GetIYPlusD(2))); break;
+        case 0x4F: inst.LD(PtrC(), GetA()); break;
             
+        case 0x50: inst.LD(PtrD(), GetB()); break;
+        case 0x51: inst.LD(PtrD(), GetC()); break;
+        case 0x52: inst.LD(PtrD(), GetD()); break;
+        case 0x53: inst.LD(PtrD(), GetE()); break;
         case 0x54: inst.LD(PtrD(), GetIYh()); break;
         case 0x55: inst.LD(PtrD(), GetIYl()); break;
         case 0x56: inst.LD(PtrD(), MemR(GetIYPlusD(2))); break;
+        case 0x57: inst.LD(PtrD(), GetA()); break;
+        case 0x58: inst.LD(PtrE(), GetB()); break;
+        case 0x59: inst.LD(PtrE(), GetC()); break;
+        case 0x5A: inst.LD(PtrE(), GetD()); break;
+        case 0x5B: inst.LD(PtrE(), GetE()); break;
         case 0x5C: inst.LD(PtrE(), GetIYh()); break;
         case 0x5D: inst.LD(PtrE(), GetIYl()); break;
         case 0x5E: inst.LD(PtrE(), MemR(GetIYPlusD(2))); break;
+        case 0x5F: inst.LD(PtrE(), GetA()); break;
             
         case 0x60: inst.LD(PtrIYh(), GetB()); break;
         case 0x61: inst.LD(PtrIYh(), GetC()); break;
@@ -940,9 +985,14 @@ void CPU::OpcodeFD(Instructions &inst, bool &executed)
         case 0x74: inst.LD_Mem(GetIYPlusD(2), GetH()); break;
         case 0x75: inst.LD_Mem(GetIYPlusD(2), GetL()); break;
         case 0x77: inst.LD_Mem(GetIYPlusD(2), GetA()); break;
+        case 0x78: inst.LD(PtrA(), GetB()); break;
+        case 0x79: inst.LD(PtrA(), GetC()); break;
+        case 0x7A: inst.LD(PtrA(), GetD()); break;
+        case 0x7B: inst.LD(PtrA(), GetE()); break;
         case 0x7C: inst.LD(PtrA(), GetIYh()); break;
         case 0x7D: inst.LD(PtrA(), GetIYl()); break;
         case 0x7E: inst.LD(PtrA(), MemR(GetIYPlusD(2))); break;
+        case 0x7F: inst.LD(PtrA(), GetA()); break;
           
         case 0x84: inst.ADD(GetIYh());  break;
         case 0x85: inst.ADD(GetIYl());  break;
