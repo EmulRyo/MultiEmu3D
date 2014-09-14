@@ -18,7 +18,8 @@
 #ifndef __VIDEO_H__
 #define __VIDEO_H__
 
-#include "map"
+#include <map>
+#include <iostream>
 #include "Def.h"
 
 #define VDP_MEM 0x4000
@@ -74,6 +75,8 @@ public:
     u8   GetStatus();
     bool GetIE0();
     bool GetIE1();
+    void SaveState(std::ofstream *file);
+    void LoadState(std::ifstream *file);
     
 private:
 	u8  m_memory[VDP_MEM];

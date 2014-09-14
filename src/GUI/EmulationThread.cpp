@@ -170,11 +170,11 @@ bool EmulationThread::ChangeFile(wxString fileName)
         battsDir += wxFileName::GetPathSeparator();
         
         if (isZip)
-            cartridge = new Cartridge(buffer, size, string(battsDir.mb_str()));
+            cartridge = new Cartridge(string(fileName.mb_str()), string(battsDir.mb_str()), buffer, size);
         else
             cartridge = new Cartridge(string(fileName.mb_str()), string(battsDir.mb_str()));
         
-        cpu->LoadCartridge(cartridge);
+        cpu->SetCartridge(cartridge);
         cpu->Reset();
         
         debugger = new Debugger(sound, video, cpu, cartridge);

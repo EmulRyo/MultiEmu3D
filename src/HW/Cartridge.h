@@ -43,18 +43,16 @@ private:
     Ram  m_ram;
 
     void LoadFile(std::string fileName, std::string batteriesPath);
-	int  CheckRomSize(int numHeaderSize, int fileSize);
+    std::string GetShortName(std::string fileName);
     
 public:
-	Cartridge(std::string fileName, std::string batteriesPath="");
-	Cartridge(u8 *cartridgeBuffer, unsigned long size, std::string batteriesPath="");
+	Cartridge(std::string fileName, std::string batteriesPath="", u8 *cartridgeBuffer=NULL, unsigned long size=0);
 	~Cartridge();
     
     void Reset();
 	
 	u8 *GetData();
 	unsigned int GetSize();
-    std::string GetGoodName(const char *name);
 	std::string GetName();
 	bool IsLoaded();
 

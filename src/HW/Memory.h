@@ -45,7 +45,7 @@ public:
 	~Memory();
 	Memory *GetPtrMemory();
 	void ResetMem();
-	void LoadCartridge(Cartridge *c);
+	void SetCartridge(Cartridge *c);
 	void MemW(u16 direction, u8 value);
 	inline u8 MemR(u16 address)
 	{

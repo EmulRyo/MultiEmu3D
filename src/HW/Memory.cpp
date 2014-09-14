@@ -42,7 +42,7 @@ Memory::~Memory()
 
 Memory *Memory::GetPtrMemory() { return this; }
 
-void Memory::LoadCartridge(Cartridge *c)
+void Memory::SetCartridge(Cartridge *c)
 {
 	m_c = c;
 }
@@ -126,10 +126,10 @@ u8 Memory::PortR(u8 port) {
 
 void Memory::SaveMemory(ofstream * file)
 {
-	//file->write((char *)&memory[0x8000], 0x8000);
+	file->write((char *)&memory[0x0000], SIZE_MEM);
 }
 
 void Memory::LoadMemory(ifstream * file)
 {
-	//file->read((char *)&memory[0x8000], 0x8000);
+	file->read((char *)&memory[0x0000], SIZE_MEM);
 }

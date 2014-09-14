@@ -36,7 +36,7 @@ CPU::CPU(Video *v, Pad *p, Sound *s): Memory(this, v, p, s)
 
 CPU::CPU(Video *v, Pad *p, Cartridge *c, Sound *s): Memory(this, v, p, s)
 {
-    LoadCartridge(c);
+    SetCartridge(c);
 	Init(v, p);
 }
 
@@ -156,10 +156,10 @@ void CPU::SaveState(string saveDirectory, int numSlot)
 	{
 		int version = SAVE_STATE_VERSION;
 		file->write((char *)&version, sizeof(int));
-		file->write(m_c->GetName().c_str(), 16);
 		
 		SaveRegs(file);
 		SaveMemory(file);
+        m_v->SaveState(file);
 		m_c->SaveStateMBC(file);
 		
 		file->close();
@@ -193,20 +193,9 @@ void CPU::LoadState(string loadDirectory, int numSlot)
 			throw SMSException("This filesave is not compatible and can't be loaded.");
 		}
 		
-		char *buffer = new char[16];
-		file->read(buffer, 16);
-        
-        string cartName = m_c->GetGoodName(buffer);
-		delete[] buffer;
-		if (cartName != m_c->GetName())
-		{
-			file->close();
-			delete file;
-			throw SMSException("This filesave does not belong to this rom and can't be loaded.");
-		}
-		
 		LoadRegs(file);
 		LoadMemory(file);
+        m_v->LoadState(file);
 		m_c->LoadStateMBC(file);
 		
 		file->close();

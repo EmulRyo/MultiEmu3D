@@ -27,28 +27,17 @@
 
 using namespace std;
 
-/*
- * Constructor que recibe un fichero, lo carga en memoria y lo procesa
- */
-Cartridge::Cartridge(string fileName, string batteriesPath)
+Cartridge::Cartridge(string fileName, string batteriesPath, u8 *cartridgeBuffer, unsigned long size)
 {
-    m_buffer = NULL;
-	m_mem = NULL;
-	LoadFile(fileName, batteriesPath);
-    
-    Reset();
-}
-
-/*
- * Constructor que recibe un buffer y su tamaño y lo procesa
- */
-Cartridge::Cartridge(u8 *cartridgeBuffer, unsigned long size, string batteriesPath)
-{
-	m_romSize = size;
+    m_romSize = size;
     m_buffer = cartridgeBuffer;
-	m_mem = cartridgeBuffer;
-	m_isLoaded = true;
-    
+    m_mem = cartridgeBuffer;
+    m_name = GetShortName(fileName);
+    if ((cartridgeBuffer != NULL) && (size > 0))
+        m_isLoaded = true;
+    else
+        LoadFile(fileName, batteriesPath);
+	   
     Reset();
 }
 
@@ -71,11 +60,21 @@ u32 RoundUpPowerOf2(u32 v) {
     return v++;
 }
 
+string Cartridge::GetShortName(string fileName) {
+    size_t begin = fileName.find_last_of('/');
+    if (begin == string::npos)
+        begin = fileName.find_last_of('\\');
+    
+    size_t end = fileName.find_last_of('.');
+    
+    if ((begin != string::npos) && (end != string::npos))
+        return fileName.substr(begin+1, end-begin-1);
+    else
+        return fileName;
+}
+
 void Cartridge::Reset()
 {
-    m_name = string("");
-	
-	//CheckRomSize((int)m_memCartridge[CART_ROM_SIZE], m_romSize);
     if ((m_romSize % 32768) == 0x200) {
         m_mem = m_buffer + 0x200;
         m_maskPages = (RoundUpPowerOf2(m_romSize-0x200)-1) >> 14;
@@ -121,48 +120,6 @@ void Cartridge::LoadFile(string fileName, string batteriesPath) {
 		cerr << fileName << ": Error trying to open the file" << endl;
 		m_isLoaded = false;
 	}
-}
-
-string Trim(const string &str) {
-    size_t endpos = str.find_last_not_of(" ");
-    if( string::npos != endpos )
-        return str.substr( 0, endpos+1 );
-    else
-        return str;
-}
-
-string Cartridge::GetGoodName(const char *name) {
-    string allow = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz ._-'!";
-    
-    int numChars = 16;
-    string tmp = string(name, numChars);
-    
-    size_t found = 0;
-    while (found != string::npos) {
-        found = tmp.find_first_not_of(allow);
-        if (found != string::npos)
-            tmp[found] = ' ';
-    }
-    
-    return Trim(tmp);
-}
-
-/*
- * Compara el tamaño de la rom con el valor de la cabecera
- */
-int Cartridge::CheckRomSize(int numHeaderSize, int fileSize)
-{
-	int headerSize = 32768 << (numHeaderSize & 0x0F);
-	if (numHeaderSize & 0xF0)
-		headerSize += (32768 << ((numHeaderSize & 0xF0) >> 0x04));
-	assert(headerSize == fileSize);
-	if (headerSize != fileSize)
-	{
-		cout << "The header does not match with the file size" << endl;
-		return 0;
-	}
-	else
-		return 1;
 }
 
 u8 *Cartridge::GetData()

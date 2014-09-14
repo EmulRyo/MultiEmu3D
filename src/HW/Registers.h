@@ -47,7 +47,6 @@ private:
 	bool m_iff1;
     bool m_iff2;
 	bool m_halt;
-	bool m_stop;
     bool m_conditionalTaken;
     bool m_incPC;
 public:
@@ -146,9 +145,6 @@ public:
 
 	inline bool GetHalt()			{ return m_halt; }
 	inline void SetHalt(bool value)	{ m_halt = value; }
-
-	inline bool GetStop()			{ return m_stop; }
-	inline void SetStop(bool value)	{ m_stop = value; }
     
     inline bool GetIncPC()           { return m_incPC; }
     inline void SetIncPC(bool incPC) { m_incPC = incPC; }

@@ -531,3 +531,43 @@ bool Video::GetIE0() {
 bool Video::GetIE1() {
     return (BIT4(m_regs[0]) != 0);
 }
+
+void Video::SaveState(ofstream *file) {
+    file->write((char *)&m_regs[0],             sizeof(u8)*16);
+    file->write((char *)&m_palettes[0],         sizeof(u8)*32);
+    file->write((char *)&m_rgbPalettes[0][0],   sizeof(u8)*32*3);
+    file->write((char *)&m_address,             sizeof(u16));
+    file->write((char *)&m_numWrite,            sizeof(u8));
+    file->write((char *)&m_partialAddress,      sizeof(u8));
+    file->write((char *)&m_line,                sizeof(u16));
+    file->write((char *)&m_cycles,              sizeof(u32));
+    file->write((char *)&m_cyclesLine,          sizeof(u16));
+    file->write((char *)&m_status,              sizeof(u8));
+    file->write((char *)&m_lineIrqCounter,      sizeof(s16));
+    file->write((char *)&m_vramAddress,         sizeof(bool));
+    file->write((char *)&m_pendingVIRQ,         sizeof(bool));
+    file->write((char *)&m_pendingLIRQ,         sizeof(bool));
+    file->write((char *)&m_mode,                sizeof(t_VDPMODES));
+    
+	file->write((char *)&m_memory[0x0000], VDP_MEM);
+}
+
+void Video::LoadState(ifstream *file) {
+    file->read((char *)&m_regs[0],             sizeof(u8)*16);
+    file->read((char *)&m_palettes[0],         sizeof(u8)*32);
+    file->read((char *)&m_rgbPalettes[0][0],   sizeof(u8)*32*3);
+    file->read((char *)&m_address,             sizeof(u16));
+    file->read((char *)&m_numWrite,            sizeof(u8));
+    file->read((char *)&m_partialAddress,      sizeof(u8));
+    file->read((char *)&m_line,                sizeof(u16));
+    file->read((char *)&m_cycles,              sizeof(u32));
+    file->read((char *)&m_cyclesLine,          sizeof(u16));
+    file->read((char *)&m_status,              sizeof(u8));
+    file->read((char *)&m_lineIrqCounter,      sizeof(s16));
+    file->read((char *)&m_vramAddress,         sizeof(bool));
+    file->read((char *)&m_pendingVIRQ,         sizeof(bool));
+    file->read((char *)&m_pendingLIRQ,         sizeof(bool));
+    file->read((char *)&m_mode,                sizeof(t_VDPMODES));
+    
+	file->read((char *)&m_memory[0x0000], VDP_MEM);
+}
