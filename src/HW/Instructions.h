@@ -140,6 +140,10 @@ private:
 	Memory      *m_mem;
     
     u8 EvenBitsSet(u8 v);
+    u8 OverflowAddition(u8 v1, u8 v2);
+    u8 OverflowAddition(u16 v1, u16 v2);
+    u8 OverflowSubstraction(u8 v1, u8 v2);
+    u8 OverflowSubstraction(u16 v1, u16 v2);
 };
 
 #endif

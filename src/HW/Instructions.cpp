@@ -27,14 +27,53 @@ using namespace std;
 #define _8bitsInmValue (m_mem->MemR(m_reg->GetPC() + 1))
 #define _16bitsInmValue ((m_mem->MemR(m_reg->GetPC() + 2)) << 8) | m_mem->MemR(m_reg->GetPC() + 1)
 
-Instructions::Instructions(Registers* reg, Memory* mem)
-{
+Instructions::Instructions(Registers* reg, Memory* mem) {
 	m_reg = reg;
 	m_mem = mem;
 }
 
-Instructions::~Instructions(void)
-{
+Instructions::~Instructions(void) {
+    
+}
+
+u8 Instructions::EvenBitsSet(u8 v) {
+    u8 c; // c accumulates the total bits set in v
+    for (c = 0; v; c++)
+        v &= v - 1; // clear the least significant bit set
+    
+    return ((c % 2) == 0);
+}
+
+u8 Instructions::OverflowAddition(u8 v1, u8 v2) {
+    u8 r = v1 + v2;
+    if (((v1 & 0x80) == (v2 & 0x80)) && ((r & 0x80) != (v1 & 0x80)))
+        return 1;
+    else
+        return 0;
+}
+
+u8 Instructions::OverflowAddition(u16 v1, u16 v2) {
+    u16 r = v1 + v2;
+    if (((v1 & 0x8000) == (v2 & 0x8000)) && ((r & 0x8000) != (v1 & 0x8000)))
+        return 1;
+    else
+        return 0;
+}
+
+u8 Instructions::OverflowSubstraction(u8 v1, u8 v2) {
+    u8 r = v1 - v2;
+    if (((v1 & 0x80) != (v2 & 0x80)) && ((r & 0x80) != (v1 & 0x80)))
+        return 1;
+    else
+        return 0;
+}
+
+u8 Instructions::OverflowSubstraction(u16 v1, u16 v2) {
+    u16 r = v1 - v2;
+    if (((v1 & 0x8000) != (v2 & 0x8000)) && ((r & 0x8000) != (v1 & 0x8000)))
+        return 1;
+    else
+        return 0;
 }
 
 void Instructions::NOP() { }
@@ -248,14 +287,6 @@ void Instructions::OTIR() {
         m_reg->SetConditionalTaken(true);
 }
 
-u8 Instructions::EvenBitsSet(u8 v) {
-    u8 c; // c accumulates the total bits set in v
-    for (c = 0; v; c++)
-        v &= v - 1; // clear the least significant bit set
-    
-    return ((c % 2) == 0);
-}
-
 void Instructions::CCF() {
     u8 c = m_reg->GetFlagC();
     m_reg->SetFlagH(c);
@@ -431,10 +462,9 @@ void Instructions::LD_Content(u16 *reg, u16 address) {
 
 void Instructions::BIT(u8 bit, u8 value) {
     value &= (1 << bit);
-    
+
 	m_reg->SetFlagZ(value ? 0 : 1);
 	m_reg->SetFlagH(1);
-    m_reg->SetFlagPV(m_reg->GetFlagZ());
     m_reg->SetFlagN(0);
 }
 
@@ -492,7 +522,9 @@ void Instructions::ADD(u8 value) {
     m_reg->SetFlagS(result >> 7);
 	m_reg->SetFlagZ(result ? 0 : 1);
     m_reg->SetFlagH((((a & 0x0F) + (value & 0x0F)) > 0x0F) ? 1 : 0);
-    m_reg->SetFlagPV((result < a) ? 1 : 0);
+    
+    m_reg->SetFlagPV(OverflowAddition(a, value));
+    
 	m_reg->SetFlagN(0);
 	m_reg->SetFlagC((result < a) ? 1 : 0);
     
@@ -556,7 +588,8 @@ void Instructions::DEC_Mem(u16 address) {
 }
 
 void Instructions::ADC(u8 value) {
-	u8 result = m_reg->GetA() + value + m_reg->GetFlagC();
+    u8 addend = value + m_reg->GetFlagC();
+	u8 result = m_reg->GetA() + addend;
     
     m_reg->SetFlagS(result >> 7);
 	m_reg->SetFlagZ(result ? 0 : 1);
@@ -564,7 +597,9 @@ void Instructions::ADC(u8 value) {
 		m_reg->SetFlagH(1);
 	else
 		m_reg->SetFlagH(0);
-    m_reg->SetFlagPV((result < m_reg->GetA()) ? 1 : 0);
+    
+    m_reg->SetFlagPV(OverflowAddition(m_reg->GetA(), addend));
+    
     m_reg->SetFlagN(0);
 	m_reg->SetFlagC((result < m_reg->GetA()) ? 1 : 0);
     
@@ -572,7 +607,8 @@ void Instructions::ADC(u8 value) {
 }
 
 void Instructions::ADC(u16 value) {
-    u16 result = m_reg->GetHL() + value + m_reg->GetFlagC();
+    u16 addend = value + m_reg->GetFlagC();
+    u16 result = m_reg->GetHL() + addend;
     
     m_reg->SetFlagS(result >> 15);
 	m_reg->SetFlagZ(result ? 0 : 1);
@@ -580,7 +616,8 @@ void Instructions::ADC(u16 value) {
 		m_reg->SetFlagH(1);
 	else
 		m_reg->SetFlagH(0);
-    m_reg->SetFlagPV((result < m_reg->GetHL()) ? 1 : 0);
+    
+    m_reg->SetFlagPV(OverflowAddition(m_reg->GetHL(), addend));
     m_reg->SetFlagN(0);
 	m_reg->SetFlagC((result < m_reg->GetHL()) ? 1 : 0);
     
@@ -593,7 +630,7 @@ void Instructions::CP(u8 value) {
     m_reg->SetFlagS(result >> 7);
 	m_reg->SetFlagZ(result ? 0 : 1);
     m_reg->SetFlagH(((value & 0x0F) > (m_reg->GetA() & 0x0F)) ? 1 : 0);
-    m_reg->SetFlagPV((value > m_reg->GetA()) ? 1 : 0);
+    m_reg->SetFlagPV(OverflowSubstraction(m_reg->GetA(), value));
 	m_reg->SetFlagN(1);
 	m_reg->SetFlagC((value > m_reg->GetA()) ? 1 : 0);
 }
@@ -604,7 +641,7 @@ void Instructions::SUB(u8 value) {
 	m_reg->SetFlagS(result >> 7);
 	m_reg->SetFlagZ(result ? 0 : 1);
     m_reg->SetFlagH(((value & 0x0F) > (m_reg->GetA() & 0x0F)) ? 1 : 0);
-    m_reg->SetFlagPV((value > m_reg->GetA()) ? 1 : 0);
+    m_reg->SetFlagPV(OverflowSubstraction(m_reg->GetA(), value));
 	m_reg->SetFlagN(1);
 	m_reg->SetFlagC((value > m_reg->GetA()) ? 1 : 0);
     
@@ -735,7 +772,7 @@ void Instructions::SBC(u8 value) {
     m_reg->SetFlagS(result >> 7);
 	m_reg->SetFlagZ(result ? 0 : 1);
     m_reg->SetFlagH(((sum&0x0F) > (m_reg->GetA()&0x0F)) ? 1 : 0);
-    m_reg->SetFlagPV((sum > m_reg->GetA()) ? 1 : 0);
+    m_reg->SetFlagPV(OverflowSubstraction(m_reg->GetA(), sum));
 	m_reg->SetFlagN(1);
     m_reg->SetFlagC((sum > m_reg->GetA()) ? 1 : 0);
     
@@ -751,7 +788,7 @@ void Instructions::SBC(u16 value) {
     m_reg->SetFlagS(result >> 15);
 	m_reg->SetFlagZ(result ? 0 : 1);
     m_reg->SetFlagH(((sum&0x0FFF) > (m_reg->GetHL()&0x0FFF)) ? 1 : 0);
-    m_reg->SetFlagPV((sum > m_reg->GetHL()) ? 1 : 0);
+    m_reg->SetFlagPV(OverflowSubstraction(m_reg->GetHL(), sum));
 	m_reg->SetFlagN(1);
     m_reg->SetFlagC((sum > m_reg->GetHL()) ? 1 : 0);
     
