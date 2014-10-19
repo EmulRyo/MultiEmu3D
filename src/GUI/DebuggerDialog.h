@@ -50,6 +50,7 @@ private:
     wxListView *m_othersView;
     wxListView *m_disassemblerView;
     wxRadioBox* m_memSelRBox;
+    wxCheckBox *m_inputUp, *m_inputDown, *m_inputLeft, *m_inputRight, *m_inputA, *m_inputB;
     wxFont* m_font;
     u16 m_disassemblerFirst;
     u16 m_disassemblerLast;
@@ -63,6 +64,7 @@ private:
     void UpdateDisassemblerIcon(int numItem, u16 currentAddress, u16 pc);
     void UpdateVideoRegs();
     void UpdateOtherRegs();
+    void UpdatePad();
     void OnReset(wxCommandEvent &);
     void OnStepInto(wxCommandEvent &);
     void OnOneFrame(wxCommandEvent &);

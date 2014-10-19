@@ -22,6 +22,7 @@
 #include "Video.h"
 #include "CPU.h"
 #include "Cartridge.h"
+#include "Pad.h"
 #include "InstructionsLength.h"
 #include "InstructionsName.h"
 #include "Debugger.h"
@@ -34,12 +35,13 @@ struct BreakpointNode {
     BreakpointNode *next;
 };
 
-Debugger::Debugger(Sound *sound, Video *video, CPU *cpu, Cartridge *cartridge)
+Debugger::Debugger(Sound *sound, Video *video, CPU *cpu, Cartridge *cartridge, Pad *pad)
 {
     m_sound = sound;
     m_video = video;
 	m_cpu = cpu;
 	m_cartridge = cartridge;
+    m_pad = pad;
     m_firstBreakpoint = NULL;
     m_lastBreakpoint = NULL;
 }
@@ -313,6 +315,10 @@ void Debugger::GetTiles(u8 *buffer, int width, int height)
         }
         y++;
     }
+}
+
+void Debugger::UpdatePad1(bool *buttonsState) {
+    m_pad->SetButtonsStatePad1(buttonsState);
 }
 
 void Debugger::Reset() {

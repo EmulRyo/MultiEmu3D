@@ -41,7 +41,7 @@ EmulationThread::EmulationThread()
     pad = new Pad();
 	cpu = new CPU(video, pad, sound);
 	cartridge = NULL;
-    debugger = new Debugger(sound, video, cpu, cartridge);
+    debugger = new Debugger(sound, video, cpu, cartridge, pad);
     
     keysUsed[0] = WXK_UP;
     keysUsed[1] = WXK_DOWN;
@@ -177,7 +177,7 @@ bool EmulationThread::ChangeFile(wxString fileName)
         cpu->SetCartridge(cartridge);
         cpu->Reset();
         
-        debugger = new Debugger(sound, video, cpu, cartridge);
+        debugger = new Debugger(sound, video, cpu, cartridge, pad);
     }
     
     

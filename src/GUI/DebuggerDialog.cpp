@@ -162,6 +162,14 @@ DebuggerDialog::DebuggerDialog(wxWindow *parent, Debugger *debugger)
     m_memCtrl = new wxTextCtrl(this, -1, wxEmptyString, wxDefaultPosition, wxSize(411, 146), wxTE_MULTILINE | wxTE_READONLY);
     m_memCtrl->SetFont(*m_font);
     
+    wxStaticText *inputText = new wxStaticText(this, -1, wxT("Input:"));
+    m_inputUp = new wxCheckBox(this, wxID_ANY, "Up");
+    m_inputDown = new wxCheckBox(this, wxID_ANY, "Down");
+    m_inputLeft = new wxCheckBox(this, wxID_ANY, "Left");
+    m_inputRight = new wxCheckBox(this, wxID_ANY, "Right");
+    m_inputA = new wxCheckBox(this, wxID_ANY, "A");
+    m_inputB = new wxCheckBox(this, wxID_ANY, "B");
+    
     wxSizer *buttonsSizer = new wxBoxSizer(wxHORIZONTAL);
     buttonsSizer->Add(resetButton);
     buttonsSizer->AddSpacer(5);
@@ -196,8 +204,18 @@ DebuggerDialog::DebuggerDialog(wxWindow *parent, Debugger *debugger)
     memSizer->Add(addressAndChoiceSizer, 0, wxBOTTOM, 5);
     memSizer->Add(m_memCtrl);
     
+    wxSizer *input = new wxBoxSizer(wxHORIZONTAL);
+    input->Add(inputText);
+    input->Add(m_inputUp);
+    input->Add(m_inputDown);
+    input->Add(m_inputLeft);
+    input->Add(m_inputRight);
+    input->Add(m_inputA);
+    input->Add(m_inputB);
+    
     wxSizer *leftSizer = new wxBoxSizer(wxVERTICAL);
     leftSizer->Add(RegsPlusDisSizer, 0, wxEXPAND);
+    leftSizer->Add(input, 0, wxEXPAND);
     leftSizer->AddStretchSpacer();
     leftSizer->Add(memSizer, 0, wxTOP, 10);
     
@@ -396,22 +414,37 @@ void DebuggerDialog::UpdateDisassembler() {
     }
 }
 
+void DebuggerDialog::UpdatePad() {
+    bool buttonsState[6];
+    buttonsState[0] = m_inputUp->IsChecked();
+    buttonsState[1] = m_inputDown->IsChecked();
+    buttonsState[2] = m_inputLeft->IsChecked();
+    buttonsState[3] = m_inputRight->IsChecked();
+    buttonsState[4] = m_inputA->IsChecked();
+    buttonsState[5] = m_inputB->IsChecked();
+    m_debugger->UpdatePad1(buttonsState);
+}
+
 void DebuggerDialog::OnReset(wxCommandEvent &event) {
+    UpdatePad();
     m_debugger->Reset();
     UpdateUI();
 }
 
 void DebuggerDialog::OnStepInto(wxCommandEvent &event) {
+    UpdatePad();
     m_debugger->StepInto();
     UpdateUI();
 }
 
 void DebuggerDialog::OnOneFrame(wxCommandEvent &event) {
+    UpdatePad();
     m_debugger->ExecuteOneFrame();
     UpdateUI();
 }
 
 void DebuggerDialog::OnOneSecond(wxCommandEvent &event) {
+    UpdatePad();
     for (int i=0; i<60; i++) {
         if (!m_debugger->ExecuteOneFrame())
             break;

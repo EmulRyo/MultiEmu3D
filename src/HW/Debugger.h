@@ -25,12 +25,13 @@ class Sound;
 class Video;
 class CPU;
 class Cartridge;
+class Pad;
 struct BreakpointNode;
 
 class Debugger
 {
 public:
-	Debugger(Sound *sound, Video *video, CPU *cpu, Cartridge *cartridge);
+	Debugger(Sound *sound, Video *video, CPU *cpu, Cartridge *cartridge, Pad *pad);
 	~Debugger();
     
     std::string GetRegAF();
@@ -66,6 +67,7 @@ public:
     u8   GetNumBank(u8 bank);
     bool GetRAMEnabled();
     u8   GetRAMNumBank();
+    void UpdatePad1(bool *buttonsState);
     
     void Reset();
     void StepInto();
@@ -85,6 +87,7 @@ private:
     Video *m_video;
 	CPU   *m_cpu;
 	Cartridge *m_cartridge;
+    Pad   *m_pad;
     BreakpointNode *m_firstBreakpoint;
     BreakpointNode *m_lastBreakpoint;
     
