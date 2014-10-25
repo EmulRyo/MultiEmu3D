@@ -49,6 +49,8 @@ public:
     std::string GetVReg(u8 reg);
     std::string GetPal(u8 pal);
     
+    bool GetFlag(int i);
+    
     std::string GetMem(u16 address);
     std::string GetMem(u16 start, u16 end);
     std::string GetVMem(u16 start, u16 end);

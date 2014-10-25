@@ -106,6 +106,12 @@ std::string Debugger::GetRegs()
     return regs;
 }
 
+bool Debugger::GetFlag(int i) {
+    u8 f = m_cpu->GetF();
+    u8 value = f & (1 << i);
+    return (value != 0);
+}
+
 std::string Debugger::GetVReg(u8 reg) {
     return ToHex(m_video->RegR(reg), 2, '0');
 }

@@ -50,12 +50,14 @@ private:
     wxListView *m_othersView;
     wxListView *m_disassemblerView;
     wxRadioBox* m_memSelRBox;
-    wxCheckBox *m_inputUp, *m_inputDown, *m_inputLeft, *m_inputRight, *m_inputA, *m_inputB;
+    wxCheckBox *m_input[6];
+    wxCheckBox *m_flags[8];
     wxFont* m_font;
     u16 m_disassemblerFirst;
     u16 m_disassemblerLast;
     
-    void CreateToolBar();
+    wxSizer *CreateButtons();
+    wxSizer *CreateFlagsAndInputControls();
     void UpdateUI();
     void UpdateRegisters();
     void UpdateMemory();
@@ -65,6 +67,7 @@ private:
     void UpdateVideoRegs();
     void UpdateOtherRegs();
     void UpdatePad();
+    void UpdateFlags();
     void OnReset(wxCommandEvent &);
     void OnStepInto(wxCommandEvent &);
     void OnOneFrame(wxCommandEvent &);

@@ -49,37 +49,6 @@ DebuggerDialog::DebuggerDialog(wxWindow *parent, Debugger *debugger)
     
     m_debugger = debugger;
     
-    wxButton *resetButton = new wxButton(this, ID_DEBUG_RESET, wxT("Reset"));
-    wxButton *stepIntoButton = new wxButton(this, ID_DEBUG_STEPINTO, wxT("Step Into"));
-    wxButton *oneFrameButton = new wxButton(this, ID_DEBUG_ONEFRAME, wxT("Run one frame"));
-    wxButton *oneSecondButton = new wxButton(this, ID_DEBUG_ONESECOND, wxT("Run one second"));
-    wxButton *breakpointsButton = new wxButton(this, ID_DEBUG_BREAKPOINTS, wxT("Breakpoints"));
-    wxButton *saveTilesButton = new wxButton(this, ID_DEBUG_SAVETILES, wxT("Save tiles"));
-    
-    stepIntoButton->SetToolTip("Step Into (F7)");
-    saveTilesButton->SetToolTip("Save tiles as tiles.bmp");
-#ifdef __WXMAC__
-    resetButton->SetToolTip("Reset (Cmd+R)");
-    oneFrameButton->SetToolTip("Run one frame (Cmd+O)");
-    oneSecondButton->SetToolTip("Run one second (F9)");
-    breakpointsButton->SetToolTip("Breakpoints (Cmd+B)");
-#else
-    resetButton->SetToolTip("Reset (Ctrl+R)");
-    oneFrameButton->SetToolTip("Run one frame (Ctrl+O)");
-    oneSecondButton->SetToolTip("Run one second (F9)");
-    breakpointsButton->SetToolTip("Breakpoints (Ctrl+B)");
-#endif
-    
-    
-    wxAcceleratorEntry entries[5];
-    entries[0].Set(wxACCEL_CTRL, (int) 'R', ID_DEBUG_RESET);
-    entries[1].Set(wxACCEL_NORMAL, WXK_F7, ID_DEBUG_STEPINTO);
-    entries[2].Set(wxACCEL_CTRL, (int) 'O', ID_DEBUG_ONEFRAME);
-    entries[3].Set(wxACCEL_NORMAL, WXK_F9, ID_DEBUG_ONESECOND);
-    entries[4].Set(wxACCEL_CTRL, (int) 'B', ID_DEBUG_BREAKPOINTS);
-    wxAcceleratorTable accel(5, entries);
-    SetAcceleratorTable(accel);
-    
     wxStaticText *regsText = new wxStaticText(this, -1, wxT("Registers:"));
     
 #ifdef __WXMSW__
@@ -162,24 +131,7 @@ DebuggerDialog::DebuggerDialog(wxWindow *parent, Debugger *debugger)
     m_memCtrl = new wxTextCtrl(this, -1, wxEmptyString, wxDefaultPosition, wxSize(411, 146), wxTE_MULTILINE | wxTE_READONLY);
     m_memCtrl->SetFont(*m_font);
     
-    wxStaticText *inputText = new wxStaticText(this, -1, wxT("Input:"));
-    m_inputUp = new wxCheckBox(this, wxID_ANY, "Up");
-    m_inputDown = new wxCheckBox(this, wxID_ANY, "Down");
-    m_inputLeft = new wxCheckBox(this, wxID_ANY, "Left");
-    m_inputRight = new wxCheckBox(this, wxID_ANY, "Right");
-    m_inputA = new wxCheckBox(this, wxID_ANY, "A");
-    m_inputB = new wxCheckBox(this, wxID_ANY, "B");
-    
-    wxSizer *buttonsSizer = new wxBoxSizer(wxHORIZONTAL);
-    buttonsSizer->Add(resetButton);
-    buttonsSizer->AddSpacer(5);
-    buttonsSizer->Add(stepIntoButton, 0, wxLEFT, 2);
-    buttonsSizer->Add(oneFrameButton, 0, wxLEFT, 2);
-    buttonsSizer->Add(oneSecondButton, 0, wxLEFT, 2);
-    buttonsSizer->AddSpacer(5);
-    buttonsSizer->Add(saveTilesButton, 0, wxLEFT, 2);
-    buttonsSizer->AddStretchSpacer();
-    buttonsSizer->Add(breakpointsButton);
+    wxSizer *buttonsSizer = CreateButtons();
     
     wxSizer *regsSizer = new wxBoxSizer(wxVERTICAL);
     regsSizer->Add(regsText, 0, wxBOTTOM, 5);
@@ -200,22 +152,15 @@ DebuggerDialog::DebuggerDialog(wxWindow *parent, Debugger *debugger)
     addressAndChoiceSizer->Add(m_memSelRBox, 0, wxRIGHT, 5);
     
     wxSizer *memSizer = new wxBoxSizer(wxVERTICAL);
-    memSizer->Add(memText, 0, wxBOTTOM, 5);
-    memSizer->Add(addressAndChoiceSizer, 0, wxBOTTOM, 5);
+    memSizer->Add(memText);
+    memSizer->Add(addressAndChoiceSizer);
     memSizer->Add(m_memCtrl);
     
-    wxSizer *input = new wxBoxSizer(wxHORIZONTAL);
-    input->Add(inputText);
-    input->Add(m_inputUp);
-    input->Add(m_inputDown);
-    input->Add(m_inputLeft);
-    input->Add(m_inputRight);
-    input->Add(m_inputA);
-    input->Add(m_inputB);
+    wxSizer *flagsAndInputSizer = CreateFlagsAndInputControls();
     
     wxSizer *leftSizer = new wxBoxSizer(wxVERTICAL);
     leftSizer->Add(RegsPlusDisSizer, 0, wxEXPAND);
-    leftSizer->Add(input, 0, wxEXPAND);
+    leftSizer->Add(flagsAndInputSizer, 0, wxEXPAND|wxTOP, 5);
     leftSizer->AddStretchSpacer();
     leftSizer->Add(memSizer, 0, wxTOP, 10);
     
@@ -246,6 +191,84 @@ DebuggerDialog::~DebuggerDialog()
 	
 }
 
+wxSizer *DebuggerDialog::CreateButtons() {
+    wxButton *resetButton = new wxButton(this, ID_DEBUG_RESET, wxT("Reset"));
+    wxButton *stepIntoButton = new wxButton(this, ID_DEBUG_STEPINTO, wxT("Step Into"));
+    wxButton *oneFrameButton = new wxButton(this, ID_DEBUG_ONEFRAME, wxT("Run one frame"));
+    wxButton *oneSecondButton = new wxButton(this, ID_DEBUG_ONESECOND, wxT("Run one second"));
+    wxButton *breakpointsButton = new wxButton(this, ID_DEBUG_BREAKPOINTS, wxT("Breakpoints"));
+    wxButton *saveTilesButton = new wxButton(this, ID_DEBUG_SAVETILES, wxT("Save tiles"));
+    
+    stepIntoButton->SetToolTip("Step Into (F7)");
+    saveTilesButton->SetToolTip("Save tiles as tiles.bmp");
+#ifdef __WXMAC__
+    resetButton->SetToolTip("Reset (Cmd+R)");
+    oneFrameButton->SetToolTip("Run one frame (Cmd+O)");
+    oneSecondButton->SetToolTip("Run one second (F9)");
+    breakpointsButton->SetToolTip("Breakpoints (Cmd+B)");
+#else
+    resetButton->SetToolTip("Reset (Ctrl+R)");
+    oneFrameButton->SetToolTip("Run one frame (Ctrl+O)");
+    oneSecondButton->SetToolTip("Run one second (F9)");
+    breakpointsButton->SetToolTip("Breakpoints (Ctrl+B)");
+#endif
+    
+    wxAcceleratorEntry entries[5];
+    entries[0].Set(wxACCEL_CTRL, (int) 'R', ID_DEBUG_RESET);
+    entries[1].Set(wxACCEL_NORMAL, WXK_F7, ID_DEBUG_STEPINTO);
+    entries[2].Set(wxACCEL_CTRL, (int) 'O', ID_DEBUG_ONEFRAME);
+    entries[3].Set(wxACCEL_NORMAL, WXK_F9, ID_DEBUG_ONESECOND);
+    entries[4].Set(wxACCEL_CTRL, (int) 'B', ID_DEBUG_BREAKPOINTS);
+    wxAcceleratorTable accel(5, entries);
+    SetAcceleratorTable(accel);
+    
+    wxSizer *buttonsSizer = new wxBoxSizer(wxHORIZONTAL);
+    buttonsSizer->Add(resetButton);
+    buttonsSizer->AddSpacer(5);
+    buttonsSizer->Add(stepIntoButton, 0, wxLEFT, 2);
+    buttonsSizer->Add(oneFrameButton, 0, wxLEFT, 2);
+    buttonsSizer->Add(oneSecondButton, 0, wxLEFT, 2);
+    buttonsSizer->AddSpacer(5);
+    buttonsSizer->Add(saveTilesButton, 0, wxLEFT, 2);
+    buttonsSizer->AddStretchSpacer();
+    buttonsSizer->Add(breakpointsButton);
+    
+    return buttonsSizer;
+}
+
+wxSizer *DebuggerDialog::CreateFlagsAndInputControls() {
+    wxStaticText *flagsText = new wxStaticText(this, -1, "Flags: ");
+    m_flags[0] = new wxCheckBox(this, wxID_ANY, "S");
+    m_flags[1] = new wxCheckBox(this, wxID_ANY, "Z");
+    m_flags[2] = new wxCheckBox(this, wxID_ANY, "Y");
+    m_flags[3] = new wxCheckBox(this, wxID_ANY, "H");
+    m_flags[4] = new wxCheckBox(this, wxID_ANY, "X");
+    m_flags[5] = new wxCheckBox(this, wxID_ANY, "P/V");
+    m_flags[6] = new wxCheckBox(this, wxID_ANY, "N");
+    m_flags[7] = new wxCheckBox(this, wxID_ANY, "C");
+    
+    wxStaticText *inputText = new wxStaticText(this, -1, wxT("Input:"));
+    m_input[0] = new wxCheckBox(this, wxID_ANY, "U");
+    m_input[1] = new wxCheckBox(this, wxID_ANY, "D");
+    m_input[2] = new wxCheckBox(this, wxID_ANY, "L");
+    m_input[3] = new wxCheckBox(this, wxID_ANY, "R");
+    m_input[4] = new wxCheckBox(this, wxID_ANY, "A");
+    m_input[5] = new wxCheckBox(this, wxID_ANY, "B");
+    
+    wxFlexGridSizer *grid = new wxFlexGridSizer(9, 2, 12);
+    grid->SetFlexibleDirection(wxHORIZONTAL);
+    grid->Add(flagsText);
+    for (int i=0; i<8; i++) {
+        m_flags[i]->Disable();
+        grid->Add(m_flags[i]);
+    }
+    grid->Add(inputText);
+    for (int i=0; i<6; i++)
+        grid->Add(m_input[i]);
+    
+    return grid;
+}
+
 std::string DebuggerDialog::IntToString(int value, int width)
 {
     std::stringstream ss;
@@ -260,6 +283,7 @@ void DebuggerDialog::UpdateUI() {
     UpdateDisassembler();
     UpdateVideoRegs();
     UpdateOtherRegs();
+    UpdateFlags();
 }
 
 void DebuggerDialog::UpdateMemory() {
@@ -414,14 +438,17 @@ void DebuggerDialog::UpdateDisassembler() {
     }
 }
 
+void DebuggerDialog::UpdateFlags() {
+    for (int i=0; i<8; i++) {
+        bool value = m_debugger->GetFlag(i);
+        m_flags[7-i]->SetValue(value);
+    }
+}
+
 void DebuggerDialog::UpdatePad() {
     bool buttonsState[6];
-    buttonsState[0] = m_inputUp->IsChecked();
-    buttonsState[1] = m_inputDown->IsChecked();
-    buttonsState[2] = m_inputLeft->IsChecked();
-    buttonsState[3] = m_inputRight->IsChecked();
-    buttonsState[4] = m_inputA->IsChecked();
-    buttonsState[5] = m_inputB->IsChecked();
+    for (int i=0; i<6; i++)
+        buttonsState[i] = m_input[i]->IsChecked();
     m_debugger->UpdatePad1(buttonsState);
 }
 
