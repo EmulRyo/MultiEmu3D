@@ -254,7 +254,6 @@ void EmulationThread::SetScreen(ISMSScreenDrawable * screen)
 
 void EmulationThread::UpdatePad()
 {
-    //wxMutexLocker lock(*mutex);
     if (emuState == Playing)
     {
         bool buttonsState[6];
@@ -262,6 +261,7 @@ void EmulationThread::UpdatePad()
             buttonsState[i] = wxGetKeyState(keysUsed[i]);
         joystick->UpdateButtonsState(buttonsState);
         
+        wxMutexLocker lock(*mutex);
         pad->SetButtonsStatePad1(buttonsState);
         pad->SetPauseState(wxGetKeyState(keysUsed[12]));
     }
