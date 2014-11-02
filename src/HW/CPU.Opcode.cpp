@@ -1131,7 +1131,7 @@ void CPU::OpcodeDDCB(Instructions &inst, bool &executed)
         case 0x44:
         case 0x45:
         case 0x46:
-        case 0x47: inst.BIT(0, MemR(GetIXPlusD(2))); break;
+        case 0x47: inst.BIT(0, GetIXPlusD(2)); break;
         case 0x48:
         case 0x49:
         case 0x4A:
@@ -1139,7 +1139,7 @@ void CPU::OpcodeDDCB(Instructions &inst, bool &executed)
         case 0x4C:
         case 0x4D:
         case 0x4E:
-        case 0x4F: inst.BIT(1, MemR(GetIXPlusD(2))); break;
+        case 0x4F: inst.BIT(1, GetIXPlusD(2)); break;
             
         case 0x50:
         case 0x51:
@@ -1148,7 +1148,7 @@ void CPU::OpcodeDDCB(Instructions &inst, bool &executed)
         case 0x54:
         case 0x55:
         case 0x56:
-        case 0x57: inst.BIT(2, MemR(GetIXPlusD(2))); break;
+        case 0x57: inst.BIT(2, GetIXPlusD(2)); break;
         case 0x58:
         case 0x59:
         case 0x5A:
@@ -1156,7 +1156,7 @@ void CPU::OpcodeDDCB(Instructions &inst, bool &executed)
         case 0x5C:
         case 0x5D:
         case 0x5E:
-        case 0x5F: inst.BIT(3, MemR(GetIXPlusD(2))); break;
+        case 0x5F: inst.BIT(3, GetIXPlusD(2)); break;
             
         case 0x60:
         case 0x61:
@@ -1165,7 +1165,7 @@ void CPU::OpcodeDDCB(Instructions &inst, bool &executed)
         case 0x64:
         case 0x65:
         case 0x66:
-        case 0x67: inst.BIT(4, MemR(GetIXPlusD(2))); break;
+        case 0x67: inst.BIT(4, GetIXPlusD(2)); break;
         case 0x68:
         case 0x69:
         case 0x6A:
@@ -1173,7 +1173,7 @@ void CPU::OpcodeDDCB(Instructions &inst, bool &executed)
         case 0x6C:
         case 0x6D:
         case 0x6E:
-        case 0x6F: inst.BIT(5, MemR(GetIXPlusD(2))); break;
+        case 0x6F: inst.BIT(5, GetIXPlusD(2)); break;
             
         case 0x70:
         case 0x71:
@@ -1182,7 +1182,7 @@ void CPU::OpcodeDDCB(Instructions &inst, bool &executed)
         case 0x74:
         case 0x75:
         case 0x76:
-        case 0x77: inst.BIT(6, MemR(GetIXPlusD(2))); break;
+        case 0x77: inst.BIT(6, GetIXPlusD(2)); break;
         case 0x78:
         case 0x79:
         case 0x7A:
@@ -1190,7 +1190,7 @@ void CPU::OpcodeDDCB(Instructions &inst, bool &executed)
         case 0x7C:
         case 0x7D:
         case 0x7E:
-        case 0x7F: inst.BIT(7, MemR(GetIXPlusD(2))); break;
+        case 0x7F: inst.BIT(7, GetIXPlusD(2)); break;
             
         case 0x80:
         case 0x81:
@@ -1425,7 +1425,7 @@ void CPU::OpcodeFDCB(Instructions &inst, bool &executed)
         case 0x44:
         case 0x45:
         case 0x46:
-        case 0x47: inst.BIT(0, MemR(GetIYPlusD(2))); break;
+        case 0x47: inst.BIT(0, GetIYPlusD(2)); break;
         case 0x48:
         case 0x49:
         case 0x4A:
@@ -1433,7 +1433,7 @@ void CPU::OpcodeFDCB(Instructions &inst, bool &executed)
         case 0x4C:
         case 0x4D:
         case 0x4E:
-        case 0x4F: inst.BIT(1, MemR(GetIYPlusD(2))); break;
+        case 0x4F: inst.BIT(1, GetIYPlusD(2)); break;
             
         case 0x50:
         case 0x51:
@@ -1442,7 +1442,7 @@ void CPU::OpcodeFDCB(Instructions &inst, bool &executed)
         case 0x54:
         case 0x55:
         case 0x56:
-        case 0x57: inst.BIT(2, MemR(GetIYPlusD(2))); break;
+        case 0x57: inst.BIT(2, GetIYPlusD(2)); break;
         case 0x58:
         case 0x59:
         case 0x5A:
@@ -1450,7 +1450,7 @@ void CPU::OpcodeFDCB(Instructions &inst, bool &executed)
         case 0x5C:
         case 0x5D:
         case 0x5E:
-        case 0x5F: inst.BIT(3, MemR(GetIYPlusD(2))); break;
+        case 0x5F: inst.BIT(3, GetIYPlusD(2)); break;
             
         case 0x60:
         case 0x61:
@@ -1459,7 +1459,7 @@ void CPU::OpcodeFDCB(Instructions &inst, bool &executed)
         case 0x64:
         case 0x65:
         case 0x66:
-        case 0x67: inst.BIT(4, MemR(GetIYPlusD(2))); break;
+        case 0x67: inst.BIT(4, GetIYPlusD(2)); break;
         case 0x68:
         case 0x69:
         case 0x6A:
@@ -1467,7 +1467,7 @@ void CPU::OpcodeFDCB(Instructions &inst, bool &executed)
         case 0x6C:
         case 0x6D:
         case 0x6E:
-        case 0x6F: inst.BIT(5, MemR(GetIYPlusD(2))); break;
+        case 0x6F: inst.BIT(5, GetIYPlusD(2)); break;
             
         case 0x70:
         case 0x71:
@@ -1476,7 +1476,7 @@ void CPU::OpcodeFDCB(Instructions &inst, bool &executed)
         case 0x74:
         case 0x75:
         case 0x76:
-        case 0x77: inst.BIT(6, MemR(GetIYPlusD(2))); break;
+        case 0x77: inst.BIT(6, GetIYPlusD(2)); break;
         case 0x78:
         case 0x79:
         case 0x7A:
@@ -1484,7 +1484,7 @@ void CPU::OpcodeFDCB(Instructions &inst, bool &executed)
         case 0x7C:
         case 0x7D:
         case 0x7E:
-        case 0x7F: inst.BIT(7, MemR(GetIYPlusD(2))); break;
+        case 0x7F: inst.BIT(7, GetIYPlusD(2)); break;
             
         case 0x80:
         case 0x81:

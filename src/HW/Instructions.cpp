@@ -463,9 +463,21 @@ void Instructions::LD_Content(u16 *reg, u16 address) {
 void Instructions::BIT(u8 bit, u8 value) {
     value &= (1 << bit);
 
+    m_reg->SetFlagS(((bit == 7) && value) ? 1 : 0);
 	m_reg->SetFlagZ(value ? 0 : 1);
+    m_reg->SetFlagY(((bit == 5) && value) ? 1 : 0);
 	m_reg->SetFlagH(1);
+    m_reg->SetFlagX(((bit == 3) && value) ? 1 : 0);
+    m_reg->SetFlagPV(m_reg->GetFlagZ());
     m_reg->SetFlagN(0);
+}
+
+void Instructions::BIT(u8 bit, u16 address) {
+    u8 h = address >> 8;
+    u8 value = m_mem->MemR(address);
+    BIT(bit, value);
+    m_reg->SetFlagY(((bit == 5) && (h & (1<<bit))) ? 1 : 0);
+    m_reg->SetFlagX(((bit == 3) && (h & (1<<bit))) ? 1 : 0);
 }
 
 void Instructions::SET_Mem(u8 bit, u16 address) {
@@ -521,7 +533,7 @@ void Instructions::ADD(u8 value) {
     
     m_reg->SetFlagS(result >> 7);
 	m_reg->SetFlagZ(result ? 0 : 1);
-    m_reg->SetFlagH((((a & 0x0F) + (value & 0x0F)) > 0x0F) ? 1 : 0);
+    m_reg->SetFlagH((result & 0x0F) < (a & 0x0F) ? 1 : 0);
     
     m_reg->SetFlagPV(OverflowAddition(a, value));
     
@@ -588,22 +600,20 @@ void Instructions::DEC_Mem(u16 address) {
 }
 
 void Instructions::ADC(u8 value) {
-    u8 addend = value + m_reg->GetFlagC();
-	u8 result = m_reg->GetA() + addend;
+    u8  addend = value + m_reg->GetFlagC();
+	u16 result16 = m_reg->GetA() + value + m_reg->GetFlagC();
+    u8  result8  = (result16 & 0xFF);
+    u8  halfA = m_reg->GetA() & 0x0F;
+    u8  halfResult = halfA + (value & 0x0F) + m_reg->GetFlagC();
     
-    m_reg->SetFlagS(result >> 7);
-	m_reg->SetFlagZ(result ? 0 : 1);
-	if ((result & 0x0F) < (m_reg->GetA() & 0x0F))
-		m_reg->SetFlagH(1);
-	else
-		m_reg->SetFlagH(0);
-    
+    m_reg->SetFlagS(result8 >> 7);
+	m_reg->SetFlagZ(result8 ? 0 : 1);
+    m_reg->SetFlagH(halfResult > 0x0F ? 1 : 0);
     m_reg->SetFlagPV(OverflowAddition(m_reg->GetA(), addend));
-    
     m_reg->SetFlagN(0);
-	m_reg->SetFlagC((result < m_reg->GetA()) ? 1 : 0);
+    m_reg->SetFlagC((result16 > 0xFF) ? 1 : 0);
     
-	m_reg->SetA(result);
+	m_reg->SetA(result8);
 }
 
 void Instructions::ADC(u16 value) {
@@ -629,7 +639,7 @@ void Instructions::CP(u8 value) {
     
     m_reg->SetFlagS(result >> 7);
 	m_reg->SetFlagZ(result ? 0 : 1);
-    m_reg->SetFlagH(((value & 0x0F) > (m_reg->GetA() & 0x0F)) ? 1 : 0);
+    m_reg->SetFlagH(((result & 0x0F) > (m_reg->GetA() & 0x0F)) ? 1 : 0);
     m_reg->SetFlagPV(OverflowSubstraction(m_reg->GetA(), value));
 	m_reg->SetFlagN(1);
 	m_reg->SetFlagC((value > m_reg->GetA()) ? 1 : 0);
@@ -640,10 +650,10 @@ void Instructions::SUB(u8 value) {
     
 	m_reg->SetFlagS(result >> 7);
 	m_reg->SetFlagZ(result ? 0 : 1);
-    m_reg->SetFlagH(((value & 0x0F) > (m_reg->GetA() & 0x0F)) ? 1 : 0);
+    m_reg->SetFlagH(((result & 0x0F) > (m_reg->GetA() & 0x0F)) ? 1 : 0);
     m_reg->SetFlagPV(OverflowSubstraction(m_reg->GetA(), value));
 	m_reg->SetFlagN(1);
-	m_reg->SetFlagC((value > m_reg->GetA()) ? 1 : 0);
+	m_reg->SetFlagC((result > m_reg->GetA()) ? 1 : 0);
     
 	m_reg->SetA(result);
 }
@@ -771,10 +781,10 @@ void Instructions::SBC(u8 value) {
     
     m_reg->SetFlagS(result >> 7);
 	m_reg->SetFlagZ(result ? 0 : 1);
-    m_reg->SetFlagH(((sum&0x0F) > (m_reg->GetA()&0x0F)) ? 1 : 0);
+    m_reg->SetFlagH(((result&0x0F) > (m_reg->GetA()&0x0F)) ? 1 : 0);
     m_reg->SetFlagPV(OverflowSubstraction(m_reg->GetA(), sum));
 	m_reg->SetFlagN(1);
-    m_reg->SetFlagC((sum > m_reg->GetA()) ? 1 : 0);
+    m_reg->SetFlagC((result > m_reg->GetA()) ? 1 : 0);
     
 	m_reg->SetA(result);
 }
@@ -787,10 +797,10 @@ void Instructions::SBC(u16 value) {
     
     m_reg->SetFlagS(result >> 15);
 	m_reg->SetFlagZ(result ? 0 : 1);
-    m_reg->SetFlagH(((sum&0x0FFF) > (m_reg->GetHL()&0x0FFF)) ? 1 : 0);
+    m_reg->SetFlagH(((result&0x0FFF) > (m_reg->GetHL()&0x0FFF)) ? 1 : 0);
     m_reg->SetFlagPV(OverflowSubstraction(m_reg->GetHL(), sum));
 	m_reg->SetFlagN(1);
-    m_reg->SetFlagC((sum > m_reg->GetHL()) ? 1 : 0);
+    m_reg->SetFlagC((result > m_reg->GetHL()) ? 1 : 0);
     
 	m_reg->SetHL(result);
 }

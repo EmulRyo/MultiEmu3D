@@ -156,8 +156,12 @@ public:
 	inline void SetFlagS(u8 value)    { m_af.s[0] = (m_af.s[0] & 0x7F) | ((value ? 1 : 0) << 7); }
 	inline u8 GetFlagZ()              { return ((m_af.s[0] & 0x40) >> 6); }
 	inline void SetFlagZ(u8 value)    { m_af.s[0] = (m_af.s[0] & 0xBF) | ((value ? 1 : 0) << 6); }
+    inline u8 GetFlagY()              { return ((m_af.s[0] & 0x20) >> 5); }
+    inline void SetFlagY(u8 value)    { m_af.s[0] = (m_af.s[0] & 0xDF) | ((value ? 1 : 0) << 5); }
     inline u8 GetFlagH()              { return ((m_af.s[0] & 0x10) >> 4); }
 	inline void SetFlagH(u8 value)    { m_af.s[0] = (m_af.s[0] & 0xEF) | ((value ? 1 : 0) << 4); }
+    inline u8 GetFlagX()              { return ((m_af.s[0] & 0x08) >> 3); }
+    inline void SetFlagX(u8 value)    { m_af.s[0] = (m_af.s[0] & 0xF7) | ((value ? 1 : 0) << 3); }
     inline u8 GetFlagPV()             { return ((m_af.s[0] & 0x04) >> 2); }
 	inline void SetFlagPV(u8 value)   { m_af.s[0] = (m_af.s[0] & 0xFB) | ((value ? 1 : 0) << 2); }
 	inline u8 GetFlagN()              { return ((m_af.s[0] & 0x02) >> 1); }
