@@ -29,13 +29,18 @@ public:
     void SetPauseState(bool state);
     bool PauseInterrupt();
     u8   GetData(u8 port);              //0xDC, 0xDD
+    void SetControl(u8 value);
     void SetRegionData(u8 value);
+    
+    void SetSDSCControl(u8 value);
+    void SetSDSCData(u8 value);
     
 private:
     bool m_buttonsStatePad1[6];
     bool m_buttonsStatePad2[6];
     bool m_pauseState;
     bool m_interrupt;
+    bool m_enabled;
     
     u8  m_data1, m_data2;
 };

@@ -15,6 +15,7 @@
  along with DMGBoy.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include <iostream>
 #include "Pad.h"
 
 enum e_smspad { UP, DOWN, LEFT, RIGHT, B1, B2 };
@@ -26,6 +27,7 @@ Pad::Pad() {
     }
     m_pauseState = false;
     m_interrupt  = false;
+    m_enabled    = true;
     
     m_data1 = 0xFF;
     m_data2 = 0xFF;
@@ -73,4 +75,16 @@ void Pad::SetRegionData(u8 value) {
         m_data2 = (m_data2 & 0xBF) | ((value & 0x20) << 1);
     else
         m_data2 = (m_data2 & 0xBF) | 0x20;
+}
+
+void Pad::SetControl(u8 value) {
+    m_enabled = BIT2(value) ? false : true;
+}
+
+void Pad::SetSDSCControl(u8 value) {
+    
+}
+
+void Pad::SetSDSCData(u8 value) {
+    printf("%c", value);
 }

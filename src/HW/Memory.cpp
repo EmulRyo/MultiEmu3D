@@ -71,6 +71,10 @@ void Memory::MemW(u16 address, u8 value)
 void Memory::PortW(u8 port, u8 value) {
     u8 portF = port & 0xC1;
     switch (portF) {
+        // 0x3E - Pad Control (SDSC)
+        case 0x00:
+            m_pad->SetControl(value);
+            break;
         // 0x3F - Region detect
         case 0x01:
             m_pad->SetRegionData(value);
@@ -91,6 +95,15 @@ void Memory::PortW(u8 port, u8 value) {
         // 0xBF - Video registers
         case 0x81:
             m_video->SetControl(value);
+            break;
+            
+        // 0xFC - SDSC Control
+        case 0xC0:
+            m_pad->SetSDSCControl(value);
+            break;
+            // 0xFD - SDSC Data Output
+        case 0xC1:
+            m_pad->SetSDSCData(value);
             break;
             
         default:
