@@ -774,19 +774,19 @@ void Instructions::JP(u16 value) {
 }
 
 void Instructions::SBC(u8 value) {
-    u8 result, sum;
+    u8 sum = value + m_reg->GetFlagC();
+    u8 result8 = m_reg->GetA() - sum;
+    s16 result16 = m_reg->GetA() - value - m_reg->GetFlagC();
+    s16 halfResult = (m_reg->GetA() & 0x0F) - (value & 0x0F) - m_reg->GetFlagC();
     
-	sum = value + m_reg->GetFlagC();
-    result = m_reg->GetA() - sum;
-    
-    m_reg->SetFlagS(result >> 7);
-	m_reg->SetFlagZ(result ? 0 : 1);
-    m_reg->SetFlagH(((result&0x0F) > (m_reg->GetA()&0x0F)) ? 1 : 0);
+    m_reg->SetFlagS(result8 >> 7);
+	m_reg->SetFlagZ(result8 ? 0 : 1);
+    m_reg->SetFlagH((halfResult < 0) ? 1 : 0);
     m_reg->SetFlagPV(OverflowSubstraction(m_reg->GetA(), sum));
 	m_reg->SetFlagN(1);
-    m_reg->SetFlagC((result > m_reg->GetA()) ? 1 : 0);
+    m_reg->SetFlagC((result16 < 0) ? 1 : 0);
     
-	m_reg->SetA(result);
+	m_reg->SetA(result8);
 }
 
 void Instructions::SBC(u16 value) {

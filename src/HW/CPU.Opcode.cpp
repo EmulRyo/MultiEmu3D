@@ -304,6 +304,7 @@ void CPU::ExecuteOpcode(u8 opcode, Instructions &inst) {
         case (0xE9): inst.JP(GetHL()); break;
         case (0xEA): inst.JP_cc_nn(f_PV, 1); break;
         case (0xEB): inst.EX_DE_HL(); break;
+        case (0xEC): inst.CALL_cc_nn(f_PV, 1); break;
         case (0xED): OpcodeED(inst, executed); break;; break;
         case (0xEE): inst.XOR(Get8BitsInmValue(1)); break;
         case (0xEF): inst.RST_n(0x28); break;
