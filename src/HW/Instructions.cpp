@@ -118,38 +118,47 @@ void Instructions::CALL_cc_nn(e_registers flag, u8 value2check) {
 }
 
 void Instructions::DAA() {
-	u8 a = m_reg->GetA();
+    u8 a = m_reg->GetA();
     u8 lowNibble = a & 0x0F;
-    u8 newC = m_reg->GetFlagC();
-    u8 newH = 0;
+    u8 highNibble = (a & 0xF0) >> 4;
+    u8 diff = 0;
+    u8 c = m_reg->GetFlagC();
+    u8 h = m_reg->GetFlagH();
+    u8 n = m_reg->GetFlagN();
     
-    // La operación anterior fue de suma
-    if (m_reg->GetFlagN() == 0) {
-        newC = 0;
-        newH = (lowNibble > 9) ? 1 : 0;
-        if (m_reg->GetFlagH() || (lowNibble > 9))
-            a += 0x06;
-        
-        if (m_reg->GetFlagC() || (a > 0x9F)) {
-            a += 0x60;
-            newC = 1;
-        }
-    }
-    else { // la operacion anterior fue de resta
-        if (m_reg->GetFlagH()) {
-            newH = (lowNibble < 6) ? 1 : 0;
-            a = (a - 6) & 0xFF;
+    if (c)
+        diff = ((lowNibble > 9) || (h)) ? 0x66 : 0x60;
+    else {
+        if ((highNibble > 9) || ((highNibble == 9) && (lowNibble > 9))) {
+            diff += 0x60;
+            c = 1;
         }
         
-        if (m_reg->GetFlagC())
-            a -= 0x60;
+        if ((lowNibble > 9) || (h))
+            diff += 0x06;
     }
+    
+    if (n) {
+        if (h)
+            h = (lowNibble < 6) ? 1 : 0;
+        else
+            h = 0;
+    }
+    else
+        h = (lowNibble > 9) ? 1 : 0;
+    
+    if (n)
+        a -= diff;
+    else
+        a += diff;
     
     m_reg->SetFlagS(a >> 7);
     m_reg->SetFlagZ(a ? 0 : 1);
-    m_reg->SetFlagH(newH);
+    m_reg->SetFlagY(BIT5(a) >> 5);
+    m_reg->SetFlagH(h);
+    m_reg->SetFlagX(BIT3(a) >> 3);
     m_reg->SetFlagPV(EvenBitsSet(a));
-    m_reg->SetFlagC(newC);
+    m_reg->SetFlagC(c);
     
     m_reg->SetA(a);
 }
