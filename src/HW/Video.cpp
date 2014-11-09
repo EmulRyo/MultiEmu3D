@@ -371,7 +371,9 @@ void Video::UpdateSprites(u8 y) {
 
 inline void Video::GetColor(VideoPixel *p)
 {
-	int xTile, tileData[4], addressIdTile, addressTile, yTile, idMapTile, bgPriority;
+	int xTile, addressIdTile, yTile, idMapTile;
+    u16 addressTile;
+    u8 bgPriority, tileData[4];
 	
     idMapTile = p->rowMap + p->xScrolled/8;
     
@@ -379,7 +381,7 @@ inline void Video::GetColor(VideoPixel *p)
     u8 data1 = m_memory[addressIdTile + 0];
     u8 data2 = m_memory[addressIdTile + 1];
     
-    u16 tileNumber = (data2 & 0x01) << 8 | data1;
+    u16 tileNumber = ((data2 & 0x01) << 8) | data1;
 	
 	addressTile = tileNumber * 32;
     
@@ -393,21 +395,22 @@ inline void Video::GetColor(VideoPixel *p)
     bgPriority = BIT4(data2);
     u8 paletteOffset = BIT3(data2) ? 16 : 0;
 	
-	int addressLineTile = addressTile + (yTile * 4); //yTile * 4 porque cada linea de 1 tile ocupa 4 bytes
+	u16 addressLineTile = addressTile + (yTile * 4); //yTile * 4 porque cada linea de 1 tile ocupa 4 bytes
 	
 	tileData[0] = m_memory[addressLineTile + 0];
 	tileData[1] = m_memory[addressLineTile + 1];
     tileData[2] = m_memory[addressLineTile + 2];
     tileData[3] = m_memory[addressLineTile + 3];
     
-	int pixX = ABS(xTile - 7);
+	u8 pixX = ABS(xTile - 7);
+    u8 mask = 0x01 << pixX;
     
 	//Un pixel lo componen 4 bits. Seleccionar la posicion del bit en los cuatro bytes (tileData)
 	//Esto devolvera un numero de color que junto a la paleta de color nos dara el color requerido
-	p->indexColor  = (((tileData[3] & (0x01 << pixX)) >> pixX) << 3);
-    p->indexColor |= (((tileData[2] & (0x01 << pixX)) >> pixX) << 2);
-    p->indexColor |= (((tileData[1] & (0x01 << pixX)) >> pixX) << 1);
-    p->indexColor |=  ((tileData[0] & (0x01 << pixX)) >> pixX);
+	p->indexColor  = (((tileData[3] & mask) >> pixX) << 3);
+    p->indexColor |= (((tileData[2] & mask) >> pixX) << 2);
+    p->indexColor |= (((tileData[1] & mask) >> pixX) << 1);
+    p->indexColor |=  ((tileData[0] & mask) >> pixX);
     
     p->indexColor += paletteOffset;
     
