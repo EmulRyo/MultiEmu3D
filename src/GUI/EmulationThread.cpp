@@ -58,6 +58,8 @@ EmulationThread::EmulationThread()
     
     joystick = new Joystick();
     m_finished = false;
+    m_speed = SpeedNormal;
+    m_soundEnabled = sound->GetEnabled();
 }
 
 EmulationThread::~EmulationThread() {
@@ -115,10 +117,11 @@ wxThread::ExitCode EmulationThread::Entry()
             }
 		} // Desbloquear el mutex
         
-        long time = swFrame.Time();
-        
-        if (time < desired)
-            this->Sleep(desired-time);
+        if (m_speed == SpeedNormal) {
+            long time = swFrame.Time();
+            if (time < desired)
+                this->Sleep(desired-time);
+        }
     }
     
     m_finished = true;
@@ -264,6 +267,9 @@ void EmulationThread::UpdatePad()
         wxMutexLocker lock(*mutex);
         pad->SetButtonsStatePad1(buttonsState);
         pad->SetPauseState(wxGetKeyState(keysUsed[12]));
+        
+        bool space = wxGetKeyState(WXK_SPACE);
+        SetSpeed(space ? SpeedMax : SpeedNormal);
     }
 }
 
@@ -279,4 +285,16 @@ void EmulationThread::PadSetKeys(int* keys)
 
 bool EmulationThread::Finished() {
     return m_finished;
+}
+
+void EmulationThread::SetSpeed(EnumSpeed speed) {
+    if (m_speed != speed) {
+        if (speed == SpeedMax) {
+            m_soundEnabled = sound->GetEnabled();
+            sound->SetEnabled(false);
+        }
+        else
+            sound->SetEnabled(m_soundEnabled);
+        m_speed = speed;
+    }
 }

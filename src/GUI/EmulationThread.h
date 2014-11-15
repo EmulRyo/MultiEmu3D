@@ -22,6 +22,7 @@
 #include <wx/stopwatch.h>
 
 enum enumEmuStates { NotStartedYet, Stopped, Paused, Playing };
+enum EnumSpeed { SpeedNormal, SpeedMax };
 
 class Cartridge;
 class Video;
@@ -48,6 +49,7 @@ public:
     void SetScreen(ISMSScreenDrawable *screen);
     void UpdatePad();
     Debugger *GetDebugger();
+    void SetSpeed(EnumSpeed speed);
     
     enumEmuStates GetState();
     void SetState(enumEmuStates state);
@@ -65,6 +67,8 @@ private:
     wxStopWatch swFrame;
     wxKeyCode keysUsed[13];
     bool m_finished;
+    EnumSpeed m_speed;
+    bool m_soundEnabled;
     
 	enumEmuStates emuState;
     

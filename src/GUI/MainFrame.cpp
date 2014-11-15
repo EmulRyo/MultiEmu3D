@@ -482,9 +482,6 @@ void MainFrame::OnSettings(wxCommandEvent &)
             ChangeRenderer();    
         }
         
-        if (renderer)
-            renderer->ChangePalette(SettingsGetGreenScale());
-        
 		emulation->ApplySettings();
 	}
 
