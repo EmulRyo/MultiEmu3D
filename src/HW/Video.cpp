@@ -305,7 +305,8 @@ void Video::UpdateBG(u8 y) {
 
 void Video::UpdateSprites(u8 y) {
     u16 spriteBase = (m_regs[SPRITEBASE] & 0x7E) << 7;
-    u8  hSprite = (m_regs[1] & 0x02) ? 16 : 8;
+    u8  mode16 = BIT1(m_regs[1]);
+    u8  hSprite = mode16 ? 16 : 8;
     u8  tileData[4];
     
     u8 paletteOffset = 16;
@@ -320,6 +321,8 @@ void Video::UpdateSprites(u8 y) {
         if ((ySprite > y-hSprite) && (ySprite <= y)) {
             u8 xSprite = m_memory[spriteBase + 128 + numSprite*2];
             u8 numTile = m_memory[spriteBase + 129 + numSprite*2];
+            if (mode16)
+                numTile &= 0xFE;
             u16 addressTile = numTile * 32 + ((m_regs[TILEBASE]&0x04) ? 0x2000 : 0x0000);
             
             u8 yTile = y - ySprite;
