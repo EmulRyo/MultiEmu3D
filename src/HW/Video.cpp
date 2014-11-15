@@ -312,11 +312,13 @@ void Video::UpdateSprites(u8 y) {
     u8 paletteOffset = 16;
     
 	for (u8 numSprite = 0; numSprite<64; numSprite++) {
-        u8 ySprite = m_memory[spriteBase + numSprite];
+        s16 ySprite = m_memory[spriteBase + numSprite];
         if ((ySprite == 0xD0) && (m_mode == MODE_4_192))
             break;
+        else if (ySprite > (0xFF - hSprite))
+            ySprite -= 0x100;
         
-        // La y se almacena como y+1 (nunca se podrá poner un sprite en y == 0)
+        // La y se almacena como y+1 (para poner un sprite en y == 0, la y original deber valer 0xFF)
         ySprite++;
         if ((ySprite > y-hSprite) && (ySprite <= y)) {
             u8 xSprite = m_memory[spriteBase + 128 + numSprite*2];
