@@ -82,7 +82,9 @@ void Instructions::CPL() {
 	m_reg->SetA(~m_reg->GetA());
 
 	m_reg->SetFlagN(1);
+    m_reg->SetFlagY(BIT5(m_reg->GetA()) ? 1 : 0);
 	m_reg->SetFlagH(1);
+    m_reg->SetFlagX(BIT3(m_reg->GetA()) ? 1 : 0);
 }
 
 void Instructions::JR() {
@@ -206,7 +208,9 @@ void Instructions::EI() {
 
 void Instructions::SCF() {
 	m_reg->SetFlagN(0);
+    m_reg->SetFlagY(BIT5(m_reg->GetA()) ? 1 : 0);
 	m_reg->SetFlagH(0);
+    m_reg->SetFlagX(BIT3(m_reg->GetA()) ? 1 : 0);
 	m_reg->SetFlagC(1);
 }
 
@@ -256,10 +260,13 @@ void Instructions::LDI() {
     m_reg->SetHL(m_reg->GetHL()+1);
     m_reg->SetBC(m_reg->GetBC()-1);
     
+    u8 n = valueHL + m_reg->GetA();
+    
     m_reg->SetFlagH(0);
     m_reg->SetFlagN(0);
     m_reg->SetFlagPV(!m_reg->GetBC() ? 0 : 1);
-
+    m_reg->SetFlagY(BIT1(n) ? 1 : 0);
+    m_reg->SetFlagX(BIT3(n) ? 1 : 0);
 }
 
 void Instructions::LDIR() {
@@ -298,7 +305,10 @@ void Instructions::OTIR() {
 
 void Instructions::CCF() {
     u8 c = m_reg->GetFlagC();
+    
+    m_reg->SetFlagY(BIT5(m_reg->GetA()) ? 1 : 0);
     m_reg->SetFlagH(c);
+    m_reg->SetFlagX(BIT3(m_reg->GetA()) ? 1 : 0);
     m_reg->SetFlagN(0);
     m_reg->SetFlagC(c ? 0 : 1);
 }
@@ -410,8 +420,11 @@ void Instructions::LD_HL_cNN() {
 }
 
 void Instructions::ADD(u16 *reg, u16 value) {
+    u8 resultH = (*reg + value) >> 8;
 	m_reg->SetFlagN(0);
+    m_reg->SetFlagY(BIT5(resultH) ? 1 : 0);
 	m_reg->SetFlagH((((*reg & 0x0FFF) + (value & 0x0FFF)) > 0x0FFF) ? 1 : 0);
+    m_reg->SetFlagX(BIT3(resultH) ? 1 : 0);
 	m_reg->SetFlagC(((*reg + value) > 0xFFFF) ? 1 : 0);
 	
     *reg += value;
@@ -437,6 +450,9 @@ void Instructions::CPI() {
     m_reg->SetFlagH((result & 0x0F) > (m_reg->GetA() & 0x0F) ? 1 : 0);
     m_reg->SetFlagPV(m_reg->GetBC() ? 1 : 0);
     m_reg->SetFlagN(1);
+    u8 n = result - m_reg->GetFlagH();
+    m_reg->SetFlagY(BIT1(n) ? 1 : 0);
+    m_reg->SetFlagX(BIT3(n) ? 1 : 0);
 }
 
 void Instructions::NEG() {
@@ -445,7 +461,9 @@ void Instructions::NEG() {
     
     m_reg->SetFlagS(BIT7(result) >> 7);
     m_reg->SetFlagZ(result == 0);
+    m_reg->SetFlagY(BIT5(result) ? 1 : 0);
     m_reg->SetFlagH((a & 0x0F) != 0);
+    m_reg->SetFlagX(BIT3(result) ? 1 : 0);
     m_reg->SetFlagPV(a == 0x80);
     m_reg->SetFlagN(1);
     m_reg->SetFlagC(a != 0);
@@ -509,9 +527,13 @@ void Instructions::LDD() {
     m_reg->SetDE(m_reg->GetDE()-1);
     m_reg->SetHL(m_reg->GetHL()-1);
     
+    u8 n = value + m_reg->GetA();
+    
     m_reg->SetFlagH(0);
     m_reg->SetFlagPV(m_reg->GetBC() ? 1 : 0);
     m_reg->SetFlagN(0);
+    m_reg->SetFlagY(BIT1(n) ? 1 : 0);
+    m_reg->SetFlagX(BIT3(n) ? 1 : 0);
 }
 
 void Instructions::LDDR() {
@@ -530,7 +552,9 @@ void Instructions::OR(u8 value) {
     
     m_reg->SetFlagS(value >> 7);
 	m_reg->SetFlagZ(value ? 0 : 1);
+    m_reg->SetFlagY(BIT5(value) ? 1 : 0);
 	m_reg->SetFlagH(0);
+    m_reg->SetFlagX(BIT3(value) ? 1 : 0);
     m_reg->SetFlagPV(EvenBitsSet(value));
     m_reg->SetFlagN(0);
 	m_reg->SetFlagC(0);
@@ -542,10 +566,10 @@ void Instructions::ADD(u8 value) {
     
     m_reg->SetFlagS(result >> 7);
 	m_reg->SetFlagZ(result ? 0 : 1);
+    m_reg->SetFlagY(BIT5(result) ? 1 : 0);
     m_reg->SetFlagH((result & 0x0F) < (a & 0x0F) ? 1 : 0);
-    
+    m_reg->SetFlagX(BIT3(result) ? 1 : 0);
     m_reg->SetFlagPV(OverflowAddition(a, value));
-    
 	m_reg->SetFlagN(0);
 	m_reg->SetFlagC((result < a) ? 1 : 0);
     
@@ -563,21 +587,17 @@ void Instructions::INC(u8 *reg) {
     
     m_reg->SetFlagS(newValue >> 7);
 	m_reg->SetFlagZ(newValue ? 0 : 1);
+    m_reg->SetFlagY(BIT5(newValue) ? 1 : 0);
     m_reg->SetFlagH((newValue & 0x0F) ? 0 : 1);
+    m_reg->SetFlagX(BIT3(newValue) ? 1 : 0);
     m_reg->SetFlagPV((oldValue == 0x7F) ? 1 : 0);
 	m_reg->SetFlagN(0);
 }
 
 void Instructions::INC_Mem(u16 address) {
-    u8 oldValue = m_mem->MemR(address);
-    u8 newValue = oldValue + 1;
-    m_mem->MemW(address, newValue);
-    
-    m_reg->SetFlagS(newValue >> 7);
-	m_reg->SetFlagZ(newValue ? 0 : 1);
-    m_reg->SetFlagH((newValue & 0x0F) ? 0 : 1);
-    m_reg->SetFlagPV((oldValue == 0x7F) ? 1 : 0);
-	m_reg->SetFlagN(0);
+    u8 value = m_mem->MemR(address);
+    INC(&value);
+    m_mem->MemW(address, value);
 }
 
 void Instructions::DEC_NoFlags(u16 *reg) {
@@ -591,21 +611,17 @@ void Instructions::DEC(u8 *reg) {
 	
     m_reg->SetFlagS(newValue >> 7);
 	m_reg->SetFlagZ(newValue ? 0 : 1);
+    m_reg->SetFlagY(BIT5(newValue) ? 1 : 0);
     m_reg->SetFlagH((newValue & 0x0F) == 0x0F ? 1 : 0);
+    m_reg->SetFlagX(BIT3(newValue) ? 1 : 0);
     m_reg->SetFlagPV((oldValue == 0x80) ? 1 : 0);
 	m_reg->SetFlagN(1);
 }
 
 void Instructions::DEC_Mem(u16 address) {
-    u8 oldValue = m_mem->MemR(address);
-    u8 newValue = oldValue - 1;
-    m_mem->MemW(address, newValue);
-	
-    m_reg->SetFlagS(newValue >> 7);
-	m_reg->SetFlagZ(newValue ? 0 : 1);
-    m_reg->SetFlagH((newValue & 0x0F) == 0x0F ? 1 : 0);
-    m_reg->SetFlagPV((oldValue == 0x80) ? 1 : 0);
-	m_reg->SetFlagN(1);
+    u8 value = m_mem->MemR(address);
+    DEC(&value);
+    m_mem->MemW(address, value);
 }
 
 void Instructions::ADC(u8 value) {
@@ -617,7 +633,9 @@ void Instructions::ADC(u8 value) {
     
     m_reg->SetFlagS(result8 >> 7);
 	m_reg->SetFlagZ(result8 ? 0 : 1);
+    m_reg->SetFlagY(BIT5(result8) ? 1 : 0);
     m_reg->SetFlagH(halfResult > 0x0F ? 1 : 0);
+    m_reg->SetFlagX(BIT3(result8) ? 1 : 0);
     m_reg->SetFlagPV(OverflowAddition(m_reg->GetA(), addend));
     m_reg->SetFlagN(0);
     m_reg->SetFlagC((result16 > 0xFF) ? 1 : 0);
@@ -628,14 +646,16 @@ void Instructions::ADC(u8 value) {
 void Instructions::ADC(u16 value) {
     u16 addend = value + m_reg->GetFlagC();
     u16 result = m_reg->GetHL() + addend;
+    u8 resultH = result >> 8;
     
     m_reg->SetFlagS(result >> 15);
 	m_reg->SetFlagZ(result ? 0 : 1);
+    m_reg->SetFlagY(BIT5(resultH) ? 1 : 0);
 	if ((result & 0x0FFF) < (m_reg->GetHL() & 0x0FFF))
 		m_reg->SetFlagH(1);
 	else
 		m_reg->SetFlagH(0);
-    
+    m_reg->SetFlagX(BIT3(resultH) ? 1 : 0);
     m_reg->SetFlagPV(OverflowAddition(m_reg->GetHL(), addend));
     m_reg->SetFlagN(0);
 	m_reg->SetFlagC((result < m_reg->GetHL()) ? 1 : 0);
@@ -648,7 +668,9 @@ void Instructions::CP(u8 value) {
     
     m_reg->SetFlagS(result >> 7);
 	m_reg->SetFlagZ(result ? 0 : 1);
+    m_reg->SetFlagY(BIT5(value) ? 1 : 0);
     m_reg->SetFlagH(((result & 0x0F) > (m_reg->GetA() & 0x0F)) ? 1 : 0);
+    m_reg->SetFlagX(BIT3(value) ? 1 : 0);
     m_reg->SetFlagPV(OverflowSubstraction(m_reg->GetA(), value));
 	m_reg->SetFlagN(1);
 	m_reg->SetFlagC((value > m_reg->GetA()) ? 1 : 0);
@@ -659,7 +681,9 @@ void Instructions::SUB(u8 value) {
     
 	m_reg->SetFlagS(result >> 7);
 	m_reg->SetFlagZ(result ? 0 : 1);
+    m_reg->SetFlagY(BIT5(result) ? 1 : 0);
     m_reg->SetFlagH(((result & 0x0F) > (m_reg->GetA() & 0x0F)) ? 1 : 0);
+    m_reg->SetFlagX(BIT3(result) ? 1 : 0);
     m_reg->SetFlagPV(OverflowSubstraction(m_reg->GetA(), value));
 	m_reg->SetFlagN(1);
 	m_reg->SetFlagC((result > m_reg->GetA()) ? 1 : 0);
@@ -691,7 +715,9 @@ void Instructions::RLCA() {
     u8 bit7 = m_reg->GetA() >> 7;
     m_reg->SetA((m_reg->GetA() << 1) | bit7);
     
+    m_reg->SetFlagY(BIT5(m_reg->GetA()) ? 1 : 0);
     m_reg->SetFlagH(0);
+    m_reg->SetFlagX(BIT3(m_reg->GetA()) ? 1 : 0);
 	m_reg->SetFlagN(0);
 	m_reg->SetFlagC(bit7);
 }
@@ -702,7 +728,9 @@ void Instructions::RLC(u8 *reg) {
     
     m_reg->SetFlagS((*reg) >> 7);
 	m_reg->SetFlagZ((*reg) ? 0 : 1);
+    m_reg->SetFlagY(BIT5(*reg) ? 1 : 0);
     m_reg->SetFlagH(0);
+    m_reg->SetFlagX(BIT3(*reg) ? 1 : 0);
     m_reg->SetFlagPV(EvenBitsSet(*reg));
 	m_reg->SetFlagN(0);
 	m_reg->SetFlagC(bit7);
@@ -726,7 +754,9 @@ void Instructions::AND(u8 value) {
     
     m_reg->SetFlagS(result >> 7);
 	m_reg->SetFlagZ(result ? 0 : 1);
+    m_reg->SetFlagY(BIT5(result) ? 1 : 0);
     m_reg->SetFlagH(1);
+    m_reg->SetFlagX(BIT3(result) ? 1 : 0);
     m_reg->SetFlagPV(EvenBitsSet(result));
 	m_reg->SetFlagN(0);
 	m_reg->SetFlagC(0);
@@ -738,7 +768,9 @@ void Instructions::XOR(u8 value){
     
 	m_reg->SetFlagS(result >> 7);
 	m_reg->SetFlagZ(result ? 0 : 1);
+    m_reg->SetFlagY(BIT5(result) ? 1 : 0);
     m_reg->SetFlagH(0);
+    m_reg->SetFlagX(BIT3(result) ? 1 : 0);
     m_reg->SetFlagPV(EvenBitsSet(result));
 	m_reg->SetFlagN(0);
 	m_reg->SetFlagC(0);
@@ -748,7 +780,9 @@ void Instructions::RRCA() {
     u8 bit0 = BIT0(m_reg->GetA());
     m_reg->SetA((bit0 << 7) | (m_reg->GetA() >> 1));
     
+    m_reg->SetFlagY(BIT5(m_reg->GetA()) ? 1 : 0);
     m_reg->SetFlagH(0);
+    m_reg->SetFlagX(BIT3(m_reg->GetA()) ? 1 : 0);
 	m_reg->SetFlagN(0);
 	m_reg->SetFlagC(bit0);
 }
@@ -759,7 +793,9 @@ void Instructions::RRC(u8 *reg) {
     
     m_reg->SetFlagS((*reg) >> 7);
 	m_reg->SetFlagZ((*reg) ? 0 : 1);
+    m_reg->SetFlagY(BIT5(*reg) ? 1 : 0);
     m_reg->SetFlagH(0);
+    m_reg->SetFlagX(BIT3(*reg) ? 1 : 0);
     m_reg->SetFlagPV(EvenBitsSet(*reg));
 	m_reg->SetFlagN(0);
 	m_reg->SetFlagC(bit0);
@@ -790,7 +826,9 @@ void Instructions::SBC(u8 value) {
     
     m_reg->SetFlagS(result8 >> 7);
 	m_reg->SetFlagZ(result8 ? 0 : 1);
+    m_reg->SetFlagY(BIT5(result8) ? 1 : 0);
     m_reg->SetFlagH((halfResult < 0) ? 1 : 0);
+    m_reg->SetFlagX(BIT3(result8) ? 1 : 0);
     m_reg->SetFlagPV(OverflowSubstraction(m_reg->GetA(), sum));
 	m_reg->SetFlagN(1);
     m_reg->SetFlagC((result16 < 0) ? 1 : 0);
@@ -799,14 +837,15 @@ void Instructions::SBC(u8 value) {
 }
 
 void Instructions::SBC(u16 value) {
-    u16 result, sum;
-    
-	sum = value + m_reg->GetFlagC();
-    result = m_reg->GetHL() - sum;
+    u16 sum = value + m_reg->GetFlagC();
+    u16 result = m_reg->GetHL() - sum;
+    u8 resultH = result >> 8;
     
     m_reg->SetFlagS(result >> 15);
 	m_reg->SetFlagZ(result ? 0 : 1);
+    m_reg->SetFlagY(BIT5(resultH) ? 1 : 0);
     m_reg->SetFlagH(((result&0x0FFF) > (m_reg->GetHL()&0x0FFF)) ? 1 : 0);
+    m_reg->SetFlagX(BIT3(resultH) ? 1 : 0);
     m_reg->SetFlagPV(OverflowSubstraction(m_reg->GetHL(), sum));
 	m_reg->SetFlagN(1);
     m_reg->SetFlagC((result > m_reg->GetHL()) ? 1 : 0);
@@ -823,7 +862,9 @@ void Instructions::RRD() {
     
     m_reg->SetFlagS(m_reg->GetA() >> 7);
     m_reg->SetFlagZ(m_reg->GetA() ? 0 : 1);
+    m_reg->SetFlagY(BIT5(m_reg->GetA()) ? 1 : 0);
     m_reg->SetFlagH(0);
+    m_reg->SetFlagX(BIT3(m_reg->GetA()) ? 1 : 0);
     m_reg->SetFlagPV(EvenBitsSet(m_reg->GetA()));
     m_reg->SetFlagN(0);
 }
@@ -837,7 +878,9 @@ void Instructions::RLD() {
     
     m_reg->SetFlagS(m_reg->GetA() >> 7);
     m_reg->SetFlagZ(m_reg->GetA() ? 0 : 1);
+    m_reg->SetFlagY(BIT5(m_reg->GetA()) ? 1 : 0);
     m_reg->SetFlagH(0);
+    m_reg->SetFlagX(BIT3(m_reg->GetA()) ? 1 : 0);
     m_reg->SetFlagPV(EvenBitsSet(m_reg->GetA()));
     m_reg->SetFlagN(0);
 }
@@ -846,7 +889,9 @@ void Instructions::RLA() {
     u8 bit7 = m_reg->GetA() >> 7;
     m_reg->SetA((m_reg->GetA() << 1) | m_reg->GetFlagC());
     
+    m_reg->SetFlagY(BIT5(m_reg->GetA()) ? 1 : 0);
     m_reg->SetFlagH(0);
+    m_reg->SetFlagX(BIT3(m_reg->GetA()) ? 1 : 0);
 	m_reg->SetFlagN(0);
 	m_reg->SetFlagC(bit7);
 }
@@ -857,7 +902,9 @@ void Instructions::RL(u8 *reg) {
     
     m_reg->SetFlagS((*reg) >> 7);
 	m_reg->SetFlagZ((*reg) ? 0 : 1);
+    m_reg->SetFlagY(BIT5(*reg) ? 1 : 0);
     m_reg->SetFlagH(0);
+    m_reg->SetFlagX(BIT3(*reg) ? 1 : 0);
     m_reg->SetFlagPV(EvenBitsSet(*reg));
 	m_reg->SetFlagN(0);
 	m_reg->SetFlagC(bit7);
@@ -879,7 +926,9 @@ void Instructions::RRA() {
     u8 bit0 = BIT0(m_reg->GetA());
     m_reg->SetA((m_reg->GetFlagC() << 7) | (m_reg->GetA() >> 1));
     
+    m_reg->SetFlagY(BIT5(m_reg->GetA()) ? 1 : 0);
     m_reg->SetFlagH(0);
+    m_reg->SetFlagX(BIT3(m_reg->GetA()) ? 1 : 0);
 	m_reg->SetFlagN(0);
 	m_reg->SetFlagC(bit0);
 }
@@ -890,7 +939,9 @@ void Instructions::RR(u8 *reg) {
     
     m_reg->SetFlagS((*reg) >> 7);
 	m_reg->SetFlagZ((*reg) ? 0 : 1);
+    m_reg->SetFlagY(BIT5(*reg) ? 1 : 0);
     m_reg->SetFlagH(0);
+    m_reg->SetFlagX(BIT3(*reg) ? 1 : 0);
     m_reg->SetFlagPV(EvenBitsSet(*reg));
 	m_reg->SetFlagN(0);
 	m_reg->SetFlagC(bit0);
@@ -914,7 +965,9 @@ void Instructions::SLA(u8 *reg) {
     
     m_reg->SetFlagS((*reg) >> 7);
 	m_reg->SetFlagZ((*reg) ? 0 : 1);
+    m_reg->SetFlagY(BIT5(*reg) ? 1 : 0);
     m_reg->SetFlagH(0);
+    m_reg->SetFlagX(BIT3(*reg) ? 1 : 0);
     m_reg->SetFlagPV(EvenBitsSet(*reg));
 	m_reg->SetFlagN(0);
 	m_reg->SetFlagC(bit7);
@@ -939,7 +992,9 @@ void Instructions::SRA(u8 *reg) {
     
     m_reg->SetFlagS((*reg) >> 7);
 	m_reg->SetFlagZ((*reg) ? 0 : 1);
+    m_reg->SetFlagY(BIT5(*reg) ? 1 : 0);
     m_reg->SetFlagH(0);
+    m_reg->SetFlagX(BIT3(*reg) ? 1 : 0);
     m_reg->SetFlagPV(EvenBitsSet(*reg));
 	m_reg->SetFlagN(0);
 	m_reg->SetFlagC(bit0);
@@ -963,7 +1018,9 @@ void Instructions::SRL(u8 *reg) {
     
     m_reg->SetFlagS((*reg) >> 7);
 	m_reg->SetFlagZ((*reg) ? 0 : 1);
+    m_reg->SetFlagY(BIT5(*reg) ? 1 : 0);
     m_reg->SetFlagH(0);
+    m_reg->SetFlagX(BIT3(*reg) ? 1 : 0);
     m_reg->SetFlagPV(EvenBitsSet(*reg));
 	m_reg->SetFlagN(0);
 	m_reg->SetFlagC(bit0);
@@ -987,7 +1044,9 @@ void Instructions::SLL(u8 *reg) {
     
     m_reg->SetFlagS((*reg) >> 7);
 	m_reg->SetFlagZ((*reg) ? 0 : 1);
+    m_reg->SetFlagY(BIT5(*reg) ? 1 : 0);
     m_reg->SetFlagH(0);
+    m_reg->SetFlagX(BIT3(*reg) ? 1 : 0);
     m_reg->SetFlagPV(EvenBitsSet(*reg));
 	m_reg->SetFlagN(0);
 	m_reg->SetFlagC(bit7);
@@ -1042,6 +1101,9 @@ void Instructions::CPD() {
     m_reg->SetFlagH((result & 0x0F) > (m_reg->GetA() & 0x0F));
     m_reg->SetFlagPV(m_reg->GetBC() ? 1 : 0);
 	m_reg->SetFlagN(1);
+    u8 n = result - m_reg->GetFlagH();
+    m_reg->SetFlagY(BIT1(n) ? 1 : 0);
+    m_reg->SetFlagX(BIT3(n) ? 1 : 0);
 }
 
 void Instructions::CPDR() {

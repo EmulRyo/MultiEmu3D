@@ -132,7 +132,7 @@ u8 Memory::PortR(u8 port) {
             return m_pad->GetData(port);
             
         default:
-            printf("PortR: 0x%X", port);
+            printf("PortR: 0x%X\n", port);
             return 0;
     }
 }
