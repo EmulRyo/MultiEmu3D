@@ -79,7 +79,7 @@ void Video::Reset() {
     m_cycles = 0;
     m_cyclesLine = 0;
     m_vramAddress = true;
-    m_status = 0;
+    m_status = 0x1F;
     m_regs[ 0] = 0x36;
     m_regs[ 1] = 0x80;
     m_regs[ 2] = 0xFF;
@@ -124,6 +124,9 @@ void Video::SetControl(u8 value) {
                 u8 reg = value & 0x0F;
                 m_regs[reg] = m_partialAddress;
                 CheckReg(reg);
+                
+                m_address = ((value & 0x3F) << 8) | m_partialAddress;
+                m_vramAddress = true;
                 break;
             }
             case 0x03:
@@ -203,6 +206,10 @@ u8 Video::GetV() {
 
 u8 Video::GetH() {
     return m_cyclesLine / 228.0f * 0xFF;
+}
+
+u16 Video::GetAddress() {
+    return m_address;
 }
 
 void Video::Update(u8 cycles) {

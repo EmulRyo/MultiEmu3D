@@ -75,6 +75,7 @@ public:
     u8   GetStatus();
     bool GetIE0();
     bool GetIE1();
+    u16  GetAddress();
     void SaveState(std::ofstream *file);
     void LoadState(std::ifstream *file);
     
