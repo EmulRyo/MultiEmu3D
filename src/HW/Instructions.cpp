@@ -488,13 +488,13 @@ void Instructions::LD_Content(u16 *reg, u16 address) {
 }
 
 void Instructions::BIT(u8 bit, u8 value) {
-    value &= (1 << bit);
+    u8 result = value & (1 << bit);
 
-    m_reg->SetFlagS(((bit == 7) && value) ? 1 : 0);
-	m_reg->SetFlagZ(value ? 0 : 1);
-    m_reg->SetFlagY(((bit == 5) && value) ? 1 : 0);
+    m_reg->SetFlagS(((bit == 7) && result) ? 1 : 0);
+	m_reg->SetFlagZ(result ? 0 : 1);
+    m_reg->SetFlagY(BIT5(value) ? 1 : 0);
 	m_reg->SetFlagH(1);
-    m_reg->SetFlagX(((bit == 3) && value) ? 1 : 0);
+    m_reg->SetFlagX(BIT3(value) ? 1 : 0);
     m_reg->SetFlagPV(m_reg->GetFlagZ());
     m_reg->SetFlagN(0);
 }
@@ -505,6 +505,15 @@ void Instructions::BIT(u8 bit, u16 address) {
     BIT(bit, value);
     m_reg->SetFlagY(((bit == 5) && (h & (1<<bit))) ? 1 : 0);
     m_reg->SetFlagX(((bit == 3) && (h & (1<<bit))) ? 1 : 0);
+}
+
+void Instructions::BIT_HL(u8 bit) {
+    u16 address = m_reg->GetHL();
+    u8 value = m_mem->MemR(address);
+    BIT(bit, value);
+    u8 n = address >> 8;
+    m_reg->SetFlagY(BIT5(n) ? 1 : 0);
+    m_reg->SetFlagX(BIT3(n) ? 1 : 0);
 }
 
 void Instructions::SET_Mem(u8 bit, u16 address) {

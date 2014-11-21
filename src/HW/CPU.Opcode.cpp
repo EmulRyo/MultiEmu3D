@@ -429,7 +429,7 @@ void CPU::OpcodeCB(Instructions &inst, bool &executed)
 		case (0x43): inst.BIT(0, GetE()); break;
 		case (0x44): inst.BIT(0, GetH()); break;
 		case (0x45): inst.BIT(0, GetL()); break;
-		case (0x46): inst.BIT(0, MemR(GetHL())); break;
+		case (0x46): inst.BIT_HL(0); break;
 		case (0x47): inst.BIT(0, GetA()); break;
 		case (0x48): inst.BIT(1, GetB()); break;
 		case (0x49): inst.BIT(1, GetC()); break;
@@ -437,7 +437,7 @@ void CPU::OpcodeCB(Instructions &inst, bool &executed)
 		case (0x4B): inst.BIT(1, GetE()); break;
 		case (0x4C): inst.BIT(1, GetH()); break;
 		case (0x4D): inst.BIT(1, GetL()); break;
-		case (0x4E): inst.BIT(1, MemR(GetHL())); break;
+		case (0x4E): inst.BIT_HL(1); break;
 		case (0x4F): inst.BIT(1, GetA()); break;
 
 		case (0x50): inst.BIT(2, GetB()); break;
@@ -446,7 +446,7 @@ void CPU::OpcodeCB(Instructions &inst, bool &executed)
 		case (0x53): inst.BIT(2, GetE()); break;
 		case (0x54): inst.BIT(2, GetH()); break;
 		case (0x55): inst.BIT(2, GetL()); break;
-		case (0x56): inst.BIT(2, MemR(GetHL())); break;
+		case (0x56): inst.BIT_HL(2); break;
 		case (0x57): inst.BIT(2, GetA()); break;
 		case (0x58): inst.BIT(3, GetB()); break;
 		case (0x59): inst.BIT(3, GetC()); break;
@@ -454,7 +454,7 @@ void CPU::OpcodeCB(Instructions &inst, bool &executed)
 		case (0x5B): inst.BIT(3, GetE()); break;
 		case (0x5C): inst.BIT(3, GetH()); break;
 		case (0x5D): inst.BIT(3, GetL()); break;
-		case (0x5E): inst.BIT(3, MemR(GetHL())); break;
+		case (0x5E): inst.BIT_HL(3); break;
 		case (0x5F): inst.BIT(3, GetA()); break;
 
 		case (0x60): inst.BIT(4, GetB()); break;
@@ -463,7 +463,7 @@ void CPU::OpcodeCB(Instructions &inst, bool &executed)
 		case (0x63): inst.BIT(4, GetE()); break;
 		case (0x64): inst.BIT(4, GetH()); break;
 		case (0x65): inst.BIT(4, GetL()); break;
-		case (0x66): inst.BIT(4, MemR(GetHL())); break;
+		case (0x66): inst.BIT_HL(4); break;
 		case (0x67): inst.BIT(4, GetA()); break;
 		case (0x68): inst.BIT(5, GetB()); break;
 		case (0x69): inst.BIT(5, GetC()); break;
@@ -471,7 +471,7 @@ void CPU::OpcodeCB(Instructions &inst, bool &executed)
 		case (0x6B): inst.BIT(5, GetE()); break;
 		case (0x6C): inst.BIT(5, GetH()); break;
 		case (0x6D): inst.BIT(5, GetL()); break;
-		case (0x6E): inst.BIT(5, MemR(GetHL())); break;
+		case (0x6E): inst.BIT_HL(5); break;
 		case (0x6F): inst.BIT(5, GetA()); break;
 
 		case (0x70): inst.BIT(6, GetB()); break;
@@ -480,7 +480,7 @@ void CPU::OpcodeCB(Instructions &inst, bool &executed)
 		case (0x73): inst.BIT(6, GetE()); break;
 		case (0x74): inst.BIT(6, GetH()); break;
 		case (0x75): inst.BIT(6, GetL()); break;
-		case (0x76): inst.BIT(6, MemR(GetHL())); break;
+		case (0x76): inst.BIT_HL(6); break;
 		case (0x77): inst.BIT(6, GetA()); break;
 		case (0x78): inst.BIT(7, GetB()); break;
 		case (0x79): inst.BIT(7, GetC()); break;
@@ -488,7 +488,7 @@ void CPU::OpcodeCB(Instructions &inst, bool &executed)
 		case (0x7B): inst.BIT(7, GetE()); break;
 		case (0x7C): inst.BIT(7, GetH()); break;
 		case (0x7D): inst.BIT(7, GetL()); break;
-		case (0x7E): inst.BIT(7, MemR(GetHL())); break;
+		case (0x7E): inst.BIT_HL(7); break;
 		case (0x7F): inst.BIT(7, GetA()); break;
 
         case (0x80): inst.RES_b_r(0, B); break;

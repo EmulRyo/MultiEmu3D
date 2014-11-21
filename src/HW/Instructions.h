@@ -74,6 +74,7 @@ public:
     void LD_Mem(u16 address, u16 value);
     void BIT(u8 bit, u8 value);
     void BIT(u8 bit, u16 address);
+    void BIT_HL(u8 bit);
     void SET_Mem(u8 bit, u16 address);
     void RES_Mem(u8 bit, u16 address);
     void LDD();
