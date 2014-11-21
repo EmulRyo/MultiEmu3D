@@ -124,7 +124,7 @@ u8 Memory::PortR(u8 port) {
         case 0x80:
             return m_video->GetData();
             
-        case 0x81:
+        case 0x81: //0xBF
             return m_video->GetControl();
             
         case 0xC0:

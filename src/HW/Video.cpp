@@ -78,6 +78,7 @@ void Video::Reset() {
     m_line = 0;
     m_cycles = 0;
     m_cyclesLine = 0;
+    m_address = 0;
     m_vramAddress = true;
     m_status = 0x1F;
     m_regs[ 0] = 0x36;

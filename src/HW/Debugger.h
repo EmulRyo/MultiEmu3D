@@ -66,6 +66,7 @@ public:
     bool GetIE();
     bool GetIE0();
     bool GetIE1();
+    u16  GetVideoAddress();
     u8   GetNumBank(u8 bank);
     bool GetRAMEnabled();
     u8   GetRAMNumBank();

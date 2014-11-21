@@ -64,7 +64,7 @@ DebuggerDialog::DebuggerDialog(wxWindow *parent, Debugger *debugger)
 #ifdef __WXMAC__
     m_font = new wxFont(12, wxTELETYPE, wxNORMAL, wxNORMAL);
     int height1 = 170;
-    int height2 = 396;
+    int height2 = 426;
 #endif
     
     m_regsView = new wxListView(this, wxID_ANY, wxDefaultPosition, wxSize(82, height1), wxLC_REPORT);
@@ -328,12 +328,12 @@ void DebuggerDialog::UpdateRegisters() {
 }
 
 void DebuggerDialog::UpdateVideoRegs() {
-    const char *names[] = { "Status", "IE0", "IE1", "IPeriod", "Line" };
+    const char *names[] = { "Status", "IE0", "IE1", "IPeriod", "Line", "Address" };
     int pos = 0;
     
     m_videoView->DeleteAllItems();
     
-    for (int i=0; i<5; i++) {
+    for (int i=0; i<6; i++) {
         m_videoView->InsertItem(pos, "");
         m_videoView->SetItem(pos, 0, names[pos]);
         m_videoView->SetItemFont(pos, *m_font);
@@ -344,6 +344,7 @@ void DebuggerDialog::UpdateVideoRegs() {
     m_videoView->SetItem(2, 1, m_debugger->GetIE1() ? "1" : "0");
     m_videoView->SetItem(3, 1, IntToString(m_debugger->GetIPeriod(), 1));
     m_videoView->SetItem(4, 1, IntToString(m_debugger->GetLine(), 1));
+    m_videoView->SetItem(5, 1, m_debugger->ToHex(m_debugger->GetVideoAddress(), 4, '0'));
     
     for (int i=0; i<11; i++) {
         m_videoView->InsertItem(pos, "");

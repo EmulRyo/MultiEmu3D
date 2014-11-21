@@ -469,6 +469,10 @@ bool Debugger::GetIE1() {
     return m_video->GetIE1();
 }
 
+u16 Debugger::GetVideoAddress() {
+    return m_video->GetAddress();
+}
+
 u8 Debugger::GetNumBank(u8 bank) {
     return m_cartridge->GetNumBank(bank);
 }
