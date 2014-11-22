@@ -227,20 +227,18 @@ void Video::Update(u8 cycles) {
     if (m_cyclesLine > 228) {
         m_cyclesLine -= 228;
         u8 h = (m_mode == MODE_4_240) ? 240 : (m_mode == MODE_4_224) ? 244 : 192;
-        if (m_line < h) {
+        if (m_line < h)
             UpdateLine(m_line);
-            
-            m_lineIrqCounter--;
-        }
-        else if (m_line == h) {
+        else if (m_line == (h+1)) {
             RefreshScreen();
             
             // Bit 7 status flag
             m_status |= 0x80;
             m_pendingVIRQ = true;
-            
-            m_lineIrqCounter--;
         }
+        
+        if (m_line <= h)
+            m_lineIrqCounter--;
         
         if (m_lineIrqCounter < 0) {
             m_pendingLIRQ = true;
