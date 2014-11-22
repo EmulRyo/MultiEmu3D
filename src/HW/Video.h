@@ -93,12 +93,15 @@ private:
     u8  m_status;
     s16 m_lineIrqCounter;
     bool m_vramAddress;
+    u8  m_readBuffer;
 	ISMSScreenDrawable *m_screen;
 	VideoPixel *m_pixel;
     bool m_pendingVIRQ;
     bool m_pendingLIRQ;
     t_VDPMODES m_mode;
     bool m_priorityBG[SMS_SCREEN_W][SMS_SCREEN_H];
+    bool m_GameGear;
+    u8   m_latch;
 
     void UpdateLine(u8 line);
 	void UpdateBG(u8 y);

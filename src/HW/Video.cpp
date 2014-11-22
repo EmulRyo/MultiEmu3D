@@ -81,6 +81,7 @@ void Video::Reset() {
     m_address = 0;
     m_vramAddress = true;
     m_status = 0x1F;
+    m_readBuffer = 0;
     m_regs[ 0] = 0x36;
     m_regs[ 1] = 0x80;
     m_regs[ 2] = 0xFF;
@@ -94,6 +95,9 @@ void Video::Reset() {
     m_regs[10] = 0xFF;
     
     m_lineIrqCounter = 0xFF;
+    
+    m_GameGear = false;
+    m_latch = 0;
     
     memset(m_memory, 0, VDP_MEM);
     memset(m_palettes, 0, 32);
@@ -113,34 +117,22 @@ void Video::SetControl(u8 value) {
         u8 place = value >> 6;
         m_address = ((value & 0x3F) << 8) | m_partialAddress;
         
-        switch (place) {
-            case 0x00:
-            case 0x01:
-            {
-                m_vramAddress = true;
-                break;
-            }
-            case 0x02:
-            {
-                u8 reg = value & 0x0F;
-                m_regs[reg] = m_partialAddress;
-                CheckReg(reg);
-                break;
-            }
-            case 0x03:
-            {
-                m_vramAddress = false;
-                break;
-            }
-                
-            default:
-                break;
+        if (place == 0) {
+            m_readBuffer = m_memory[m_address];
+            m_address++;
         }
+        else if (place == 2) {
+            u8 reg = value & 0x0F;
+            m_regs[reg] = m_partialAddress;
+            CheckReg(reg);
+        }
+        
+        m_vramAddress = (place != 3);
         
         m_numWrite = 0;
     }
-    
-    m_partialAddress = value;
+    else
+        m_partialAddress = value;
 }
 
 
@@ -157,6 +149,8 @@ void Video::SetData(u8 value) {
     
     m_address++;
     m_address &= 0x3FFF;
+    
+    m_readBuffer = value;
 }
 
 u8 Video::GetControl() {
@@ -170,20 +164,12 @@ u8 Video::GetControl() {
 
 u8 Video::GetData() {
     m_numWrite = 0;
-    if (m_vramAddress) {
-        u8 value = m_memory[m_address];
-        if (m_address < 0x3FFF)
-            m_address++;
-        
-        return value;
-    }
-    else {
-        u8 value = m_palettes[m_address];
-        if (m_address < 31)
-            m_address++;
-        
-        return value;
-    }
+    
+    u8 value = m_readBuffer;
+    m_readBuffer = m_memory[m_address];
+    m_address = (m_address + 1) & 0x3FFF;
+    
+    return value;
 }
 
 u8 Video::GetV() {
