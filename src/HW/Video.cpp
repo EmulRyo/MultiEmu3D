@@ -111,12 +111,12 @@ void Video::SetControl(u8 value) {
     
     if (m_numWrite == 2) {
         u8 place = value >> 6;
+        m_address = ((value & 0x3F) << 8) | m_partialAddress;
         
         switch (place) {
             case 0x00:
             case 0x01:
             {
-                m_address = ((value & 0x3F) << 8) | m_partialAddress;
                 m_vramAddress = true;
                 break;
             }
@@ -125,14 +125,10 @@ void Video::SetControl(u8 value) {
                 u8 reg = value & 0x0F;
                 m_regs[reg] = m_partialAddress;
                 CheckReg(reg);
-                
-                m_address = ((value & 0x3F) << 8) | m_partialAddress;
-                m_vramAddress = true;
                 break;
             }
             case 0x03:
             {
-                m_address = m_partialAddress & 0x1F;
                 m_vramAddress = false;
                 break;
             }
@@ -151,17 +147,16 @@ void Video::SetControl(u8 value) {
 void Video::SetData(u8 value) {
     m_numWrite = 0;
     
-    if (m_vramAddress) {
+    if (m_vramAddress)
         m_memory[m_address] = value;
-        m_address++;
-        m_address &= 0x3FFF;
-    }
     else {
-        m_palettes[m_address] = value;
-        UpdatePalette(m_address);
-        m_address++;
-        m_address &= 0x3F;
+        u8 numPalette = m_address & 0x1F;
+        m_palettes[numPalette] = value;
+        UpdatePalette(numPalette);
     }
+    
+    m_address++;
+    m_address &= 0x3FFF;
 }
 
 u8 Video::GetControl() {
@@ -216,8 +211,8 @@ u16 Video::GetAddress() {
 void Video::Update(u8 cycles) {
     m_cycles += cycles;
     
-    if (m_cycles > 59719) {
-        m_cycles -= 59719;
+    if (m_cycles > FRAME_CYCLES) {
+        m_cycles -= FRAME_CYCLES;
         m_cyclesLine = 0;
         m_line = 0;
         m_lineIrqCounter = m_regs[10];
