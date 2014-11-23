@@ -307,10 +307,78 @@ void Video::UpdateSprites(u8 y) {
     u8  mode16 = BIT1(m_regs[1]);
     u8  hSprite = mode16 ? 16 : 8;
     u8  tileData[4];
+    u8  sprites[64];
+    u8  paletteOffset = 16;
     
-    u8 paletteOffset = 16;
+    u8  spritesInLine = GetSprites(y, spriteBase, hSprite, &sprites[0]);
+
+    for (int i=spritesInLine-1; i>=0; i--) {
+        u8 numSprite = sprites[i];
+        
+        s16 ySprite = m_memory[spriteBase + numSprite];
+        if (ySprite > (0xFF - hSprite))
+            ySprite -= 0x100;
+        
+        // La y se almacena como y+1 (para poner un sprite en y == 0, la y original deber valer 0xFF)
+        ySprite++;
+
+        u8 xSprite = m_memory[spriteBase + 128 + numSprite*2];
+        u8 numTile = m_memory[spriteBase + 129 + numSprite*2];
+        if (mode16)
+            numTile &= 0xFE;
+        u16 addressTile = numTile * 32 + ((m_regs[TILEBASE]&0x04) ? 0x2000 : 0x0000);
+        
+        u8 yTile = y - ySprite;
+        
+        u8 xBeg = xSprite;
+        u8 xTile = 0, countX = 0;
+        u8 countY = yTile;
+     
+        for (u16 x=xBeg; ((x<xSprite+8) && (x<SMS_SCREEN_W)); x++) {
+            xTile = countX;
+            
+            int addressLineTile = addressTile + (yTile * 4); //yTile * 4 porque cada linea de 1 tile ocupa 4 bytes
+            
+            tileData[0] = m_memory[addressLineTile + 0];
+            tileData[1] = m_memory[addressLineTile + 1];
+            tileData[2] = m_memory[addressLineTile + 2];
+            tileData[3] = m_memory[addressLineTile + 3];
+            
+            int pixX = ABS(xTile - 7);
+            
+            //Un pixel lo componen 4 bits. Seleccionar la posicion del bit en los cuatro bytes (tileData)
+            //Esto devolvera un numero de color que junto a la paleta de color nos dara el color requerido
+            u8 indexColor  = (((tileData[3] & (0x01 << pixX)) >> pixX) << 3);
+            indexColor |= (((tileData[2] & (0x01 << pixX)) >> pixX) << 2);
+            indexColor |= (((tileData[1] & (0x01 << pixX)) >> pixX) << 1);
+            indexColor |=  ((tileData[0] & (0x01 << pixX)) >> pixX);
+            
+            s16 x1 = xSprite + countX;
+            s16 y1 = ySprite + countY;
+            
+            if (BIT3(m_regs[0]))
+                x1 -= 8;
+            
+            if ((indexColor != 0) && (m_priorityBG[x1][y1] == false) && (x1 >= 0)){
+                indexColor += paletteOffset;
+                
+                u8 r = m_rgbPalettes[indexColor][0];
+                u8 g = m_rgbPalettes[indexColor][1];
+                u8 b = m_rgbPalettes[indexColor][2];
+                
+                m_screen->OnDrawPixel(r, g, b, x1, y1);
+            }
+            
+            countX++;
+        }
+    }
+}
+
+u8 Video::GetSprites(u8 y, u16 spriteBase, u8 hSprite, u8 *sprites) {
+    const u8 maxSprites = 64;
+    u8 spritesInLine = 0;
     
-	for (u8 numSprite = 0; numSprite<64; numSprite++) {
+    for (u8 numSprite = 0; numSprite<64; numSprite++) {
         s16 ySprite = m_memory[spriteBase + numSprite];
         if ((ySprite == 0xD0) && (m_mode == MODE_4_192))
             break;
@@ -320,57 +388,19 @@ void Video::UpdateSprites(u8 y) {
         // La y se almacena como y+1 (para poner un sprite en y == 0, la y original deber valer 0xFF)
         ySprite++;
         if ((ySprite > y-hSprite) && (ySprite <= y)) {
-            u8 xSprite = m_memory[spriteBase + 128 + numSprite*2];
-            u8 numTile = m_memory[spriteBase + 129 + numSprite*2];
-            if (mode16)
-                numTile &= 0xFE;
-            u16 addressTile = numTile * 32 + ((m_regs[TILEBASE]&0x04) ? 0x2000 : 0x0000);
+            if (spritesInLine < maxSprites)
+                sprites[spritesInLine] = numSprite;
             
-            u8 yTile = y - ySprite;
-            
-            u8 xBeg = xSprite;
-            u8 xTile = 0, countX = 0;
-            u8 countY = yTile;
-            
-            for (u16 x=xBeg; ((x<xSprite+8) && (x<SMS_SCREEN_W)); x++) {
-                xTile = countX;
-                
-                int addressLineTile = addressTile + (yTile * 4); //yTile * 4 porque cada linea de 1 tile ocupa 4 bytes
-                
-                tileData[0] = m_memory[addressLineTile + 0];
-                tileData[1] = m_memory[addressLineTile + 1];
-                tileData[2] = m_memory[addressLineTile + 2];
-                tileData[3] = m_memory[addressLineTile + 3];
-                
-                int pixX = ABS(xTile - 7);
-                
-                //Un pixel lo componen 4 bits. Seleccionar la posicion del bit en los cuatro bytes (tileData)
-                //Esto devolvera un numero de color que junto a la paleta de color nos dara el color requerido
-                u8 indexColor  = (((tileData[3] & (0x01 << pixX)) >> pixX) << 3);
-                   indexColor |= (((tileData[2] & (0x01 << pixX)) >> pixX) << 2);
-                   indexColor |= (((tileData[1] & (0x01 << pixX)) >> pixX) << 1);
-                   indexColor |=  ((tileData[0] & (0x01 << pixX)) >> pixX);
-                
-                s16 x1 = xSprite + countX;
-                s16 y1 = ySprite + countY;
-                
-                if (BIT3(m_regs[0]))
-                    x1 -= 8;
-                
-                if ((indexColor != 0) && (m_priorityBG[x1][y1] == false) && (x1 >= 0)){
-                    indexColor += paletteOffset;
-                    
-                    u8 r = m_rgbPalettes[indexColor][0];
-                    u8 g = m_rgbPalettes[indexColor][1];
-                    u8 b = m_rgbPalettes[indexColor][2];
-                    
-                    m_screen->OnDrawPixel(r, g, b, x1, y1);
-                }
-                
-                countX++;
-            }
+            spritesInLine++;
         }
     }
+    
+    if (spritesInLine > maxSprites) {
+        m_status |= 0x40;
+        spritesInLine = maxSprites;
+    }
+    
+    return spritesInLine;
 }
 
 inline void Video::GetColor(VideoPixel *p)

@@ -110,6 +110,7 @@ private:
     void UpdatePalette(u8 numPalette);
     void UpdatePaletteGG(u8 numPalette);
     void CheckReg(u8 reg);
+    u8   GetSprites(u8 y, u16 spriteBase, u8 hSprite, u8 *sprites);
 };
 
 #endif
