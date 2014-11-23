@@ -108,6 +108,7 @@ private:
 	void UpdateSprites(u8 y);
 	inline void GetColor(VideoPixel * p);
     void UpdatePalette(u8 numPalette);
+    void UpdatePaletteGG(u8 numPalette);
     void CheckReg(u8 reg);
 };
 

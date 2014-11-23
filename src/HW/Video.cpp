@@ -142,9 +142,21 @@ void Video::SetData(u8 value) {
     if (m_vramAddress)
         m_memory[m_address] = value;
     else {
-        u8 numPalette = m_address & 0x1F;
-        m_palettes[numPalette] = value;
-        UpdatePalette(numPalette);
+        if (m_GameGear) {
+            u8 numPalette = m_address & 0x3F;
+            if ((numPalette % 2) == 0)
+                m_latch = value;
+            else {
+                m_palettes[numPalette] = value;
+                m_palettes[numPalette-1] = m_latch;
+                UpdatePaletteGG(numPalette);
+            }
+        }
+        else {
+            u8 numPalette = m_address & 0x1F;
+            m_palettes[numPalette] = value;
+            UpdatePalette(numPalette);
+        }
     }
     
     m_address++;
@@ -424,6 +436,21 @@ void Video::UpdatePalette(u8 numPalette) {
         m_rgbPalettes[numPalette][0] *= 85;
         m_rgbPalettes[numPalette][1] *= 85;
         m_rgbPalettes[numPalette][2] *= 85;
+}
+
+void Video::UpdatePaletteGG(u8 numPalette) {
+    u8 data1 = m_palettes[numPalette-1];
+    u8 data2 = m_palettes[numPalette];
+    
+    numPalette = numPalette / 2;
+    m_rgbPalettes[numPalette][0] = data1 & 0x0F;
+    m_rgbPalettes[numPalette][1] = data1 >> 0x0F;
+    m_rgbPalettes[numPalette][2] = data2 & 0x0F;
+    
+    // Como el valor va de 0 a 15, hay que convertirlo de 0 a 255
+    m_rgbPalettes[numPalette][0] *= 17;
+    m_rgbPalettes[numPalette][1] *= 17;
+    m_rgbPalettes[numPalette][2] *= 17;
 }
 
 void Video::GetTile(u8 *buffer, int widthSize, int tile)
