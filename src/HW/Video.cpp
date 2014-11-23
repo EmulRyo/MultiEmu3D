@@ -359,7 +359,7 @@ void Video::UpdateSprites(u8 y) {
             if (BIT3(m_regs[0]))
                 x1 -= 8;
             
-            if ((indexColor != 0) && (m_priorityBG[x1][y1] == false) && (x1 >= 0)){
+            if ((indexColor != 0) && (m_pixelAux[x1][y1] >= 0) && (x1 >= 0)){
                 indexColor += paletteOffset;
                 
                 u8 r = m_rgbPalettes[indexColor][0];
@@ -367,6 +367,10 @@ void Video::UpdateSprites(u8 y) {
                 u8 b = m_rgbPalettes[indexColor][2];
                 
                 m_screen->OnDrawPixel(r, g, b, x1, y1);
+                
+                m_pixelAux[x1][y1]++;
+                if (m_pixelAux[x1][y1] > 1)
+                    m_status |= 0x20;
             }
             
             countX++;
@@ -448,7 +452,7 @@ inline void Video::GetColor(VideoPixel *p)
     
     p->indexColor += paletteOffset;
     
-    m_priorityBG[p->x][p->y] = (bgPriority  && p->indexColor) ? true : false;
+    m_pixelAux[p->x][p->y] = (bgPriority  && p->indexColor) ? -1 : 0;
     
     p->r = m_rgbPalettes[p->indexColor][0];
     p->g = m_rgbPalettes[p->indexColor][1];

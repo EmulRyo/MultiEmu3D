@@ -99,7 +99,11 @@ private:
     bool m_pendingVIRQ;
     bool m_pendingLIRQ;
     t_VDPMODES m_mode;
-    bool m_priorityBG[SMS_SCREEN_W][SMS_SCREEN_H];
+    
+    // Contendrá -1 en los píxeles en los que el BG tiene prioridad, 0 en los que se
+    // pinta BG pero no sprite, 1 cuando se pinta un sprite, 2 cuando se pintan 2
+    // sprites, etc.
+    s8   m_pixelAux[SMS_SCREEN_W][SMS_SCREEN_H];
     bool m_GameGear;
     u8   m_latch;
 
