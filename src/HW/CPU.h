@@ -46,6 +46,7 @@ public:
 	int  ExecuteOneFrame();
 	void Reset();
     int  GetElapsedCycles();
+    void SetGGMode(bool value);
 	void SaveState(std::string saveDirectory, int numSlot);
 	void LoadState(std::string loadDirectory, int numSlot);
     

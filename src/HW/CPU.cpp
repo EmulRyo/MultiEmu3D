@@ -46,6 +46,7 @@ void CPU::Init(Video *v, Pad *p) {
     // 3,579545 Mhz NTSC (59.94Hz = 59718,802)
     // 3,546893 Mhz PAL
     m_cyclesFrame = 59719;
+    m_GameGear = false;
 	ResetGlobalVariables();
 }
 
@@ -106,6 +107,12 @@ int CPU::Execute(int cyclesToExecute)
 	}//end while
     
     return m_cycles;
+}
+
+void CPU::SetGGMode(bool value) {
+    m_GameGear = value;
+    m_video->SetGGMode(value);
+    m_pad->SetGGMode(value);
 }
 
 int  CPU::GetElapsedCycles() {

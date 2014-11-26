@@ -47,8 +47,15 @@ void Memory::SetCartridge(Cartridge *c)
 	m_c = c;
 }
 
-void Memory::ResetMem()
-{
+void Memory::ResetMem() {
+    m_GGRegs[0] = 0xC0;
+    m_GGRegs[1] = 0x7F;
+    m_GGRegs[2] = 0xFF;
+    m_GGRegs[3] = 0x00;
+    m_GGRegs[4] = 0xFF;
+    m_GGRegs[5] = 0x00;
+    m_GGRegs[6] = 0xFF;
+    
 	memset(&memory, 0x00, SIZE_MEM);
     if (m_c)
         m_c->Reset();
@@ -71,9 +78,9 @@ void Memory::MemW(u16 address, u8 value)
 void Memory::PortW(u8 port, u8 value) {
     u8 portF = port & 0xC1;
     switch (portF) {
-        // 0x3E - Pad Control (SDSC)
+        // 0x3E - Memory control
         case 0x00:
-            m_pad->SetControl(value);
+            MemoryControlW(value);
             break;
         // 0x3F - Region detect
         case 0x01:
@@ -113,8 +120,19 @@ void Memory::PortW(u8 port, u8 value) {
 };
 
 u8 Memory::PortR(u8 port) {
+    if (m_GameGear) {
+        if (port == 0)
+            return m_pad->GetData(port);
+        else if (port < 7)
+            return m_GGRegs[port];
+    }
+    
     u8 portF = port & 0xC1;
     switch (portF) {
+        case 0x00:
+        case 0x01:
+            return 0xFF;
+            
         case 0x40:
             return m_video->GetV();
             
@@ -135,6 +153,10 @@ u8 Memory::PortR(u8 port) {
             printf("PortR: 0x%X\n", port);
             return 0;
     }
+}
+
+void Memory::MemoryControlW(u8 value) {
+    m_pad->SetControl(value);
 }
 
 void Memory::SaveMemory(ofstream * file)

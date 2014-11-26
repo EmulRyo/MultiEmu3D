@@ -33,6 +33,10 @@ Pad::Pad() {
     m_data2 = 0xFF;
 }
 
+void Pad::SetGGMode(bool value) {
+    m_GameGear = value;
+}
+
 void Pad::SetButtonsStatePad1(bool buttonsState[6]) {
 	for (int i=0; i<6; i++)
 		m_buttonsStatePad1[i] = buttonsState[i];
@@ -52,12 +56,22 @@ void Pad::SetPauseState(bool state) {
 }
 
 bool Pad::PauseInterrupt() {
-    bool value = m_interrupt;
-    m_interrupt = false;
-    return value;
+    if (m_GameGear)
+        return false;
+    else {
+        bool value = m_interrupt;
+        m_interrupt = false;
+        return value;
+    }
 }
 
 u8 Pad::GetData(u8 port) {
+    if (port == 0)
+        return m_pauseState ? 0x40 : 0xC0;
+        
+    if (!m_enabled)
+        return 0xFF;
+    
     port &= 0xC1;
     if (port == 0xC0)
         return m_data1;
@@ -78,7 +92,7 @@ void Pad::SetRegionData(u8 value) {
 }
 
 void Pad::SetControl(u8 value) {
-    m_enabled = BIT2(value) ? false : true;
+    //m_enabled = BIT2(value) ? false : true;
 }
 
 void Pad::SetSDSCControl(u8 value) {

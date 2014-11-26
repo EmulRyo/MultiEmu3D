@@ -53,6 +53,7 @@ using namespace std;
 
 Video::Video(ISMSScreenDrawable *screen)
 {
+    m_GameGear = false;
     m_pixel = new VideoPixel();
     Reset();
 	SetScreen(screen);
@@ -96,7 +97,6 @@ void Video::Reset() {
     
     m_lineIrqCounter = 0xFF;
     
-    m_GameGear = false;
     m_latch = 0;
     
     memset(m_memory, 0, VDP_MEM);
@@ -108,6 +108,10 @@ void Video::ClearScreen()
 {
     if (m_screen)
         m_screen->OnClear();
+}
+
+void Video::SetGGMode(bool value) {
+    m_GameGear = value;
 }
 
 void Video::SetControl(u8 value) {
@@ -478,7 +482,7 @@ void Video::UpdatePaletteGG(u8 numPalette) {
     
     numPalette = numPalette / 2;
     m_rgbPalettes[numPalette][0] = data1 & 0x0F;
-    m_rgbPalettes[numPalette][1] = data1 >> 0x0F;
+    m_rgbPalettes[numPalette][1] = data1 >> 4;
     m_rgbPalettes[numPalette][2] = data2 & 0x0F;
     
     // Como el valor va de 0 a 15, hay que convertirlo de 0 a 255

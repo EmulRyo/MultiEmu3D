@@ -31,6 +31,7 @@ public:
     u8   GetData(u8 port);              //0xDC, 0xDD
     void SetControl(u8 value);
     void SetRegionData(u8 value);
+    void SetGGMode(bool value);
     
     void SetSDSCControl(u8 value);
     void SetSDSCData(u8 value);
@@ -41,6 +42,7 @@ private:
     bool m_pauseState;
     bool m_interrupt;
     bool m_enabled;
+    bool m_GameGear;
     
     u8  m_data1, m_data2;
 };

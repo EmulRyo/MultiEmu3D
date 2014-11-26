@@ -37,9 +37,8 @@ protected:
     CPU *m_cpu;
     Video *m_video;
     Pad *m_pad;
+    bool m_GameGear;
 
-public:
-	u8 memory[SIZE_MEM];
 public:
 	Memory(CPU *cpu, Video *v, Pad *pad, Sound *s);
 	~Memory();
@@ -60,6 +59,12 @@ public:
     u8   PortR(u8 port);
 	void SaveMemory(std::ofstream *file);
 	void LoadMemory(std::ifstream *file);
+    
+private:
+    u8 memory[SIZE_MEM];
+    u8 m_GGRegs[7];
+    
+    void MemoryControlW(u8 value);
 };
 
 #endif

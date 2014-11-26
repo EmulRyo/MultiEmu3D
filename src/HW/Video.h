@@ -78,11 +78,12 @@ public:
     u16  GetAddress();
     void SaveState(std::ofstream *file);
     void LoadState(std::ifstream *file);
+    void SetGGMode(bool value);
     
 private:
 	u8  m_memory[VDP_MEM];
     u8  m_regs[16];
-    u8  m_palettes[32];
+    u8  m_palettes[64];
     u8  m_rgbPalettes[32][3];
     u16 m_address;
     u8  m_numWrite;

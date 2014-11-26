@@ -147,16 +147,18 @@ bool EmulationThread::ChangeFile(wxString fileName)
         }
         
         wxString fileLower = fileName.Lower();
+        bool sms = fileLower.EndsWith(wxT(".sms"));
+        bool gg  = fileLower.EndsWith(wxT(".gg"));
         if (fileLower.EndsWith(wxT(".zip")))
         {
             isZip = true;
-            this->LoadZip(fileName, &buffer, &size);
+            this->LoadZip(fileName, &buffer, &size, &gg);
             if ((buffer == NULL) || (size == 0))
                 return false;
         }
-        else if (!fileLower.EndsWith(wxT(".sms")))
+        else if (!sms && !gg)
         {
-            wxMessageBox(_("Only sms and zip files allowed!"), _("Error"));
+            wxMessageBox(_("Only sms, gg and zip files allowed!"), _("Error"));
             return false;
         }
         
@@ -179,6 +181,7 @@ bool EmulationThread::ChangeFile(wxString fileName)
         
         cpu->SetCartridge(cartridge);
         cpu->Reset();
+        cpu->SetGGMode(gg);
         
         debugger = new Debugger(sound, video, cpu, cartridge, pad);
     }
@@ -194,7 +197,7 @@ bool EmulationThread::ChangeFile(wxString fileName)
  * Si existe mas de una rom solo carga la primera. Si se ha encontrado, la rom se devuelve en un buffer
  * junto con su tamaño, sino las variables se dejan intactas
  */
-void EmulationThread::LoadZip(const wxString zipPath, u8 ** buffer, unsigned long * size)
+void EmulationThread::LoadZip(const wxString zipPath, u8 ** buffer, unsigned long *size, bool *gg)
 {
 	wxString fileInZip, fileLower;
 	wxZipEntry* entry;
@@ -205,7 +208,9 @@ void EmulationThread::LoadZip(const wxString zipPath, u8 ** buffer, unsigned lon
 		fileInZip = entry->GetName();
         
 		fileLower = fileInZip.Lower();
-		if (fileLower.EndsWith(wxT(".sms")) || fileLower.EndsWith(wxT(".sms")))
+        bool sms = fileLower.EndsWith(wxT(".sms"));
+        *gg = fileLower.EndsWith(wxT(".gg"));
+		if (sms || *gg)
 		{
 			*size = zip.GetSize();
 			*buffer = new u8[*size];
@@ -221,7 +226,7 @@ void EmulationThread::LoadZip(const wxString zipPath, u8 ** buffer, unsigned lon
 	}
     
 	// Archivo no encontrado
-	wxMessageBox(_("Master System rom not found in the file:\n")+zipPath, _("Error"));
+	wxMessageBox(_("Master System or Game Gear rom not found in the file:\n")+zipPath, _("Error"));
 	return;
 }
 
@@ -270,6 +275,7 @@ void EmulationThread::UpdatePad()
         
         bool space = wxGetKeyState(WXK_SPACE);
         SetSpeed(space ? SpeedMax : SpeedNormal);
+        //SetSpeed(SpeedMax);
     }
 }
 
