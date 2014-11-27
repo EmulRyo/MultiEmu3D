@@ -76,6 +76,11 @@ void Memory::MemW(u16 address, u8 value)
 }
 
 void Memory::PortW(u8 port, u8 value) {
+    if (m_GameGear && port == 0x06) {
+        m_s->WritePort(port, value, m_cpu->GetElapsedCycles());
+        return;
+    }
+    
     u8 portF = port & 0xC1;
     switch (portF) {
         // 0x3E - Memory control
