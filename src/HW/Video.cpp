@@ -112,6 +112,10 @@ void Video::ClearScreen()
 
 void Video::SetGGMode(bool value) {
     m_GameGear = value;
+    if (value)
+        m_screen->OnSizeChanged(48, 24, 160, 144);
+    else
+        m_screen->OnSizeChanged(0, 0, 256, 192);
 }
 
 void Video::SetControl(u8 value) {

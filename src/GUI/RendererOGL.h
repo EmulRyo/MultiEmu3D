@@ -86,10 +86,11 @@ private:
 	void InitGL();
     void SetGLContext();
     void SetPerspective();
-    void ScreenCreate();
+    void ScreenCreate(float aspectRatio);
     void ScreenDraw();
     void MoveCamera(Camera &cam);
     bool RestoreTo(Camera &camSrc, Camera &camDst);
+    void OnSizeChanged(int x, int y, int width, int height);
     void TryToLoad();
 };
 

@@ -27,6 +27,9 @@ RendererBase::RendererBase()
     frontBuffer = NULL;
     backBuffer = NULL;
 	winRenderer = NULL;
+    m_x = m_y = 0;
+    m_width = SMS_SCREEN_W;
+    m_height = SMS_SCREEN_H;
 	CreateScreen();
 }
 
@@ -108,6 +111,13 @@ void RendererBase::OnDrawPixel(u8 r, u8 g, u8 b, int x, int y)
 	backBuffer[offsetBuf + 0] = r;
 	backBuffer[offsetBuf + 1] = g;
 	backBuffer[offsetBuf + 2] = b;
+}
+
+void RendererBase::OnSizeChanged(int x, int y, int width, int height) {
+    m_x = x;
+    m_y = y;
+    m_width = width;
+    m_height = height;
 }
 
 DnDFile::DnDFile(wxWindow * parent)

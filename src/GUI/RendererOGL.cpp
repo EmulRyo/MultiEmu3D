@@ -190,7 +190,7 @@ void RendererOGL::SetPerspective() {
     int winW, winH, w, h, x, y;
     GetClientSize(&winW, &winH);
     
-    float gbAspectRatio = (float)SMS_SCREEN_W / SMS_SCREEN_H;
+    float gbAspectRatio = (float)m_width / m_height;
     float wAspectRatio = (float)winW / winH;
     
     if (gbAspectRatio < wAspectRatio)
@@ -215,18 +215,20 @@ void RendererOGL::SetPerspective() {
     glViewport(0, 0, (GLint) winW, (GLint) winH);
 }
 
-void RendererOGL::ScreenCreate() {
+void RendererOGL::ScreenCreate(float aspectRatio) {
+    if (m_glList)
+        glDeleteLists(m_glList, 1);
     m_glList = glGenLists(1);
     glNewList(m_glList, GL_COMPILE_AND_EXECUTE);
     
     glBegin(GL_QUADS);
     glNormal3f( 0.0f, 0.0f, 1.0f);
-    // 47.5 de ancho, 42,75 de alto. AR = 1.111
-    // 48.86 de ancho, 42,75 de alto. AR = 1.143
-    glTexCoord2f(0.0f, 0.0f); glVertex3f(-24.42857f, 54.225f, 16.0f);
-    glTexCoord2f(0.0f, 1.0f); glVertex3f(-24.42857f, 11.475f, 16.0f);
-    glTexCoord2f(1.0f, 1.0f); glVertex3f( 24.42857f, 11.475f, 16.0f);
-    glTexCoord2f(1.0f, 0.0f); glVertex3f( 24.42857f, 54.225f, 16.0f);
+    
+    float width2 = 42.75 / 2.0f * aspectRatio;
+    glTexCoord2f(0.0f, 0.0f); glVertex3f(-width2, 54.225f, 16.0f);
+    glTexCoord2f(0.0f, 1.0f); glVertex3f(-width2, 11.475f, 16.0f);
+    glTexCoord2f(1.0f, 1.0f); glVertex3f( width2, 11.475f, 16.0f);
+    glTexCoord2f(1.0f, 0.0f); glVertex3f( width2, 54.225f, 16.0f);
     glEnd();
     
     glEndList();
@@ -329,6 +331,11 @@ void RendererOGL::MoveCamera(Camera &cam) {
     m_mouseOldY = m_mouseNewY;
 }
 
+void RendererOGL::OnSizeChanged(int x, int y, int width, int height) {
+    RendererBase::OnSizeChanged(x, y, width, height);
+    ScreenCreate((float)width/height);
+}
+
 void RendererOGL::Render()
 {
 	if(!IsShown())
@@ -340,7 +347,7 @@ void RendererOGL::Render()
     if (!m_initialized)
     {
         InitGL();
-        ScreenCreate();
+        ScreenCreate(256.0f/192.0f);
         m_initialized = true;
     }
 	
@@ -365,7 +372,10 @@ void RendererOGL::Render()
 void RendererOGL::ScreenDraw() {
     glEnable(GL_TEXTURE_2D);
     glBindTexture(GL_TEXTURE_2D, m_textureID);
-    glTexSubImage2D (GL_TEXTURE_2D, 0, 0, 0, SMS_SCREEN_W, SMS_SCREEN_H, GL_RGB, GL_UNSIGNED_BYTE, frontBuffer);
+    glPixelStorei(GL_UNPACK_ROW_LENGTH, SMS_SCREEN_W);
+    char *subimg = (char*)frontBuffer + (m_x + m_y*SMS_SCREEN_W)*3;
+    glTexImage2D( GL_TEXTURE_2D, 0, GL_RGB, m_width, m_height, 0, GL_RGB, GL_UNSIGNED_BYTE, subimg );
+    glPixelStorei(GL_UNPACK_ROW_LENGTH, 0);
     
     float ambient[] = {1.0f, 1.0f, 1.0f, 1.0f};
     float diffuse[] = {1.0f, 1.0f, 1.0f, 1.0f};

@@ -40,6 +40,7 @@ public:
 	void OnRefreshGBScreen();
     void OnRefreshRealScreen();
     void OnDrawPixel(u8 r, u8 g, u8 b, int x, int y);
+    void OnSizeChanged(int x, int y, int width, int height);
     virtual void OnChangeView() = 0;
     
 protected:
@@ -47,6 +48,7 @@ protected:
     u8 *imgBuf2;
     u8 *frontBuffer;
     u8 *backBuffer;
+    int m_x, m_y, m_width, m_height;
     
 private:
 	wxWindow * winRenderer;
