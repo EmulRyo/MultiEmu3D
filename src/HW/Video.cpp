@@ -228,8 +228,10 @@ void Video::Update(u8 cycles) {
     if (m_cyclesLine > 228) {
         m_cyclesLine -= 228;
         u8 h = (m_mode == MODE_4_240) ? 240 : (m_mode == MODE_4_224) ? 244 : 192;
-        if (m_line < h)
-            UpdateLine(m_line);
+        if (m_line < h) {
+            if ((!m_GameGear) || ((m_GameGear) && (m_line >= 24) && (m_line < 168)))
+                UpdateLine(m_line);
+        }
         else if (m_line == (h+1)) {
             RefreshScreen();
             
@@ -254,7 +256,7 @@ void Video::UpdateLine(u8 line) {
     if (BIT6(m_regs[1])) {
         UpdateBG(line);
         UpdateSprites(line);
-        if (BIT5(m_regs[0])) {
+        if (!m_GameGear && (BIT5(m_regs[0]))) {
             // Pintar columna de 8 pixeles de un color sólido
             u8 indexColor = (m_regs[BACKDROPCOLOR] & 0x0F) + 16;
             u8 r = m_rgbPalettes[indexColor][0];
@@ -292,7 +294,9 @@ void Video::UpdateBG(u8 y) {
     else
         scrollX = 256-m_regs[XSCROLL];
     
-	for (x=0; x<SMS_SCREEN_W; x++) {
+    int xBeg = m_GameGear ? 48 : 0;
+    int xEnd = m_GameGear ? 209 : 256;
+	for (x=xBeg; x<xEnd; x++) {
         m_pixel->x = x;
         m_pixel->xScrolled = (x + scrollX);
         if (m_pixel->xScrolled > 255)
