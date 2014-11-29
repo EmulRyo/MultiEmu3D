@@ -62,27 +62,27 @@ SettingsDialog::~SettingsDialog()
 }
 
 /*! * Transfer data to the window */
-bool SettingsDialog::TransferDataToWindow()
-{
+bool SettingsDialog::TransferDataToWindow() {
 	m_settings = SettingsGetCopy();
 	
-    wxRadioBox* renderCtrl =     (wxRadioBox*)	  FindWindow(ID_RENDERMETHOD);
-	wxRadioBox* greenscaleCtrl = (wxRadioBox*)	  FindWindow(ID_GREENSCALE);
-	wxChoice* winZoomCtrl =		 (wxChoice*)	  FindWindow(ID_WINZOOM);
 	wxCheckBox* soundEnabledCtrl = (wxCheckBox*)  FindWindow(ID_SOUND_ENABLED);
 	wxChoice* soundSRCtrl =		 (wxChoice*)	  FindWindow(ID_SOUND_SR);
-	InputTextCtrl* upCtrl =		 (InputTextCtrl*) FindWindow(ID_TEXTCTRL_UP);
-	InputTextCtrl* downCtrl =	 (InputTextCtrl*) FindWindow(ID_TEXTCTRL_DOWN);
-	InputTextCtrl* leftCtrl =	 (InputTextCtrl*) FindWindow(ID_TEXTCTRL_LEFT);
-	InputTextCtrl* rightCtrl =	 (InputTextCtrl*) FindWindow(ID_TEXTCTRL_RIGHT);
-	InputTextCtrl* aCtrl =		 (InputTextCtrl*) FindWindow(ID_TEXTCTRL_A);
-	InputTextCtrl* bCtrl =		 (InputTextCtrl*) FindWindow(ID_TEXTCTRL_B);
-	InputTextCtrl* selectCtrl =	 (InputTextCtrl*) FindWindow(ID_TEXTCTRL_SELECT);
+    
+	InputTextCtrl* up1Ctrl =     (InputTextCtrl*) FindWindow(ID_TEXTCTRL_UP1);
+	InputTextCtrl* down1Ctrl =	 (InputTextCtrl*) FindWindow(ID_TEXTCTRL_DOWN1);
+	InputTextCtrl* left1Ctrl =	 (InputTextCtrl*) FindWindow(ID_TEXTCTRL_LEFT1);
+	InputTextCtrl* right1Ctrl =	 (InputTextCtrl*) FindWindow(ID_TEXTCTRL_RIGHT1);
+	InputTextCtrl* a1Ctrl =		 (InputTextCtrl*) FindWindow(ID_TEXTCTRL_A1);
+	InputTextCtrl* b1Ctrl =		 (InputTextCtrl*) FindWindow(ID_TEXTCTRL_B1);
+    
+    InputTextCtrl* up2Ctrl =     (InputTextCtrl*) FindWindow(ID_TEXTCTRL_UP2);
+    InputTextCtrl* down2Ctrl =	 (InputTextCtrl*) FindWindow(ID_TEXTCTRL_DOWN2);
+    InputTextCtrl* left2Ctrl =	 (InputTextCtrl*) FindWindow(ID_TEXTCTRL_LEFT2);
+    InputTextCtrl* right2Ctrl =	 (InputTextCtrl*) FindWindow(ID_TEXTCTRL_RIGHT2);
+    InputTextCtrl* a2Ctrl =		 (InputTextCtrl*) FindWindow(ID_TEXTCTRL_A2);
+    InputTextCtrl* b2Ctrl =		 (InputTextCtrl*) FindWindow(ID_TEXTCTRL_B2);
+    
 	InputTextCtrl* startCtrl =	 (InputTextCtrl*) FindWindow(ID_TEXTCTRL_START);
-
-    renderCtrl->SetSelection(m_settings.renderMethod);
-	greenscaleCtrl->SetSelection(m_settings.greenScale);
-	winZoomCtrl->SetSelection(m_settings.windowZoom - 1);
 	
 	soundEnabledCtrl->SetValue(m_settings.soundEnabled);
 	int sampleRates[] = { 22050, 32000, 44100, 48000 };
@@ -94,51 +94,66 @@ bool SettingsDialog::TransferDataToWindow()
 	}
 	soundSRCtrl->SetSelection(idSampleRate);
 	
-	upCtrl->OnChangeKey(	m_settings.padKeys[0]);
-	downCtrl->OnChangeKey(	m_settings.padKeys[1]);
-	leftCtrl->OnChangeKey(	m_settings.padKeys[2]);
-	rightCtrl->OnChangeKey(	m_settings.padKeys[3]);
-	aCtrl->OnChangeKey(		m_settings.padKeys[4]);
-	bCtrl->OnChangeKey(		m_settings.padKeys[5]);
-	selectCtrl->OnChangeKey(m_settings.padKeys[6]);
-	startCtrl->OnChangeKey(	m_settings.padKeys[7]);
+	up1Ctrl->OnChangeKey(	m_settings.pad1Keys[0]);
+	down1Ctrl->OnChangeKey(	m_settings.pad1Keys[1]);
+	left1Ctrl->OnChangeKey(	m_settings.pad1Keys[2]);
+	right1Ctrl->OnChangeKey(m_settings.pad1Keys[3]);
+	a1Ctrl->OnChangeKey(	m_settings.pad1Keys[4]);
+	b1Ctrl->OnChangeKey(	m_settings.pad1Keys[5]);
+    
+    up2Ctrl->OnChangeKey(	m_settings.pad2Keys[0]);
+    down2Ctrl->OnChangeKey(	m_settings.pad2Keys[1]);
+    left2Ctrl->OnChangeKey(	m_settings.pad2Keys[2]);
+    right2Ctrl->OnChangeKey(m_settings.pad2Keys[3]);
+    a2Ctrl->OnChangeKey(	m_settings.pad2Keys[4]);
+    b2Ctrl->OnChangeKey(	m_settings.pad2Keys[5]);
+    
+	startCtrl->OnChangeKey(	m_settings.pauseStartKey);
 
 	return true;
 }
 
 /*! * Transfer data from the window */
-bool SettingsDialog::TransferDataFromWindow()
-{
-    wxRadioBox* renderCtrl =     (wxRadioBox*)	  FindWindow(ID_RENDERMETHOD);
-	wxRadioBox* greenscaleCtrl = (wxRadioBox*)	  FindWindow(ID_GREENSCALE);
-	wxChoice* winZoomCtrl =		 (wxChoice*)	  FindWindow(ID_WINZOOM);
+bool SettingsDialog::TransferDataFromWindow() {
 	wxCheckBox* soundEnabledCtrl = (wxCheckBox*)  FindWindow(ID_SOUND_ENABLED);
 	wxChoice* soundSRCtrl =		 (wxChoice*)	  FindWindow(ID_SOUND_SR);
-	InputTextCtrl* upCtrl =		 (InputTextCtrl*) FindWindow(ID_TEXTCTRL_UP);
-	InputTextCtrl* downCtrl =	 (InputTextCtrl*) FindWindow(ID_TEXTCTRL_DOWN);
-	InputTextCtrl* leftCtrl =	 (InputTextCtrl*) FindWindow(ID_TEXTCTRL_LEFT);
-	InputTextCtrl* rightCtrl =	 (InputTextCtrl*) FindWindow(ID_TEXTCTRL_RIGHT);
-	InputTextCtrl* aCtrl =		 (InputTextCtrl*) FindWindow(ID_TEXTCTRL_A);
-	InputTextCtrl* bCtrl =		 (InputTextCtrl*) FindWindow(ID_TEXTCTRL_B);
-	InputTextCtrl* selectCtrl =	 (InputTextCtrl*) FindWindow(ID_TEXTCTRL_SELECT);
+    
+	InputTextCtrl* up1Ctrl    =	(InputTextCtrl*) FindWindow(ID_TEXTCTRL_UP1);
+	InputTextCtrl* down1Ctrl  =	(InputTextCtrl*) FindWindow(ID_TEXTCTRL_DOWN1);
+	InputTextCtrl* left1Ctrl  =	(InputTextCtrl*) FindWindow(ID_TEXTCTRL_LEFT1);
+	InputTextCtrl* right1Ctrl =	(InputTextCtrl*) FindWindow(ID_TEXTCTRL_RIGHT1);
+	InputTextCtrl* a1Ctrl     =	(InputTextCtrl*) FindWindow(ID_TEXTCTRL_A1);
+	InputTextCtrl* b1Ctrl     =	(InputTextCtrl*) FindWindow(ID_TEXTCTRL_B1);
+    
+    InputTextCtrl* up2Ctrl    =	(InputTextCtrl*) FindWindow(ID_TEXTCTRL_UP2);
+    InputTextCtrl* down2Ctrl  =	(InputTextCtrl*) FindWindow(ID_TEXTCTRL_DOWN2);
+    InputTextCtrl* left2Ctrl  =	(InputTextCtrl*) FindWindow(ID_TEXTCTRL_LEFT2);
+    InputTextCtrl* right2Ctrl =	(InputTextCtrl*) FindWindow(ID_TEXTCTRL_RIGHT2);
+    InputTextCtrl* a2Ctrl     =	(InputTextCtrl*) FindWindow(ID_TEXTCTRL_A2);
+    InputTextCtrl* b2Ctrl     =	(InputTextCtrl*) FindWindow(ID_TEXTCTRL_B2);
+    
 	InputTextCtrl* startCtrl =	 (InputTextCtrl*) FindWindow(ID_TEXTCTRL_START);
 
-    m_settings.renderMethod = renderCtrl->GetSelection();
-	m_settings.greenScale = greenscaleCtrl->GetSelection();
-	m_settings.windowZoom = winZoomCtrl->GetSelection()+1;
 	m_settings.soundEnabled = soundEnabledCtrl->GetValue();
 	int sampleRates[] = { 22050, 32000, 44100, 48000 };
 	int idSampleRate = soundSRCtrl->GetSelection();
 	m_settings.soundSampleRate = sampleRates[idSampleRate];
 
-	m_settings.padKeys[0] = upCtrl->keyCode;
-	m_settings.padKeys[1] = downCtrl->keyCode;
-	m_settings.padKeys[2] = leftCtrl->keyCode;
-	m_settings.padKeys[3] = rightCtrl->keyCode;
-	m_settings.padKeys[4] = aCtrl->keyCode;
-	m_settings.padKeys[5] = bCtrl->keyCode;
-	m_settings.padKeys[6] = selectCtrl->keyCode;
-	m_settings.padKeys[7] = startCtrl->keyCode;
+	m_settings.pad1Keys[0] = up1Ctrl->keyCode;
+	m_settings.pad1Keys[1] = down1Ctrl->keyCode;
+	m_settings.pad1Keys[2] = left1Ctrl->keyCode;
+	m_settings.pad1Keys[3] = right1Ctrl->keyCode;
+	m_settings.pad1Keys[4] = a1Ctrl->keyCode;
+	m_settings.pad1Keys[5] = b1Ctrl->keyCode;
+    
+    m_settings.pad2Keys[0] = up2Ctrl->keyCode;
+    m_settings.pad2Keys[1] = down2Ctrl->keyCode;
+    m_settings.pad2Keys[2] = left2Ctrl->keyCode;
+    m_settings.pad2Keys[3] = right2Ctrl->keyCode;
+    m_settings.pad2Keys[4] = a2Ctrl->keyCode;
+    m_settings.pad2Keys[5] = b2Ctrl->keyCode;
+    
+	m_settings.pauseStartKey = startCtrl->keyCode;
 	
     SettingsSetNewValues(m_settings);
 	SettingsSaveToFile();
@@ -149,46 +164,6 @@ bool SettingsDialog::TransferDataFromWindow()
 wxPanel* SettingsDialog::CreateVideoSettingsPage(wxWindow* parent)
 {
     wxPanel* panel = new wxPanel(parent, wxID_ANY);
-
-    wxStaticText * renderLabel = new wxStaticText(panel, wxID_ANY, _("Render method:"));
-	wxString renderChoices[2];
-    renderChoices[0] = _("Software (Slower)");
-    renderChoices[1] = _("OpenGL (Faster)");
-    wxRadioBox* renderRadioBox = new wxRadioBox(panel, ID_RENDERMETHOD, wxT(""),
-                                                   wxDefaultPosition, wxDefaultSize, 2, renderChoices, 1, wxRA_SPECIFY_COLS);
-    renderLabel->Hide();
-    renderRadioBox->Hide();
-
-	wxStaticText * grayGreenLabel = new wxStaticText(panel, wxID_ANY, _("DMG color palette:"));
-	wxString grayGreenChoices[2];
-    grayGreenChoices[0] = _("Grayscale");
-    grayGreenChoices[1] = _("Greenscale");
-    wxRadioBox* grayGreenRadioBox = new wxRadioBox(panel, ID_GREENSCALE, wxT(""),
-												 wxDefaultPosition, wxDefaultSize, 2, grayGreenChoices, 1, wxRA_SPECIFY_COLS);
-    
-
-	wxStaticText * winZoomLabel = new wxStaticText(panel, wxID_ANY, _("Window size:"));
-    wxChoice* winZoomChoice = new wxChoice(panel, ID_WINZOOM);
-	winZoomChoice->Append(wxT("1x"));
-	winZoomChoice->Append(wxT("2x"));
-	winZoomChoice->Append(wxT("3x"));
-	winZoomChoice->Append(wxT("4x"));
-    
-    winZoomLabel->Hide();
-    winZoomChoice->Hide();
-
-	wxFlexGridSizer *grid = new wxFlexGridSizer(2, 3, 5);
-    //grid->Add(renderLabel, 0, wxUP, 7);
-    //grid->Add(renderRadioBox);
-	grid->Add(grayGreenLabel, 0, wxUP, 7);
-	grid->Add(grayGreenRadioBox);
-	//grid->Add(winZoomLabel, 0, wxALL|wxALIGN_CENTER_VERTICAL, 0);
-	//grid->Add(winZoomChoice);
-	
-	wxBoxSizer *topSizer = new wxBoxSizer( wxVERTICAL );
-	topSizer->Add(grid, 0, wxALL, 10);
-	
-    panel->SetSizerAndFit(topSizer);
 
     return panel;
 }
@@ -227,45 +202,57 @@ wxPanel* SettingsDialog::CreateInputSettingsPage(wxWindow* parent)
 {
 	wxPanel* panel = new wxPanel(parent, wxID_ANY);
 	
-    wxStaticText * upLabel = new wxStaticText(panel, wxID_ANY, _("Up:"));
-	InputTextCtrl * upTextCtrl = new InputTextCtrl(panel, ID_TEXTCTRL_UP);
+    wxStaticText *pad1Label   = new wxStaticText(panel, wxID_ANY, _("Pad 1"));
+    wxStaticText *pad2Label   = new wxStaticText(panel, wxID_ANY, _("Pad 2"));
+    
+    wxStaticText *upLabel    = new wxStaticText(panel, wxID_ANY, _("Up:"));
+    wxStaticText *downLabel  = new wxStaticText(panel, wxID_ANY, _("Down:"));
+    wxStaticText *leftLabel  = new wxStaticText(panel, wxID_ANY, _("Left:"));
+    wxStaticText *rightLabel = new wxStaticText(panel, wxID_ANY, _("Right:"));
+    wxStaticText *aLabel     = new wxStaticText(panel, wxID_ANY, wxT("1:"));
+    wxStaticText *bLabel     = new wxStaticText(panel, wxID_ANY, wxT("2:"));
+    
+    wxStaticText *startLabel  = new wxStaticText(panel, wxID_ANY, wxT("Pause/Start:"));
+    
+	InputTextCtrl *up1TextCtrl    = new InputTextCtrl(panel, ID_TEXTCTRL_UP1);
+	InputTextCtrl *down1TextCtrl  = new InputTextCtrl(panel, ID_TEXTCTRL_DOWN1);
+	InputTextCtrl *left1TextCtrl  = new InputTextCtrl(panel, ID_TEXTCTRL_LEFT1);
+	InputTextCtrl *right1TextCtrl = new InputTextCtrl(panel, ID_TEXTCTRL_RIGHT1);
+	InputTextCtrl *a1TextCtrl     = new InputTextCtrl(panel, ID_TEXTCTRL_A1);
+	InputTextCtrl *b1TextCtrl     = new InputTextCtrl(panel, ID_TEXTCTRL_B1);
+    
+    InputTextCtrl *up2TextCtrl    = new InputTextCtrl(panel, ID_TEXTCTRL_UP2);
+    InputTextCtrl *down2TextCtrl  = new InputTextCtrl(panel, ID_TEXTCTRL_DOWN2);
+    InputTextCtrl *left2TextCtrl  = new InputTextCtrl(panel, ID_TEXTCTRL_LEFT2);
+    InputTextCtrl *right2TextCtrl = new InputTextCtrl(panel, ID_TEXTCTRL_RIGHT2);
+    InputTextCtrl *a2TextCtrl     = new InputTextCtrl(panel, ID_TEXTCTRL_A2);
+    InputTextCtrl *b2TextCtrl     = new InputTextCtrl(panel, ID_TEXTCTRL_B2);
+    
+	InputTextCtrl *startTextCtrl = new InputTextCtrl(panel, ID_TEXTCTRL_START);
 	
-	wxStaticText * downLabel = new wxStaticText(panel, wxID_ANY, _("Down:"));
-	InputTextCtrl * downTextCtrl = new InputTextCtrl(panel, ID_TEXTCTRL_DOWN);
-	
-	wxStaticText * leftLabel = new wxStaticText(panel, wxID_ANY, _("Left:"));
-	InputTextCtrl * leftTextCtrl = new InputTextCtrl(panel, ID_TEXTCTRL_LEFT);
-	
-	wxStaticText * rightLabel = new wxStaticText(panel, wxID_ANY, _("Right:"));
-	InputTextCtrl * rightTextCtrl = new InputTextCtrl(panel, ID_TEXTCTRL_RIGHT);
-	
-	wxStaticText * aLabel = new wxStaticText(panel, wxID_ANY, wxT("A:"));
-	InputTextCtrl * aTextCtrl = new InputTextCtrl(panel, ID_TEXTCTRL_A);
-	
-	wxStaticText * bLabel = new wxStaticText(panel, wxID_ANY, wxT("B:"));
-	InputTextCtrl * bTextCtrl = new InputTextCtrl(panel, ID_TEXTCTRL_B);
-	
-	wxStaticText * selectLabel = new wxStaticText(panel, wxID_ANY, wxT("Select:"));
-	InputTextCtrl * selectTextCtrl = new InputTextCtrl(panel, ID_TEXTCTRL_SELECT);
-	
-	wxStaticText * startLabel = new wxStaticText(panel, wxID_ANY, wxT("Start:"));
-	InputTextCtrl * startTextCtrl = new InputTextCtrl(panel, ID_TEXTCTRL_START);
-	
-	wxFlexGridSizer *grid = new wxFlexGridSizer(2, 3, 5);
+	wxFlexGridSizer *grid = new wxFlexGridSizer(3, 3, 5);
+    grid->AddSpacer(0);
+    grid->Add(pad1Label, 0, wxALL|wxALIGN_CENTER_VERTICAL, 0);
+    grid->Add(pad2Label, 0, wxALL|wxALIGN_CENTER_VERTICAL, 0);
 	grid->Add(upLabel, 0, wxALL|wxALIGN_CENTER_VERTICAL, 0);
-	grid->Add(upTextCtrl);
+	grid->Add(up1TextCtrl);
+    grid->Add(up2TextCtrl);
 	grid->Add(downLabel, 0, wxALL|wxALIGN_CENTER_VERTICAL, 0);
-	grid->Add(downTextCtrl);
+    grid->Add(down1TextCtrl);
+    grid->Add(down2TextCtrl);
 	grid->Add(leftLabel, 0, wxALL|wxALIGN_CENTER_VERTICAL, 0);
-	grid->Add(leftTextCtrl);
+	grid->Add(left1TextCtrl);
+    grid->Add(left2TextCtrl);
 	grid->Add(rightLabel, 0, wxALL|wxALIGN_CENTER_VERTICAL, 0);
-	grid->Add(rightTextCtrl);
+	grid->Add(right1TextCtrl);
+    grid->Add(right2TextCtrl);
 	grid->Add(aLabel, 0, wxALL|wxALIGN_CENTER_VERTICAL, 0);
-	grid->Add(aTextCtrl);
+	grid->Add(a1TextCtrl);
+    grid->Add(a2TextCtrl);
 	grid->Add(bLabel, 0, wxALL|wxALIGN_CENTER_VERTICAL, 0);
-	grid->Add(bTextCtrl);
-	grid->Add(selectLabel, 0, wxALL|wxALIGN_CENTER_VERTICAL, 0);
-	grid->Add(selectTextCtrl);
+	grid->Add(b1TextCtrl);
+    grid->Add(b2TextCtrl);
+    
 	grid->Add(startLabel, 0, wxALL|wxALIGN_CENTER_VERTICAL, 0);
 	grid->Add(startTextCtrl);
 	

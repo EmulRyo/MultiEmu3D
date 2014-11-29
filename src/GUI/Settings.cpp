@@ -36,114 +36,115 @@ Settings::Settings()
 	soundSampleRate = 44100;
     language = wxLANGUAGE_DEFAULT;
 	
-	padKeys[0]	= WXK_UP;	// Up
-	padKeys[1]	= WXK_DOWN; // Down
-	padKeys[2]	= WXK_LEFT; // Left
-	padKeys[3]	= WXK_RIGHT;// Right
-	padKeys[4]	= 'A';		// A
-	padKeys[5]	= 'S';		// B
-	padKeys[6]	= WXK_SHIFT;  // Select
-	padKeys[7]	= WXK_RETURN; // Start
+	pad1Keys[0]	= WXK_UP;	// Up
+	pad1Keys[1]	= WXK_DOWN; // Down
+	pad1Keys[2]	= WXK_LEFT; // Left
+	pad1Keys[3]	= WXK_RIGHT;// Right
+	pad1Keys[4]	= 'A';		// A
+	pad1Keys[5]	= 'S';		// B
+    
+    pad2Keys[0]	= 'I'; // Up
+    pad2Keys[1]	= 'K'; // Down
+    pad2Keys[2]	= 'J'; // Left
+    pad2Keys[3]	= 'L'; // Right
+    pad2Keys[4]	= 'G'; // A
+    pad2Keys[5]	= 'H'; // B
+    
+	pauseStartKey = WXK_RETURN; // Start
 }
 
-Settings SettingsGetCopy()
-{
+Settings SettingsGetCopy() {
 	return settings;
 }
 
-void SettingsSetNewValues(Settings newSettings)
-{
+void SettingsSetNewValues(Settings newSettings) {
 	settings = newSettings;
 }
 
-int SettingsGetRenderMethod()
-{
+int SettingsGetRenderMethod() {
 	return settings.renderMethod;
 }
 
-void SettingsSetGreenScale(int renderMethod)
-{
+void SettingsSetGreenScale(int renderMethod) {
 	settings.renderMethod = renderMethod;
 }
 
-bool SettingsGetGreenScale()
-{
+bool SettingsGetGreenScale() {
 	return settings.greenScale;
 }
 
-void SettingsSetGreenScale(bool greenScale)
-{
+void SettingsSetGreenScale(bool greenScale) {
 	settings.greenScale = greenScale;
 }
 
-int SettingsGetWindowZoom()
-{
+int SettingsGetWindowZoom() {
 	return settings.windowZoom;
 }
 
-void SettingsSetWindowZoom(int windowZoom)
-{
+void SettingsSetWindowZoom(int windowZoom) {
 	settings.windowZoom = windowZoom;
 }
 
-bool SettingsGetSoundEnabled()
-{
+bool SettingsGetSoundEnabled() {
 	return settings.soundEnabled;
 }
 
-void SettingsSetSoundEnabled(bool enabled)
-{
+void SettingsSetSoundEnabled(bool enabled) {
 	settings.soundEnabled = enabled;
 }
 
-int SettingsGetSoundSampleRate()
-{
+int SettingsGetSoundSampleRate() {
 	return settings.soundSampleRate;
 }
 
-void SettingsSetSoundSampleRate(int sampleRate)
-{
+void SettingsSetSoundSampleRate(int sampleRate) {
 	settings.soundSampleRate = sampleRate;
 }
 
-long SettingsGetLanguage()
-{
+long SettingsGetLanguage() {
 	return settings.language;
 }
 
-void SettingsSetLanguage(long language)
-{
+void SettingsSetLanguage(long language) {
 	settings.language = language;
 }
 
-int* SettingsGetInput()
-{
-	return &settings.padKeys[0];
+int* SettingsGetInput1() {
+	return &settings.pad1Keys[0];
 }
 
-void SettingsSetInput(const int* padKeys)
-{
-	for (int i=0; i<8; i++)
-	{
-		settings.padKeys[i] = padKeys[i];
-	}
+int* SettingsGetInput2() {
+    return &settings.pad2Keys[0];
 }
 
-string* SettingsGetRecentRoms()
-{
+int SettingsGetPauseStart() {
+    return settings.pauseStartKey;
+}
+
+void SettingsSetInput1(const int* padKeys) {
+	for (int i=0; i<6; i++)
+		settings.pad1Keys[i] = padKeys[i];
+}
+
+void SettingsSetInput2(const int* padKeys) {
+    for (int i=0; i<6; i++)
+        settings.pad2Keys[i] = padKeys[i];
+}
+
+void SettingsSetPauseStart(int padKey) {
+    settings.pauseStartKey = padKey;
+}
+
+string* SettingsGetRecentRoms() {
 	return &settings.recentRoms[0];
 }
 
-void SettingsSetRecentRoms(const string* recentRoms)
-{
+void SettingsSetRecentRoms(const string* recentRoms) {
 	for (int i=0; i<10; i++)
-	{
-		settings.recentRoms[i] = recentRoms[i];
-	}
+        settings.recentRoms[i] = recentRoms[i];
 }
 
-void SettingsSaveToFile()
-{
+void SettingsSaveToFile() {
     Settings settings = SettingsGetCopy();
     
 	wxString configDir = wxStandardPaths::Get().GetUserDataDir();
@@ -164,14 +165,19 @@ void SettingsSaveToFile()
 	fileConfig.Write(wxT("Sound/enabled"), settings.soundEnabled);
 	fileConfig.Write(wxT("Sound/sampleRate"), settings.soundSampleRate);
 	
-	fileConfig.Write(wxT("Input/up"), settings.padKeys[0]);
-	fileConfig.Write(wxT("Input/down"), settings.padKeys[1]);
-	fileConfig.Write(wxT("Input/left"), settings.padKeys[2]);
-	fileConfig.Write(wxT("Input/right"), settings.padKeys[3]);
-	fileConfig.Write(wxT("Input/a"), settings.padKeys[4]);
-	fileConfig.Write(wxT("Input/b"), settings.padKeys[5]);
-	fileConfig.Write(wxT("Input/select"), settings.padKeys[6]);
-	fileConfig.Write(wxT("Input/start"), settings.padKeys[7]);
+	fileConfig.Write(wxT("Input1/up"), settings.pad1Keys[0]);
+	fileConfig.Write(wxT("Input1/down"), settings.pad1Keys[1]);
+	fileConfig.Write(wxT("Input1/left"), settings.pad1Keys[2]);
+	fileConfig.Write(wxT("Input1/right"), settings.pad1Keys[3]);
+	fileConfig.Write(wxT("Input1/a"), settings.pad1Keys[4]);
+	fileConfig.Write(wxT("Input1/b"), settings.pad1Keys[5]);
+    fileConfig.Write(wxT("Input2/up"), settings.pad2Keys[0]);
+    fileConfig.Write(wxT("Input2/down"), settings.pad2Keys[1]);
+    fileConfig.Write(wxT("Input2/left"), settings.pad2Keys[2]);
+    fileConfig.Write(wxT("Input2/right"), settings.pad2Keys[3]);
+    fileConfig.Write(wxT("Input2/a"), settings.pad2Keys[4]);
+    fileConfig.Write(wxT("Input2/b"), settings.pad2Keys[5]);
+	fileConfig.Write(wxT("Input/pauseStart"), settings.pauseStartKey);
 	
 	wxString auxString[10];
 	for (int i=0; i<10; i++)
@@ -208,14 +214,19 @@ Settings SettingsLoadFromFile()
 	fileConfig.Read(wxT("Sound/enabled"),	 &settings.soundEnabled);
 	fileConfig.Read(wxT("Sound/sampleRate"), &settings.soundSampleRate);
 	
-	fileConfig.Read(wxT("Input/up"),	 &settings.padKeys[0]);
-	fileConfig.Read(wxT("Input/down"),	 &settings.padKeys[1]);
-	fileConfig.Read(wxT("Input/left"),	 &settings.padKeys[2]);
-	fileConfig.Read(wxT("Input/right"),  &settings.padKeys[3]);
-	fileConfig.Read(wxT("Input/a"),		 &settings.padKeys[4]);
-	fileConfig.Read(wxT("Input/b"),		 &settings.padKeys[5]);
-	fileConfig.Read(wxT("Input/select"), &settings.padKeys[6]);
-	fileConfig.Read(wxT("Input/start"),  &settings.padKeys[7]);
+	fileConfig.Read(wxT("Input1/up"),    &settings.pad1Keys[0]);
+	fileConfig.Read(wxT("Input1/down"),	 &settings.pad1Keys[1]);
+	fileConfig.Read(wxT("Input1/left"),	 &settings.pad1Keys[2]);
+	fileConfig.Read(wxT("Input1/right"), &settings.pad1Keys[3]);
+	fileConfig.Read(wxT("Input1/a"),     &settings.pad1Keys[4]);
+	fileConfig.Read(wxT("Input1/b"),     &settings.pad1Keys[5]);
+    fileConfig.Read(wxT("Input2/up"),    &settings.pad2Keys[0]);
+    fileConfig.Read(wxT("Input2/down"),	 &settings.pad2Keys[1]);
+    fileConfig.Read(wxT("Input2/left"),	 &settings.pad2Keys[2]);
+    fileConfig.Read(wxT("Input2/right"), &settings.pad2Keys[3]);
+    fileConfig.Read(wxT("Input2/a"),     &settings.pad2Keys[4]);
+    fileConfig.Read(wxT("Input2/b"),     &settings.pad2Keys[5]);
+	fileConfig.Read(wxT("Input/pauseStart"),  &settings.pauseStartKey);
 	
 	wxString auxString[10];
 	fileConfig.Read(wxT("RecentRoms/01"), &auxString[0]);
@@ -230,9 +241,7 @@ Settings SettingsLoadFromFile()
 	fileConfig.Read(wxT("RecentRoms/10"), &auxString[9]);
 	
 	for (int i=0; i<10; i++)
-	{
 		settings.recentRoms[i] = auxString[i].mb_str();
-	}
     
     return settings;
 }

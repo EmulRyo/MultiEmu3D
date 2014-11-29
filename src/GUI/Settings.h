@@ -30,7 +30,9 @@ public:
 	int  soundSampleRate;
     long language;
 	
-	int  padKeys[8];
+	int  pad1Keys[6];
+    int  pad2Keys[6];
+    int  pauseStartKey;
 	std::string recentRoms[10];
 	
 public:
@@ -45,7 +47,9 @@ int  SettingsGetWindowZoom();
 bool SettingsGetSoundEnabled();
 int  SettingsGetSoundSampleRate();
 long SettingsGetLanguage();
-int* SettingsGetInput();
+int* SettingsGetInput1();
+int* SettingsGetInput2();
+int  SettingsGetPauseStart();
 std::string* SettingsGetRecentRoms();
 
 void SettingsSetNewValues(Settings newSettings);
@@ -56,7 +60,9 @@ void SettingsSetWindowZoom(int windowZoom);
 void SettingsSetSoundEnabled(bool enabled);
 void SettingsSetSoundSampleRate(int sampleRate);
 void SettingsSetLanguage(long language);
-void SettingsSetInput(const int* padKeys);
+void SettingsSetInput1(const int* padKeys);
+void SettingsSetInput2(const int* padKeys);
+void SettingsSetPauseStart(int padKey);
 void SettingsSetRecentRoms(const std::string* recentRoms);
 
 void SettingsSaveToFile();

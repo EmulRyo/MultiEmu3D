@@ -50,6 +50,13 @@ EmulationThread::EmulationThread()
     keysUsed[4] = (wxKeyCode)'A';
     keysUsed[5] = (wxKeyCode)'S';
     
+    keysUsed[ 6] = (wxKeyCode)'I';
+    keysUsed[ 7] = (wxKeyCode)'K';
+    keysUsed[ 8] = (wxKeyCode)'J';
+    keysUsed[ 9] = (wxKeyCode)'L';
+    keysUsed[10] = (wxKeyCode)'G';
+    keysUsed[11] = (wxKeyCode)'H';
+    
     keysUsed[12] = WXK_RETURN;
     
     ApplySettings();
@@ -248,7 +255,7 @@ void EmulationThread::ApplySettings()
 {
     wxMutexLocker lock(*mutex);
     
-    PadSetKeys(SettingsGetInput());
+    PadSetKeys(SettingsGetInput1(), SettingsGetInput2());
     sound->ChangeSampleRate(SettingsGetSoundSampleRate());
     sound->SetEnabled(SettingsGetSoundEnabled());
 }
@@ -264,13 +271,14 @@ void EmulationThread::UpdatePad()
 {
     if (emuState == Playing)
     {
-        bool buttonsState[6];
-        for (int i=0; i<6; i++)
+        bool buttonsState[12];
+        for (int i=0; i<12; i++)
             buttonsState[i] = wxGetKeyState(keysUsed[i]);
         joystick->UpdateButtonsState(buttonsState);
         
         wxMutexLocker lock(*mutex);
         pad->SetButtonsStatePad1(buttonsState);
+        pad->SetButtonsStatePad2(&buttonsState[6]);
         pad->SetPauseState(wxGetKeyState(keysUsed[12]));
         
         bool space = wxGetKeyState(WXK_SPACE);
@@ -283,10 +291,11 @@ Debugger *EmulationThread::GetDebugger() {
     return debugger;
 }
 
-void EmulationThread::PadSetKeys(int* keys)
-{
+void EmulationThread::PadSetKeys(int* keys1, int* keys2) {
 	for (int i=0; i<6; i++)
-		keysUsed[i] = (wxKeyCode)keys[i];
+		keysUsed[i] = (wxKeyCode)keys1[i];
+    for (int i=6; i<12; i++)
+        keysUsed[i] = (wxKeyCode)keys2[i-6];
 }
 
 bool EmulationThread::Finished() {

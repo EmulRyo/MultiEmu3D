@@ -50,6 +50,21 @@ void Pad::SetButtonsStatePad1(bool buttonsState[6]) {
     m_data1 |= m_buttonsStatePad1[B2]    ? 0x00 : 0x20;
 }
 
+void Pad::SetButtonsStatePad2(bool buttonsState[6]) {
+    for (int i=0; i<6; i++)
+        m_buttonsStatePad2[i] = buttonsState[i];
+    
+    m_data1 = (m_data1 & 0x3F);
+    m_data1 |= m_buttonsStatePad2[UP]    ? 0x00 : 0x40;
+    m_data1 |= m_buttonsStatePad2[DOWN]  ? 0x00 : 0x80;
+    
+    m_data2 = (m_data2 & 0xF0);
+    m_data2 |= m_buttonsStatePad2[LEFT]  ? 0x00 : 0x01;
+    m_data2 |= m_buttonsStatePad2[RIGHT] ? 0x00 : 0x02;
+    m_data2 |= m_buttonsStatePad2[B1]    ? 0x00 : 0x04;
+    m_data2 |= m_buttonsStatePad2[B2]    ? 0x00 : 0x08;
+}
+
 void Pad::SetPauseState(bool state) {
     m_interrupt = (state && (!m_pauseState));
     m_pauseState = state;
@@ -69,8 +84,8 @@ u8 Pad::GetData(u8 port) {
     if (port == 0)
         return m_pauseState ? 0x40 : 0xC0;
         
-    if (!m_enabled)
-        return 0xFF;
+    //if (!m_enabled)
+    //    return 0xFF;
     
     port &= 0xC1;
     if (port == 0xC0)
@@ -92,7 +107,7 @@ void Pad::SetRegionData(u8 value) {
 }
 
 void Pad::SetControl(u8 value) {
-    //m_enabled = BIT2(value) ? false : true;
+    m_enabled = BIT2(value) ? false : true;
 }
 
 void Pad::SetSDSCControl(u8 value) {
@@ -100,5 +115,6 @@ void Pad::SetSDSCControl(u8 value) {
 }
 
 void Pad::SetSDSCData(u8 value) {
-    printf("%c", value);
+    if (!m_enabled)
+        printf("%c", value);
 }
