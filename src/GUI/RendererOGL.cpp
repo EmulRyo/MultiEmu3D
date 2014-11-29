@@ -158,7 +158,7 @@ void RendererOGL::InitGL()
 	
     glGenTextures(1, &m_textureID);
 	glBindTexture(GL_TEXTURE_2D, m_textureID);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, SMS_SCREEN_W, SMS_SCREEN_H, 0, GL_RGB, GL_UNSIGNED_BYTE, frontBuffer);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, SMS_SCREEN_W, SMS_SCREEN_H, 0, GL_RGB, GL_UNSIGNED_BYTE, m_frontBuffer);
     
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
@@ -373,8 +373,8 @@ void RendererOGL::ScreenDraw() {
     glEnable(GL_TEXTURE_2D);
     glBindTexture(GL_TEXTURE_2D, m_textureID);
     glPixelStorei(GL_UNPACK_ROW_LENGTH, SMS_SCREEN_W);
-    char *subimg = (char*)frontBuffer + (m_x + m_y*SMS_SCREEN_W)*3;
-    glTexImage2D( GL_TEXTURE_2D, 0, GL_RGB, m_width, m_height, 0, GL_RGB, GL_UNSIGNED_BYTE, subimg );
+    char *subImg = (char*)m_frontBuffer + (m_x + m_y*SMS_SCREEN_W)*3;
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, m_width, m_height, 0, GL_RGB, GL_UNSIGNED_BYTE, subImg);
     glPixelStorei(GL_UNPACK_ROW_LENGTH, 0);
     
     float ambient[] = {1.0f, 1.0f, 1.0f, 1.0f};

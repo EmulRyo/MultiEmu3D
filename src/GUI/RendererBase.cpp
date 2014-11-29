@@ -22,11 +22,11 @@
 
 RendererBase::RendererBase()
 {
-    imgBuf1 = NULL;
-    imgBuf2 = NULL;
-    frontBuffer = NULL;
-    backBuffer = NULL;
-	winRenderer = NULL;
+    m_imgBuf1 = NULL;
+    m_imgBuf2 = NULL;
+    m_frontBuffer = NULL;
+    m_backBuffer = NULL;
+	m_winRenderer = NULL;
     m_x = m_y = 0;
     m_width = SMS_SCREEN_W;
     m_height = SMS_SCREEN_H;
@@ -35,59 +35,51 @@ RendererBase::RendererBase()
 
 RendererBase::~RendererBase()
 {
-    if (imgBuf1)
-        delete[] imgBuf1;
+    if (m_imgBuf1)
+        delete[] m_imgBuf1;
     
-    if (imgBuf2)
-        delete[] imgBuf2;
+    if (m_imgBuf2)
+        delete[] m_imgBuf2;
 }
 
-wxWindow * RendererBase::GetWinRenderer()
+wxWindow *RendererBase::GetWinRenderer()
 {
-    return winRenderer;
+    return m_winRenderer;
 }
 
-void RendererBase::SetWinRenderer(wxWindow * parent, wxWindow *renderer)
+void RendererBase::SetWinRenderer(wxWindow *parent, wxWindow *renderer)
 {
-    renderer->SetMinSize(wxSize(SMS_SCREEN_W, SMS_SCREEN_H));
-	this->winRenderer = renderer;
+    m_parent = parent;
+    renderer->SetMinSize(wxSize(160, 144));
+	m_winRenderer = renderer;
 	renderer->SetDropTarget(new DnDFile(parent));
     //renderer->SetCursor( wxCursor( wxCURSOR_BLANK ) ); 
 }
 
 void RendererBase::CreateScreen() {
-	imgBuf1 = new u8[SMS_SCREEN_W*SMS_SCREEN_H*3];
-    imgBuf2 = new u8[SMS_SCREEN_W*SMS_SCREEN_H*3];
-    backBuffer = imgBuf1;
-    frontBuffer = imgBuf2;
+	m_imgBuf1 = new u8[SMS_SCREEN_W*SMS_SCREEN_H*3];
+    m_imgBuf2 = new u8[SMS_SCREEN_W*SMS_SCREEN_H*3];
+    m_backBuffer = m_imgBuf1;
+    m_frontBuffer = m_imgBuf2;
 	OnClear();
-	ChangePalette(SettingsGetGreenScale());
-}
-
-void RendererBase::ChangePalette(bool original)
-{
-	if (original)
-		selPalette = 0;
-	else
-		selPalette = 1;
 }
 
 void RendererBase::OnClear()
 {
 	int size = SMS_SCREEN_W*SMS_SCREEN_H*3;
-    memset(backBuffer, 0, size);
-    memset(frontBuffer, 0, size);
+    memset(m_backBuffer, 0, size);
+    memset(m_frontBuffer, 0, size);
 	PageFlip();
 }
 
 void RendererBase::PageFlip()
 {
-    u8 * aux = frontBuffer;
-    frontBuffer = backBuffer;
-    backBuffer = aux;
+    u8 *aux = m_frontBuffer;
+    m_frontBuffer = m_backBuffer;
+    m_backBuffer = aux;
 }
 
-//Cuando se actualiza la pantalla de la gameboy
+//Cuando se actualiza la pantalla de la master system
 void RendererBase::OnRefreshGBScreen()
 {
 	PageFlip();
@@ -95,9 +87,9 @@ void RendererBase::OnRefreshGBScreen()
 
 //Cuando se actualiza la pantalla del PC
 void RendererBase::OnRefreshRealScreen() {
-    if (winRenderer) {
-        winRenderer->Refresh(false);
-        winRenderer->Update();
+    if (m_winRenderer) {
+        m_winRenderer->Refresh(false);
+        m_winRenderer->Update();
     }
 }
 
@@ -108,9 +100,9 @@ void RendererBase::OnDrawPixel(u8 r, u8 g, u8 b, int x, int y)
 	int offsetY = y * sizeLine;
 	int offsetBuf = offsetY + offsetX;
 	
-	backBuffer[offsetBuf + 0] = r;
-	backBuffer[offsetBuf + 1] = g;
-	backBuffer[offsetBuf + 2] = b;
+	m_backBuffer[offsetBuf + 0] = r;
+	m_backBuffer[offsetBuf + 1] = g;
+	m_backBuffer[offsetBuf + 2] = b;
 }
 
 void RendererBase::OnSizeChanged(int x, int y, int width, int height) {
@@ -118,16 +110,40 @@ void RendererBase::OnSizeChanged(int x, int y, int width, int height) {
     m_y = y;
     m_width = width;
     m_height = height;
+    
+    bool resize = false;
+    wxSize size = m_winRenderer->GetSize();
+    if (size.x < width) {
+        size.x = width;
+        resize = true;
+    }
+    if (size.y < height) {
+        size.y = height;
+        resize = true;
+    }
+    
+    if (resize) {
+        m_parent->SetClientSize(size);
+        m_parent->Layout();
+    }
+}
+
+int RendererBase::GetMinimunWidth() {
+    return m_width;
+}
+
+int RendererBase::GetMinimunHeight() {
+    return m_height;
 }
 
 DnDFile::DnDFile(wxWindow * parent)
 {
-	this->parent = parent;
+	m_parent = parent;
 }
 
 bool DnDFile::OnDropFiles(wxCoord x, wxCoord y, const wxArrayString& filenames)
 {
-	MainFrame * frame = (MainFrame *)parent;
+	MainFrame *frame = (MainFrame *)m_parent;
 	frame->ChangeFile(filenames[0]);
 	
 	return true;

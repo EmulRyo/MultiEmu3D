@@ -55,21 +55,21 @@ protected:
 	DECLARE_EVENT_TABLE()
     
 private:
-	wxMenuBar *mb;
-	wxMenu *recentMenuFile;
-	wxMenu *recentMenuPopup;
-	wxToolBar* toolBar;
-	wxTimer * timer;
-    wxBoxSizer *mainSizer;
-    bool fullScreen;
-    RendererBase *renderer;
-    int typeRenderer;
-	SettingsDialog * settingsDialog;
-    EmulationThread * emulation;
-    int lastWidth, lastHeight;
+	wxMenuBar *m_mb;
+	wxMenu *m_recentMenuFile;
+	wxMenu *m_recentMenuPopup;
+	wxToolBar *m_toolBar;
+	wxTimer *m_timer;
+    wxBoxSizer *m_mainSizer;
+    bool m_fullScreen;
+    RendererBase *m_renderer;
+    int m_typeRenderer;
+	SettingsDialog  *m_settingsDialog;
+    EmulationThread *m_emulation;
+    int m_lastWidth, m_lastHeight;
 	
-	RecentFile recentFiles[MAX_RECENT_FILES];
-	int numRecentFiles;
+	RecentFile m_recentFiles[MAX_RECENT_FILES];
+	int m_numRecentFiles;
     
     /**
      * Called when exit from the file menu is selected.

@@ -42,7 +42,7 @@ RendererSW::~RendererSW() {
 
 void RendererSW::OnPaint(wxPaintEvent &) {
     
-	wxImage img = wxImage(SMS_SCREEN_W, SMS_SCREEN_H, frontBuffer, true);
+	wxImage img = wxImage(SMS_SCREEN_W, SMS_SCREEN_H, m_frontBuffer, true);
 	
 	int winZoom = SettingsGetWindowZoom();
 	if (winZoom > 1)

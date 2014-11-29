@@ -32,9 +32,11 @@ public:
 	~RendererBase();
 	
     wxWindow * GetWinRenderer();
-	void SetWinRenderer(wxWindow * parent, wxWindow *renderer);
+	void SetWinRenderer(wxWindow *parent, wxWindow *renderer);
 	void CreateScreen();
 	void ChangePalette(bool original);
+    int  GetMinimunWidth();
+    int  GetMinimunHeight();
 	
 	void OnClear();
 	void OnRefreshGBScreen();
@@ -44,15 +46,15 @@ public:
     virtual void OnChangeView() = 0;
     
 protected:
-	u8 *imgBuf1;
-    u8 *imgBuf2;
-    u8 *frontBuffer;
-    u8 *backBuffer;
+	u8 *m_imgBuf1;
+    u8 *m_imgBuf2;
+    u8 *m_frontBuffer;
+    u8 *m_backBuffer;
     int m_x, m_y, m_width, m_height;
     
 private:
-	wxWindow * winRenderer;
-	int  selPalette;
+	wxWindow *m_winRenderer;
+    wxWindow *m_parent;
     
     void PageFlip();
 };
@@ -63,7 +65,7 @@ public:
 	DnDFile(wxWindow *parent);
 	virtual bool OnDropFiles(wxCoord x, wxCoord y, const wxArrayString& filenames);
 private:
-	wxWindow *parent;
+	wxWindow *m_parent;
 };
 
 #endif
