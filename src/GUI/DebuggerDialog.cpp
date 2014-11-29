@@ -517,8 +517,8 @@ void DebuggerDialog::OnMemSelectChange(wxCommandEvent &event) {
 }
 
 void DebuggerDialog::OnSaveTiles(wxCommandEvent &event) {
-    int width = 16*8;
-    int height = 28*8;
+    const int width = 16*8;
+    const int height = 28*8;
     u8 buffer[width*height*3];
     m_debugger->GetTiles(buffer, width, height);
     wxImage *img = new wxImage(width, height, buffer);

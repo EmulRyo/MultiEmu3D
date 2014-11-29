@@ -11,24 +11,6 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\..\src\Cartridge.h" />
-    <ClInclude Include="..\..\..\src\CPU.h" />
-    <ClInclude Include="..\..\..\src\Debugger.h" />
-    <ClInclude Include="..\..\..\src\Def.h" />
-    <ClInclude Include="..\..\..\src\GBException.h" />
-    <ClInclude Include="..\..\..\src\Gb_Snd_Emu-0.1.4\Basic_Gb_Apu.h" />
-    <ClInclude Include="..\..\..\src\Gb_Snd_Emu-0.1.4\boost\config.hpp" />
-    <ClInclude Include="..\..\..\src\Gb_Snd_Emu-0.1.4\boost\cstdint.hpp" />
-    <ClInclude Include="..\..\..\src\Gb_Snd_Emu-0.1.4\boost\static_assert.hpp" />
-    <ClInclude Include="..\..\..\src\Gb_Snd_Emu-0.1.4\gb_apu\blargg_common.h" />
-    <ClInclude Include="..\..\..\src\Gb_Snd_Emu-0.1.4\gb_apu\blargg_source.h" />
-    <ClInclude Include="..\..\..\src\Gb_Snd_Emu-0.1.4\gb_apu\Blip_Buffer.h" />
-    <ClInclude Include="..\..\..\src\Gb_Snd_Emu-0.1.4\gb_apu\Blip_Synth.h" />
-    <ClInclude Include="..\..\..\src\Gb_Snd_Emu-0.1.4\gb_apu\Gb_Apu.h" />
-    <ClInclude Include="..\..\..\src\Gb_Snd_Emu-0.1.4\gb_apu\Gb_Oscs.h" />
-    <ClInclude Include="..\..\..\src\Gb_Snd_Emu-0.1.4\gb_apu\Multi_Buffer.h" />
-    <ClInclude Include="..\..\..\src\Gb_Snd_Emu-0.1.4\Sound_Queue.h" />
-    <ClInclude Include="..\..\..\src\Gb_Snd_Emu-0.1.4\Wave_Writer.h" />
     <ClInclude Include="..\..\..\src\GUI\3D\Array.h" />
     <ClInclude Include="..\..\..\src\GUI\3D\Camera.h" />
     <ClInclude Include="..\..\..\src\GUI\3D\Geo.h" />
@@ -39,6 +21,7 @@
     <ClInclude Include="..\..\..\src\GUI\EmulationThread.h" />
     <ClInclude Include="..\..\..\src\GUI\IDControls.h" />
     <ClInclude Include="..\..\..\src\GUI\InputTextCtrl.h" />
+    <ClInclude Include="..\..\..\src\GUI\Joystick.h" />
     <ClInclude Include="..\..\..\src\GUI\MainApp.h" />
     <ClInclude Include="..\..\..\src\GUI\MainFrame.h" />
     <ClInclude Include="..\..\..\src\GUI\RendererBase.h" />
@@ -46,29 +29,37 @@
     <ClInclude Include="..\..\..\src\GUI\RendererSW.h" />
     <ClInclude Include="..\..\..\src\GUI\Settings.h" />
     <ClInclude Include="..\..\..\src\GUI\SettingsDialog.h" />
-    <ClInclude Include="..\..\..\src\Instructions.h" />
-    <ClInclude Include="..\..\..\src\InstructionsDef.h" />
-    <ClInclude Include="..\..\..\src\Log.h" />
-    <ClInclude Include="..\..\..\src\MBC.h" />
-    <ClInclude Include="..\..\..\src\Memory.h" />
-    <ClInclude Include="..\..\..\src\Pad.h" />
-    <ClInclude Include="..\..\..\src\Registers.h" />
-    <ClInclude Include="..\..\..\src\Sound.h" />
-    <ClInclude Include="..\..\..\src\SoundSDL.h" />
-    <ClInclude Include="..\..\..\src\Video.h" />
+    <ClInclude Include="..\..\..\src\HW\Cartridge.h" />
+    <ClInclude Include="..\..\..\src\HW\CPU.h" />
+    <ClInclude Include="..\..\..\src\HW\Debugger.h" />
+    <ClInclude Include="..\..\..\src\HW\Def.h" />
+    <ClInclude Include="..\..\..\src\HW\Instructions.h" />
+    <ClInclude Include="..\..\..\src\HW\InstructionsCycles.h" />
+    <ClInclude Include="..\..\..\src\HW\InstructionsLength.h" />
+    <ClInclude Include="..\..\..\src\HW\InstructionsName.h" />
+    <ClInclude Include="..\..\..\src\HW\ISMSScreenDrawable.h" />
+    <ClInclude Include="..\..\..\src\HW\Log.h" />
+    <ClInclude Include="..\..\..\src\HW\Memory.h" />
+    <ClInclude Include="..\..\..\src\HW\Pad.h" />
+    <ClInclude Include="..\..\..\src\HW\Registers.h" />
+    <ClInclude Include="..\..\..\src\HW\SMSException.h" />
+    <ClInclude Include="..\..\..\src\HW\Sound.h" />
+    <ClInclude Include="..\..\..\src\HW\SoundSDL.h" />
+    <ClInclude Include="..\..\..\src\HW\Video.h" />
+    <ClInclude Include="..\..\..\src\Sms_Snd_Emu-0.1.1\blargg_common.h" />
+    <ClInclude Include="..\..\..\src\Sms_Snd_Emu-0.1.1\Blip_Buffer.h" />
+    <ClInclude Include="..\..\..\src\Sms_Snd_Emu-0.1.1\Blip_Synth.h" />
+    <ClInclude Include="..\..\..\src\Sms_Snd_Emu-0.1.1\boost\array.hpp" />
+    <ClInclude Include="..\..\..\src\Sms_Snd_Emu-0.1.1\boost\config.hpp" />
+    <ClInclude Include="..\..\..\src\Sms_Snd_Emu-0.1.1\boost\cstdint.hpp" />
+    <ClInclude Include="..\..\..\src\Sms_Snd_Emu-0.1.1\boost\scoped_ptr.hpp" />
+    <ClInclude Include="..\..\..\src\Sms_Snd_Emu-0.1.1\boost\static_assert.hpp" />
+    <ClInclude Include="..\..\..\src\Sms_Snd_Emu-0.1.1\Sms_Apu.h" />
+    <ClInclude Include="..\..\..\src\Sms_Snd_Emu-0.1.1\Sms_Oscs.h" />
+    <ClInclude Include="..\..\..\src\Sms_Snd_Emu-0.1.1\Sound_Writer.hpp" />
+    <ClInclude Include="..\..\..\src\Sms_Snd_Emu-0.1.1\Stereo_Buffer.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\..\src\Cartridge.cpp" />
-    <ClCompile Include="..\..\..\src\CPU.cpp" />
-    <ClCompile Include="..\..\..\src\Debugger.cpp" />
-    <ClCompile Include="..\..\..\src\GBException.cpp" />
-    <ClCompile Include="..\..\..\src\Gb_Snd_Emu-0.1.4\Basic_Gb_Apu.cpp" />
-    <ClCompile Include="..\..\..\src\Gb_Snd_Emu-0.1.4\gb_apu\Blip_Buffer.cpp" />
-    <ClCompile Include="..\..\..\src\Gb_Snd_Emu-0.1.4\gb_apu\Gb_Apu.cpp" />
-    <ClCompile Include="..\..\..\src\Gb_Snd_Emu-0.1.4\gb_apu\Gb_Oscs.cpp" />
-    <ClCompile Include="..\..\..\src\Gb_Snd_Emu-0.1.4\gb_apu\Multi_Buffer.cpp" />
-    <ClCompile Include="..\..\..\src\Gb_Snd_Emu-0.1.4\Sound_Queue.cpp" />
-    <ClCompile Include="..\..\..\src\Gb_Snd_Emu-0.1.4\Wave_Writer.cpp" />
     <ClCompile Include="..\..\..\src\GUI\3D\Array.cpp" />
     <ClCompile Include="..\..\..\src\GUI\3D\Camera.cpp" />
     <ClCompile Include="..\..\..\src\GUI\3D\Geo.cpp" />
@@ -79,6 +70,7 @@
     <ClCompile Include="..\..\..\src\GUI\DebuggerDialog.cpp" />
     <ClCompile Include="..\..\..\src\GUI\EmulationThread.cpp" />
     <ClCompile Include="..\..\..\src\GUI\InputTextCtrl.cpp" />
+    <ClCompile Include="..\..\..\src\GUI\Joystick.cpp" />
     <ClCompile Include="..\..\..\src\GUI\MainApp.cpp" />
     <ClCompile Include="..\..\..\src\GUI\MainFrame.cpp" />
     <ClCompile Include="..\..\..\src\GUI\RendererBase.cpp">
@@ -89,16 +81,26 @@
     <ClCompile Include="..\..\..\src\GUI\RendererSW.cpp" />
     <ClCompile Include="..\..\..\src\GUI\Settings.cpp" />
     <ClCompile Include="..\..\..\src\GUI\SettingsDialog.cpp" />
-    <ClCompile Include="..\..\..\src\Instructions.cpp" />
-    <ClCompile Include="..\..\..\src\InstructionsDef.cpp" />
-    <ClCompile Include="..\..\..\src\Log.cpp" />
-    <ClCompile Include="..\..\..\src\MBC.cpp" />
-    <ClCompile Include="..\..\..\src\Memory.cpp" />
-    <ClCompile Include="..\..\..\src\Pad.cpp" />
-    <ClCompile Include="..\..\..\src\Registers.cpp" />
-    <ClCompile Include="..\..\..\src\Sound.cpp" />
-    <ClCompile Include="..\..\..\src\SoundSDL.cpp" />
-    <ClCompile Include="..\..\..\src\Video.cpp" />
+    <ClCompile Include="..\..\..\src\HW\Cartridge.cpp" />
+    <ClCompile Include="..\..\..\src\HW\CPU.cpp" />
+    <ClCompile Include="..\..\..\src\HW\CPU.Opcode.cpp" />
+    <ClCompile Include="..\..\..\src\HW\Debugger.cpp" />
+    <ClCompile Include="..\..\..\src\HW\Instructions.cpp" />
+    <ClCompile Include="..\..\..\src\HW\InstructionsCycles.cpp" />
+    <ClCompile Include="..\..\..\src\HW\InstructionsLength.cpp" />
+    <ClCompile Include="..\..\..\src\HW\InstructionsName.cpp" />
+    <ClCompile Include="..\..\..\src\HW\Log.cpp" />
+    <ClCompile Include="..\..\..\src\HW\Memory.cpp" />
+    <ClCompile Include="..\..\..\src\HW\Pad.cpp" />
+    <ClCompile Include="..\..\..\src\HW\Registers.cpp" />
+    <ClCompile Include="..\..\..\src\HW\SMSException.cpp" />
+    <ClCompile Include="..\..\..\src\HW\Sound.cpp" />
+    <ClCompile Include="..\..\..\src\HW\SoundSDL.cpp" />
+    <ClCompile Include="..\..\..\src\HW\Video.cpp" />
+    <ClCompile Include="..\..\..\src\Sms_Snd_Emu-0.1.1\Blip_Buffer.cpp" />
+    <ClCompile Include="..\..\..\src\Sms_Snd_Emu-0.1.1\Sms_Apu.cpp" />
+    <ClCompile Include="..\..\..\src\Sms_Snd_Emu-0.1.1\Sound_Writer.cpp" />
+    <ClCompile Include="..\..\..\src\Sms_Snd_Emu-0.1.1\Stereo_Buffer.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="..\..\..\src\GUI\Windows\DMGBoy.rc" />
@@ -107,7 +109,7 @@
     <ProjectGuid>{F8EA2224-322E-4208-BDE5-3DF28CEB5100}</ProjectGuid>
     <RootNamespace>GB</RootNamespace>
     <Keyword>Win32Proj</Keyword>
-    <ProjectName>DMGBoy</ProjectName>
+    <ProjectName>MarkSystem</ProjectName>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
@@ -159,7 +161,7 @@
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
-      <AdditionalIncludeDirectories>$(WXWIN)\include\msvc;$(WXWIN)\include;$(GBSNDEMU);$(GLEW)\include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(WXWIN)\include\msvc;$(WXWIN)\include;$(SMSSNDEMU);$(GLEW)\include</AdditionalIncludeDirectories>
       <PrecompiledHeaderFile>
       </PrecompiledHeaderFile>
       <PrecompiledHeaderOutputFile>
@@ -184,7 +186,7 @@
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
-      <AdditionalIncludeDirectories>$(WXWIN)\include\msvc;$(WXWIN)\include;$(GBSNDEMU);$(GLEW)\include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(WXWIN)\include\msvc;$(WXWIN)\include;$(SMSSNDEMU);$(GLEW)\include</AdditionalIncludeDirectories>
       <PrecompiledHeaderFile>
       </PrecompiledHeaderFile>
       <PrecompiledHeaderOutputFile>

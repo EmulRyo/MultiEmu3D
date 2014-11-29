@@ -85,6 +85,7 @@
 	const bool false = 0;
 #endif
 
+#include <stdint.h>
 #include <stddef.h>
 #include <assert.h>
 

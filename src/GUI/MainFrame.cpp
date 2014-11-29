@@ -17,7 +17,6 @@
 
 #include <iostream>
 #include <string>
-#include <math.h>
 #include <wx/toolbar.h>
 #include <wx/stdpaths.h>
 #include <wx/filename.h>
@@ -593,6 +592,11 @@ void MainFrame::OnTimer(wxTimerEvent &event)
 {
     m_renderer->OnRefreshRealScreen();
     m_emulation->UpdatePad();
+}
+
+double round(double number)
+{
+    return number < 0.0 ? ceil(number - 0.5) : floor(number + 0.5);
 }
 
 void MainFrame::OnResize(wxSizeEvent &event)
