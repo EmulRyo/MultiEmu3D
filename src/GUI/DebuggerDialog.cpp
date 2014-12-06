@@ -252,8 +252,8 @@ wxSizer *DebuggerDialog::CreateFlagsAndInputControls() {
     m_input[1] = new wxCheckBox(this, wxID_ANY, "D");
     m_input[2] = new wxCheckBox(this, wxID_ANY, "L");
     m_input[3] = new wxCheckBox(this, wxID_ANY, "R");
-    m_input[4] = new wxCheckBox(this, wxID_ANY, "A");
-    m_input[5] = new wxCheckBox(this, wxID_ANY, "B");
+    m_input[4] = new wxCheckBox(this, wxID_ANY, "1");
+    m_input[5] = new wxCheckBox(this, wxID_ANY, "2");
     
     wxFlexGridSizer *grid = new wxFlexGridSizer(9, 2, 12);
     grid->SetFlexibleDirection(wxHORIZONTAL);

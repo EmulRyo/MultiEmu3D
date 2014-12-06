@@ -18,6 +18,7 @@
 #ifndef __EMULATIONTHREAD_H__
 #define __EMULATIONTHREAD_H__
 
+#include <sstream>
 #include <wx/thread.h>
 #include <wx/stopwatch.h>
 
@@ -33,6 +34,15 @@ class Debugger;
 class Joystick;
 class ISMSScreenDrawable;
 class wxMutex;
+
+#define MAX_REWINDS 600
+
+struct Rewind {
+    bool enabled;
+    std::stringstream *data[MAX_REWINDS];
+    int tail, length;
+    int visible;
+};
 
 class EmulationThread : public wxThread
 {
@@ -69,11 +79,15 @@ private:
     bool m_finished;
     EnumSpeed m_speed;
     bool m_soundEnabled;
+    ISMSScreenDrawable *m_screen;
+    
+    Rewind m_rewind;
     
 	enumEmuStates emuState;
     
     void LoadZip(const wxString zipPath, u8 **buffer, unsigned long *size, bool *gg);
     void PadSetKeys(int* keys1, int* keys2);
+    void UpdateRewindScreen();
 };
 
 #endif

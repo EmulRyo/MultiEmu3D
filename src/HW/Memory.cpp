@@ -164,12 +164,12 @@ void Memory::MemoryControlW(u8 value) {
     m_pad->SetControl(value);
 }
 
-void Memory::SaveMemory(ofstream * file)
+void Memory::SaveMemory(ostream *stream)
 {
-	file->write((char *)&memory[0x0000], SIZE_MEM);
+	stream->write((char *)&memory[0x0000], SIZE_MEM);
 }
 
-void Memory::LoadMemory(ifstream * file)
+void Memory::LoadMemory(istream *stream)
 {
-	file->read((char *)&memory[0x0000], SIZE_MEM);
+	stream->read((char *)&memory[0x0000], SIZE_MEM);
 }

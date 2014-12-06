@@ -152,48 +152,48 @@ string Registers::ToString()
 	return out.str();
 }
 
-void Registers::SaveRegs(ofstream *file)
+void Registers::SaveRegs(ostream *stream)
 {
-	file->write((char *)&m_af.d, sizeof(u16));
-	file->write((char *)&m_bc.d, sizeof(u16));
-	file->write((char *)&m_de.d, sizeof(u16));
-	file->write((char *)&m_hl.d, sizeof(u16));
-    file->write((char *)&m_ix.d, sizeof(u16));
-    file->write((char *)&m_iy.d, sizeof(u16));
-    file->write((char *)&m_af2.d, sizeof(u16));
-    file->write((char *)&m_bc2.d, sizeof(u16));
-    file->write((char *)&m_de2.d, sizeof(u16));
-    file->write((char *)&m_hl2.d, sizeof(u16));
-    file->write((char *)&m_r, sizeof(u8));
-    file->write((char *)&m_i, sizeof(u8));
-	file->write((char *)&m_pc, sizeof(u16));
-	file->write((char *)&m_sp, sizeof(u16));
-	file->write((char *)&m_iff1, sizeof(bool));
-	file->write((char *)&m_iff2, sizeof(bool));
-    file->write((char *)&m_intMode, sizeof(u8));
-	file->write((char *)&m_halt, sizeof(bool));
-    file->write((char *)&m_intPending, sizeof(bool));
+	stream->write((char *)&m_af.d, sizeof(u16));
+	stream->write((char *)&m_bc.d, sizeof(u16));
+	stream->write((char *)&m_de.d, sizeof(u16));
+	stream->write((char *)&m_hl.d, sizeof(u16));
+    stream->write((char *)&m_ix.d, sizeof(u16));
+    stream->write((char *)&m_iy.d, sizeof(u16));
+    stream->write((char *)&m_af2.d, sizeof(u16));
+    stream->write((char *)&m_bc2.d, sizeof(u16));
+    stream->write((char *)&m_de2.d, sizeof(u16));
+    stream->write((char *)&m_hl2.d, sizeof(u16));
+    stream->write((char *)&m_r, sizeof(u8));
+    stream->write((char *)&m_i, sizeof(u8));
+	stream->write((char *)&m_pc, sizeof(u16));
+	stream->write((char *)&m_sp, sizeof(u16));
+	stream->write((char *)&m_iff1, sizeof(bool));
+	stream->write((char *)&m_iff2, sizeof(bool));
+    stream->write((char *)&m_intMode, sizeof(u8));
+	stream->write((char *)&m_halt, sizeof(bool));
+    stream->write((char *)&m_intPending, sizeof(bool));
 }
 
-void Registers::LoadRegs(ifstream *file)
+void Registers::LoadRegs(istream *stream)
 {
-	file->read((char *)&m_af.d, sizeof(u16));
-	file->read((char *)&m_bc.d, sizeof(u16));
-	file->read((char *)&m_de.d, sizeof(u16));
-	file->read((char *)&m_hl.d, sizeof(u16));
-    file->read((char *)&m_ix.d, sizeof(u16));
-	file->read((char *)&m_iy.d, sizeof(u16));
-    file->read((char *)&m_af2.d, sizeof(u16));
-    file->read((char *)&m_bc2.d, sizeof(u16));
-    file->read((char *)&m_de2.d, sizeof(u16));
-    file->read((char *)&m_hl2.d, sizeof(u16));
-    file->read((char *)&m_r, sizeof(u8));
-    file->read((char *)&m_i, sizeof(u8));
-	file->read((char *)&m_pc, sizeof(u16));
-	file->read((char *)&m_sp, sizeof(u16));
-	file->read((char *)&m_iff1, sizeof(bool));
-	file->read((char *)&m_iff2, sizeof(bool));
-    file->read((char *)&m_intMode, sizeof(u8));
-	file->read((char *)&m_halt, sizeof(bool));
-    file->read((char *)&m_intPending, sizeof(bool));
+	stream->read((char *)&m_af.d, sizeof(u16));
+	stream->read((char *)&m_bc.d, sizeof(u16));
+	stream->read((char *)&m_de.d, sizeof(u16));
+	stream->read((char *)&m_hl.d, sizeof(u16));
+    stream->read((char *)&m_ix.d, sizeof(u16));
+	stream->read((char *)&m_iy.d, sizeof(u16));
+    stream->read((char *)&m_af2.d, sizeof(u16));
+    stream->read((char *)&m_bc2.d, sizeof(u16));
+    stream->read((char *)&m_de2.d, sizeof(u16));
+    stream->read((char *)&m_hl2.d, sizeof(u16));
+    stream->read((char *)&m_r, sizeof(u8));
+    stream->read((char *)&m_i, sizeof(u8));
+	stream->read((char *)&m_pc, sizeof(u16));
+	stream->read((char *)&m_sp, sizeof(u16));
+	stream->read((char *)&m_iff1, sizeof(bool));
+	stream->read((char *)&m_iff2, sizeof(bool));
+    stream->read((char *)&m_intMode, sizeof(u8));
+	stream->read((char *)&m_halt, sizeof(bool));
+    stream->read((char *)&m_intPending, sizeof(bool));
 }

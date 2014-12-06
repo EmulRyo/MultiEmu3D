@@ -59,8 +59,8 @@ public:
 	u8 Read(u16 address);
 	void Write(u16 address, u8 value);
 	
-	void SaveStateMBC(std::ofstream *file);
-	void LoadStateMBC(std::ifstream *file);
+	void SaveStateMBC(std::ostream *stream);
+	void LoadStateMBC(std::istream *stream);
     
     void Extract();
     

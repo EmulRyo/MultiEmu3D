@@ -72,6 +72,10 @@ void RendererBase::OnClear()
 	PageFlip();
 }
 
+u8* RendererBase::GetBufferPtr() {
+    return m_frontBuffer;
+}
+
 void RendererBase::PageFlip()
 {
     u8 *aux = m_frontBuffer;

@@ -57,8 +57,8 @@ public:
 	}
     void PortW(u8 port, u8 value);
     u8   PortR(u8 port);
-	void SaveMemory(std::ofstream *file);
-	void LoadMemory(std::ifstream *file);
+	void SaveMemory(std::ostream *stream);
+	void LoadMemory(std::istream *stream);
     
 private:
     u8 memory[SIZE_MEM];

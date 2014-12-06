@@ -47,6 +47,8 @@ public:
 	void Reset();
     int  GetElapsedCycles();
     void SetGGMode(bool value);
+    void LoadStateFromRAM(std::istream *stream);
+    void SaveStateToRAM(std::ostream *stream);
 	void SaveState(std::string saveDirectory, int numSlot);
 	void LoadState(std::string loadDirectory, int numSlot);
     

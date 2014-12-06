@@ -76,8 +76,8 @@ public:
     bool GetIE0();
     bool GetIE1();
     u16  GetAddress();
-    void SaveState(std::ofstream *file);
-    void LoadState(std::ifstream *file);
+    void SaveState(std::ostream *file);
+    void LoadState(std::istream *file);
     void SetGGMode(bool value);
     
 private:

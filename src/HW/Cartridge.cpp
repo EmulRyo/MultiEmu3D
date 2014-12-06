@@ -142,12 +142,12 @@ bool Cartridge::IsLoaded()
 	return m_isLoaded;
 }
 
-void Cartridge::SaveStateMBC(ofstream * file)
+void Cartridge::SaveStateMBC(ostream *stream)
 {
 	
 }
 
-void Cartridge::LoadStateMBC(ifstream * file)
+void Cartridge::LoadStateMBC(istream *stream)
 {
 	
 }

@@ -600,42 +600,46 @@ bool Video::GetIE1() {
     return (BIT4(m_regs[0]) != 0);
 }
 
-void Video::SaveState(ofstream *file) {
-    file->write((char *)&m_regs[0],             sizeof(u8)*16);
-    file->write((char *)&m_palettes[0],         sizeof(u8)*32);
-    file->write((char *)&m_rgbPalettes[0][0],   sizeof(u8)*32*3);
-    file->write((char *)&m_address,             sizeof(u16));
-    file->write((char *)&m_numWrite,            sizeof(u8));
-    file->write((char *)&m_partialAddress,      sizeof(u8));
-    file->write((char *)&m_line,                sizeof(u16));
-    file->write((char *)&m_cycles,              sizeof(u32));
-    file->write((char *)&m_cyclesLine,          sizeof(u16));
-    file->write((char *)&m_status,              sizeof(u8));
-    file->write((char *)&m_lineIrqCounter,      sizeof(s16));
-    file->write((char *)&m_vramAddress,         sizeof(bool));
-    file->write((char *)&m_pendingVIRQ,         sizeof(bool));
-    file->write((char *)&m_pendingLIRQ,         sizeof(bool));
-    file->write((char *)&m_mode,                sizeof(t_VDPMODES));
+void Video::SaveState(ostream *stream) {
+    stream->write((char *)&m_regs[0],             sizeof(u8)*16);
+    stream->write((char *)&m_palettes[0],         sizeof(u8)*64);
+    stream->write((char *)&m_rgbPalettes[0][0],   sizeof(u8)*32*3);
+    stream->write((char *)&m_address,             sizeof(u16));
+    stream->write((char *)&m_numWrite,            sizeof(u8));
+    stream->write((char *)&m_partialAddress,      sizeof(u8));
+    stream->write((char *)&m_line,                sizeof(u16));
+    stream->write((char *)&m_cycles,              sizeof(u32));
+    stream->write((char *)&m_cyclesLine,          sizeof(u16));
+    stream->write((char *)&m_status,              sizeof(u8));
+    stream->write((char *)&m_lineIrqCounter,      sizeof(s16));
+    stream->write((char *)&m_vramAddress,         sizeof(bool));
+    stream->write((char *)&m_readBuffer,          sizeof(u8));
+    stream->write((char *)&m_pendingVIRQ,         sizeof(bool));
+    stream->write((char *)&m_pendingLIRQ,         sizeof(bool));
+    stream->write((char *)&m_mode,                sizeof(t_VDPMODES));
+    stream->write((char *)&m_latch,               sizeof(u8));
     
-	file->write((char *)&m_memory[0x0000], VDP_MEM);
+	stream->write((char *)&m_memory[0x0000], VDP_MEM);
 }
 
-void Video::LoadState(ifstream *file) {
-    file->read((char *)&m_regs[0],             sizeof(u8)*16);
-    file->read((char *)&m_palettes[0],         sizeof(u8)*32);
-    file->read((char *)&m_rgbPalettes[0][0],   sizeof(u8)*32*3);
-    file->read((char *)&m_address,             sizeof(u16));
-    file->read((char *)&m_numWrite,            sizeof(u8));
-    file->read((char *)&m_partialAddress,      sizeof(u8));
-    file->read((char *)&m_line,                sizeof(u16));
-    file->read((char *)&m_cycles,              sizeof(u32));
-    file->read((char *)&m_cyclesLine,          sizeof(u16));
-    file->read((char *)&m_status,              sizeof(u8));
-    file->read((char *)&m_lineIrqCounter,      sizeof(s16));
-    file->read((char *)&m_vramAddress,         sizeof(bool));
-    file->read((char *)&m_pendingVIRQ,         sizeof(bool));
-    file->read((char *)&m_pendingLIRQ,         sizeof(bool));
-    file->read((char *)&m_mode,                sizeof(t_VDPMODES));
+void Video::LoadState(istream *stream) {
+    stream->read((char *)&m_regs[0],             sizeof(u8)*16);
+    stream->read((char *)&m_palettes[0],         sizeof(u8)*64);
+    stream->read((char *)&m_rgbPalettes[0][0],   sizeof(u8)*32*3);
+    stream->read((char *)&m_address,             sizeof(u16));
+    stream->read((char *)&m_numWrite,            sizeof(u8));
+    stream->read((char *)&m_partialAddress,      sizeof(u8));
+    stream->read((char *)&m_line,                sizeof(u16));
+    stream->read((char *)&m_cycles,              sizeof(u32));
+    stream->read((char *)&m_cyclesLine,          sizeof(u16));
+    stream->read((char *)&m_status,              sizeof(u8));
+    stream->read((char *)&m_lineIrqCounter,      sizeof(s16));
+    stream->read((char *)&m_vramAddress,         sizeof(bool));
+    stream->read((char *)&m_readBuffer,          sizeof(u8));
+    stream->read((char *)&m_pendingVIRQ,         sizeof(bool));
+    stream->read((char *)&m_pendingLIRQ,         sizeof(bool));
+    stream->read((char *)&m_mode,                sizeof(t_VDPMODES));
+    stream->read((char *)&m_latch,               sizeof(u8));
     
-	file->read((char *)&m_memory[0x0000], VDP_MEM);
+	stream->read((char *)&m_memory[0x0000], VDP_MEM);
 }

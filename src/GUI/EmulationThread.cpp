@@ -20,6 +20,7 @@
 #include <wx/zipstrm.h>
 #include <wx/stdpaths.h>
 #include <wx/msgdlg.h>
+#include "../HW/ISMSScreenDrawable.h"
 #include "../HW/Pad.h"
 #include "../HW/Sound.h"
 #include "../HW/Video.h"
@@ -35,6 +36,8 @@ using namespace std;
 EmulationThread::EmulationThread()
 {
     mutex = new wxMutex();
+    
+    m_screen = NULL;
     
 	sound = new Sound();
     video = new Video(NULL);
@@ -67,6 +70,10 @@ EmulationThread::EmulationThread()
     m_finished = false;
     m_speed = SpeedNormal;
     m_soundEnabled = sound->GetEnabled();
+    
+    m_rewind.tail = 0;
+    m_rewind.length = 0;
+    m_rewind.enabled = false;
 }
 
 EmulationThread::~EmulationThread() {
@@ -79,6 +86,10 @@ EmulationThread::~EmulationThread() {
 		delete cartridge;
     
     delete joystick;
+    
+    for (int i=0; i<m_rewind.length; i++) {
+        delete m_rewind.data[i];
+    }
 }
 
 void EmulationThread::SetState(enumEmuStates state)
@@ -120,7 +131,23 @@ wxThread::ExitCode EmulationThread::Entry()
 			wxMutexLocker lock(*mutex);
 			if (emuState == Playing)
             {
-			    cpu->ExecuteOneFrame();
+                if (!m_rewind.enabled) {
+                    cpu->ExecuteOneFrame();
+                    
+                    if (m_rewind.length >= MAX_REWINDS) {
+                        delete m_rewind.data[m_rewind.tail];
+                    }
+                    else
+                        m_rewind.length++;
+                    
+                    m_rewind.data[m_rewind.tail] = new stringstream();
+                    u8 *data = m_screen->GetBufferPtr();
+                    int size = SMS_SCREEN_W*SMS_SCREEN_H*3;
+                    m_rewind.data[m_rewind.tail]->write((char *)data, size);
+                    cpu->SaveStateToRAM(m_rewind.data[m_rewind.tail]);
+                    
+                    m_rewind.tail = (m_rewind.tail + 1) % MAX_REWINDS;
+                }
             }
 		} // Desbloquear el mutex
         
@@ -260,11 +287,20 @@ void EmulationThread::ApplySettings()
     sound->SetEnabled(SettingsGetSoundEnabled());
 }
 
-void EmulationThread::SetScreen(ISMSScreenDrawable * screen)
+void EmulationThread::SetScreen(ISMSScreenDrawable *screen)
 {
     wxMutexLocker lock(*mutex);
-
+    
+    m_screen = screen;
     video->SetScreen(screen);
+}
+
+void EmulationThread::UpdateRewindScreen() {
+    u8 *data = m_screen->GetBufferPtr();
+    int size = SMS_SCREEN_W*SMS_SCREEN_H*3;
+    stringstream *stream = m_rewind.data[m_rewind.visible];
+    stream->seekg(0, stream->beg);
+    stream->read((char *)data, size);
 }
 
 void EmulationThread::UpdatePad()
@@ -276,13 +312,44 @@ void EmulationThread::UpdatePad()
             buttonsState[i] = wxGetKeyState(keysUsed[i]);
         joystick->UpdateButtonsState(buttonsState);
         
-        wxMutexLocker lock(*mutex);
-        pad->SetButtonsStatePad1(buttonsState);
-        pad->SetButtonsStatePad2(&buttonsState[6]);
-        pad->SetPauseState(wxGetKeyState(keysUsed[12]));
-        
-        bool space = wxGetKeyState(WXK_SPACE);
-        SetSpeed(space ? SpeedMax : SpeedNormal);
+        if (m_rewind.enabled) {
+            if (buttonsState[4]) {
+                m_rewind.enabled = false;
+                cpu->LoadStateFromRAM(m_rewind.data[m_rewind.visible]);
+            }
+            else if (buttonsState[5])
+                m_rewind.enabled = false;
+            else if (buttonsState[2]) {
+                if (m_rewind.visible != m_rewind.tail) {
+                    m_rewind.visible = (m_rewind.visible + MAX_REWINDS-1) % MAX_REWINDS;
+                    UpdateRewindScreen();
+                }
+            }
+            else if (buttonsState[3]) {
+                int last = (m_rewind.tail + MAX_REWINDS-1) % MAX_REWINDS;
+                if (m_rewind.visible != last) {
+                    m_rewind.visible = (m_rewind.visible + 1) % MAX_REWINDS;
+                    UpdateRewindScreen();
+                }
+            }
+        }
+        else {
+            bool back = wxGetKeyState(WXK_BACK);
+            
+            if (!back) {
+                wxMutexLocker lock(*mutex);
+                pad->SetButtonsStatePad1(buttonsState);
+                pad->SetButtonsStatePad2(&buttonsState[6]);
+                pad->SetPauseState(wxGetKeyState(keysUsed[12]));
+                
+                bool space = wxGetKeyState(WXK_SPACE);
+                SetSpeed(space ? SpeedMax : SpeedNormal);
+            }
+            else {
+                m_rewind.enabled = true;
+                m_rewind.visible = (m_rewind.tail + MAX_REWINDS-1) % MAX_REWINDS;
+            }
+        }
         //SetSpeed(SpeedMax);
     }
 }

@@ -42,6 +42,7 @@ public:
 	void OnRefreshGBScreen();
     void OnRefreshRealScreen();
     void OnDrawPixel(u8 r, u8 g, u8 b, int x, int y);
+    u8*  GetBufferPtr();
     void OnSizeChanged(int x, int y, int width, int height);
     virtual void OnChangeView() = 0;
     
@@ -59,7 +60,6 @@ private:
     void PageFlip();
 };
 
-// A drop target that adds filenames to a list box
 class DnDFile : public wxFileDropTarget {
 public:
 	DnDFile(wxWindow *parent);

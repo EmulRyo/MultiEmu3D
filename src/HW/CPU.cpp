@@ -146,6 +146,20 @@ void CPU::Interrupts(Instructions &inst) {
     }
 }
 
+void CPU::LoadStateFromRAM(istream *stream) {
+    LoadRegs(stream);
+    LoadMemory(stream);
+    m_v->LoadState(stream);
+    m_c->LoadStateMBC(stream);
+}
+
+void CPU::SaveStateToRAM(ostream *stream) {
+    SaveRegs(stream);
+    SaveMemory(stream);
+    m_v->SaveState(stream);
+    m_c->SaveStateMBC(stream);
+}
+
 void CPU::SaveState(string saveDirectory, int numSlot)
 {
 	if (m_c == NULL)
