@@ -80,6 +80,9 @@ private:
     bool         m_restoreTo3D;
     float        m_filter;
     float        m_minZ;
+    GLubyte      m_black[4];
+    GLubyte      m_white[4], m_whiteOpaque[4];
+    GLubyte      m_blue[4];
     
     Geo          m_geo;
 	
@@ -94,7 +97,14 @@ private:
     void TryToLoad();
     void RenderOverlay();
     void DrawRewind(int winW, int winH);
-    void DrawRectangle(float r, float g, float b, float x0, float x1, float y0, float y1);
+    void DrawIcon(int winW, int winH);
+    void DrawIconRewindL(int x, int y);
+    void DrawIconRewindR(int x, int y);
+    void DrawIconPlay(int x, int y);
+    void DrawIconPause(int x, int y);
+    void DrawIconStop(int x, int y);
+    void DrawRectangle(GLubyte *rgba, float x0, float x1, float y0, float y1);
+    void DrawTriangle(GLubyte *rgba, float x0, float y0, float x1, float y1, float x2, float y2);
 };
 
 #endif // #if wxUSE_GLCANVAS

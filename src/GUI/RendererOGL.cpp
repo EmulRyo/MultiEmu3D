@@ -100,6 +100,11 @@ RendererOGL::RendererOGL(MainFrame *parent, wxWindowID id,
 #else
     SetBackgroundStyle(wxBG_STYLE_PAINT);
 #endif
+    
+    m_black[0] =   0; m_black[1] =   0; m_black[2] =   0; m_black[3] = 255;
+    m_white[0] = 255; m_white[1] = 255; m_white[2] = 255; m_white[3] = 200;
+    m_blue[0]  =   0; m_blue[1]  = 162; m_blue[2]  = 255; m_blue[3]  = 230;
+    for (int i=0; i<4; i++) m_whiteOpaque[i] = 255;
 }
 
 RendererOGL::~RendererOGL()
@@ -368,76 +373,6 @@ void RendererOGL::Render()
     
     glFlush();
     SwapBuffers();
-}
-
-void RendererOGL::RenderOverlay() {
-    int winW, winH;
-    GetClientSize(&winW, &winH);
-    
-    glPushAttrib(GL_ALL_ATTRIB_BITS);
-    
-    glMatrixMode(GL_MODELVIEW);
-    glLoadIdentity();
-    glMatrixMode(GL_PROJECTION);
-    glLoadIdentity();
-    gluOrtho2D(0, winW, winH, 0);
-    glDisable(GL_DEPTH_TEST);
-    glDisable(GL_CULL_FACE);
-    glDisable(GL_TEXTURE_2D);
-    glDisable(GL_LIGHTING);
-    glDisable(GL_LINE_SMOOTH);
-    glDisable(GL_POLYGON_SMOOTH);
-    glDisable(GL_BLEND);
-    glHint(GL_LINE_SMOOTH_HINT, GL_FASTEST);
-    glHint(GL_POLYGON_SMOOTH_HINT, GL_FASTEST);
-    
-    if (m_rewindValue >= 0)
-        DrawRewind(winW, winH);
-    
-    glPopAttrib();
-}
-
-void RendererOGL::DrawRewind(int winW, int winH) {
-    int gap = 12;
-    int barHeight = 10;
-    int cursorWidth = 6;
-    int cursorHeightAdd = 3;
-    
-    float x0 = gap+0.5f;
-    float x1 = winW-gap+0.5f;
-    float y0 = winH-gap-barHeight+0.5f;
-    float y1 = winH-gap+0.5f;
-    float x2 = (int)(x0 - 0.5f + (x1-x0) * m_rewindValue) + 0.5f;
-    float x3 = (int)(x2 - 0.5f - cursorWidth/2.0f) + 0.5f;
-    float x4 = (int)(x2 - 0.5f + cursorWidth/2.0f) + 0.5f;
-    float y3 = (int)(y0 - 0.5f - cursorHeightAdd) + 0.5f;
-    float y4 = (int)(y1 - 0.5f + cursorHeightAdd) + 0.5f;
-    
-    glLineWidth(1.0);
-    glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-    glBegin(GL_QUADS);
-    DrawRectangle(0, 0, 0, x0+1, x1-1, y0+1, y1-1);
-    DrawRectangle(1, 1, 1, x0, x1, y0, y1);
-    glEnd();
-    
-    glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-    glBegin(GL_QUADS);
-    DrawRectangle(0, 0.635, 1, x0+1, x2, y0+1, y1-1);
-    DrawRectangle(1, 1, 1, x3, x4, y3, y4);
-    glEnd();
-    
-    glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-    glBegin(GL_QUADS);
-    DrawRectangle(0, 0, 0, x3, x4, y3, y4);
-    glEnd();
-}
-
-void RendererOGL::DrawRectangle(float r, float g, float b, float x0, float x1, float y0, float y1) {
-    glColor3f(r, g, b);
-    glVertex2f(x0, y0);
-    glVertex2f(x0, y1);
-    glVertex2f(x1, y1);
-    glVertex2f(x1, y0);
 }
 
 void RendererOGL::ScreenDraw() {

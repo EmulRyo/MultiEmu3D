@@ -100,19 +100,28 @@ void EmulationThread::SetState(enumEmuStates state)
     
     this->emuState = state;
     
-    if (state == Playing)
+    if (state == Playing) {
         sound->SetEnabled(SettingsGetSoundEnabled());
+        ((RendererBase *)m_screen)->SetIcon(Renderer::Play);
+    }
     else
         sound->SetEnabled(false);
     
     if (state == Stopped)
     {
+        ((RendererBase *)m_screen)->SetIcon(Renderer::Stop);
+        ((RendererBase *)m_screen)->SetRewindValue(-1);
+        m_rewind.enabled = false;
+        
         if (cartridge)
             cartridge->Extract();
 #ifdef MAKEGBLOG
         cpu->SaveLog();
 #endif
         cpu->Reset();
+    }
+    else if (state == Paused) {
+        ((RendererBase *)m_screen)->SetIcon(Renderer::Pause);
     }
 }
 
@@ -337,15 +346,18 @@ void EmulationThread::UpdatePad()
                 m_rewind.enabled = false;
                 cpu->LoadStateFromRAM(m_rewind.data[m_rewind.visible]);
                 m_rewind.tail = m_rewind.visible;
+                ((RendererBase *)m_screen)->SetIcon(Renderer::Play);
                 SetRewindPosition();
             }
             else if (buttonsState[B2]) {
                 m_rewind.enabled = false;
+                ((RendererBase *)m_screen)->SetIcon(Renderer::Play);
                 SetRewindPosition();
             }
             else if (buttonsState[LEFT]) {
                 if (m_rewind.visible != m_rewind.head) {
                     m_rewind.visible = (m_rewind.visible + MAX_REWINDS-1) % MAX_REWINDS;
+                    ((RendererBase *)m_screen)->SetIcon(Renderer::RewindL);
                     SetRewindPosition();
                     UpdateRewindScreen();
                 }
@@ -353,6 +365,7 @@ void EmulationThread::UpdatePad()
             else if (buttonsState[RIGHT]) {
                 if (m_rewind.visible != m_rewind.tail) {
                     m_rewind.visible = (m_rewind.visible + 1) % MAX_REWINDS;
+                    ((RendererBase *)m_screen)->SetIcon(Renderer::RewindR);
                     SetRewindPosition();
                     UpdateRewindScreen();
                 }
@@ -373,6 +386,7 @@ void EmulationThread::UpdatePad()
             else {
                 m_rewind.enabled = true;
                 ((RendererBase *)m_screen)->SetRewindValue(1.0f);
+                ((RendererBase *)m_screen)->SetIcon(Renderer::RewindL);
                 m_rewind.visible = m_rewind.tail;
             }
         }

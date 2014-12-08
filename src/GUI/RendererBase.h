@@ -25,6 +25,10 @@
  * RendererBase Class
  *******************************************************************************/
 
+namespace Renderer {
+    enum Icon { Play, Pause, Stop, RewindL, RewindR };
+};
+
 class RendererBase: public ISMSScreenDrawable {
     
 public:
@@ -38,6 +42,7 @@ public:
     int  GetMinimunWidth();
     int  GetMinimunHeight();
     void SetRewindValue(float value);
+    void SetIcon(Renderer::Icon icon, int frames=120);
 	
 	void OnClear();
 	void OnRefreshGBScreen();
@@ -53,6 +58,8 @@ protected:
     u8 *m_frontBuffer;
     u8 *m_backBuffer;
     float m_rewindValue;
+    int m_iconFrames;
+    Renderer::Icon m_icon;
     int m_x, m_y, m_width, m_height;
     
 private:
