@@ -18,8 +18,6 @@
 #include <iostream>
 #include "Pad.h"
 
-enum e_smspad { UP, DOWN, LEFT, RIGHT, B1, B2 };
-
 Pad::Pad() {
     for (int i=0; i<6; i++) {
         m_buttonsStatePad1[i] = false;

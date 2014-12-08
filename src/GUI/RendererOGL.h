@@ -92,6 +92,9 @@ private:
     bool RestoreTo(Camera &camSrc, Camera &camDst);
     void OnSizeChanged(int x, int y, int width, int height);
     void TryToLoad();
+    void RenderOverlay();
+    void DrawRewind(int winW, int winH);
+    void DrawRectangle(float r, float g, float b, float x0, float x1, float y0, float y1);
 };
 
 #endif // #if wxUSE_GLCANVAS

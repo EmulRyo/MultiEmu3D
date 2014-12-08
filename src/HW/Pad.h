@@ -20,6 +20,8 @@
 
 #include "Def.h"
 
+enum e_smspad { UP, DOWN, LEFT, RIGHT, B1, B2 };
+
 class Pad {
 public:
     Pad();

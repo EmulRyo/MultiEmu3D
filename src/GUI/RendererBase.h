@@ -37,6 +37,7 @@ public:
 	void ChangePalette(bool original);
     int  GetMinimunWidth();
     int  GetMinimunHeight();
+    void SetRewindValue(float value);
 	
 	void OnClear();
 	void OnRefreshGBScreen();
@@ -51,6 +52,7 @@ protected:
     u8 *m_imgBuf2;
     u8 *m_frontBuffer;
     u8 *m_backBuffer;
+    float m_rewindValue;
     int m_x, m_y, m_width, m_height;
     
 private:

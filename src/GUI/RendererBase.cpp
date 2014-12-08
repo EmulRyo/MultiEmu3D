@@ -30,6 +30,7 @@ RendererBase::RendererBase()
     m_x = m_y = 0;
     m_width = SMS_SCREEN_W;
     m_height = SMS_SCREEN_H;
+    m_rewindValue = -1.0f;
 	CreateScreen();
 }
 
@@ -138,6 +139,10 @@ int RendererBase::GetMinimunWidth() {
 
 int RendererBase::GetMinimunHeight() {
     return m_height;
+}
+
+void RendererBase::SetRewindValue(float value) {
+    m_rewindValue = value;
 }
 
 DnDFile::DnDFile(wxWindow * parent)

@@ -40,7 +40,7 @@ class wxMutex;
 struct Rewind {
     bool enabled;
     std::stringstream *data[MAX_REWINDS];
-    int tail, length;
+    int tail, head, length;
     int visible;
 };
 
@@ -88,6 +88,7 @@ private:
     void LoadZip(const wxString zipPath, u8 **buffer, unsigned long *size, bool *gg);
     void PadSetKeys(int* keys1, int* keys2);
     void UpdateRewindScreen();
+    void SetRewindPosition();
 };
 
 #endif

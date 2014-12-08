@@ -30,6 +30,7 @@
 #include "Settings.h"
 #include "EmulationThread.h"
 #include "Joystick.h"
+#include "RendererOGL.h"
 
 using namespace std;
 
@@ -71,7 +72,8 @@ EmulationThread::EmulationThread()
     m_speed = SpeedNormal;
     m_soundEnabled = sound->GetEnabled();
     
-    m_rewind.tail = 0;
+    m_rewind.tail = -1;
+    m_rewind.head = 0;
     m_rewind.length = 0;
     m_rewind.enabled = false;
 }
@@ -134,8 +136,12 @@ wxThread::ExitCode EmulationThread::Entry()
                 if (!m_rewind.enabled) {
                     cpu->ExecuteOneFrame();
                     
+                    m_rewind.tail = (m_rewind.tail + 1) % MAX_REWINDS;
+                    
                     if (m_rewind.length >= MAX_REWINDS) {
                         delete m_rewind.data[m_rewind.tail];
+                        if (m_rewind.tail == m_rewind.head)
+                            m_rewind.head = (m_rewind.head + 1) % MAX_REWINDS;
                     }
                     else
                         m_rewind.length++;
@@ -145,8 +151,6 @@ wxThread::ExitCode EmulationThread::Entry()
                     int size = SMS_SCREEN_W*SMS_SCREEN_H*3;
                     m_rewind.data[m_rewind.tail]->write((char *)data, size);
                     cpu->SaveStateToRAM(m_rewind.data[m_rewind.tail]);
-                    
-                    m_rewind.tail = (m_rewind.tail + 1) % MAX_REWINDS;
                 }
             }
 		} // Desbloquear el mutex
@@ -303,32 +307,53 @@ void EmulationThread::UpdateRewindScreen() {
     stream->read((char *)data, size);
 }
 
+void EmulationThread::SetRewindPosition() {
+    float value = -1.0f;
+    
+    if (m_rewind.enabled) {
+        int tail = m_rewind.tail;
+        if (m_rewind.head > m_rewind.tail)
+            tail += MAX_REWINDS;
+        int total = tail - m_rewind.head + 1;
+        tail = m_rewind.tail;
+        if (m_rewind.visible > m_rewind.tail)
+            tail += MAX_REWINDS;
+        value = 1.0f - ((float)(tail - m_rewind.visible) / total);
+    }
+    
+    ((RendererBase *)m_screen)->SetRewindValue(value);
+}
+
 void EmulationThread::UpdatePad()
 {
-    if (emuState == Playing)
-    {
+    if (emuState == Playing) {
         bool buttonsState[12];
         for (int i=0; i<12; i++)
             buttonsState[i] = wxGetKeyState(keysUsed[i]);
         joystick->UpdateButtonsState(buttonsState);
         
         if (m_rewind.enabled) {
-            if (buttonsState[4]) {
+            if (buttonsState[B1]) {
                 m_rewind.enabled = false;
                 cpu->LoadStateFromRAM(m_rewind.data[m_rewind.visible]);
+                m_rewind.tail = m_rewind.visible;
+                SetRewindPosition();
             }
-            else if (buttonsState[5])
+            else if (buttonsState[B2]) {
                 m_rewind.enabled = false;
-            else if (buttonsState[2]) {
-                if (m_rewind.visible != m_rewind.tail) {
+                SetRewindPosition();
+            }
+            else if (buttonsState[LEFT]) {
+                if (m_rewind.visible != m_rewind.head) {
                     m_rewind.visible = (m_rewind.visible + MAX_REWINDS-1) % MAX_REWINDS;
+                    SetRewindPosition();
                     UpdateRewindScreen();
                 }
             }
-            else if (buttonsState[3]) {
-                int last = (m_rewind.tail + MAX_REWINDS-1) % MAX_REWINDS;
-                if (m_rewind.visible != last) {
+            else if (buttonsState[RIGHT]) {
+                if (m_rewind.visible != m_rewind.tail) {
                     m_rewind.visible = (m_rewind.visible + 1) % MAX_REWINDS;
+                    SetRewindPosition();
                     UpdateRewindScreen();
                 }
             }
@@ -347,7 +372,8 @@ void EmulationThread::UpdatePad()
             }
             else {
                 m_rewind.enabled = true;
-                m_rewind.visible = (m_rewind.tail + MAX_REWINDS-1) % MAX_REWINDS;
+                ((RendererBase *)m_screen)->SetRewindValue(1.0f);
+                m_rewind.visible = m_rewind.tail;
             }
         }
         //SetSpeed(SpeedMax);
