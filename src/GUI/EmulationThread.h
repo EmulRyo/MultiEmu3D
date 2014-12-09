@@ -18,9 +18,9 @@
 #ifndef __EMULATIONTHREAD_H__
 #define __EMULATIONTHREAD_H__
 
-#include <sstream>
 #include <wx/thread.h>
 #include <wx/stopwatch.h>
+#include "Rewind.h"
 
 enum enumEmuStates { NotStartedYet, Stopped, Paused, Playing };
 enum EnumSpeed { SpeedNormal, SpeedMax };
@@ -34,15 +34,6 @@ class Debugger;
 class Joystick;
 class ISMSScreenDrawable;
 class wxMutex;
-
-#define MAX_REWINDS 600
-
-struct Rewind {
-    bool enabled;
-    std::stringstream *data[MAX_REWINDS];
-    int tail, head, length;
-    int visible;
-};
 
 class EmulationThread : public wxThread
 {

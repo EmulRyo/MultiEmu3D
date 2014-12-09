@@ -42,6 +42,7 @@
 		6E8B2F5B19A74F3E0021AF2A /* InstructionsLength.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 6E8B2F5819A74F3E0021AF2A /* InstructionsLength.cpp */; };
 		6E90991018D8D822005DF1C1 /* BreakpointsDialog.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 6E90990E18D8D822005DF1C1 /* BreakpointsDialog.cpp */; };
 		6E9BF3C61A3603AD0009849A /* RendererOGL.Overlay.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 6E9BF3C51A3603AD0009849A /* RendererOGL.Overlay.cpp */; };
+		6E9BF3C91A3631050009849A /* Rewind.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 6E9BF3C71A3631050009849A /* Rewind.cpp */; };
 		6EABFB9E193A7B09005A0457 /* dmgboy.mo in Resources */ = {isa = PBXBuildFile; fileRef = 6EABFB9D193A7B09005A0457 /* dmgboy.mo */; };
 		6EABFB9F193A7B3E005A0457 /* dmgboy.mo in CopyFiles */ = {isa = PBXBuildFile; fileRef = 6EABFB9D193A7B09005A0457 /* dmgboy.mo */; };
 		6EAFD344172C03EC0089D6D0 /* MarkSystem.icns in Resources */ = {isa = PBXBuildFile; fileRef = 6E20575F120589BF00079331 /* MarkSystem.icns */; };
@@ -182,6 +183,8 @@
 		6E97934213C8CBCE0078E8EC /* RendererBase.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = RendererBase.cpp; sourceTree = "<group>"; };
 		6E97934313C8CBCE0078E8EC /* RendererBase.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RendererBase.h; sourceTree = "<group>"; };
 		6E9BF3C51A3603AD0009849A /* RendererOGL.Overlay.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = RendererOGL.Overlay.cpp; sourceTree = "<group>"; };
+		6E9BF3C71A3631050009849A /* Rewind.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Rewind.cpp; sourceTree = "<group>"; };
+		6E9BF3C81A3631050009849A /* Rewind.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Rewind.h; sourceTree = "<group>"; };
 		6EA1AB77127F0F0E00AC510C /* AboutDialog.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AboutDialog.h; sourceTree = "<group>"; };
 		6EA1AB78127F0F0E00AC510C /* AboutDialog.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = AboutDialog.cpp; sourceTree = "<group>"; };
 		6EABFB9D193A7B09005A0457 /* dmgboy.mo */ = {isa = PBXFileReference; lastKnownFileType = file; path = dmgboy.mo; sourceTree = "<group>"; };
@@ -325,6 +328,8 @@
 				6E0823A513C2429700C42CE0 /* RendererOGL.h */,
 				6E0823A413C2429700C42CE0 /* RendererOGL.cpp */,
 				6E9BF3C51A3603AD0009849A /* RendererOGL.Overlay.cpp */,
+				6E9BF3C71A3631050009849A /* Rewind.cpp */,
+				6E9BF3C81A3631050009849A /* Rewind.h */,
 				6EFA5C0417895CCF00DD9E94 /* Settings.h */,
 				6EFA5C0317895CCF00DD9E94 /* Settings.cpp */,
 				6E2236781233B4C6009D019F /* SettingsDialog.h */,
@@ -557,6 +562,7 @@
 				6ED4CF6B195381BA0003C70B /* Instructions.cpp in Sources */,
 				6ED4CF6F195381BA0003C70B /* Memory.cpp in Sources */,
 				6E47553A1719970B00602FE1 /* EmulationThread.cpp in Sources */,
+				6E9BF3C91A3631050009849A /* Rewind.cpp in Sources */,
 				6E47553C1719970B00602FE1 /* MainApp.cpp in Sources */,
 				6E47553E1719970B00602FE1 /* MainFrame.cpp in Sources */,
 				6E6A931A199D5E040034D49C /* Blip_Buffer.cpp in Sources */,

@@ -72,10 +72,7 @@ EmulationThread::EmulationThread()
     m_speed = SpeedNormal;
     m_soundEnabled = sound->GetEnabled();
     
-    m_rewind.tail = -1;
-    m_rewind.head = 0;
-    m_rewind.length = 0;
-    m_rewind.enabled = false;
+    m_rewind.SetCPU(cpu);
 }
 
 EmulationThread::~EmulationThread() {
@@ -88,10 +85,6 @@ EmulationThread::~EmulationThread() {
 		delete cartridge;
     
     delete joystick;
-    
-    for (int i=0; i<m_rewind.length; i++) {
-        delete m_rewind.data[i];
-    }
 }
 
 void EmulationThread::SetState(enumEmuStates state)
@@ -111,7 +104,7 @@ void EmulationThread::SetState(enumEmuStates state)
     {
         ((RendererBase *)m_screen)->SetIcon(Renderer::Stop);
         ((RendererBase *)m_screen)->SetRewindValue(-1);
-        m_rewind.enabled = false;
+        m_rewind.Disable();
         
         if (cartridge)
             cartridge->Extract();
@@ -142,24 +135,9 @@ wxThread::ExitCode EmulationThread::Entry()
 			wxMutexLocker lock(*mutex);
 			if (emuState == Playing)
             {
-                if (!m_rewind.enabled) {
+                if (!m_rewind.IsEnabled()) {
                     cpu->ExecuteOneFrame();
-                    
-                    m_rewind.tail = (m_rewind.tail + 1) % MAX_REWINDS;
-                    
-                    if (m_rewind.length >= MAX_REWINDS) {
-                        delete m_rewind.data[m_rewind.tail];
-                        if (m_rewind.tail == m_rewind.head)
-                            m_rewind.head = (m_rewind.head + 1) % MAX_REWINDS;
-                    }
-                    else
-                        m_rewind.length++;
-                    
-                    m_rewind.data[m_rewind.tail] = new stringstream();
-                    u8 *data = m_screen->GetBufferPtr();
-                    int size = SMS_SCREEN_W*SMS_SCREEN_H*3;
-                    m_rewind.data[m_rewind.tail]->write((char *)data, size);
-                    cpu->SaveStateToRAM(m_rewind.data[m_rewind.tail]);
+                    m_rewind.AddFrame();
                 }
             }
 		} // Desbloquear el mutex
@@ -306,31 +284,7 @@ void EmulationThread::SetScreen(ISMSScreenDrawable *screen)
     
     m_screen = screen;
     video->SetScreen(screen);
-}
-
-void EmulationThread::UpdateRewindScreen() {
-    u8 *data = m_screen->GetBufferPtr();
-    int size = SMS_SCREEN_W*SMS_SCREEN_H*3;
-    stringstream *stream = m_rewind.data[m_rewind.visible];
-    stream->seekg(0, stream->beg);
-    stream->read((char *)data, size);
-}
-
-void EmulationThread::SetRewindPosition() {
-    float value = -1.0f;
-    
-    if (m_rewind.enabled) {
-        int tail = m_rewind.tail;
-        if (m_rewind.head > m_rewind.tail)
-            tail += MAX_REWINDS;
-        int total = tail - m_rewind.head + 1;
-        tail = m_rewind.tail;
-        if (m_rewind.visible > m_rewind.tail)
-            tail += MAX_REWINDS;
-        value = 1.0f - ((float)(tail - m_rewind.visible) / total);
-    }
-    
-    ((RendererBase *)m_screen)->SetRewindValue(value);
+    m_rewind.SetRenderer((RendererBase *)screen);
 }
 
 void EmulationThread::UpdatePad()
@@ -340,57 +294,18 @@ void EmulationThread::UpdatePad()
         for (int i=0; i<12; i++)
             buttonsState[i] = wxGetKeyState(keysUsed[i]);
         joystick->UpdateButtonsState(buttonsState);
+        bool back = wxGetKeyState(WXK_BACK);
+        bool space = wxGetKeyState(WXK_SPACE);
+        m_rewind.UpdatePad(buttonsState, back);
         
-        if (m_rewind.enabled) {
-            if (buttonsState[B1]) {
-                m_rewind.enabled = false;
-                cpu->LoadStateFromRAM(m_rewind.data[m_rewind.visible]);
-                m_rewind.tail = m_rewind.visible;
-                ((RendererBase *)m_screen)->SetIcon(Renderer::Play);
-                SetRewindPosition();
-            }
-            else if (buttonsState[B2]) {
-                m_rewind.enabled = false;
-                ((RendererBase *)m_screen)->SetIcon(Renderer::Play);
-                SetRewindPosition();
-            }
-            else if (buttonsState[LEFT]) {
-                if (m_rewind.visible != m_rewind.head) {
-                    m_rewind.visible = (m_rewind.visible + MAX_REWINDS-1) % MAX_REWINDS;
-                    ((RendererBase *)m_screen)->SetIcon(Renderer::RewindL);
-                    SetRewindPosition();
-                    UpdateRewindScreen();
-                }
-            }
-            else if (buttonsState[RIGHT]) {
-                if (m_rewind.visible != m_rewind.tail) {
-                    m_rewind.visible = (m_rewind.visible + 1) % MAX_REWINDS;
-                    ((RendererBase *)m_screen)->SetIcon(Renderer::RewindR);
-                    SetRewindPosition();
-                    UpdateRewindScreen();
-                }
-            }
-        }
-        else {
-            bool back = wxGetKeyState(WXK_BACK);
+        if (!m_rewind.IsEnabled() && (!back)) {
+            wxMutexLocker lock(*mutex);
+            pad->SetButtonsStatePad1(buttonsState);
+            pad->SetButtonsStatePad2(&buttonsState[6]);
+            pad->SetPauseState(wxGetKeyState(keysUsed[12]));
             
-            if (!back) {
-                wxMutexLocker lock(*mutex);
-                pad->SetButtonsStatePad1(buttonsState);
-                pad->SetButtonsStatePad2(&buttonsState[6]);
-                pad->SetPauseState(wxGetKeyState(keysUsed[12]));
-                
-                bool space = wxGetKeyState(WXK_SPACE);
-                SetSpeed(space ? SpeedMax : SpeedNormal);
-            }
-            else {
-                m_rewind.enabled = true;
-                ((RendererBase *)m_screen)->SetRewindValue(1.0f);
-                ((RendererBase *)m_screen)->SetIcon(Renderer::RewindL);
-                m_rewind.visible = m_rewind.tail;
-            }
+            SetSpeed(space ? SpeedMax : SpeedNormal);
         }
-        //SetSpeed(SpeedMax);
     }
 }
 
