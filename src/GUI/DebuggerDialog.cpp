@@ -22,7 +22,7 @@
 #include "IDControls.h"
 #include "DebuggerDialog.h"
 #include "BreakpointsDialog.h"
-#include "../HW/Debugger.h"
+#include "../SMS-GG/Debugger.h"
 
 #include "Xpm/currentRow.xpm"
 #include "Xpm/breakPoint.xpm"

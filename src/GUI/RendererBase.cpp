@@ -18,7 +18,7 @@
 #include "Settings.h"
 #include "MainFrame.h"
 #include "RendererBase.h"
-#include "../HW/Def.h"
+#include "../SMS-GG/Def.h"
 
 RendererBase::RendererBase()
 {

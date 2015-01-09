@@ -20,7 +20,7 @@
 
 #include <wx/wx.h>
 #include <wx/listctrl.h>
-#include "../HW/Def.h"
+#include "../SMS-GG/Def.h"
 
 class Debugger;
 class wxListView;

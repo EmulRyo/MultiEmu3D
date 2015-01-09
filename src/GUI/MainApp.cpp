@@ -28,7 +28,7 @@
 #include "MainFrame.h"
 #include "SettingsDialog.h"
 #include "Settings.h"
-#include "../HW/Def.h"
+#include "../SMS-GG/Def.h"
 
 IMPLEMENT_APP(MainApp)
 

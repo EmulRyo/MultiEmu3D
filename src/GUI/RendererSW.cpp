@@ -18,7 +18,7 @@
 #include <wx/dcbuffer.h>
 #include <wx/image.h>
 #include "IDControls.h"
-#include "../HW/Def.h"
+#include "../SMS-GG/Def.h"
 #include "Settings.h"
 #include "RendererSW.h"
 

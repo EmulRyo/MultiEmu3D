@@ -32,7 +32,7 @@
 #include "DebuggerDialog.h"
 #include "IDControls.h"
 #include "Settings.h"
-#include "../HW/SMSException.h"
+#include "../SMS-GG/SMSException.h"
 #include "Xpm/open.xpm"
 #include "Xpm/play.xpm"
 #include "Xpm/pause.xpm"

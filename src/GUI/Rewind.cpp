@@ -16,9 +16,9 @@
  */
 
 #include "RendererBase.h"
-#include "../HW/Def.h"
-#include "../HW/Pad.h"
-#include "../HW/CPU.h"
+#include "../SMS-GG/Def.h"
+#include "../SMS-GG/Pad.h"
+#include "../SMS-GG/CPU.h"
 #include "Rewind.h"
 
 using namespace std;

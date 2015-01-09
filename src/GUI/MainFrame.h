@@ -23,7 +23,7 @@
 #include <wx/frame.h>
 #include <wx/timer.h>
 #include <wx/sizer.h>
-#include "../HW/Def.h"
+#include "../SMS-GG/Def.h"
 
 class RendererBase;
 class SettingsDialog;

@@ -19,7 +19,7 @@
 #include <wx/listctrl.h>
 #include "IDControls.h"
 #include "BreakpointsDialog.h"
-#include "../HW/Debugger.h"
+#include "../SMS-GG/Debugger.h"
 
 using namespace std;
 

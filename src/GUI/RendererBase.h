@@ -19,7 +19,7 @@
 #define __BASERENDERER_H__
 
 #include <wx/dnd.h>
-#include "../HW/ISMSScreenDrawable.h"
+#include "../SMS-GG/ISMSScreenDrawable.h"
 
 /*******************************************************************************
  * RendererBase Class

@@ -21,7 +21,7 @@
 #include <wx/filename.h>
 #include <wx/fileconf.h>
 #include "Settings.h"
-#include "../HW/Def.h"
+#include "../SMS-GG/Def.h"
 
 using namespace std;
 

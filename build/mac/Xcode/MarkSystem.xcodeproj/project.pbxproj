@@ -174,10 +174,10 @@
 		6E82ED72194391BF001D8B2D /* Joystick.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Joystick.cpp; sourceTree = "<group>"; };
 		6E82ED73194391BF001D8B2D /* Joystick.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Joystick.h; sourceTree = "<group>"; };
 		6E88103618390F1700E5F636 /* gb.3di */ = {isa = PBXFileReference; lastKnownFileType = file; name = gb.3di; path = ../../../src/GUI/3D/gb.3di; sourceTree = "<group>"; };
-		6E8B2F5619A74F3E0021AF2A /* InstructionsCycles.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = InstructionsCycles.cpp; path = ../../../src/HW/InstructionsCycles.cpp; sourceTree = "<group>"; };
-		6E8B2F5719A74F3E0021AF2A /* InstructionsCycles.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = InstructionsCycles.h; path = ../../../src/HW/InstructionsCycles.h; sourceTree = "<group>"; };
-		6E8B2F5819A74F3E0021AF2A /* InstructionsLength.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = InstructionsLength.cpp; path = ../../../src/HW/InstructionsLength.cpp; sourceTree = "<group>"; };
-		6E8B2F5919A74F3E0021AF2A /* InstructionsLength.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = InstructionsLength.h; path = ../../../src/HW/InstructionsLength.h; sourceTree = "<group>"; };
+		6E8B2F5619A74F3E0021AF2A /* InstructionsCycles.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = InstructionsCycles.cpp; path = "../../../src/SMS-GG/InstructionsCycles.cpp"; sourceTree = "<group>"; };
+		6E8B2F5719A74F3E0021AF2A /* InstructionsCycles.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = InstructionsCycles.h; path = "../../../src/SMS-GG/InstructionsCycles.h"; sourceTree = "<group>"; };
+		6E8B2F5819A74F3E0021AF2A /* InstructionsLength.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = InstructionsLength.cpp; path = "../../../src/SMS-GG/InstructionsLength.cpp"; sourceTree = "<group>"; };
+		6E8B2F5919A74F3E0021AF2A /* InstructionsLength.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = InstructionsLength.h; path = "../../../src/SMS-GG/InstructionsLength.h"; sourceTree = "<group>"; };
 		6E90990E18D8D822005DF1C1 /* BreakpointsDialog.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = BreakpointsDialog.cpp; sourceTree = "<group>"; };
 		6E90990F18D8D822005DF1C1 /* BreakpointsDialog.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BreakpointsDialog.h; sourceTree = "<group>"; };
 		6E97934213C8CBCE0078E8EC /* RendererBase.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = RendererBase.cpp; sourceTree = "<group>"; };
@@ -191,39 +191,39 @@
 		6EAFD345172C0C070089D6D0 /* Config.xcconfig */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xcconfig; path = Config.xcconfig; sourceTree = "<group>"; };
 		6EBF280C146746D100F2D9F8 /* EmulationThread.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = EmulationThread.cpp; sourceTree = "<group>"; };
 		6EBF280D146746D100F2D9F8 /* EmulationThread.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EmulationThread.h; sourceTree = "<group>"; };
-		6ED4CF45195381BA0003C70B /* Cartridge.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Cartridge.cpp; path = ../../../src/HW/Cartridge.cpp; sourceTree = "<group>"; };
-		6ED4CF46195381BA0003C70B /* Cartridge.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Cartridge.h; path = ../../../src/HW/Cartridge.h; sourceTree = "<group>"; };
-		6ED4CF47195381BA0003C70B /* CPU.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = CPU.cpp; path = ../../../src/HW/CPU.cpp; sourceTree = "<group>"; };
-		6ED4CF48195381BA0003C70B /* CPU.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CPU.h; path = ../../../src/HW/CPU.h; sourceTree = "<group>"; };
-		6ED4CF49195381BA0003C70B /* Debugger.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Debugger.cpp; path = ../../../src/HW/Debugger.cpp; sourceTree = "<group>"; };
-		6ED4CF4A195381BA0003C70B /* Debugger.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Debugger.h; path = ../../../src/HW/Debugger.h; sourceTree = "<group>"; };
-		6ED4CF4B195381BA0003C70B /* Def.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Def.h; path = ../../../src/HW/Def.h; sourceTree = "<group>"; };
-		6ED4CF4C195381BA0003C70B /* SMSException.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = SMSException.cpp; path = ../../../src/HW/SMSException.cpp; sourceTree = "<group>"; };
-		6ED4CF4D195381BA0003C70B /* SMSException.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SMSException.h; path = ../../../src/HW/SMSException.h; sourceTree = "<group>"; };
-		6ED4CF4E195381BA0003C70B /* ISMSScreenDrawable.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ISMSScreenDrawable.h; path = ../../../src/HW/ISMSScreenDrawable.h; sourceTree = "<group>"; };
-		6ED4CF4F195381BA0003C70B /* Instructions.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Instructions.cpp; path = ../../../src/HW/Instructions.cpp; sourceTree = "<group>"; };
-		6ED4CF50195381BA0003C70B /* Instructions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Instructions.h; path = ../../../src/HW/Instructions.h; sourceTree = "<group>"; };
-		6ED4CF51195381BA0003C70B /* InstructionsName.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = InstructionsName.cpp; path = ../../../src/HW/InstructionsName.cpp; sourceTree = "<group>"; };
-		6ED4CF52195381BA0003C70B /* InstructionsName.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = InstructionsName.h; path = ../../../src/HW/InstructionsName.h; sourceTree = "<group>"; };
-		6ED4CF53195381BA0003C70B /* Log.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Log.cpp; path = ../../../src/HW/Log.cpp; sourceTree = "<group>"; };
-		6ED4CF54195381BA0003C70B /* Log.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Log.h; path = ../../../src/HW/Log.h; sourceTree = "<group>"; };
-		6ED4CF57195381BA0003C70B /* Memory.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Memory.cpp; path = ../../../src/HW/Memory.cpp; sourceTree = "<group>"; };
-		6ED4CF58195381BA0003C70B /* Memory.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Memory.h; path = ../../../src/HW/Memory.h; sourceTree = "<group>"; };
-		6ED4CF59195381BA0003C70B /* Pad.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Pad.cpp; path = ../../../src/HW/Pad.cpp; sourceTree = "<group>"; };
-		6ED4CF5A195381BA0003C70B /* Pad.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Pad.h; path = ../../../src/HW/Pad.h; sourceTree = "<group>"; };
-		6ED4CF5B195381BA0003C70B /* Registers.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Registers.cpp; path = ../../../src/HW/Registers.cpp; sourceTree = "<group>"; };
-		6ED4CF5C195381BA0003C70B /* Registers.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Registers.h; path = ../../../src/HW/Registers.h; sourceTree = "<group>"; };
-		6ED4CF5F195381BA0003C70B /* Sound.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Sound.cpp; path = ../../../src/HW/Sound.cpp; sourceTree = "<group>"; };
-		6ED4CF60195381BA0003C70B /* Sound.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Sound.h; path = ../../../src/HW/Sound.h; sourceTree = "<group>"; };
-		6ED4CF61195381BA0003C70B /* SoundPortaudio.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = SoundPortaudio.cpp; path = ../../../src/HW/SoundPortaudio.cpp; sourceTree = "<group>"; };
-		6ED4CF62195381BA0003C70B /* SoundPortaudio.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SoundPortaudio.h; path = ../../../src/HW/SoundPortaudio.h; sourceTree = "<group>"; };
-		6ED4CF65195381BA0003C70B /* Video.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Video.cpp; path = ../../../src/HW/Video.cpp; sourceTree = "<group>"; };
-		6ED4CF66195381BA0003C70B /* Video.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Video.h; path = ../../../src/HW/Video.h; sourceTree = "<group>"; };
+		6ED4CF45195381BA0003C70B /* Cartridge.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Cartridge.cpp; path = "../../../src/SMS-GG/Cartridge.cpp"; sourceTree = "<group>"; };
+		6ED4CF46195381BA0003C70B /* Cartridge.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Cartridge.h; path = "../../../src/SMS-GG/Cartridge.h"; sourceTree = "<group>"; };
+		6ED4CF47195381BA0003C70B /* CPU.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = CPU.cpp; path = "../../../src/SMS-GG/CPU.cpp"; sourceTree = "<group>"; };
+		6ED4CF48195381BA0003C70B /* CPU.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CPU.h; path = "../../../src/SMS-GG/CPU.h"; sourceTree = "<group>"; };
+		6ED4CF49195381BA0003C70B /* Debugger.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Debugger.cpp; path = "../../../src/SMS-GG/Debugger.cpp"; sourceTree = "<group>"; };
+		6ED4CF4A195381BA0003C70B /* Debugger.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Debugger.h; path = "../../../src/SMS-GG/Debugger.h"; sourceTree = "<group>"; };
+		6ED4CF4B195381BA0003C70B /* Def.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Def.h; path = "../../../src/SMS-GG/Def.h"; sourceTree = "<group>"; };
+		6ED4CF4C195381BA0003C70B /* SMSException.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = SMSException.cpp; path = "../../../src/SMS-GG/SMSException.cpp"; sourceTree = "<group>"; };
+		6ED4CF4D195381BA0003C70B /* SMSException.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SMSException.h; path = "../../../src/SMS-GG/SMSException.h"; sourceTree = "<group>"; };
+		6ED4CF4E195381BA0003C70B /* ISMSScreenDrawable.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ISMSScreenDrawable.h; path = "../../../src/SMS-GG/ISMSScreenDrawable.h"; sourceTree = "<group>"; };
+		6ED4CF4F195381BA0003C70B /* Instructions.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Instructions.cpp; path = "../../../src/SMS-GG/Instructions.cpp"; sourceTree = "<group>"; };
+		6ED4CF50195381BA0003C70B /* Instructions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Instructions.h; path = "../../../src/SMS-GG/Instructions.h"; sourceTree = "<group>"; };
+		6ED4CF51195381BA0003C70B /* InstructionsName.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = InstructionsName.cpp; path = "../../../src/SMS-GG/InstructionsName.cpp"; sourceTree = "<group>"; };
+		6ED4CF52195381BA0003C70B /* InstructionsName.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = InstructionsName.h; path = "../../../src/SMS-GG/InstructionsName.h"; sourceTree = "<group>"; };
+		6ED4CF53195381BA0003C70B /* Log.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Log.cpp; path = "../../../src/SMS-GG/Log.cpp"; sourceTree = "<group>"; };
+		6ED4CF54195381BA0003C70B /* Log.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Log.h; path = "../../../src/SMS-GG/Log.h"; sourceTree = "<group>"; };
+		6ED4CF57195381BA0003C70B /* Memory.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Memory.cpp; path = "../../../src/SMS-GG/Memory.cpp"; sourceTree = "<group>"; };
+		6ED4CF58195381BA0003C70B /* Memory.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Memory.h; path = "../../../src/SMS-GG/Memory.h"; sourceTree = "<group>"; };
+		6ED4CF59195381BA0003C70B /* Pad.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Pad.cpp; path = "../../../src/SMS-GG/Pad.cpp"; sourceTree = "<group>"; };
+		6ED4CF5A195381BA0003C70B /* Pad.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Pad.h; path = "../../../src/SMS-GG/Pad.h"; sourceTree = "<group>"; };
+		6ED4CF5B195381BA0003C70B /* Registers.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Registers.cpp; path = "../../../src/SMS-GG/Registers.cpp"; sourceTree = "<group>"; };
+		6ED4CF5C195381BA0003C70B /* Registers.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Registers.h; path = "../../../src/SMS-GG/Registers.h"; sourceTree = "<group>"; };
+		6ED4CF5F195381BA0003C70B /* Sound.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Sound.cpp; path = "../../../src/SMS-GG/Sound.cpp"; sourceTree = "<group>"; };
+		6ED4CF60195381BA0003C70B /* Sound.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Sound.h; path = "../../../src/SMS-GG/Sound.h"; sourceTree = "<group>"; };
+		6ED4CF61195381BA0003C70B /* SoundPortaudio.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = SoundPortaudio.cpp; path = "../../../src/SMS-GG/SoundPortaudio.cpp"; sourceTree = "<group>"; };
+		6ED4CF62195381BA0003C70B /* SoundPortaudio.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SoundPortaudio.h; path = "../../../src/SMS-GG/SoundPortaudio.h"; sourceTree = "<group>"; };
+		6ED4CF65195381BA0003C70B /* Video.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Video.cpp; path = "../../../src/SMS-GG/Video.cpp"; sourceTree = "<group>"; };
+		6ED4CF66195381BA0003C70B /* Video.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Video.h; path = "../../../src/SMS-GG/Video.h"; sourceTree = "<group>"; };
 		6EDDDE7312EA037200BFB26A /* InputTextCtrl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = InputTextCtrl.h; sourceTree = "<group>"; };
 		6EDDDE7412EA037200BFB26A /* InputTextCtrl.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = InputTextCtrl.cpp; sourceTree = "<group>"; };
 		6EE5987A17CCB0EE008B5A91 /* Camera.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Camera.cpp; path = ../../../src/GUI/3D/Camera.cpp; sourceTree = "<group>"; };
 		6EE5987B17CCB0EE008B5A91 /* Camera.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Camera.h; path = ../../../src/GUI/3D/Camera.h; sourceTree = "<group>"; };
-		6EE60A6019798A16008D94D5 /* CPU.Opcode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = CPU.Opcode.cpp; path = ../../../src/HW/CPU.Opcode.cpp; sourceTree = "<group>"; };
+		6EE60A6019798A16008D94D5 /* CPU.Opcode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = CPU.Opcode.cpp; path = "../../../src/SMS-GG/CPU.Opcode.cpp"; sourceTree = "<group>"; };
 		6EF404E318AFE5F3006A0FDC /* DebuggerDialog.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = DebuggerDialog.cpp; sourceTree = "<group>"; };
 		6EF404E418AFE5F3006A0FDC /* DebuggerDialog.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DebuggerDialog.h; sourceTree = "<group>"; };
 		6EFA5275126354F2000E541D /* ToDo.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = ToDo.txt; path = ../../../src/ToDo.txt; sourceTree = SOURCE_ROOT; };
@@ -272,7 +272,7 @@
 				6EFA5275126354F2000E541D /* ToDo.txt */,
 				6E2B3EC417C136420066D9C6 /* 3D */,
 				6E23C6BD11D7CA0C0043AF47 /* GUI */,
-				6E23C71411D7CD090043AF47 /* HW */,
+				6E373B0B1A5C7CB1009E02D1 /* SMS-GG */,
 				6E6A9303199D5E040034D49C /* Sms_Snd_Emu-0.1.1 */,
 				29B97317FDCFA39411CA2CEA /* Resources */,
 				29B97323FDCFA39411CA2CEA /* Frameworks */,
@@ -343,7 +343,24 @@
 			path = ../../../src/GUI;
 			sourceTree = SOURCE_ROOT;
 		};
-		6E23C71411D7CD090043AF47 /* HW */ = {
+		6E2B3EC417C136420066D9C6 /* 3D */ = {
+			isa = PBXGroup;
+			children = (
+				6E2B3ED017C13BD80066D9C6 /* Array.cpp */,
+				6E2B3ED117C13BD80066D9C6 /* Array.h */,
+				6EE5987A17CCB0EE008B5A91 /* Camera.cpp */,
+				6EE5987B17CCB0EE008B5A91 /* Camera.h */,
+				6E2B3ED217C13BD80066D9C6 /* Geo.cpp */,
+				6E2B3ED317C13BD80066D9C6 /* Geo.h */,
+				6E2B3ED917C14B6E0066D9C6 /* wxImageLoader.cpp */,
+				6E2B3ED817C14B570066D9C6 /* wxImageLoader.h */,
+				6E0F405717DC78B60061C894 /* gb.jpg */,
+				6E88103618390F1700E5F636 /* gb.3di */,
+			);
+			name = 3D;
+			sourceTree = "<group>";
+		};
+		6E373B0B1A5C7CB1009E02D1 /* SMS-GG */ = {
 			isa = PBXGroup;
 			children = (
 				6ED4CF45195381BA0003C70B /* Cartridge.cpp */,
@@ -380,24 +397,7 @@
 				6ED4CF65195381BA0003C70B /* Video.cpp */,
 				6ED4CF66195381BA0003C70B /* Video.h */,
 			);
-			name = HW;
-			sourceTree = "<group>";
-		};
-		6E2B3EC417C136420066D9C6 /* 3D */ = {
-			isa = PBXGroup;
-			children = (
-				6E2B3ED017C13BD80066D9C6 /* Array.cpp */,
-				6E2B3ED117C13BD80066D9C6 /* Array.h */,
-				6EE5987A17CCB0EE008B5A91 /* Camera.cpp */,
-				6EE5987B17CCB0EE008B5A91 /* Camera.h */,
-				6E2B3ED217C13BD80066D9C6 /* Geo.cpp */,
-				6E2B3ED317C13BD80066D9C6 /* Geo.h */,
-				6E2B3ED917C14B6E0066D9C6 /* wxImageLoader.cpp */,
-				6E2B3ED817C14B570066D9C6 /* wxImageLoader.h */,
-				6E0F405717DC78B60061C894 /* gb.jpg */,
-				6E88103618390F1700E5F636 /* gb.3di */,
-			);
-			name = 3D;
+			name = "SMS-GG";
 			sourceTree = "<group>";
 		};
 		6E41039D175A423900B5D091 /* Languages */ = {

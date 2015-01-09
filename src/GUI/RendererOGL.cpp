@@ -33,7 +33,7 @@
 #include "RendererOGL.h"
 #include "MainFrame.h"
 #include "Settings.h"
-#include "../HW/Def.h"
+#include "../SMS-GG/Def.h"
 
 #define PI 3.141592653589793f
 
