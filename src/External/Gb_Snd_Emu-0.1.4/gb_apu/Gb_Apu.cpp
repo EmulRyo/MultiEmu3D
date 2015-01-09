@@ -75,7 +75,7 @@ void Gb_Apu::reset()
 
 void Gb_Apu::osc_output( int index, Gb_Blip_Buffer* center, Gb_Blip_Buffer* left, Gb_Blip_Buffer* right )
 {
-	require( (unsigned) index < osc_count );
+	assert( (unsigned) index < osc_count );
 	
 	Gb_Osc& osc = *oscs [index];
 	if ( center && !left && !right )
@@ -87,7 +87,7 @@ void Gb_Apu::osc_output( int index, Gb_Blip_Buffer* center, Gb_Blip_Buffer* left
 	else
 	{
 		// must be silenced or stereo
-		require( (!left && !right) || (left && right) );
+		assert( (!left && !right) || (left && right) );
 	}
 	osc.outputs [1] = right;
 	osc.outputs [2] = left;
@@ -97,7 +97,7 @@ void Gb_Apu::osc_output( int index, Gb_Blip_Buffer* center, Gb_Blip_Buffer* left
 
 void Gb_Apu::run_until( gb_time_t end_time )
 {
-	require( end_time >= last_time ); // end_time must not be before previous time
+	assert( end_time >= last_time ); // end_time must not be before previous time
 	if ( end_time == last_time )
 		return;
 	
@@ -160,7 +160,7 @@ bool Gb_Apu::end_frame( gb_time_t end_time )
 
 void Gb_Apu::write_register( gb_time_t time, gb_addr_t addr, int data )
 {
-	require( (unsigned) data < 0x100 );
+	assert( (unsigned) data < 0x100 );
 	
 	int reg = addr - start_addr;
 	if ( (unsigned) reg >= register_count )
@@ -239,7 +239,7 @@ void Gb_Apu::write_register( gb_time_t time, gb_addr_t addr, int data )
 int Gb_Apu::read_register( gb_time_t time, gb_addr_t addr )
 {
 	// function now takes actual address, i.e. 0xFFXX
-	require( start_addr <= addr && addr <= end_addr );
+	assert( start_addr <= addr && addr <= end_addr );
 	
 	run_until( time );
 	
