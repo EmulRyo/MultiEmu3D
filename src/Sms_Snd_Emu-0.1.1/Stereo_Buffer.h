@@ -7,7 +7,7 @@
 #ifndef STEREO_BUFFER_H
 #define STEREO_BUFFER_H
 
-#include "Blip_Buffer.h"
+#include "Sms_Blip_Buffer.h"
 
 class Stereo_Buffer {
 public:

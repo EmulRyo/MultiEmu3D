@@ -6,7 +6,7 @@
 #ifndef SMS_OSCS_H
 #define SMS_OSCS_H
 
-#include "Blip_Buffer.h"
+#include "Sms_Blip_Buffer.h"
 
 struct Sms_Osc
 {

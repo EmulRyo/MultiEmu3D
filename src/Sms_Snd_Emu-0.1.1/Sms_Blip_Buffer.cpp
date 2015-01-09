@@ -1,7 +1,7 @@
 
 // Blip_Buffer 0.3.0. http://www.slack.net/~ant/nes-emu/
 
-#include "Blip_Buffer.h"
+#include "Sms_Blip_Buffer.h"
 
 #include <string.h>
 #include <math.h>
