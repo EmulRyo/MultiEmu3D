@@ -21,6 +21,8 @@
 #include <wx/thread.h>
 #include "SoundPortaudio.h"
 
+using namespace GameBoy;
+
 static bool paInitialized = false;
 
 SoundPortaudio::SoundPortaudio()

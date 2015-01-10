@@ -27,6 +27,7 @@
 #include "MBC.h"
 
 using namespace std;
+using namespace GameBoy;
 
 /*
  * Constructor que recibe un fichero, lo carga en memoria y lo procesa

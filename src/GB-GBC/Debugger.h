@@ -27,58 +27,59 @@ class CPU;
 class Cartridge;
 struct BreakpointNode;
 
-class Debugger
-{
-public:
-	Debugger(Sound *sound, Video *video, CPU *cpu, Cartridge *cartridge);
-	~Debugger();
-    
-    std::string GetRegAF();
-    std::string GetRegBC();
-    std::string GetRegDE();
-    std::string GetRegHL();
-    
-    std::string GetRegSP();
-    std::string GetRegPC();
-    
-    std::string GetRegs();
-    
-    std::string GetMem(WORD address);
-    std::string GetMem(WORD start, WORD end);
-    std::string GetMemVRam(WORD start, WORD end, int slot);
-    std::string GetMemPalette(int sprite, int number);
-    void GetBG(BYTE *buffer);
-    void GetWindow(BYTE *buffer);
-    void GetTiles(BYTE *buffer, int width, int height);
-    void GetColorPalette(int sprite, int number, BYTE palette[4][3]);
-    std::string Disassemble(WORD start, int numInstructions);
-    std::string Disassemble(int numInstructions);
-    void DisassembleNext(WORD &currentAddress, WORD &nextAddress, std::string &name, std::string &data);
-    void DisassembleOne(WORD address, WORD &nextAddress, std::string &name, std::string &data);
-    
-    void Reset();
-    void StepInto();
-    bool ExecuteOneFrame();
-    
-    void AddBreakpoint(WORD address);
-    void DelBreakpoint(WORD address);
-    bool HasBreakpoint(WORD address);
-    int  GetNumBreakpoints();
-    WORD GetBreakpoint(int i);
-    
-    std::string ToHex(int value, int width, char fill);
-    void AppendHex(std::stringstream &ss, int value, int width, char fill);
-    
-private:
-	Sound *m_sound;
-    Video *m_video;
-	CPU   *m_cpu;
-	Cartridge *m_cartridge;
-    BreakpointNode *m_firstBreakpoint;
-    BreakpointNode *m_lastBreakpoint;
-    
-    BreakpointNode *GetBreakpointNode(WORD address);
-    void ClearBreakpoints();
-};
+namespace GameBoy {
+    class Debugger {
+    public:
+        Debugger(GameBoy::Sound *sound, Video *video, CPU *cpu, Cartridge *cartridge);
+        ~Debugger();
+        
+        std::string GetRegAF();
+        std::string GetRegBC();
+        std::string GetRegDE();
+        std::string GetRegHL();
+        
+        std::string GetRegSP();
+        std::string GetRegPC();
+        
+        std::string GetRegs();
+        
+        std::string GetMem(WORD address);
+        std::string GetMem(WORD start, WORD end);
+        std::string GetMemVRam(WORD start, WORD end, int slot);
+        std::string GetMemPalette(int sprite, int number);
+        void GetBG(BYTE *buffer);
+        void GetWindow(BYTE *buffer);
+        void GetTiles(BYTE *buffer, int width, int height);
+        void GetColorPalette(int sprite, int number, BYTE palette[4][3]);
+        std::string Disassemble(WORD start, int numInstructions);
+        std::string Disassemble(int numInstructions);
+        void DisassembleNext(WORD &currentAddress, WORD &nextAddress, std::string &name, std::string &data);
+        void DisassembleOne(WORD address, WORD &nextAddress, std::string &name, std::string &data);
+        
+        void Reset();
+        void StepInto();
+        bool ExecuteOneFrame();
+        
+        void AddBreakpoint(WORD address);
+        void DelBreakpoint(WORD address);
+        bool HasBreakpoint(WORD address);
+        int  GetNumBreakpoints();
+        WORD GetBreakpoint(int i);
+        
+        std::string ToHex(int value, int width, char fill);
+        void AppendHex(std::stringstream &ss, int value, int width, char fill);
+        
+    private:
+        GameBoy::Sound *m_sound;
+        Video *m_video;
+        CPU   *m_cpu;
+        Cartridge *m_cartridge;
+        BreakpointNode *m_firstBreakpoint;
+        BreakpointNode *m_lastBreakpoint;
+        
+        BreakpointNode *GetBreakpointNode(WORD address);
+        void ClearBreakpoints();
+    };
+}
 
 #endif

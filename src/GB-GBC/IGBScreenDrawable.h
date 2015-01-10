@@ -18,15 +18,18 @@
 #ifndef __IGBSCREENDRAWABLE_H__
 #define __IGBSCREENDRAWABLE_H__
 
-class IGBScreenDrawable
-{
-public:
-	virtual void OnPreDraw() = 0;
-	virtual void OnPostDraw() = 0;
-	virtual void OnDrawPixel(int idColor, int x, int y) = 0;
-    virtual void OnDrawPixel(BYTE r, BYTE g, BYTE b, int x, int y) = 0;
-	virtual void OnRefreshGBScreen() = 0;
-	virtual void OnClear() = 0;
-};
+namespace GameBoy {
+    
+    class IGBScreenDrawable
+    {
+    public:
+        virtual void OnPreDraw() = 0;
+        virtual void OnPostDraw() = 0;
+        virtual void OnDrawPixel(int idColor, int x, int y) = 0;
+        virtual void OnDrawPixel(BYTE r, BYTE g, BYTE b, int x, int y) = 0;
+        virtual void OnRefreshGBScreen() = 0;
+        virtual void OnClear() = 0;
+    };
+}
 
 #endif

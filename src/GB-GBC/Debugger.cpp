@@ -26,6 +26,7 @@
 #include "Debugger.h"
 
 using namespace std;
+using namespace GameBoy;
 
 struct BreakpointNode {
     WORD value;
@@ -33,7 +34,7 @@ struct BreakpointNode {
     BreakpointNode *next;
 };
 
-Debugger::Debugger(Sound *sound, Video *video, CPU *cpu, Cartridge *cartridge)
+Debugger::Debugger(GameBoy::Sound *sound, Video *video, CPU *cpu, Cartridge *cartridge)
 {
     m_sound = sound;
     m_video = video;

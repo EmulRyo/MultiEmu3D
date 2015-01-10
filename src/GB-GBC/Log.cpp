@@ -19,7 +19,9 @@
 #include <string>
 #include "Registers.h"
 #include "Log.h"
+
 using namespace std;
+using namespace GameBoy;
 
 QueueLog::QueueLog(int maxItems)
 {

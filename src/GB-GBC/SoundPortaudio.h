@@ -23,45 +23,48 @@
 class wxSemaphore;
 class wxMutex;
 
-// Simple Portaudio sound wrapper that has a synchronous interface
-class SoundPortaudio {
-public:
-	SoundPortaudio();
-	~SoundPortaudio();
-	
-	// Initialize with specified sample rate and number of channels.
-	// Returns true on success, otherwise false.
-	bool Start(long sampleRate, int numChannels);
-	
-	// Write samples to buffer and block until enough space is available
-	void Write( const short *data, int count);
-	
-	// Stop audio output
-	void Stop();
-	
-private:
-    PaStream *m_stream;
+namespace GameBoy {
     
-    enum { bufSize = 2048 };
-	enum { numBuffers = 10 };
-	short* volatile m_bufs;
-	wxSemaphore* volatile m_semaphore;
-    wxMutex* m_mutex;
-	int volatile m_readBuf;
-	int m_writeBuf;	// id del buffer actual
-	int m_writePos;
-    int m_fullBuffers;
-	bool m_soundOpen;
-	
-	short* GetBufPtr(int index);
-	int FillBuffer(void *outputBuffer, unsigned long framesPerBuffer);
-    
-	static int PortaudioCallback( const void *inputBuffer, void *outputBuffer,
-                            unsigned long framesPerBuffer,
-                            const PaStreamCallbackTimeInfo* timeInfo,
-                            PaStreamCallbackFlags statusFlags,
-                            void *userData );
-};
+    // Simple Portaudio sound wrapper that has a synchronous interface
+    class SoundPortaudio {
+    public:
+        SoundPortaudio();
+        ~SoundPortaudio();
+        
+        // Initialize with specified sample rate and number of channels.
+        // Returns true on success, otherwise false.
+        bool Start(long sampleRate, int numChannels);
+        
+        // Write samples to buffer and block until enough space is available
+        void Write( const short *data, int count);
+        
+        // Stop audio output
+        void Stop();
+        
+    private:
+        PaStream *m_stream;
+        
+        enum { bufSize = 2048 };
+        enum { numBuffers = 10 };
+        short* volatile m_bufs;
+        wxSemaphore* volatile m_semaphore;
+        wxMutex* m_mutex;
+        int volatile m_readBuf;
+        int m_writeBuf;	// id del buffer actual
+        int m_writePos;
+        int m_fullBuffers;
+        bool m_soundOpen;
+        
+        short* GetBufPtr(int index);
+        int FillBuffer(void *outputBuffer, unsigned long framesPerBuffer);
+        
+        static int PortaudioCallback( const void *inputBuffer, void *outputBuffer,
+                                unsigned long framesPerBuffer,
+                                const PaStreamCallbackTimeInfo* timeInfo,
+                                PaStreamCallbackFlags statusFlags,
+                                void *userData );
+    };
+}
 
 #endif
 

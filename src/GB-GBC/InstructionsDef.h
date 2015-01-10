@@ -20,11 +20,15 @@
 
 #include "Def.h"
 
+namespace GameBoy {
+    
 const char *GetInstructionName(BYTE opcode);
 const char *GetInstructionCBName(BYTE opcode);
 BYTE GetInstructionLength(BYTE opcode);
 BYTE GetInstructionCycles(BYTE opcode);
 BYTE GetInstructionCondicionalCycles(BYTE opcode);
 BYTE GetInstructionCyclesCB(BYTE opcode);
+    
+}
 
 #endif

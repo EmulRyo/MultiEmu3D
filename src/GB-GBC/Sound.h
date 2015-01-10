@@ -21,38 +21,41 @@
 #include "Def.h"
 
 class Basic_Gb_Apu;
-#ifdef __WXMSW__
-class SoundSDL;
-#else
-class SoundPortaudio;
-#endif
 
-class Sound
-{
-private:
-	Basic_Gb_Apu * apu;
-#ifdef __WXMSW__
-	SoundSDL * sound;
-#else
-    SoundPortaudio * sound;
-#endif
-	bool m_initialized;
-	bool m_enabled;
-	long m_sampleRate;
-	
-	int HandleError( const char* str );
-public:
-	Sound();
-	~Sound();
-	
-	int ChangeSampleRate(long newSampleRate);
-	int Start();
-	int Stop();
-	bool GetEnabled();
-	void SetEnabled(bool enabled);
-	void WriteRegister(WORD address, BYTE value);
-	BYTE ReadRegister(WORD address);
-	void EndFrame();
-};
+namespace GameBoy {
 
+#ifdef __WXMSW__
+    class SoundSDL;
+#else
+    class SoundPortaudio;
+#endif
+    
+    class Sound {
+    private:
+        Basic_Gb_Apu * apu;
+#ifdef __WXMSW__
+        SoundSDL * sound;
+#else
+        SoundPortaudio * sound;
+#endif
+        bool m_initialized;
+        bool m_enabled;
+        long m_sampleRate;
+        
+        int HandleError( const char* str );
+    public:
+        Sound();
+        ~Sound();
+        
+        int ChangeSampleRate(long newSampleRate);
+        int Start();
+        int Stop();
+        bool GetEnabled();
+        void SetEnabled(bool enabled);
+        void WriteRegister(WORD address, BYTE value);
+        BYTE ReadRegister(WORD address);
+        void EndFrame();
+    };
+
+}
 #endif

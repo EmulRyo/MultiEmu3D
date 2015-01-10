@@ -22,6 +22,7 @@
 #include "GBException.h"
 
 using namespace std;
+using namespace GameBoy;
 
 Registers::Registers() {ResetRegs();}
 

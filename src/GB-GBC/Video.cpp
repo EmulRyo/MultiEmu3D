@@ -24,6 +24,7 @@
 #define MEMR(address) (m_mem->memory[(address)])
 
 using namespace std;
+using namespace GameBoy;
 
 Video::Video(IGBScreenDrawable *screen)
 {

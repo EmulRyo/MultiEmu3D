@@ -27,38 +27,41 @@
 #define CART_ROM_SIZE	0x0148
 #define CART_RAM_SIZE	0x0149
 
-class Cartridge
-{
-private:
-	unsigned long m_romSize;
-	std::string m_name;
-	bool m_isLoaded;
-    bool m_hasRTC;
-	BYTE *m_memCartridge;
-
-	BYTE (*ptrRead)(WORD);
-	void (*ptrWrite)(WORD, BYTE);
-	void CheckCartridge(std::string batteriesPath="");
-	int  CheckRomSize(int numHeaderSize, int fileSize);
+namespace GameBoy {
     
-public:
-	Cartridge(std::string fileName, std::string batteriesPath="");
-	Cartridge(BYTE *cartridgeBuffer, unsigned long size, std::string batteriesPath="");
-	~Cartridge();
-	
-	BYTE *GetData();
-	unsigned int GetSize();
-    std::string GetGoodName(const char *name);
-	std::string GetName();
-	bool IsLoaded();
+    class Cartridge
+    {
+    private:
+        unsigned long m_romSize;
+        std::string m_name;
+        bool m_isLoaded;
+        bool m_hasRTC;
+        BYTE *m_memCartridge;
 
-	inline BYTE Read(WORD direction) { return ptrRead(direction); };
-	inline void Write(WORD direction, BYTE value) { ptrWrite(direction, value); };
-	
-	void SaveStateMBC(std::ofstream *file);
-	void LoadStateMBC(std::ifstream *file);
-    
-    void Extract();
-};
+        BYTE (*ptrRead)(WORD);
+        void (*ptrWrite)(WORD, BYTE);
+        void CheckCartridge(std::string batteriesPath="");
+        int  CheckRomSize(int numHeaderSize, int fileSize);
+        
+    public:
+        Cartridge(std::string fileName, std::string batteriesPath="");
+        Cartridge(BYTE *cartridgeBuffer, unsigned long size, std::string batteriesPath="");
+        ~Cartridge();
+        
+        BYTE *GetData();
+        unsigned int GetSize();
+        std::string GetGoodName(const char *name);
+        std::string GetName();
+        bool IsLoaded();
+
+        inline BYTE Read(WORD direction) { return ptrRead(direction); };
+        inline void Write(WORD direction, BYTE value) { ptrWrite(direction, value); };
+        
+        void SaveStateMBC(std::ofstream *file);
+        void LoadStateMBC(std::ifstream *file);
+        
+        void Extract();
+    };
+}
 
 #endif

@@ -20,15 +20,18 @@
 
 #include "Def.h"
 
-class Pad {
-public:
-    Pad();
+namespace GameBoy {
     
-    int  SetButtonsState(bool buttonsState[8], BYTE *valueP1);
-    BYTE Update(BYTE valueP1);
-    
-private:
-    bool m_buttonsState[8];
-};
+    class Pad {
+    public:
+        Pad();
+        
+        int  SetButtonsState(bool buttonsState[8], BYTE *valueP1);
+        BYTE Update(BYTE valueP1);
+        
+    private:
+        bool m_buttonsState[8];
+    };
+}
 
 #endif

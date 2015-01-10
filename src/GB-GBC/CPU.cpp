@@ -31,7 +31,7 @@
 #endif
 
 using namespace std;
-
+using namespace GameBoy;
 
 CPU::CPU(Video *v, Pad *p, Sound *s): Memory(this, s)
 {

@@ -23,6 +23,7 @@
 #include "CPU.h"
 
 using namespace std;
+using namespace GameBoy;
 
 Memory::Memory(CPU *cpu, Sound *s)
 {

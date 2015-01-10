@@ -23,6 +23,7 @@
 #include "Instructions.h"
 
 using namespace std;
+using namespace GameBoy;
 
 #define _8bitsInmValue (mem->MemR(reg->GetPC() + 1))
 #define _16bitsInmValue ((mem->MemR(reg->GetPC() + 2)) << 8) | mem->MemR(reg->GetPC() + 1)

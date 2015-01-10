@@ -17,6 +17,8 @@
 
 #include "Pad.h"
 
+using namespace GameBoy;
+
 enum e_gbpad { UP, DOWN, LEFT, RIGHT, A, B, SELECT, START };
 
 Pad::Pad() {
