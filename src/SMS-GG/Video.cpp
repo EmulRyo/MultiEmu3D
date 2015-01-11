@@ -30,6 +30,9 @@
 #define XSCROLL         8
 #define YSCROLL         9
 
+using namespace std;
+using namespace MasterSystem;
+
 const t_VDPMODES SMS2Modes[16] = {
     GRAPHIC_1,
     TEXT,
@@ -48,8 +51,6 @@ const t_VDPMODES SMS2Modes[16] = {
     MODE_4_240,
     MODE_4_192
 };
-
-using namespace std;
 
 Video::Video(ISMSScreenDrawable *screen)
 {

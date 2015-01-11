@@ -29,7 +29,7 @@ namespace Renderer {
     enum Icon { Play, Pause, Stop, RewindL, RewindR };
 };
 
-class RendererBase: public ISMSScreenDrawable {
+class RendererBase: public MasterSystem::ISMSScreenDrawable {
     
 public:
 	RendererBase();

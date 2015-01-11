@@ -28,12 +28,15 @@
 #include "Debugger.h"
 
 using namespace std;
+using namespace MasterSystem;
 
-struct BreakpointNode {
-    u16 value;
-    BreakpointNode *prev;
-    BreakpointNode *next;
-};
+namespace MasterSystem {
+    struct BreakpointNode {
+        u16 value;
+        BreakpointNode *prev;
+        BreakpointNode *next;
+    };
+}
 
 Debugger::Debugger(Sound *sound, Video *video, CPU *cpu, Cartridge *cartridge, Pad *pad)
 {

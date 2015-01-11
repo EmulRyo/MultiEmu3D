@@ -29,7 +29,7 @@
 #include "MainFrame.h"
 #include "AboutDialog.h"
 #include "SettingsDialog.h"
-#include "DebuggerDialog.h"
+#include "DebuggerSMSDialog.h"
 #include "IDControls.h"
 #include "Settings.h"
 #include "../SMS-GG/SMSException.h"
@@ -699,6 +699,6 @@ void MainFrame::OnChangeView(wxCommandEvent &event) {
 void MainFrame::OnDebug(wxCommandEvent &event) {
     m_emulation->SetState(Paused);
     
-    DebuggerDialog debugger(this, m_emulation->GetDebugger());
+    DebuggerSMSDialog debugger(this, m_emulation->GetDebugger());
     debugger.ShowModal();
 }

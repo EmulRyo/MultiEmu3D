@@ -22,27 +22,29 @@
 #include <wx/listctrl.h>
 #include "../SMS-GG/Def.h"
 
-class Debugger;
 class wxListView;
+namespace MasterSystem {
+    class Debugger;
+}
 
 /*******************************************************************************
  // DebuggerDialog Class
  *******************************************************************************/
 
-class DebuggerDialog : public wxDialog {
+class DebuggerSMSDialog : public wxDialog {
 public:
 	
     /**
      * Creates a new DebuggerDialog.
      */
-    DebuggerDialog(wxWindow *parent, Debugger *debugger);
-	~DebuggerDialog();
+    DebuggerSMSDialog(wxWindow *parent, MasterSystem::Debugger *debugger);
+	~DebuggerSMSDialog();
     
 protected:
 	DECLARE_EVENT_TABLE()
     
 private:
-    Debugger *m_debugger;
+    MasterSystem::Debugger *m_debugger;
     wxListView *m_regsView;
     wxTextCtrl *m_addressMemCtrl;
     wxTextCtrl *m_memCtrl;

@@ -33,6 +33,7 @@
 #include "RendererOGL.h"
 
 using namespace std;
+using namespace MasterSystem;
 
 EmulationThread::EmulationThread()
 {
@@ -40,12 +41,12 @@ EmulationThread::EmulationThread()
     
     m_screen = NULL;
     
-	sound = new Sound();
-    video = new Video(NULL);
-    pad = new Pad();
-	cpu = new CPU(video, pad, sound);
+    sound = new MasterSystem::Sound();
+    video = new MasterSystem::Video(NULL);
+    pad = new MasterSystem::Pad();
+	cpu = new MasterSystem::CPU(video, pad, sound);
 	cartridge = NULL;
-    debugger = new Debugger(sound, video, cpu, cartridge, pad);
+    debugger = new MasterSystem::Debugger(sound, video, cpu, cartridge, pad);
     
     keysUsed[0] = WXK_UP;
     keysUsed[1] = WXK_DOWN;
@@ -200,15 +201,15 @@ bool EmulationThread::ChangeFile(wxString fileName)
         battsDir += wxFileName::GetPathSeparator();
         
         if (isZip)
-            cartridge = new Cartridge(string(fileName.mb_str()), string(battsDir.mb_str()), buffer, size);
+            cartridge = new MasterSystem::Cartridge(string(fileName.mb_str()), string(battsDir.mb_str()), buffer, size);
         else
-            cartridge = new Cartridge(string(fileName.mb_str()), string(battsDir.mb_str()));
+            cartridge = new MasterSystem::Cartridge(string(fileName.mb_str()), string(battsDir.mb_str()));
         
         cpu->SetCartridge(cartridge);
         cpu->Reset();
         cpu->SetGGMode(gg);
         
-        debugger = new Debugger(sound, video, cpu, cartridge, pad);
+        debugger = new MasterSystem::Debugger(sound, video, cpu, cartridge, pad);
     }
     
     
@@ -278,7 +279,7 @@ void EmulationThread::ApplySettings()
     sound->SetEnabled(SettingsGetSoundEnabled());
 }
 
-void EmulationThread::SetScreen(ISMSScreenDrawable *screen)
+void EmulationThread::SetScreen(MasterSystem::ISMSScreenDrawable *screen)
 {
     wxMutexLocker lock(*mutex);
     
@@ -309,7 +310,7 @@ void EmulationThread::UpdatePad()
     }
 }
 
-Debugger *EmulationThread::GetDebugger() {
+MasterSystem::Debugger *EmulationThread::GetDebugger() {
     return debugger;
 }
 

@@ -28,6 +28,7 @@
 #endif
 
 using namespace std;
+using namespace MasterSystem;
 
 CPU::CPU(Video *v, Pad *p, Sound *s): Memory(this, v, p, s)
 {

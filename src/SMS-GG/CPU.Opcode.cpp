@@ -24,6 +24,7 @@
 #include "SMSException.h"
 
 using namespace std;
+using namespace MasterSystem;
 
 u8 CPU::Get8BitsInmValue(u8 offset) {
     return (MemR(GetPC() + offset));

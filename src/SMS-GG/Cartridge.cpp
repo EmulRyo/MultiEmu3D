@@ -26,6 +26,7 @@
 #include "SMSException.h"
 
 using namespace std;
+using namespace MasterSystem;
 
 Cartridge::Cartridge(string fileName, string batteriesPath, u8 *cartridgeBuffer, unsigned long size)
 {

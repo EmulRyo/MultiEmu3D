@@ -25,6 +25,7 @@
 #include "Pad.h"
 
 using namespace std;
+using namespace MasterSystem;
 
 Memory::Memory(CPU *cpu, Video *v, Pad *p, Sound *s)
 {

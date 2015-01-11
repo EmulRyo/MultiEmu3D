@@ -21,52 +21,55 @@
 #include <string>
 #include "Def.h"
 
-class Cartridge
-{
-    struct Ram
+namespace MasterSystem {
+    
+    class Cartridge
     {
-        u8   mem[0x8000];
-        bool enabled;
-        u8   numBank;
-        u8  *page;
+        struct Ram
+        {
+            u8   mem[0x8000];
+            bool enabled;
+            u8   numBank;
+            u8  *page;
+        };
+        
+    private:
+        unsigned long m_romSize;
+        std::string m_name;
+        bool m_isLoaded;
+        u8  *m_buffer;
+        u8  *m_mem;
+        u8  *m_pages[3];
+        u8   m_numBanks[3];
+        u8   m_maskPages;
+        Ram  m_ram;
+
+        void LoadFile(std::string fileName, std::string batteriesPath);
+        std::string GetShortName(std::string fileName);
+        
+    public:
+        Cartridge(std::string fileName, std::string batteriesPath="", u8 *cartridgeBuffer=NULL, unsigned long size=0);
+        ~Cartridge();
+        
+        void Reset();
+        
+        u8 *GetData();
+        unsigned int GetSize();
+        std::string GetName();
+        bool IsLoaded();
+
+        u8 Read(u16 address);
+        void Write(u16 address, u8 value);
+        
+        void SaveStateMBC(std::ostream *stream);
+        void LoadStateMBC(std::istream *stream);
+        
+        void Extract();
+        
+        u8   GetNumBank(u8 bank);
+        bool GetRAMEnabled();
+        u8   GetRAMNumBank();
     };
-    
-private:
-	unsigned long m_romSize;
-	std::string m_name;
-	bool m_isLoaded;
-	u8  *m_buffer;
-    u8  *m_mem;
-    u8  *m_pages[3];
-    u8   m_numBanks[3];
-    u8   m_maskPages;
-    Ram  m_ram;
-
-    void LoadFile(std::string fileName, std::string batteriesPath);
-    std::string GetShortName(std::string fileName);
-    
-public:
-	Cartridge(std::string fileName, std::string batteriesPath="", u8 *cartridgeBuffer=NULL, unsigned long size=0);
-	~Cartridge();
-    
-    void Reset();
-	
-	u8 *GetData();
-	unsigned int GetSize();
-	std::string GetName();
-	bool IsLoaded();
-
-	u8 Read(u16 address);
-	void Write(u16 address, u8 value);
-	
-	void SaveStateMBC(std::ostream *stream);
-	void LoadStateMBC(std::istream *stream);
-    
-    void Extract();
-    
-    u8   GetNumBank(u8 bank);
-    bool GetRAMEnabled();
-    u8   GetRAMNumBank();
-};
+}
 
 #endif

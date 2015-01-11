@@ -22,6 +22,7 @@
 #include "SMSException.h"
 
 using namespace std;
+using namespace MasterSystem;
 
 Registers::Registers() {ResetRegs();}
 

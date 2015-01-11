@@ -29,6 +29,7 @@
 #include "Sound.h"
 
 using namespace std;
+using namespace MasterSystem;
 
 enum SoundError { ERROR, NO_ERROR };
 

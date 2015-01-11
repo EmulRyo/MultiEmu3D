@@ -28,32 +28,34 @@ class SoundSDL;
 class SoundPortaudio;
 #endif
 
-class Sound
-{
-private:
-	Sms_Apu * m_apu;
-    Stereo_Buffer *m_mixer;
-#ifdef __WXMSW__
-	SoundSDL *m_sound;
-#else
-    SoundPortaudio *m_sound;
-#endif
-	bool m_initialized;
-	bool m_enabled;
-	long m_sampleRate;
-	
-	int HandleError( const char* str );
-public:
-	Sound();
-	~Sound();
-	
-	int ChangeSampleRate(long newSampleRate);
-	int Start();
-	int Stop();
-	bool GetEnabled();
-	void SetEnabled(bool enabled);
-	void WritePort(u8 port, u8 value, u32 cyclesElapsed);
-	void EndFrame(u32 cyclesElapsed);
-};
+namespace MasterSystem {
+    class Sound
+    {
+    private:
+        Sms_Apu * m_apu;
+        Stereo_Buffer *m_mixer;
+    #ifdef __WXMSW__
+        SoundSDL *m_sound;
+    #else
+        SoundPortaudio *m_sound;
+    #endif
+        bool m_initialized;
+        bool m_enabled;
+        long m_sampleRate;
+        
+        int HandleError( const char* str );
+    public:
+        Sound();
+        ~Sound();
+        
+        int ChangeSampleRate(long newSampleRate);
+        int Start();
+        int Stop();
+        bool GetEnabled();
+        void SetEnabled(bool enabled);
+        void WritePort(u8 port, u8 value, u32 cyclesElapsed);
+        void EndFrame(u32 cyclesElapsed);
+    };
+}
 
 #endif

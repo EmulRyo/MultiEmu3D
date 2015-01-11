@@ -18,6 +18,8 @@
 #include <iostream>
 #include "Pad.h"
 
+using namespace MasterSystem;
+
 Pad::Pad() {
     for (int i=0; i<6; i++) {
         m_buttonsStatePad1[i] = false;

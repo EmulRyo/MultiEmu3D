@@ -23,6 +23,7 @@
 #include "Instructions.h"
 
 using namespace std;
+using namespace MasterSystem;
 
 #define _8bitsInmValue (m_mem->MemR(m_reg->GetPC() + 1))
 #define _16bitsInmValue ((m_mem->MemR(m_reg->GetPC() + 2)) << 8) | m_mem->MemR(m_reg->GetPC() + 1)

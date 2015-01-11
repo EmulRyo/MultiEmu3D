@@ -20,7 +20,7 @@
 #include <wx/listctrl.h>
 #include <wx/imaglist.h>
 #include "IDControls.h"
-#include "DebuggerDialog.h"
+#include "DebuggerSMSDialog.h"
 #include "BreakpointsDialog.h"
 #include "../SMS-GG/Debugger.h"
 
@@ -29,20 +29,21 @@
 #include "Xpm/currentBreak.xpm"
 
 using namespace std;
+using namespace MasterSystem;
 
-BEGIN_EVENT_TABLE(DebuggerDialog, wxDialog)
-EVT_BUTTON(ID_DEBUG_RESET, DebuggerDialog::OnReset)
-EVT_BUTTON(ID_DEBUG_STEPINTO, DebuggerDialog::OnStepInto)
-EVT_BUTTON(ID_DEBUG_ONEFRAME, DebuggerDialog::OnOneFrame)
-EVT_BUTTON(ID_DEBUG_ONESECOND, DebuggerDialog::OnOneSecond)
-EVT_BUTTON(ID_DEBUG_BREAKPOINTS, DebuggerDialog::OnBreakpoints)
-EVT_BUTTON(ID_DEBUG_SAVETILES, DebuggerDialog::OnSaveTiles)
-EVT_TEXT(ID_DEBUG_MEMADDRESS, DebuggerDialog::OnMemAddressChange)
-EVT_LIST_ITEM_ACTIVATED(ID_DEBUG_DISASSEMBLER, DebuggerDialog::OnActivated)
-EVT_RADIOBOX(ID_DEBUG_MEMSELECT, DebuggerDialog::OnMemSelectChange)
+BEGIN_EVENT_TABLE(DebuggerSMSDialog, wxDialog)
+EVT_BUTTON(ID_DEBUG_RESET, DebuggerSMSDialog::OnReset)
+EVT_BUTTON(ID_DEBUG_STEPINTO, DebuggerSMSDialog::OnStepInto)
+EVT_BUTTON(ID_DEBUG_ONEFRAME, DebuggerSMSDialog::OnOneFrame)
+EVT_BUTTON(ID_DEBUG_ONESECOND, DebuggerSMSDialog::OnOneSecond)
+EVT_BUTTON(ID_DEBUG_BREAKPOINTS, DebuggerSMSDialog::OnBreakpoints)
+EVT_BUTTON(ID_DEBUG_SAVETILES, DebuggerSMSDialog::OnSaveTiles)
+EVT_TEXT(ID_DEBUG_MEMADDRESS, DebuggerSMSDialog::OnMemAddressChange)
+EVT_LIST_ITEM_ACTIVATED(ID_DEBUG_DISASSEMBLER, DebuggerSMSDialog::OnActivated)
+EVT_RADIOBOX(ID_DEBUG_MEMSELECT, DebuggerSMSDialog::OnMemSelectChange)
 END_EVENT_TABLE()
 
-DebuggerDialog::DebuggerDialog(wxWindow *parent, Debugger *debugger)
+DebuggerSMSDialog::DebuggerSMSDialog(wxWindow *parent, Debugger *debugger)
 {
     this->Create(parent, ID_DEBUGGERDIALOG, wxT("Debugger"), wxDefaultPosition,
            wxDefaultSize, wxDEFAULT_DIALOG_STYLE);
@@ -186,12 +187,12 @@ DebuggerDialog::DebuggerDialog(wxWindow *parent, Debugger *debugger)
     UpdateUI();
 }
 
-DebuggerDialog::~DebuggerDialog()
+DebuggerSMSDialog::~DebuggerSMSDialog()
 {
 	
 }
 
-wxSizer *DebuggerDialog::CreateButtons() {
+wxSizer *DebuggerSMSDialog::CreateButtons() {
     wxButton *resetButton = new wxButton(this, ID_DEBUG_RESET, wxT("Reset"));
     wxButton *stepIntoButton = new wxButton(this, ID_DEBUG_STEPINTO, wxT("Step Into"));
     wxButton *oneFrameButton = new wxButton(this, ID_DEBUG_ONEFRAME, wxT("Run one frame"));
@@ -236,7 +237,7 @@ wxSizer *DebuggerDialog::CreateButtons() {
     return buttonsSizer;
 }
 
-wxSizer *DebuggerDialog::CreateFlagsAndInputControls() {
+wxSizer *DebuggerSMSDialog::CreateFlagsAndInputControls() {
     wxStaticText *flagsText = new wxStaticText(this, -1, "Flags: ");
     m_flags[0] = new wxCheckBox(this, wxID_ANY, "S");
     m_flags[1] = new wxCheckBox(this, wxID_ANY, "Z");
@@ -269,7 +270,7 @@ wxSizer *DebuggerDialog::CreateFlagsAndInputControls() {
     return grid;
 }
 
-std::string DebuggerDialog::IntToString(int value, int width)
+std::string DebuggerSMSDialog::IntToString(int value, int width)
 {
     std::stringstream ss;
     ss << setfill('0') << setw(width) << value;
@@ -277,7 +278,7 @@ std::string DebuggerDialog::IntToString(int value, int width)
 }
 
 
-void DebuggerDialog::UpdateUI() {
+void DebuggerSMSDialog::UpdateUI() {
     UpdateRegisters();
     UpdateMemory();
     UpdateDisassembler();
@@ -286,7 +287,7 @@ void DebuggerDialog::UpdateUI() {
     UpdateFlags();
 }
 
-void DebuggerDialog::UpdateMemory() {
+void DebuggerSMSDialog::UpdateMemory() {
     int memSelect = m_memSelRBox->GetSelection();
     int maxMem = (memSelect == 0) ? 0x10000 : 0x4000;
     wxString address = m_addressMemCtrl->GetValue();
@@ -306,7 +307,7 @@ void DebuggerDialog::UpdateMemory() {
     }
 }
 
-void DebuggerDialog::UpdateRegisters() {
+void DebuggerSMSDialog::UpdateRegisters() {
     const char *names[] = { "AF", "BC", "DE", "HL", "PC", "SP", "IX", "IY" };
     
     m_regsView->DeleteAllItems();
@@ -327,7 +328,7 @@ void DebuggerDialog::UpdateRegisters() {
     m_regsView->SetItem(7, 1, m_debugger->GetRegIY());
 }
 
-void DebuggerDialog::UpdateVideoRegs() {
+void DebuggerSMSDialog::UpdateVideoRegs() {
     const char *names[] = { "Status", "IE0", "IE1", "IPeriod", "Line", "Address" };
     int pos = 0;
     
@@ -363,7 +364,7 @@ void DebuggerDialog::UpdateVideoRegs() {
     }
 }
 
-void DebuggerDialog::UpdateOtherRegs() {
+void DebuggerSMSDialog::UpdateOtherRegs() {
     const char *names[] = { "IE", "Bank 0", "Bank 1", "Bank 2", "Ram Enab", "Ram Bank" };
     
     m_othersView->DeleteAllItems();
@@ -382,7 +383,7 @@ void DebuggerDialog::UpdateOtherRegs() {
     m_othersView->SetItem(5, 1, IntToString(m_debugger->GetRAMNumBank(), 1));
 }
 
-void DebuggerDialog::UpdateDisassemblerIcon(int numItem, u16 currentAddress, u16 pc) {
+void DebuggerSMSDialog::UpdateDisassemblerIcon(int numItem, u16 currentAddress, u16 pc) {
     if (currentAddress == pc) {
         if (m_debugger->HasBreakpoint(currentAddress))
             m_disassemblerView->SetItemColumnImage(numItem, 0, 2);
@@ -395,7 +396,7 @@ void DebuggerDialog::UpdateDisassemblerIcon(int numItem, u16 currentAddress, u16
         m_disassemblerView->SetItemColumnImage(numItem, 0, -1);
 }
 
-void DebuggerDialog::InitDisassemblerVars(u16 &currentAddress, u16 &nextAddress, string &name, string &data, u16 &pc) {
+void DebuggerSMSDialog::InitDisassemblerVars(u16 &currentAddress, u16 &nextAddress, string &name, string &data, u16 &pc) {
     m_debugger->DisassembleNext(currentAddress, nextAddress, name, data);
     pc = currentAddress;
     if ((currentAddress >= m_disassemblerFirst) && (currentAddress <= m_disassemblerLast)) {
@@ -405,7 +406,7 @@ void DebuggerDialog::InitDisassemblerVars(u16 &currentAddress, u16 &nextAddress,
         m_disassemblerFirst = currentAddress;
 }
 
-void DebuggerDialog::UpdateDisassembler() {
+void DebuggerSMSDialog::UpdateDisassembler() {
     u16 currentAddress, nextAddress, pc, second;
     string address, name, data;
     const int lines = 8;
@@ -439,39 +440,39 @@ void DebuggerDialog::UpdateDisassembler() {
     }
 }
 
-void DebuggerDialog::UpdateFlags() {
+void DebuggerSMSDialog::UpdateFlags() {
     for (int i=0; i<8; i++) {
         bool value = m_debugger->GetFlag(i);
         m_flags[7-i]->SetValue(value);
     }
 }
 
-void DebuggerDialog::UpdatePad() {
+void DebuggerSMSDialog::UpdatePad() {
     bool buttonsState[6];
     for (int i=0; i<6; i++)
         buttonsState[i] = m_input[i]->IsChecked();
     m_debugger->UpdatePad1(buttonsState);
 }
 
-void DebuggerDialog::OnReset(wxCommandEvent &event) {
+void DebuggerSMSDialog::OnReset(wxCommandEvent &event) {
     UpdatePad();
     m_debugger->Reset();
     UpdateUI();
 }
 
-void DebuggerDialog::OnStepInto(wxCommandEvent &event) {
+void DebuggerSMSDialog::OnStepInto(wxCommandEvent &event) {
     UpdatePad();
     m_debugger->StepInto();
     UpdateUI();
 }
 
-void DebuggerDialog::OnOneFrame(wxCommandEvent &event) {
+void DebuggerSMSDialog::OnOneFrame(wxCommandEvent &event) {
     UpdatePad();
     m_debugger->ExecuteOneFrame();
     UpdateUI();
 }
 
-void DebuggerDialog::OnOneSecond(wxCommandEvent &event) {
+void DebuggerSMSDialog::OnOneSecond(wxCommandEvent &event) {
     UpdatePad();
     for (int i=0; i<60; i++) {
         if (!m_debugger->ExecuteOneFrame())
@@ -481,13 +482,13 @@ void DebuggerDialog::OnOneSecond(wxCommandEvent &event) {
     UpdateUI();
 }
 
-void DebuggerDialog::OnBreakpoints(wxCommandEvent &event) {
+void DebuggerSMSDialog::OnBreakpoints(wxCommandEvent &event) {
     BreakpointsDialog breakpoints(this, m_debugger);
     breakpoints.ShowModal();
     UpdateUI();
 }
 
-void DebuggerDialog::OnMemAddressChange(wxCommandEvent &event) {
+void DebuggerSMSDialog::OnMemAddressChange(wxCommandEvent &event) {
     if(!m_addressMemCtrl->IsModified())
         return;
     
@@ -498,7 +499,7 @@ void DebuggerDialog::OnMemAddressChange(wxCommandEvent &event) {
     UpdateMemory();
 }
 
-void DebuggerDialog::OnActivated(wxListEvent &event) {
+void DebuggerSMSDialog::OnActivated(wxListEvent &event) {
     long index = event.GetIndex();
     wxString address = m_disassemblerView->GetItemText(index, 1);
     long value;
@@ -512,11 +513,11 @@ void DebuggerDialog::OnActivated(wxListEvent &event) {
     }
 }
 
-void DebuggerDialog::OnMemSelectChange(wxCommandEvent &event) {
+void DebuggerSMSDialog::OnMemSelectChange(wxCommandEvent &event) {
     UpdateMemory();
 }
 
-void DebuggerDialog::OnSaveTiles(wxCommandEvent &event) {
+void DebuggerSMSDialog::OnSaveTiles(wxCommandEvent &event) {
     const int width = 16*8;
     const int height = 28*8;
     u8 buffer[width*height*3];

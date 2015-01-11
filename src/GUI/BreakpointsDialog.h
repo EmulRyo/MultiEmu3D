@@ -20,8 +20,11 @@
 
 #include <wx/wx.h>
 
-class Debugger;
 class wxListView;
+
+namespace MasterSystem {
+    class Debugger;
+}
 
 /*******************************************************************************
  // BreakpointsDialog Class
@@ -30,14 +33,14 @@ class wxListView;
 class BreakpointsDialog : public wxDialog {
 public:
 	
-    BreakpointsDialog(wxWindow *parent, Debugger *debugger);
+    BreakpointsDialog(wxWindow *parent, MasterSystem::Debugger *debugger);
 	~BreakpointsDialog();
     
 protected:
 	DECLARE_EVENT_TABLE()
     
 private:
-    Debugger *m_debugger;
+    MasterSystem::Debugger *m_debugger;
     wxFont *m_font;
     wxListView *m_breakpointsView;
     wxTextCtrl *m_addressCtrl;

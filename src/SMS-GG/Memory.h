@@ -25,46 +25,49 @@
 #define SIZE_RAM   0x2000
 #define SIZE_MEM (SIZE_RAM)
 
-class CPU;
-class Video;
-class Pad;
-
-class Memory
-{
-protected:
-	Cartridge *m_c;
-	Sound *m_s;
-    CPU *m_cpu;
-    Video *m_video;
-    Pad *m_pad;
-    bool m_GameGear;
-
-public:
-	Memory(CPU *cpu, Video *v, Pad *pad, Sound *s);
-	~Memory();
-	Memory *GetPtrMemory();
-	void ResetMem();
-	void SetCartridge(Cartridge *c);
-	void MemW(u16 direction, u8 value);
-	inline u8 MemR(u16 address)
-	{
-        if (address < 0xC000)
-            return m_c->Read(address);
-        else if (address < 0xE000)
-            return memory[address-0xC000];
-        else
-            return memory[address-0xE000];
-	}
-    void PortW(u8 port, u8 value);
-    u8   PortR(u8 port);
-	void SaveMemory(std::ostream *stream);
-	void LoadMemory(std::istream *stream);
+namespace MasterSystem {
     
-private:
-    u8 memory[SIZE_MEM];
-    u8 m_GGRegs[7];
-    
-    void MemoryControlW(u8 value);
-};
+    class CPU;
+    class Video;
+    class Pad;
+
+    class Memory
+    {
+    protected:
+        Cartridge *m_c;
+        Sound *m_s;
+        CPU *m_cpu;
+        Video *m_video;
+        Pad *m_pad;
+        bool m_GameGear;
+
+    public:
+        Memory(CPU *cpu, Video *v, Pad *pad, Sound *s);
+        ~Memory();
+        Memory *GetPtrMemory();
+        void ResetMem();
+        void SetCartridge(Cartridge *c);
+        void MemW(u16 direction, u8 value);
+        inline u8 MemR(u16 address)
+        {
+            if (address < 0xC000)
+                return m_c->Read(address);
+            else if (address < 0xE000)
+                return memory[address-0xC000];
+            else
+                return memory[address-0xE000];
+        }
+        void PortW(u8 port, u8 value);
+        u8   PortR(u8 port);
+        void SaveMemory(std::ostream *stream);
+        void LoadMemory(std::istream *stream);
+        
+    private:
+        u8 memory[SIZE_MEM];
+        u8 m_GGRegs[7];
+        
+        void MemoryControlW(u8 value);
+    };
+}
 
 #endif

@@ -24,98 +24,101 @@
 
 #define VDP_MEM 0x4000
 
-enum t_VDPMODES {
-    GRAPHIC_1, GRAPHIC_2, MODE_12, MODE_13, MODE_23, MODE_123,
-    MULTICOLOR,
-    MODE_4_192, MODE_4_224, MODE_4_240,
-    TEXT, INVALID_TEXT
-};
+namespace MasterSystem {
 
-class Memory;
-class ISMSScreenDrawable;
+    enum t_VDPMODES {
+        GRAPHIC_1, GRAPHIC_2, MODE_12, MODE_13, MODE_23, MODE_123,
+        MULTICOLOR,
+        MODE_4_192, MODE_4_224, MODE_4_240,
+        TEXT, INVALID_TEXT
+    };
 
-struct VideoPixel
-{
-	int x, y;
-	int rowMap;
-	int color, indexColor, xScrolled;
-	int palette[4];
-	int mapIni;
-	u8 yTile;
-    u8 r, g, b;
-};
+    class Memory;
+    class ISMSScreenDrawable;
 
-class Video
-{
-public:
-	Video(ISMSScreenDrawable *screen);
-	~Video(void);
-    void SetScreen(ISMSScreenDrawable *screen);
-    void Reset();
-	void RefreshScreen();
-	void ClearScreen();
-    bool Interrupt();
-    
-    u8   GetV();                //0x7E
-    u8   GetH();                //0x7F
-    u8   GetData();             //0xBE
-    void SetData(u8 value);     //0xBE
-    u8   GetControl();          //0xBF
-    void SetControl(u8 value);  //0xBF
-    
-    u8   MemR(u16 address);
-    u8   RegR(u8 reg);
-    u8   PalR(u8 pal);
-    void GetTile(u8 *buffer, int widthSize, int tile);
-    
-    void Update(u8 cycles);
-    
-    u16  GetLine();
-    u8   GetCyclesLine();
-    u8   GetStatus();
-    bool GetIE0();
-    bool GetIE1();
-    u16  GetAddress();
-    void SaveState(std::ostream *file);
-    void LoadState(std::istream *file);
-    void SetGGMode(bool value);
-    
-private:
-	u8  m_memory[VDP_MEM];
-    u8  m_regs[16];
-    u8  m_palettes[64];
-    u8  m_rgbPalettes[32][3];
-    u16 m_address;
-    u8  m_numWrite;
-    u8  m_partialAddress;
-    u16 m_line;
-    u32 m_cycles;
-    u16 m_cyclesLine;
-    u8  m_status;
-    s16 m_lineIrqCounter;
-    bool m_vramAddress;
-    u8  m_readBuffer;
-	ISMSScreenDrawable *m_screen;
-	VideoPixel *m_pixel;
-    bool m_pendingVIRQ;
-    bool m_pendingLIRQ;
-    t_VDPMODES m_mode;
-    
-    // Contendrá -1 en los píxeles en los que el BG tiene prioridad, 0 en los que se
-    // pinta BG pero no sprite, 1 cuando se pinta un sprite, 2 cuando se pintan 2
-    // sprites, etc.
-    s8   m_pixelAux[SMS_SCREEN_W][SMS_SCREEN_H];
-    bool m_GameGear;
-    u8   m_latch;
+    struct VideoPixel
+    {
+        int x, y;
+        int rowMap;
+        int color, indexColor, xScrolled;
+        int palette[4];
+        int mapIni;
+        u8 yTile;
+        u8 r, g, b;
+    };
 
-    void UpdateLine(u8 line);
-	void UpdateBG(u8 y);
-	void UpdateSprites(u8 y);
-	inline void GetColor(VideoPixel * p);
-    void UpdatePalette(u8 numPalette);
-    void UpdatePaletteGG(u8 numPalette);
-    void CheckReg(u8 reg);
-    u8   GetSprites(u8 y, u16 spriteBase, u8 hSprite, u8 *sprites);
-};
+    class Video
+    {
+    public:
+        Video(ISMSScreenDrawable *screen);
+        ~Video(void);
+        void SetScreen(ISMSScreenDrawable *screen);
+        void Reset();
+        void RefreshScreen();
+        void ClearScreen();
+        bool Interrupt();
+        
+        u8   GetV();                //0x7E
+        u8   GetH();                //0x7F
+        u8   GetData();             //0xBE
+        void SetData(u8 value);     //0xBE
+        u8   GetControl();          //0xBF
+        void SetControl(u8 value);  //0xBF
+        
+        u8   MemR(u16 address);
+        u8   RegR(u8 reg);
+        u8   PalR(u8 pal);
+        void GetTile(u8 *buffer, int widthSize, int tile);
+        
+        void Update(u8 cycles);
+        
+        u16  GetLine();
+        u8   GetCyclesLine();
+        u8   GetStatus();
+        bool GetIE0();
+        bool GetIE1();
+        u16  GetAddress();
+        void SaveState(std::ostream *file);
+        void LoadState(std::istream *file);
+        void SetGGMode(bool value);
+        
+    private:
+        u8  m_memory[VDP_MEM];
+        u8  m_regs[16];
+        u8  m_palettes[64];
+        u8  m_rgbPalettes[32][3];
+        u16 m_address;
+        u8  m_numWrite;
+        u8  m_partialAddress;
+        u16 m_line;
+        u32 m_cycles;
+        u16 m_cyclesLine;
+        u8  m_status;
+        s16 m_lineIrqCounter;
+        bool m_vramAddress;
+        u8  m_readBuffer;
+        ISMSScreenDrawable *m_screen;
+        VideoPixel *m_pixel;
+        bool m_pendingVIRQ;
+        bool m_pendingLIRQ;
+        t_VDPMODES m_mode;
+        
+        // Contendrá -1 en los píxeles en los que el BG tiene prioridad, 0 en los que se
+        // pinta BG pero no sprite, 1 cuando se pinta un sprite, 2 cuando se pintan 2
+        // sprites, etc.
+        s8   m_pixelAux[SMS_SCREEN_W][SMS_SCREEN_H];
+        bool m_GameGear;
+        u8   m_latch;
+
+        void UpdateLine(u8 line);
+        void UpdateBG(u8 y);
+        void UpdateSprites(u8 y);
+        inline void GetColor(VideoPixel * p);
+        void UpdatePalette(u8 numPalette);
+        void UpdatePaletteGG(u8 numPalette);
+        void CheckReg(u8 reg);
+        u8   GetSprites(u8 y, u16 spriteBase, u8 hSprite, u8 *sprites);
+    };
+}
 
 #endif

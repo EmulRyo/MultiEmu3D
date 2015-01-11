@@ -22,6 +22,7 @@
 #include "Rewind.h"
 
 using namespace std;
+using namespace MasterSystem;
 
 Rewind::Rewind()
 {
@@ -44,7 +45,7 @@ bool Rewind::IsEnabled() {
     return m_enabled;
 }
 
-void Rewind::SetCPU(CPU *cpu) {
+void Rewind::SetCPU(MasterSystem::CPU *cpu) {
     m_cpu = cpu;
 }
 

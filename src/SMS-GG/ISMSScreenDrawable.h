@@ -20,14 +20,17 @@
 
 #include "Def.h"
 
-class ISMSScreenDrawable
-{
-public:
-    virtual u8*  GetBufferPtr() = 0;
-	virtual void OnDrawPixel(u8 r, u8 g, u8 b, int x, int y) = 0;
-    virtual void OnSizeChanged(int x, int y, int width, int height) = 0;
-	virtual void OnRefreshGBScreen() = 0;
-	virtual void OnClear() = 0;
-};
+namespace MasterSystem {
+    
+    class ISMSScreenDrawable
+    {
+    public:
+        virtual u8*  GetBufferPtr() = 0;
+        virtual void OnDrawPixel(u8 r, u8 g, u8 b, int x, int y) = 0;
+        virtual void OnSizeChanged(int x, int y, int width, int height) = 0;
+        virtual void OnRefreshGBScreen() = 0;
+        virtual void OnClear() = 0;
+    };
+}
 
 #endif

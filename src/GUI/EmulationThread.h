@@ -25,14 +25,17 @@
 enum enumEmuStates { NotStartedYet, Stopped, Paused, Playing };
 enum EnumSpeed { SpeedNormal, SpeedMax };
 
-class Cartridge;
-class Video;
-class Sound;
-class Pad;
-class CPU;
-class Debugger;
+namespace MasterSystem {
+    class Cartridge;
+    class Video;
+    class Sound;
+    class Pad;
+    class CPU;
+    class Debugger;
+    class ISMSScreenDrawable;
+}
+
 class Joystick;
-class ISMSScreenDrawable;
 class wxMutex;
 
 class EmulationThread : public wxThread
@@ -47,9 +50,9 @@ public:
     void LoadState(std::string fileName, int id);
     void SaveState(std::string fileName, int id);
     void ApplySettings();
-    void SetScreen(ISMSScreenDrawable *screen);
+    void SetScreen(MasterSystem::ISMSScreenDrawable *screen);
     void UpdatePad();
-    Debugger *GetDebugger();
+    MasterSystem::Debugger *GetDebugger();
     void SetSpeed(EnumSpeed speed);
     
     enumEmuStates GetState();
@@ -57,12 +60,12 @@ public:
     bool Finished();
     
 private:
-	Video *video;
-	Sound *sound;
-    Pad *pad;
-	Cartridge *cartridge;
-    CPU *cpu;
-    Debugger *debugger;
+	MasterSystem::Video *video;
+	MasterSystem::Sound *sound;
+    MasterSystem::Pad *pad;
+	MasterSystem::Cartridge *cartridge;
+    MasterSystem::CPU *cpu;
+    MasterSystem::Debugger *debugger;
     Joystick *joystick;
     wxMutex *mutex;
     wxStopWatch swFrame;
@@ -70,7 +73,7 @@ private:
     bool m_finished;
     EnumSpeed m_speed;
     bool m_soundEnabled;
-    ISMSScreenDrawable *m_screen;
+    MasterSystem::ISMSScreenDrawable *m_screen;
     
     Rewind m_rewind;
     
