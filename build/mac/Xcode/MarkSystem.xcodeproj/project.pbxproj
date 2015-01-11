@@ -40,6 +40,7 @@
 		6E78491D1A60B7D40039E80D /* Sound.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 6E7849071A60B7D40039E80D /* Sound.cpp */; };
 		6E78491E1A60B7D40039E80D /* SoundPortaudio.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 6E7849091A60B7D40039E80D /* SoundPortaudio.cpp */; };
 		6E7849211A60B7D40039E80D /* Video.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 6E78490E1A60B7D40039E80D /* Video.cpp */; };
+		6E7849241A628BAA0039E80D /* SMS.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 6E7849221A628BAA0039E80D /* SMS.cpp */; };
 		6E81E465190AE64200725E92 /* dmgboy.mo in CopyFiles */ = {isa = PBXBuildFile; fileRef = 6E81E460190AE57D00725E92 /* dmgboy.mo */; };
 		6E81E466190AE65500725E92 /* dmgboy.mo in CopyFiles */ = {isa = PBXBuildFile; fileRef = 6E41039B175A41CF00B5D091 /* dmgboy.mo */; };
 		6E81E4691914011900725E92 /* dmgboy.mo in CopyFiles */ = {isa = PBXBuildFile; fileRef = 6E81E4681914011900725E92 /* dmgboy.mo */; };
@@ -200,6 +201,8 @@
 		6E78490A1A60B7D40039E80D /* SoundPortaudio.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SoundPortaudio.h; sourceTree = "<group>"; };
 		6E78490E1A60B7D40039E80D /* Video.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Video.cpp; sourceTree = "<group>"; };
 		6E78490F1A60B7D40039E80D /* Video.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Video.h; sourceTree = "<group>"; };
+		6E7849221A628BAA0039E80D /* SMS.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = SMS.cpp; path = "../../../src/SMS-GG/SMS.cpp"; sourceTree = "<group>"; };
+		6E7849231A628BAA0039E80D /* SMS.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SMS.h; path = "../../../src/SMS-GG/SMS.h"; sourceTree = "<group>"; };
 		6E81E460190AE57D00725E92 /* dmgboy.mo */ = {isa = PBXFileReference; lastKnownFileType = file; name = dmgboy.mo; path = ../../languages/fr/dmgboy.mo; sourceTree = "<group>"; };
 		6E81E4681914011900725E92 /* dmgboy.mo */ = {isa = PBXFileReference; lastKnownFileType = file; name = dmgboy.mo; path = ../../languages/el/dmgboy.mo; sourceTree = "<group>"; };
 		6E82ED72194391BF001D8B2D /* Joystick.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Joystick.cpp; sourceTree = "<group>"; };
@@ -455,6 +458,8 @@
 				6ED4CF5A195381BA0003C70B /* Pad.h */,
 				6ED4CF5B195381BA0003C70B /* Registers.cpp */,
 				6ED4CF5C195381BA0003C70B /* Registers.h */,
+				6E7849221A628BAA0039E80D /* SMS.cpp */,
+				6E7849231A628BAA0039E80D /* SMS.h */,
 				6ED4CF5F195381BA0003C70B /* Sound.cpp */,
 				6ED4CF60195381BA0003C70B /* Sound.h */,
 				6ED4CF61195381BA0003C70B /* SoundPortaudio.cpp */,
@@ -748,6 +753,7 @@
 				6EE60A6219798A16008D94D5 /* CPU.Opcode.cpp in Sources */,
 				6EF2144F1A6094680045C4A1 /* Sound_Writer.cpp in Sources */,
 				6E7849151A60B7D40039E80D /* Instructions.cpp in Sources */,
+				6E7849241A628BAA0039E80D /* SMS.cpp in Sources */,
 				6E2B3ED517C13BD80066D9C6 /* Geo.cpp in Sources */,
 				6E82ED74194391BF001D8B2D /* Joystick.cpp in Sources */,
 				6E2B3EDA17C14B6E0066D9C6 /* wxImageLoader.cpp in Sources */,

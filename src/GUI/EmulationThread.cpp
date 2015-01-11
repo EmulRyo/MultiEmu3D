@@ -20,13 +20,7 @@
 #include <wx/zipstrm.h>
 #include <wx/stdpaths.h>
 #include <wx/msgdlg.h>
-#include "../SMS-GG/ISMSScreenDrawable.h"
-#include "../SMS-GG/Pad.h"
-#include "../SMS-GG/Sound.h"
-#include "../SMS-GG/Video.h"
-#include "../SMS-GG/CPU.h"
-#include "../SMS-GG/Pad.h"
-#include "../SMS-GG/Debugger.h"
+#include "../SMS-GG/SMS.h"
 #include "Settings.h"
 #include "EmulationThread.h"
 #include "Joystick.h"
@@ -41,12 +35,7 @@ EmulationThread::EmulationThread()
     
     m_screen = NULL;
     
-    sound = new MasterSystem::Sound();
-    video = new MasterSystem::Video(NULL);
-    pad = new MasterSystem::Pad();
-	cpu = new MasterSystem::CPU(video, pad, sound);
-	cartridge = NULL;
-    debugger = new MasterSystem::Debugger(sound, video, cpu, cartridge, pad);
+    m_sms = new MasterSystem::SMS();
     
     keysUsed[0] = WXK_UP;
     keysUsed[1] = WXK_DOWN;
@@ -71,19 +60,14 @@ EmulationThread::EmulationThread()
     joystick = new Joystick();
     m_finished = false;
     m_speed = SpeedNormal;
-    m_soundEnabled = sound->GetEnabled();
+    m_soundEnabled = m_sms->SoundIsEnabled();
     
-    m_rewind.SetCPU(cpu);
+    m_rewind.SetCPU(m_sms->GetCPU());
 }
 
 EmulationThread::~EmulationThread() {
     emuState = Stopped;
-	delete cpu;
-	delete video;
-	delete sound;
-    delete pad;
-    if (cartridge)
-		delete cartridge;
+    delete m_sms;
     
     delete joystick;
 }
@@ -95,11 +79,11 @@ void EmulationThread::SetState(enumEmuStates state)
     this->emuState = state;
     
     if (state == Playing) {
-        sound->SetEnabled(SettingsGetSoundEnabled());
+        m_sms->SoundEnable(SettingsGetSoundEnabled());
         ((RendererBase *)m_screen)->SetIcon(Renderer::Play);
     }
     else
-        sound->SetEnabled(false);
+        m_sms->SoundEnable(false);
     
     if (state == Stopped)
     {
@@ -107,12 +91,8 @@ void EmulationThread::SetState(enumEmuStates state)
         ((RendererBase *)m_screen)->SetRewindValue(-1);
         m_rewind.Disable();
         
-        if (cartridge)
-            cartridge->Extract();
-#ifdef MAKEGBLOG
-        cpu->SaveLog();
-#endif
-        cpu->Reset();
+        m_sms->CartridgeExtract();
+        m_sms->Reset();
     }
     else if (state == Paused) {
         ((RendererBase *)m_screen)->SetIcon(Renderer::Pause);
@@ -137,7 +117,7 @@ wxThread::ExitCode EmulationThread::Entry()
 			if (emuState == Playing)
             {
                 if (!m_rewind.IsEnabled()) {
-                    cpu->ExecuteOneFrame();
+                    m_sms->ExecuteOneFrame();
                     m_rewind.AddFrame();
                 }
             }
@@ -189,9 +169,6 @@ bool EmulationThread::ChangeFile(wxString fileName)
         }
         
         // Si ha llegado aquí es que es un archivo permitido
-        if (cartridge)
-            delete cartridge;
-        
         wxString battsDir = wxStandardPaths::Get().GetUserDataDir() + wxFileName::GetPathSeparator()
         + wxT("Batts");
         
@@ -201,15 +178,11 @@ bool EmulationThread::ChangeFile(wxString fileName)
         battsDir += wxFileName::GetPathSeparator();
         
         if (isZip)
-            cartridge = new MasterSystem::Cartridge(string(fileName.mb_str()), string(battsDir.mb_str()), buffer, size);
+            m_sms->CartridgeLoad(string(fileName.mb_str()), string(battsDir.mb_str()), buffer, size);
         else
-            cartridge = new MasterSystem::Cartridge(string(fileName.mb_str()), string(battsDir.mb_str()));
+            m_sms->CartridgeLoad(string(fileName.mb_str()), string(battsDir.mb_str()));
         
-        cpu->SetCartridge(cartridge);
-        cpu->Reset();
-        cpu->SetGGMode(gg);
-        
-        debugger = new MasterSystem::Debugger(sound, video, cpu, cartridge, pad);
+        m_sms->SetGGMode(gg);
     }
     
     
@@ -260,14 +233,14 @@ void EmulationThread::LoadState(std::string fileName, int id)
 {
     wxMutexLocker lock(*mutex);
     
-    cpu->LoadState(fileName, id);
+    m_sms->LoadState(fileName, id);
 }
 
 void EmulationThread::SaveState(std::string fileName, int id)
 {
     wxMutexLocker lock(*mutex);
     
-    cpu->SaveState(fileName, id);
+    m_sms->SaveState(fileName, id);
 }
 
 void EmulationThread::ApplySettings()
@@ -275,8 +248,8 @@ void EmulationThread::ApplySettings()
     wxMutexLocker lock(*mutex);
     
     PadSetKeys(SettingsGetInput1(), SettingsGetInput2());
-    sound->ChangeSampleRate(SettingsGetSoundSampleRate());
-    sound->SetEnabled(SettingsGetSoundEnabled());
+    m_sms->SoundSetSampleRate(SettingsGetSoundSampleRate());
+    m_sms->SoundEnable(SettingsGetSoundEnabled());
 }
 
 void EmulationThread::SetScreen(MasterSystem::ISMSScreenDrawable *screen)
@@ -284,7 +257,7 @@ void EmulationThread::SetScreen(MasterSystem::ISMSScreenDrawable *screen)
     wxMutexLocker lock(*mutex);
     
     m_screen = screen;
-    video->SetScreen(screen);
+    m_sms->SetScreen(screen);
     m_rewind.SetRenderer((RendererBase *)screen);
 }
 
@@ -301,9 +274,7 @@ void EmulationThread::UpdatePad()
         
         if (!m_rewind.IsEnabled() && (!back)) {
             wxMutexLocker lock(*mutex);
-            pad->SetButtonsStatePad1(buttonsState);
-            pad->SetButtonsStatePad2(&buttonsState[6]);
-            pad->SetPauseState(wxGetKeyState(keysUsed[12]));
+            m_sms->PadSetButtons(buttonsState, wxGetKeyState(keysUsed[12]));
             
             SetSpeed(space ? SpeedMax : SpeedNormal);
         }
@@ -311,7 +282,7 @@ void EmulationThread::UpdatePad()
 }
 
 MasterSystem::Debugger *EmulationThread::GetDebugger() {
-    return debugger;
+    return m_sms->GetDebugger();
 }
 
 void EmulationThread::PadSetKeys(int* keys1, int* keys2) {
@@ -328,11 +299,11 @@ bool EmulationThread::Finished() {
 void EmulationThread::SetSpeed(EnumSpeed speed) {
     if (m_speed != speed) {
         if (speed == SpeedMax) {
-            m_soundEnabled = sound->GetEnabled();
-            sound->SetEnabled(false);
+            m_soundEnabled = m_sms->SoundIsEnabled();
+            m_sms->SoundEnable(false);
         }
         else
-            sound->SetEnabled(m_soundEnabled);
+            m_sms->SoundEnable(m_soundEnabled);
         m_speed = speed;
     }
 }

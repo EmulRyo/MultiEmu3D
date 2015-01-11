@@ -26,13 +26,7 @@ enum enumEmuStates { NotStartedYet, Stopped, Paused, Playing };
 enum EnumSpeed { SpeedNormal, SpeedMax };
 
 namespace MasterSystem {
-    class Cartridge;
-    class Video;
-    class Sound;
-    class Pad;
-    class CPU;
-    class Debugger;
-    class ISMSScreenDrawable;
+    class SMS;
 }
 
 class Joystick;
@@ -60,12 +54,7 @@ public:
     bool Finished();
     
 private:
-	MasterSystem::Video *video;
-	MasterSystem::Sound *sound;
-    MasterSystem::Pad *pad;
-	MasterSystem::Cartridge *cartridge;
-    MasterSystem::CPU *cpu;
-    MasterSystem::Debugger *debugger;
+    MasterSystem::SMS *m_sms;
     Joystick *joystick;
     wxMutex *mutex;
     wxStopWatch swFrame;
@@ -79,7 +68,7 @@ private:
     
 	enumEmuStates emuState;
     
-    void LoadZip(const wxString zipPath, u8 **buffer, unsigned long *size, bool *gg);
+    void LoadZip(const wxString zipPath, unsigned char **buffer, unsigned long *size, bool *gg);
     void PadSetKeys(int* keys1, int* keys2);
     void UpdateRewindScreen();
     void SetRewindPosition();
