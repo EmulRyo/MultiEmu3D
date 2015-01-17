@@ -43,28 +43,28 @@ namespace GameBoy {
         
         std::string GetRegs();
         
-        std::string GetMem(WORD address);
-        std::string GetMem(WORD start, WORD end);
-        std::string GetMemVRam(WORD start, WORD end, int slot);
+        std::string GetMem(u16 address);
+        std::string GetMem(u16 start, u16 end);
+        std::string GetMemVRam(u16 start, u16 end, int slot);
         std::string GetMemPalette(int sprite, int number);
-        void GetBG(BYTE *buffer);
-        void GetWindow(BYTE *buffer);
-        void GetTiles(BYTE *buffer, int width, int height);
-        void GetColorPalette(int sprite, int number, BYTE palette[4][3]);
-        std::string Disassemble(WORD start, int numInstructions);
+        void GetBG(u8 *buffer);
+        void GetWindow(u8 *buffer);
+        void GetTiles(u8 *buffer, int width, int height);
+        void GetColorPalette(int sprite, int number, u8 palette[4][3]);
+        std::string Disassemble(u16 start, int numInstructions);
         std::string Disassemble(int numInstructions);
-        void DisassembleNext(WORD &currentAddress, WORD &nextAddress, std::string &name, std::string &data);
-        void DisassembleOne(WORD address, WORD &nextAddress, std::string &name, std::string &data);
+        void DisassembleNext(u16 &currentAddress, u16 &nextAddress, std::string &name, std::string &data);
+        void DisassembleOne(u16 address, u16 &nextAddress, std::string &name, std::string &data);
         
         void Reset();
         void StepInto();
         bool ExecuteOneFrame();
         
-        void AddBreakpoint(WORD address);
-        void DelBreakpoint(WORD address);
-        bool HasBreakpoint(WORD address);
+        void AddBreakpoint(u16 address);
+        void DelBreakpoint(u16 address);
+        bool HasBreakpoint(u16 address);
         int  GetNumBreakpoints();
-        WORD GetBreakpoint(int i);
+        u16 GetBreakpoint(int i);
         
         std::string ToHex(int value, int width, char fill);
         void AppendHex(std::stringstream &ss, int value, int width, char fill);
@@ -77,7 +77,7 @@ namespace GameBoy {
         BreakpointNode *m_firstBreakpoint;
         BreakpointNode *m_lastBreakpoint;
         
-        BreakpointNode *GetBreakpointNode(WORD address);
+        BreakpointNode *GetBreakpointNode(u16 address);
         void ClearBreakpoints();
     };
 }

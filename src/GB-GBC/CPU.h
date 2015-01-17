@@ -32,11 +32,11 @@ namespace GameBoy {
     {
     private:
         unsigned long m_numInstructions;
-        BYTE m_lastCycles;
+        u8 m_lastCycles;
         int  m_cyclesLCD;
-        WORD m_cyclesTimer;
-        WORD m_cyclesDIV;
-        WORD m_cyclesSerial;
+        u16 m_cyclesTimer;
+        u16 m_cyclesDIV;
+        u16 m_cyclesSerial;
         int  m_bitSerial;
         
         int m_lcdMode0;
@@ -59,11 +59,11 @@ namespace GameBoy {
         int  Execute(int cyclesToExecute);
         int  ExecuteOneFrame();
         void UpdatePad(bool buttonsState[8]);
-        void OnWriteLCDC(BYTE value);
-        BYTE TACChanged(BYTE newValue);
-        BYTE DIVChanged(BYTE newValue);
-        BYTE P1Changed(BYTE newValue);
-        void StatChanged(BYTE newValue);
+        void OnWriteLCDC(u8 value);
+        u8 TACChanged(u8 newValue);
+        u8 DIVChanged(u8 newValue);
+        u8 P1Changed(u8 newValue);
+        void StatChanged(u8 newValue);
         void AddCycles(int cycles);
         void CheckLYC();
         void Reset();

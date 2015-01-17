@@ -18,7 +18,7 @@
 
 namespace GameBoy {
 
-    const BYTE instructionLengths[] = {
+    const u8 instructionLengths[] = {
         1, 3, 1, 1, 1, 1, 2, 1, 3, 1, 1, 1, 1, 1, 2, 1,
         2, 3, 1, 1, 1, 1, 2, 1, 2, 1, 1, 1, 1, 1, 2, 1,
         2, 3, 1, 1, 1, 1, 2, 1, 2, 1, 1, 1, 1, 1, 2, 1,
@@ -37,7 +37,7 @@ namespace GameBoy {
         2, 1, 1, 1, 0, 1, 2, 1, 2, 1, 3, 1, 0, 0, 2, 1
     };
 
-    const BYTE instructionCycles[] = {
+    const u8 instructionCycles[] = {
         1, 3, 2, 2, 1, 1, 2, 1, 5, 2, 2, 2, 1, 1, 2, 1,
         0, 3, 2, 2, 1, 1, 2, 1, 3, 2, 2, 2, 1, 1, 2, 1,
         2, 3, 2, 2, 1, 1, 2, 1, 2, 2, 2, 2, 1, 1, 2, 1,
@@ -56,7 +56,7 @@ namespace GameBoy {
         3, 3, 2, 1, 0, 4, 2, 4, 3, 2, 4, 1, 0, 0, 2, 4
     };
 
-    const BYTE instructionCondicionalCycles[] = {
+    const u8 instructionCondicionalCycles[] = {
         1, 3, 2, 2, 1, 1, 2, 1, 5, 2, 2, 2, 1, 1, 2, 1,
         0, 3, 2, 2, 1, 1, 2, 1, 3, 2, 2, 2, 1, 1, 2, 1,
         3, 3, 2, 2, 1, 1, 2, 1, 3, 2, 2, 2, 1, 1, 2, 1,
@@ -75,7 +75,7 @@ namespace GameBoy {
         3, 3, 2, 1, 0, 4, 2, 4, 3, 2, 4, 1, 0, 0, 2, 4
     };
 
-    const BYTE instructionCyclesCB[] = {
+    const u8 instructionCyclesCB[] = {
         2, 2, 2, 2, 2, 2, 4, 2, 2, 2, 2, 2, 2, 2, 4, 2,
         2, 2, 2, 2, 2, 2, 4, 2, 2, 2, 2, 2, 2, 2, 4, 2,
         2, 2, 2, 2, 2, 2, 4, 2, 2, 2, 2, 2, 2, 2, 4, 2,
@@ -642,27 +642,27 @@ namespace GameBoy {
         "SET 7 A"
     };
 
-    const char *GetInstructionName(BYTE opcode) {
+    const char *GetInstructionName(u8 opcode) {
         return instructionsName[opcode];
     }
 
-    const char *GetInstructionCBName(BYTE opcode) {
+    const char *GetInstructionCBName(u8 opcode) {
         return instructionsCBName[opcode];
     }
 
-    BYTE GetInstructionLength(BYTE opcode) {
+    u8 GetInstructionLength(u8 opcode) {
         return instructionLengths[opcode];
     }
 
-    BYTE GetInstructionCycles(BYTE opcode) {
+    u8 GetInstructionCycles(u8 opcode) {
         return instructionCycles[opcode];
     }
 
-    BYTE GetInstructionCondicionalCycles(BYTE opcode) {
+    u8 GetInstructionCondicionalCycles(u8 opcode) {
         return instructionCondicionalCycles[opcode];
     }
 
-    BYTE GetInstructionCyclesCB(BYTE opcode) {
+    u8 GetInstructionCyclesCB(u8 opcode) {
         return instructionCyclesCB[opcode];
     }
 }

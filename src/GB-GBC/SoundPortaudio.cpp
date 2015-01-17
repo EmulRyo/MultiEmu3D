@@ -178,12 +178,12 @@ void SoundPortaudio::Write(const short* in, int count)
 int SoundPortaudio::FillBuffer(void *outputBuffer, unsigned long framesPerBuffer)
 {
     short * out = (short *)outputBuffer;
-    size_t copyBytes = framesPerBuffer*2 * sizeof(short);
+    size_t copyu8s = framesPerBuffer*2 * sizeof(short);
     
     // si hay por lo menos un buffer para reproducir
 	if ( m_fullBuffers > 0 )
 	{
-		memcpy(out, GetBufPtr(m_readBuf), copyBytes);
+		memcpy(out, GetBufPtr(m_readBuf), copyu8s);
 		m_readBuf = (m_readBuf + 1) % numBuffers;
         m_semaphore->Post();
         
@@ -193,7 +193,7 @@ int SoundPortaudio::FillBuffer(void *outputBuffer, unsigned long framesPerBuffer
 	// si no hay ninguno reproducir silencio
 	else
 	{
-		memset(out, 0, copyBytes);
+		memset(out, 0, copyu8s);
 	}
     
     return 0;

@@ -26,7 +26,7 @@ namespace GameBoy {
         virtual void OnPreDraw() = 0;
         virtual void OnPostDraw() = 0;
         virtual void OnDrawPixel(int idColor, int x, int y) = 0;
-        virtual void OnDrawPixel(BYTE r, BYTE g, BYTE b, int x, int y) = 0;
+        virtual void OnDrawPixel(u8 r, u8 g, u8 b, int x, int y) = 0;
         virtual void OnRefreshGBScreen() = 0;
         virtual void OnClear() = 0;
     };

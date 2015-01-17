@@ -23,18 +23,18 @@
 #include "MBC.h"
 using namespace std;
 
-static BYTE * _memCartridge = NULL;
-static BYTE * _ptrCartridge = NULL;
-static BYTE * _memRamMBC = NULL;
-static BYTE * _ptrRamMBC = NULL;
+static u8 * _memCartridge = NULL;
+static u8 * _ptrCartridge = NULL;
+static u8 * _memRamMBC = NULL;
+static u8 * _ptrRamMBC = NULL;
 static int _memMode = 0;
 
 static int _romBank = 1;
-static int _romSize = 0;	//Bytes
+static int _romSize = 0;	//u8s
 static int _numRomBanks = 2;
 
 static int _ramBank = 0;
-static int _ramSize = 0;	//Bytes
+static int _ramSize = 0;	//u8s
 static int _ramEnabled = 0;
 
 RTC *_rtc = NULL;
@@ -45,7 +45,7 @@ static string _pathBatteries = "";
 void MBCSaveBattRam();
 void MBCLoadBattRam();
 
-void InitMBC(string romName, BYTE * memCartridge, int romSize)
+void InitMBC(string romName, u8 * memCartridge, int romSize)
 {
 	_romName = romName;
 	_memCartridge = memCartridge;
@@ -62,12 +62,12 @@ void InitMBC(string romName, BYTE * memCartridge, int romSize)
 	_memRamMBC = NULL;
 }
 
-void InitMBCNone(string romName, BYTE * memCartridge, int romSize)
+void InitMBCNone(string romName, u8 * memCartridge, int romSize)
 {
 	InitMBC(romName, memCartridge, romSize);
 }
 
-void InitMBC1(string romName, BYTE * memCartridge, int romSize, int ramHeaderSize)
+void InitMBC1(string romName, u8 * memCartridge, int romSize, int ramHeaderSize)
 {
 	InitMBC(romName, memCartridge, romSize);
 
@@ -79,25 +79,25 @@ void InitMBC1(string romName, BYTE * memCartridge, int romSize, int ramHeaderSiz
 		_ramSize = 32768;		//32KB
 
 	if (_ramSize)
-		_memRamMBC = new BYTE[_ramSize];
+		_memRamMBC = new u8[_ramSize];
 	_ptrRamMBC = _memRamMBC;
 	
 	MBCLoadBattRam();
 }
 
-void InitMBC2(string romName, BYTE * memCartridge, int romSize)
+void InitMBC2(string romName, u8 * memCartridge, int romSize)
 {
 	InitMBC(romName, memCartridge, romSize);
 
 	_ramSize = 512;
 
-	_memRamMBC = new BYTE[_ramSize];
+	_memRamMBC = new u8[_ramSize];
 	_ptrRamMBC = _memRamMBC;
 	
 	MBCLoadBattRam();
 }
 
-void InitMBC3(string romName, BYTE * memCartridge, int romSize, int ramHeaderSize, bool hasRTC)
+void InitMBC3(string romName, u8 * memCartridge, int romSize, int ramHeaderSize, bool hasRTC)
 {
 	InitMBC(romName, memCartridge, romSize);
 
@@ -109,7 +109,7 @@ void InitMBC3(string romName, BYTE * memCartridge, int romSize, int ramHeaderSiz
 		_ramSize = 131072;		//128KB = 1Mb
 
 	if (_ramSize)
-		_memRamMBC = new BYTE[_ramSize];
+		_memRamMBC = new u8[_ramSize];
 	_ptrRamMBC = _memRamMBC;
     
     if (_rtc)
@@ -120,7 +120,7 @@ void InitMBC3(string romName, BYTE * memCartridge, int romSize, int ramHeaderSiz
 	MBCLoadBattRam();
 }
 
-void InitMBC5(string romName, BYTE * memCartridge, int romSize, int ramHeaderSize)
+void InitMBC5(string romName, u8 * memCartridge, int romSize, int ramHeaderSize)
 {
 	InitMBC1(romName, memCartridge, romSize, ramHeaderSize);
 }
@@ -135,20 +135,20 @@ void DestroyMBC()
 	_ptrRamMBC = NULL;
 }
 
-BYTE NoneRead(WORD address)
+u8 NoneRead(u16 address)
 {
 	return _memCartridge[address];
 }
 
-void NoneWrite(WORD address, BYTE value)
+void NoneWrite(u16 address, u8 value)
 {
 	//No hacer nada
 	return;
 }
 
-void MBC1Write(WORD address, BYTE value)
+void MBC1Write(u16 address, u8 value)
 {
-	WORD msAddr = address >> 12;
+	u16 msAddr = address >> 12;
 	
 	switch (msAddr) {
 		case 0x0:
@@ -202,7 +202,7 @@ void MBC1Write(WORD address, BYTE value)
 	}
 }
 
-BYTE MBC1Read(WORD address)
+u8 MBC1Read(u16 address)
 {
 	if (address < 0x4000)
 		return _memCartridge[address];
@@ -214,9 +214,9 @@ BYTE MBC1Read(WORD address)
 	return 0;
 }
 
-void MBC2Write(WORD address, BYTE value)
+void MBC2Write(u16 address, u8 value)
 {
-	WORD msAddr = address >> 12;
+	u16 msAddr = address >> 12;
 
 	switch (msAddr) {
 		case 0x0:
@@ -253,7 +253,7 @@ void MBC2Write(WORD address, BYTE value)
 	}
 }
 
-BYTE MBC2Read(WORD address)
+u8 MBC2Read(u16 address)
 {
 	if (address < 0x4000)
 		return _memCartridge[address];
@@ -265,10 +265,10 @@ BYTE MBC2Read(WORD address)
 	return 0;
 }
 
-void MBC3Write(WORD address, BYTE value)
+void MBC3Write(u16 address, u8 value)
 {
 	
-	WORD msAddr = address >> 12;
+	u16 msAddr = address >> 12;
 	
 	switch (msAddr) {
 		case 0x0:
@@ -323,7 +323,7 @@ void MBC3Write(WORD address, BYTE value)
 	}
 }
 
-BYTE MBC3Read(WORD address)
+u8 MBC3Read(u16 address)
 {
 	if (address < 0x4000)
 		return _memCartridge[address];
@@ -342,9 +342,9 @@ BYTE MBC3Read(WORD address)
 	return 0;
 }
 
-void MBC5Write(WORD address, BYTE value)
+void MBC5Write(u16 address, u8 value)
 {
-	WORD msAddr = address >> 12;
+	u16 msAddr = address >> 12;
 	
 	switch (msAddr) {
 		case 0x0:
@@ -384,7 +384,7 @@ void MBC5Write(WORD address, BYTE value)
 	}
 }
 
-BYTE MBC5Read(WORD address)
+u8 MBC5Read(u16 address)
 {
 	if (address < 0x4000)
 		return _memCartridge[address];

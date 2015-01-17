@@ -16,6 +16,7 @@
  */
 
 #include "Pad.h"
+#include "../Common/Bit.h"
 
 using namespace GameBoy;
 
@@ -26,22 +27,22 @@ Pad::Pad() {
         m_buttonsState[i] = false;
 }
 
-BYTE Pad::Update(BYTE valueP1)
+u8 Pad::Update(u8 valueP1)
 {
-    BYTE newValue = 0;
+    u8 newValue = 0;
     
 	if(!BIT5(valueP1)) {
-        BYTE start  = (m_buttonsState[START]  ? 0 : 1) << 3;
-        BYTE select = (m_buttonsState[SELECT] ? 0 : 1) << 2;
-        BYTE b      = (m_buttonsState[B]      ? 0 : 1) << 1;
-        BYTE a      = (m_buttonsState[A]      ? 0 : 1);
+        u8 start  = (m_buttonsState[START]  ? 0 : 1) << 3;
+        u8 select = (m_buttonsState[SELECT] ? 0 : 1) << 2;
+        u8 b      = (m_buttonsState[B]      ? 0 : 1) << 1;
+        u8 a      = (m_buttonsState[A]      ? 0 : 1);
 		newValue = start | select | b | a;
     }
     else if(!BIT4(valueP1)) {
-        BYTE down  = (m_buttonsState[DOWN]  ? 0 : 1) << 3;
-        BYTE up    = (m_buttonsState[UP]    ? 0 : 1) << 2;
-        BYTE left  = (m_buttonsState[LEFT]  ? 0 : 1) << 1;
-        BYTE right = (m_buttonsState[RIGHT] ? 0 : 1);
+        u8 down  = (m_buttonsState[DOWN]  ? 0 : 1) << 3;
+        u8 up    = (m_buttonsState[UP]    ? 0 : 1) << 2;
+        u8 left  = (m_buttonsState[LEFT]  ? 0 : 1) << 1;
+        u8 right = (m_buttonsState[RIGHT] ? 0 : 1);
 		newValue = down | up | left | right;
     }
     else {
@@ -53,7 +54,7 @@ BYTE Pad::Update(BYTE valueP1)
 
 // Devuelve 1 cuando se ha pulsado un botón
 // 0 en caso contrario
-int Pad::SetButtonsState(bool buttonsState[8], BYTE *valueP1)
+int Pad::SetButtonsState(bool buttonsState[8], u8 *valueP1)
 {
 	
 	int interrupt = 0;

@@ -32,7 +32,7 @@ Registers::~Registers()
 
 Registers *Registers::GetPtrRegisters() {return this;}
 
-WORD Registers::GetReg(e_registers reg)
+u16 Registers::GetReg(e_registers reg)
 {
 	switch (reg){
 		case A: return GetA(); break;
@@ -56,17 +56,17 @@ WORD Registers::GetReg(e_registers reg)
 	}
 }
 
-void Registers::SetReg(e_registers reg, WORD value)
+void Registers::SetReg(e_registers reg, u16 value)
 {
 	switch (reg){
-		case A: SetA((BYTE)value); break;
-		case B: SetB((BYTE)value); break;
-		case C: SetC((BYTE)value); break;
-		case D: SetD((BYTE)value); break;
-		case E: SetE((BYTE)value); break;
-		case F: SetF((BYTE)value); break;
-		case H: SetH((BYTE)value); break;
-		case L: SetL((BYTE)value); break;
+		case A: SetA((u8)value); break;
+		case B: SetB((u8)value); break;
+		case C: SetC((u8)value); break;
+		case D: SetD((u8)value); break;
+		case E: SetE((u8)value); break;
+		case F: SetF((u8)value); break;
+		case H: SetH((u8)value); break;
+		case L: SetL((u8)value); break;
 		case AF: SetAF(value); break;
 		case BC: SetBC(value); break;
 		case DE: SetDE(value); break;
@@ -80,7 +80,7 @@ void Registers::SetReg(e_registers reg, WORD value)
 	}
 }
 
-BYTE Registers::GetFlag(e_registers flag)
+u8 Registers::GetFlag(e_registers flag)
 {
 	switch (flag){
 		case f_C: return GetFlagC();
@@ -94,7 +94,7 @@ BYTE Registers::GetFlag(e_registers flag)
 	}
 }
 
-void Registers::SetFlag(e_registers flag, BYTE value)
+void Registers::SetFlag(e_registers flag, u8 value)
 {
 	switch (flag){
 		case f_C: SetFlagC(value);
@@ -138,12 +138,12 @@ string Registers::ToString()
 
 void Registers::SaveRegs(ofstream * file)
 {
-	file->write((char *)&m_af.doble, sizeof(WORD));
-	file->write((char *)&m_bc.doble, sizeof(WORD));
-	file->write((char *)&m_de.doble, sizeof(WORD));
-	file->write((char *)&m_hl.doble, sizeof(WORD));
-	file->write((char *)&m_pc, sizeof(WORD));
-	file->write((char *)&m_sp, sizeof(WORD));
+	file->write((char *)&m_af.doble, sizeof(u16));
+	file->write((char *)&m_bc.doble, sizeof(u16));
+	file->write((char *)&m_de.doble, sizeof(u16));
+	file->write((char *)&m_hl.doble, sizeof(u16));
+	file->write((char *)&m_pc, sizeof(u16));
+	file->write((char *)&m_sp, sizeof(u16));
 	file->write((char *)&m_IME, sizeof(bool));
 	file->write((char *)&m_pendingIME, sizeof(bool));
 	file->write((char *)&m_pendingIMEvalue, sizeof(bool));
@@ -153,12 +153,12 @@ void Registers::SaveRegs(ofstream * file)
 
 void Registers::LoadRegs(ifstream * file)
 {
-	file->read((char *)&m_af.doble, sizeof(WORD));
-	file->read((char *)&m_bc.doble, sizeof(WORD));
-	file->read((char *)&m_de.doble, sizeof(WORD));
-	file->read((char *)&m_hl.doble, sizeof(WORD));
-	file->read((char *)&m_pc, sizeof(WORD));
-	file->read((char *)&m_sp, sizeof(WORD));
+	file->read((char *)&m_af.doble, sizeof(u16));
+	file->read((char *)&m_bc.doble, sizeof(u16));
+	file->read((char *)&m_de.doble, sizeof(u16));
+	file->read((char *)&m_hl.doble, sizeof(u16));
+	file->read((char *)&m_pc, sizeof(u16));
+	file->read((char *)&m_sp, sizeof(u16));
 	file->read((char *)&m_IME, sizeof(bool));
 	file->read((char *)&m_pendingIME, sizeof(bool));
 	file->read((char *)&m_pendingIMEvalue, sizeof(bool));

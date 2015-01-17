@@ -20,6 +20,7 @@
 
 #include "map"
 #include "Def.h"
+#include "../Common/Types.h"
 
 namespace GameBoy {
     
@@ -33,8 +34,8 @@ namespace GameBoy {
         int color, indexColor, xScrolled;
         int palette[4];
         int mapIni;
-        BYTE yTile;
-        BYTE r, g, b;
+        u8 yTile;
+        u8 r, g, b;
     };
 
     class Video
@@ -54,9 +55,9 @@ namespace GameBoy {
         void SetMem(Memory *mem);
         void RefreshScreen();
         void ClearScreen();
-        void UpdateLine(BYTE line);
-        void GetTile(BYTE *buffer, int widthSize, int tile, int bank);
-        void GetColorPalette(BYTE palette[4][3], int address);
+        void UpdateLine(u8 line);
+        void GetTile(u8 *buffer, int widthSize, int tile, int bank);
+        void GetColorPalette(u8 palette[4][3], int address);
     private:
         void UpdateBG(int line);
         void UpdateWin(int line);
@@ -64,7 +65,7 @@ namespace GameBoy {
         void UpdateOAM(int line);
         inline void GetColor(VideoPixel * p);
         void GetDMGPalette(int * palette, int dir);
-        bool ObjAboveBG(BYTE oamBit7, int x, int y);
+        bool ObjAboveBG(u8 oamBit7, int x, int y);
     };
 }
 

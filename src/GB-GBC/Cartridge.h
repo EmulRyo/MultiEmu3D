@@ -19,7 +19,7 @@
 #define __CARTRIDGE_H__
 
 #include <string>
-#include "Def.h"
+#include "../Common/Types.h"
 
 #define CART_NAME		0x0134
 #define CART_COLOR		0x0143
@@ -36,26 +36,26 @@ namespace GameBoy {
         std::string m_name;
         bool m_isLoaded;
         bool m_hasRTC;
-        BYTE *m_memCartridge;
+        u8 *m_memCartridge;
 
-        BYTE (*ptrRead)(WORD);
-        void (*ptrWrite)(WORD, BYTE);
+        u8 (*ptrRead)(u16);
+        void (*ptrWrite)(u16, u8);
         void CheckCartridge(std::string batteriesPath="");
         int  CheckRomSize(int numHeaderSize, int fileSize);
         
     public:
         Cartridge(std::string fileName, std::string batteriesPath="");
-        Cartridge(BYTE *cartridgeBuffer, unsigned long size, std::string batteriesPath="");
+        Cartridge(u8 *cartridgeBuffer, unsigned long size, std::string batteriesPath="");
         ~Cartridge();
         
-        BYTE *GetData();
+        u8 *GetData();
         unsigned int GetSize();
         std::string GetGoodName(const char *name);
         std::string GetName();
         bool IsLoaded();
 
-        inline BYTE Read(WORD direction) { return ptrRead(direction); };
-        inline void Write(WORD direction, BYTE value) { ptrWrite(direction, value); };
+        inline u8 Read(u16 direction) { return ptrRead(direction); };
+        inline void Write(u16 direction, u8 value) { ptrWrite(direction, value); };
         
         void SaveStateMBC(std::ofstream *file);
         void LoadStateMBC(std::ifstream *file);

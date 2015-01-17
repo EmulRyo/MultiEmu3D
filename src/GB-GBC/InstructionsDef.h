@@ -18,16 +18,16 @@
 #ifndef __INSTRUCTIONSNAME_H__
 #define __INSTRUCTIONSNAME_H__
 
-#include "Def.h"
+#include "../Common/Types.h"
 
 namespace GameBoy {
     
-const char *GetInstructionName(BYTE opcode);
-const char *GetInstructionCBName(BYTE opcode);
-BYTE GetInstructionLength(BYTE opcode);
-BYTE GetInstructionCycles(BYTE opcode);
-BYTE GetInstructionCondicionalCycles(BYTE opcode);
-BYTE GetInstructionCyclesCB(BYTE opcode);
+const char *GetInstructionName(u8 opcode);
+const char *GetInstructionCBName(u8 opcode);
+u8 GetInstructionLength(u8 opcode);
+u8 GetInstructionCycles(u8 opcode);
+u8 GetInstructionCondicionalCycles(u8 opcode);
+u8 GetInstructionCyclesCB(u8 opcode);
     
 }
 

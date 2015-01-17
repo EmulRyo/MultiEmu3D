@@ -69,7 +69,7 @@ void GB::CartridgeExtract() {
         m_cartridge->Extract();
 }
 
-void GB::CartridgeLoad(std::string fileName, std::string batteriesPath, BYTE *cartridgeBuffer, unsigned long size) {
+void GB::CartridgeLoad(std::string fileName, std::string batteriesPath, u8 *cartridgeBuffer, unsigned long size) {
     if (m_cartridge)
         delete m_cartridge;
     

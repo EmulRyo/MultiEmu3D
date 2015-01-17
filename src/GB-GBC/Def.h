@@ -18,19 +18,7 @@
 #ifndef __DEF_H__
 #define __DEF_H__
 
-//#define MAKEGBLOG
-
-#define APP_NAME		"DMGBoy"
-#define APP_VERSION		"2.0"
-#define APP_MAINT		"Pablo Gascó"
-#define APP_LICENCE		"GPL v3"
-#define APP_COPYRIGTH	"(C) 2014 Pablo Gasco"
-#define APP_WEBSITE		"http://code.google.com/p/dmgboy/"
-
-#define SAVE_STATE_VERSION	0x03
-
-typedef unsigned char BYTE;
-typedef unsigned short WORD;
+#define GB_SAVE_STATE_VERSION	0x03
 
 #define GB_SCREEN_W 160
 #define GB_SCREEN_H 144
@@ -42,21 +30,7 @@ typedef unsigned short WORD;
 
 #define HDMA_CYCLES 8
 
-#define FRAME_CYCLES    70224
-
-#define BIT0(value)	((value) & 0x01)
-#define BIT1(value)	((value) & 0x02)
-#define BIT2(value)	((value) & 0x04)
-#define BIT3(value)	((value) & 0x08)
-#define BIT4(value)	((value) & 0x10)
-#define BIT5(value)	((value) & 0x20)
-#define BIT6(value)	((value) & 0x40)
-#define BIT7(value)	((value) & 0x80)
-
-#define BITS01(value)	((value) & 0x03)
-#define BITS23(value)	((value) & 0x0C)
-#define BITS45(value)	((value) & 0x30)
-#define BITS67(value)	((value) & 0xC0)
+#define GB_FRAME_CYCLES    70224
 
 #define P1		0xFF00
 #define SB		0xFF01

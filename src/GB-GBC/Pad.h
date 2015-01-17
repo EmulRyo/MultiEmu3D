@@ -18,7 +18,7 @@
 #ifndef __PAD_H__
 #define __PAD_H__
 
-#include "Def.h"
+#include "../Common/Types.h"
 
 namespace GameBoy {
     
@@ -26,8 +26,8 @@ namespace GameBoy {
     public:
         Pad();
         
-        int  SetButtonsState(bool buttonsState[8], BYTE *valueP1);
-        BYTE Update(BYTE valueP1);
+        int  SetButtonsState(bool buttonsState[8], u8 *valueP1);
+        u8 Update(u8 valueP1);
         
     private:
         bool m_buttonsState[8];

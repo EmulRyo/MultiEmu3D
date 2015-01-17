@@ -21,6 +21,7 @@
 #include "Pad.h"
 #include "Memory.h"
 #include "CPU.h"
+#include "../Common/Bit.h"
 
 using namespace std;
 using namespace GameBoy;
@@ -123,7 +124,7 @@ void Memory::ResetMem()
     }
 }
 
-void Memory::MemW(WORD address, BYTE value)
+void Memory::MemW(u16 address, u8 value)
 {
 	if ((address < 0x8000) || ((address >= 0xA000)&&(address < 0xC000)))
 	{
@@ -207,7 +208,7 @@ void Memory::MemW(WORD address, BYTE value)
                 break;
             case BGPD:
                 if (m_colorMode) {
-                    BYTE index = memory[BGPI] & 0x3F;
+                    u8 index = memory[BGPI] & 0x3F;
                     memory[BGP_OFFSET + index] = value;
                     
                     if (BIT7(memory[BGPI]))
@@ -220,7 +221,7 @@ void Memory::MemW(WORD address, BYTE value)
                 break;
             case OBPD:
                 if (m_colorMode) {
-                    BYTE index = memory[OBPI] & 0x3F;
+                    u8 index = memory[OBPI] & 0x3F;
                     memory[OBP_OFFSET + index] = value;
                     
                     if (BIT7(memory[OBPI]))
@@ -236,27 +237,27 @@ void Memory::MemW(WORD address, BYTE value)
 	memory[address] = value;
 }
 
-BYTE Memory::MemRVRam(WORD address, int slot)
+u8 Memory::MemRVRam(u16 address, int slot)
 {
     return memory[(address-0x8000) + VRAM_OFFSET + (slot*0x2000)];
 }
 
-BYTE Memory::MemRWRam(WORD address, int slot)
+u8 Memory::MemRWRam(u16 address, int slot)
 {
     return memory[(address-0xD000) + WRAM_OFFSET + (slot*0x1000)];
 }
 
-void Memory::OamDmaTransfer(BYTE address)
+void Memory::OamDmaTransfer(u8 address)
 {
-	BYTE i;
+	u8 i;
 
 	for (i=0; i<0xA0; i++)
 		MemWNoCheck(0xFE00 + i, MemR((address << 8) + i));
 }
 
-BYTE Memory::VRamDmaTransfer(BYTE value)
+u8 Memory::VRamDmaTransfer(u8 value)
 {
-    WORD mode = value & 0x80;
+    u16 mode = value & 0x80;
     
     if (m_hdmaActive && mode == 0)    // Se quiere parar el hdma manualmente
     {
@@ -267,15 +268,15 @@ BYTE Memory::VRamDmaTransfer(BYTE value)
     {
         if (mode == 0)  // Todo de golpe
         {
-            WORD src = (memory[HDMA1] << 8) | (memory[HDMA2] & 0xF0);           // valores entre 0000-7FF0 o A000-DFF0
-            WORD dst = ((memory[HDMA3] & 0x1F) << 8) | (memory[HDMA4] & 0xF0);  // Valores entre 0x0000-0x1FF0
-            WORD length = ((value & 0x7F) + 1) * 0x10;                  // Valores entre 0x10-0x800
+            u16 src = (memory[HDMA1] << 8) | (memory[HDMA2] & 0xF0);           // valores entre 0000-7FF0 o A000-DFF0
+            u16 dst = ((memory[HDMA3] & 0x1F) << 8) | (memory[HDMA4] & 0xF0);  // Valores entre 0x0000-0x1FF0
+            u16 length = ((value & 0x7F) + 1) * 0x10;                  // Valores entre 0x10-0x800
             
             for (int i= 0; i<length; i++)
                 m_vRam[dst+i] = MemR(src+i);
             
-            WORD srcEnd = src + length;
-            WORD dstEnd = dst + length;
+            u16 srcEnd = src + length;
+            u16 dstEnd = dst + length;
             memory[HDMA1] = srcEnd >> 8;
             memory[HDMA2] = srcEnd & 0xF0;
             memory[HDMA3] = dstEnd >> 8;
@@ -303,14 +304,14 @@ void Memory::UpdateHDMA()
 {
     if (m_hdmaActive)
     {
-        WORD src = (memory[HDMA1] << 8) | (memory[HDMA2] & 0xF0);           // valores entre 0000-7FF0 o A000-DFF0
-        WORD dst = ((memory[HDMA3] & 0x1F) << 8) | (memory[HDMA4] & 0xF0);  // Valores entre 0x0000-0x1FF0
+        u16 src = (memory[HDMA1] << 8) | (memory[HDMA2] & 0xF0);           // valores entre 0000-7FF0 o A000-DFF0
+        u16 dst = ((memory[HDMA3] & 0x1F) << 8) | (memory[HDMA4] & 0xF0);  // Valores entre 0x0000-0x1FF0
         
         for (int i=0; i<0x10; i++)
             m_vRam[dst+i] = MemR(src+i);
         
-        WORD srcEnd = src + 0x10;
-        WORD dstEnd = dst + 0x10;
+        u16 srcEnd = src + 0x10;
+        u16 dstEnd = dst + 0x10;
         memory[HDMA1] = srcEnd >> 8;
         memory[HDMA2] = srcEnd & 0xF0;
         memory[HDMA3] = dstEnd >> 8;

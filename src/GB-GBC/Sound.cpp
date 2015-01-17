@@ -26,11 +26,12 @@
 #include "SoundPortaudio.h"
 #endif
 #include "Sound.h"
+#include "Def.h"
 
 using namespace std;
 using namespace GameBoy;
 
-BYTE soundMask[] = {
+u8 soundMask[] = {
     0x80, 0x3F, 0x00, 0xFF, 0xBF, // NR10-NR14 (0xFF10-0xFF14)
     0xFF, 0x3F, 0x00, 0xFF, 0xBF, // NR20-NR24 (0xFF15-0xFF19)
     0x7F, 0xFF, 0x9F, 0xFF, 0xBF, // NR30-NR34 (0xFF1A-0xFF1E)
@@ -171,7 +172,7 @@ void Sound::EndFrame()
 
 	delete[] buf;
 }
-void Sound::WriteRegister(WORD address, BYTE value)
+void Sound::WriteRegister(u16 address, u8 value)
 {
     if (m_enabled)
     {
@@ -189,9 +190,9 @@ void Sound::WriteRegister(WORD address, BYTE value)
     }
 }
 
-BYTE Sound::ReadRegister(WORD address)
+u8 Sound::ReadRegister(u16 address)
 {
-    BYTE value = 0;
+    u8 value = 0;
     if(m_enabled)
         value = apu->read_register(address);
     

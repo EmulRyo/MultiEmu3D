@@ -21,6 +21,7 @@
 #include "Registers.h"
 #include "Memory.h"
 #include "Instructions.h"
+#include "../Common/Bit.h"
 
 using namespace std;
 using namespace GameBoy;
@@ -42,7 +43,7 @@ void Instructions::NOP(){reg->AddPC(1);}
 
 void Instructions::LD_r1_r2(e_registers e_reg1, e_registers e_reg2)
 {
-	BYTE length = 1;
+	u8 length = 1;
 
 	if (e_reg1 == c_HL)
 	{
@@ -52,7 +53,7 @@ void Instructions::LD_r1_r2(e_registers e_reg1, e_registers e_reg2)
 			length = 2;
 		}
 		else
-			mem->MemW(reg->GetHL(), (BYTE)reg->GetReg(e_reg2));
+			mem->MemW(reg->GetHL(), (u8)reg->GetReg(e_reg2));
 	}
 	else
 	{
@@ -158,8 +159,8 @@ void Instructions::CCF()
 
 void Instructions::CP_n(e_registers place)
 {
-	BYTE value;
-	BYTE length = 1;
+	u8 value;
+	u8 length = 1;
 
 	switch (place)
 	{
@@ -171,7 +172,7 @@ void Instructions::CP_n(e_registers place)
 			value = mem->MemR(reg->GetHL());
 			break;
 		default:
-			value = (BYTE)reg->GetReg(place);
+			value = (u8)reg->GetReg(place);
 	}
 
 	reg->SetFlagZ((reg->GetA() == value) ? 1 : 0);
@@ -201,7 +202,7 @@ void Instructions::LD_n_nn(e_registers place)
 
 void Instructions::LD_nn_SP()
 {
-	WORD destAddress = _16bitsInmValue;
+	u16 destAddress = _16bitsInmValue;
 	mem->MemW(destAddress, reg->GetSP() & 0x00FF);
 	mem->MemW(destAddress + 1, reg->GetSP() >> 8);
     reg->AddPC(3);
@@ -218,7 +219,7 @@ void Instructions::JR()
     reg->AddPC(2 + address);
 }
 
-void Instructions::JR_CC_n(e_registers flag, BYTE value2check)
+void Instructions::JR_CC_n(e_registers flag, u8 value2check)
 {
 	if (reg->GetFlag(flag) == value2check)
     {
@@ -238,7 +239,7 @@ void Instructions::CALL_nn()
 	reg->SetPC(_16bitsInmValue);
 }
 
-void Instructions::CALL_cc_nn(e_registers flag, BYTE value2check)
+void Instructions::CALL_cc_nn(e_registers flag, u8 value2check)
 {
 	if (reg->GetFlag(flag) == value2check)
     {
@@ -311,13 +312,13 @@ void Instructions::SUB_n(e_registers place)
 void Instructions::ADD_A_n(e_registers place)
 {
 	int value, length = 1;
-	BYTE valueReg;
+	u8 valueReg;
 
 	switch (place)
 	{
 		case $:		valueReg = _8bitsInmValue; length = 2; break;
 		case c_HL:	valueReg = mem->MemR(reg->GetHL()); break;
-		default:	valueReg = (BYTE)reg->GetReg(place); break;
+		default:	valueReg = (u8)reg->GetReg(place); break;
 	}
 
 	value = reg->GetA() + valueReg;
@@ -335,13 +336,13 @@ void Instructions::ADD_A_n(e_registers place)
 void Instructions::ADC_A_n(e_registers lugar)
 {
 	int value, length = 1;
-	BYTE valueReg;
+	u8 valueReg;
 
 	switch (lugar)
 	{
 		case $:		valueReg = _8bitsInmValue; length = 2; break;
 		case c_HL:	valueReg = mem->MemR(reg->GetHL()); break;
-		default:	valueReg = (BYTE)reg->GetReg(lugar); break;
+		default:	valueReg = (u8)reg->GetReg(lugar); break;
 	}
 
 	value = reg->GetFlagC() + valueReg + reg->GetA();
@@ -361,7 +362,7 @@ void Instructions::ADC_A_n(e_registers lugar)
 
 void Instructions::INC_n(e_registers place)
 {
-	BYTE value;
+	u8 value;
 
 	if (place == c_HL)
 	{
@@ -382,7 +383,7 @@ void Instructions::INC_n(e_registers place)
 
 void Instructions::ADD_HL_n(e_registers place)
 {
-	WORD value, hl;
+	u16 value, hl;
 	
 	value = reg->GetReg(place);
 	hl = reg->GetHL();
@@ -398,7 +399,7 @@ void Instructions::ADD_HL_n(e_registers place)
 
 void Instructions::RLC_n(e_registers place)
 {
-	BYTE bit7, value;
+	u8 bit7, value;
 
 	if (place == c_HL)
 	{
@@ -409,7 +410,7 @@ void Instructions::RLC_n(e_registers place)
 	}
 	else
 	{
-		value = (BYTE)reg->GetReg(place);
+		value = (u8)reg->GetReg(place);
 		bit7 = BIT7(value) >> 7;
 		value = (value << 1) | bit7;
 		reg->SetReg(place, value);
@@ -455,7 +456,7 @@ void Instructions::DAA()
 	 --------------------------------------------------------------------------------
 	 |           | C Flag  | HEX value in | H Flag | HEX value in | Number  | C flag|
 	 | Operation | Before  | upper digit  | Before | lower digit  | added   | After |
-	 |           | DAA     | (bit 7-4)    | DAA    | (bit 3-0)    | to byte | DAA   |
+	 |           | DAA     | (bit 7-4)    | DAA    | (bit 3-0)    | to u8 | DAA   |
 	 |------------------------------------------------------------------------------|
 	 |           |    0    |     0-9      |   0    |     0-9      |   00    |   0   |
 	 |   ADD     |    0    |     0-8      |   0    |     A-F      |   06    |   0   |
@@ -546,7 +547,7 @@ void Instructions::DAA()
 
 void Instructions::DEC_n(e_registers place)
 {
-	BYTE value;
+	u8 value;
 
 	if (place == c_HL)
 	{
@@ -574,8 +575,8 @@ void Instructions::DEC_nn(e_registers lugar)
 
 void Instructions::OR_n(e_registers lugar)
 {
-	BYTE longitud = 1;
-    BYTE value;
+	u8 longitud = 1;
+    u8 value;
 
 	switch (lugar)
 	{
@@ -602,8 +603,8 @@ void Instructions::OR_n(e_registers lugar)
 
 void Instructions::XOR_n(e_registers lugar)
 {
-    BYTE longitud = 1;
-    BYTE value;
+    u8 longitud = 1;
+    u8 value;
 
 	switch (lugar)
 	{
@@ -640,7 +641,7 @@ void Instructions::RETI()
 	RET();
 }
 
-void Instructions::RET_cc(e_registers flag, BYTE value2check)
+void Instructions::RET_cc(e_registers flag, u8 value2check)
 {
 	reg->AddPC(1);
 	if (reg->GetFlag(flag) == value2check)
@@ -668,7 +669,7 @@ void Instructions::LD_cC_A()
 	reg->AddPC(1);
 }
 
-void Instructions::SET_b_r(BYTE bit, e_registers place)
+void Instructions::SET_b_r(u8 bit, e_registers place)
 {
 	if (place == c_HL)
 		mem->MemW(reg->GetHL(), mem->MemR(reg->GetHL()) | (1 << bit));
@@ -678,14 +679,14 @@ void Instructions::SET_b_r(BYTE bit, e_registers place)
 	reg->AddPC(2);
 }
 
-void Instructions::BIT_b_r(BYTE bit, e_registers lugar)
+void Instructions::BIT_b_r(u8 bit, e_registers lugar)
 {
-	BYTE value;
+	u8 value;
 
 	if (lugar == c_HL)
 		value = mem->MemR(reg->GetHL());
 	else
-		value = (BYTE)reg->GetReg(lugar);
+		value = (u8)reg->GetReg(lugar);
 
 	if (!(value & (1 << bit)))
 		reg->SetFlagZ(1);
@@ -698,7 +699,7 @@ void Instructions::BIT_b_r(BYTE bit, e_registers lugar)
 	reg->AddPC(2);
 }
 
-void Instructions::RES_b_r(BYTE bit, e_registers lugar)
+void Instructions::RES_b_r(u8 bit, e_registers lugar)
 {
     if (lugar == c_HL)
 		mem->MemW(reg->GetHL(), mem->MemR(reg->GetHL()) & ~(1 << bit));
@@ -722,8 +723,8 @@ void Instructions::EI()
 
 void Instructions::SBC_A(e_registers place)
 {
-	WORD value;
-    BYTE result;
+	u16 value;
+    u8 result;
     int sum;
 	int length = 1;
 
@@ -765,7 +766,7 @@ void Instructions::SBC_A(e_registers place)
 
 void Instructions::AND(e_registers lugar)
 {
-	BYTE longitud = 1;
+	u8 longitud = 1;
 
 	switch (lugar)
 	{
@@ -791,7 +792,7 @@ void Instructions::AND(e_registers lugar)
 
 void Instructions::SLA_n(e_registers place)
 {
-	BYTE bit7, value;
+	u8 bit7, value;
 
 	if (place == c_HL)
 	{
@@ -816,7 +817,7 @@ void Instructions::SLA_n(e_registers place)
 
 void Instructions::SRA_n(e_registers lugar)
 {
-    BYTE bit0, bit7, value;
+    u8 bit0, bit7, value;
 
 	if (lugar == c_HL)
 	{
@@ -830,7 +831,7 @@ void Instructions::SRA_n(e_registers lugar)
 		bit0 = BIT0(reg->GetReg(lugar));
 		bit7 = BIT7(reg->GetReg(lugar));
 		reg->SetReg(lugar, bit7 | (reg->GetReg(lugar) >> 1));
-		value = (BYTE)reg->GetReg(lugar);
+		value = (u8)reg->GetReg(lugar);
 	}
 
 	reg->SetFlagZ(!value ? 1 : 0);
@@ -843,7 +844,7 @@ void Instructions::SRA_n(e_registers lugar)
 
 void Instructions::SRL_n(e_registers place)
 {
-    BYTE bit0, value;
+    u8 bit0, value;
 
 	if (place == c_HL)
 	{
@@ -915,7 +916,7 @@ void Instructions::STOP()
 
 void Instructions::SWAP(e_registers place)
 {
-	BYTE value;
+	u8 value;
 
 	if (place == c_HL)
 	{
@@ -925,7 +926,7 @@ void Instructions::SWAP(e_registers place)
 	}
 	else
 	{
-		value = (BYTE)reg->GetReg(place);
+		value = (u8)reg->GetReg(place);
 		value = ((value & 0x0F) << 4) | ((value & 0xF0) >> 4);
 		reg->SetReg(place, value);
 	}
@@ -956,9 +957,9 @@ void Instructions::POP_nn(e_registers lugar)
 	reg->AddPC(1);
 }
 
-void Instructions::JP_cc_nn(e_registers flag, BYTE value2check)
+void Instructions::JP_cc_nn(e_registers flag, u8 value2check)
 {
-	WORD nn;
+	u16 nn;
 
 	nn = _16bitsInmValue;
 
@@ -973,7 +974,7 @@ void Instructions::JP_cc_nn(e_registers flag, BYTE value2check)
 
 void Instructions::RL_n(e_registers place)
 {
-	BYTE oldBit7, value;
+	u8 oldBit7, value;
 
 	if (place == c_HL)
 	{
@@ -1004,7 +1005,7 @@ void Instructions::RL_n(e_registers place)
 
 void Instructions::RR_n(e_registers place)
 {
-	BYTE bit0, value;
+	u8 bit0, value;
 
 	if (place == c_HL)
 	{
@@ -1015,7 +1016,7 @@ void Instructions::RR_n(e_registers place)
 	}
 	else
 	{
-		value = (BYTE)reg->GetReg(place);
+		value = (u8)reg->GetReg(place);
 		bit0 = BIT0(value);
 		value = (reg->GetFlagC() << 7) | (value >> 1);
 		reg->SetReg(place, value);
@@ -1037,7 +1038,7 @@ void Instructions::RR_n(e_registers place)
 
 void Instructions::RRC_n(e_registers place)
 {
-	BYTE bit0, value;
+	u8 bit0, value;
 
 	if (place == c_HL)
 	{
@@ -1048,7 +1049,7 @@ void Instructions::RRC_n(e_registers place)
 	}
 	else
 	{
-		value = (BYTE)reg->GetReg(place);
+		value = (u8)reg->GetReg(place);
 		bit0 = BIT0(value);
 		value = (bit0 << 7) | (value >> 1);
 		reg->SetReg(place, value);
@@ -1076,7 +1077,7 @@ void Instructions::PUSH_PC()
 	mem->MemW(reg->GetSP(), reg->GetPC() & 0x00FF);
 }
 
-void Instructions::RST_n(BYTE desp)
+void Instructions::RST_n(u8 desp)
 {
 	//Queremos que se guarde la siquiente instruccion a ejecutar
 	reg->AddPC(1);

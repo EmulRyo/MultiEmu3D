@@ -19,6 +19,7 @@
 #include "Memory.h"
 #include "IGBScreenDrawable.h"
 #include "Video.h"
+#include "../Common/Bit.h"
 
 #define ABS(x) ((x) < 0 ? -(x) : (x))
 #define MEMR(address) (m_mem->memory[(address)])
@@ -53,7 +54,7 @@ void Video::SetMem(Memory *mem)
 	m_mem = mem;
 }
 
-void Video::UpdateLine(BYTE y)
+void Video::UpdateLine(u8 y)
 {
     if (m_screen)
         m_screen->OnPreDraw();
@@ -82,7 +83,7 @@ void Video::ClearScreen()
 void Video::UpdateBG(int y)
 {
 	int x, yScrolled;
-	BYTE valueLCDC, valueSCX;
+	u8 valueLCDC, valueSCX;
 	int display;
 
 	valueLCDC = MEMR(LCDC);
@@ -154,7 +155,7 @@ void Video::UpdateBG(int y)
 void Video::UpdateWin(int y)
 {
 	int x, wndPosX, xIni, yScrolled;
-	WORD wndPosY;
+	u16 wndPosY;
 
 	//Si la ventana esta desactivada no hacemos nada
 	if (!BIT5(MEMR(LCDC)))
@@ -211,7 +212,7 @@ void Video::UpdateWin(int y)
 inline void Video::GetColor(VideoPixel *p)
 {
 	int xTile, line[2], addressIdTile, addressTile, mapAttributes, yTile, idMapTile, bgPriority;
-    BYTE colorPalette[4][3];
+    u8 colorPalette[4][3];
 	
     idMapTile = p->rowMap + p->xScrolled/8;
 	addressIdTile = p->mapIni + idMapTile;
@@ -219,7 +220,7 @@ inline void Video::GetColor(VideoPixel *p)
 	if (!p->tileDataSelect)	//Seleccionar el tile data
 	{
 		//0x8800 = 0x9000 - (128 * 16)
-		addressTile = (WORD)(0x9000 + ((char)MEMR(addressIdTile))*16);	//Se multiplica por 16 porque cada tile ocupa 16 bytes
+		addressTile = (u16)(0x9000 + ((char)MEMR(addressIdTile))*16);	//Se multiplica por 16 porque cada tile ocupa 16 u8s
 	}
 	else
 	{
@@ -246,13 +247,13 @@ inline void Video::GetColor(VideoPixel *p)
         GetColorPalette(colorPalette, BGP_OFFSET + (numPalette*8));
     }
 	
-	int addressLineTile = addressTile + (yTile * 2); //yTile * 2 porque cada linea de 1 tile ocupa 2 bytes
+	int addressLineTile = addressTile + (yTile * 2); //yTile * 2 porque cada linea de 1 tile ocupa 2 u8s
 	
 	line[0] = MEMR(addressLineTile + 0);
 	line[1] = MEMR(addressLineTile + 1);
 	
 	int pixX = ABS(xTile - 7);
-	//Un pixel lo componen 2 bits. Seleccionar la posicion del bit en los dos bytes (line[0] y line[1])
+	//Un pixel lo componen 2 bits. Seleccionar la posicion del bit en los dos u8s (line[0] y line[1])
 	//Esto devolvera un numero de color que junto a la paleta de color nos dara el color requerido
 	p->indexColor = (((line[1] & (0x01 << pixX)) >> pixX) << 1) | ((line[0] & (0x01 << pixX)) >> pixX);
     
@@ -324,8 +325,8 @@ void Video::UpdateOAM(int y)
 	int addressSprite, tileNumber, addressTile;
 	int color;
 	int palette0[4], palette1[4];
-	BYTE line[2];
-    BYTE colorPalette[4][3];
+	u8 line[2];
+    u8 colorPalette[4][3];
 
 	if (!BIT1(MEMR(LCDC)))	//OAM desactivado
 		return;
@@ -387,13 +388,13 @@ void Video::UpdateOAM(int y)
 		{
 			xTile = xFlip ? ABS(countX - 7) : countX;
 
-			line[0] = MEMR(addressTile + (yTile * 2));	//yTile * 2 porque cada linea de 1 tile ocupa 2 bytes
+			line[0] = MEMR(addressTile + (yTile * 2));	//yTile * 2 porque cada linea de 1 tile ocupa 2 u8s
 			line[1] = MEMR(addressTile + (yTile * 2) + 1);
 
 			int pixX = ABS(xTile - 7);
-			//Un pixel lo componen 2 bits. Seleccionar la posicion del bit en los dos bytes (line[0] y line[1])
+			//Un pixel lo componen 2 bits. Seleccionar la posicion del bit en los dos u8s (line[0] y line[1])
 			//Esto devolvera un numero de color que junto a la paleta de color nos dara el color requerido
-			BYTE index = (((line[1] & (1 << pixX)) >> pixX) << 1) | ((line[0] & (1 << pixX)) >> pixX);
+			u8 index = (((line[1] & (1 << pixX)) >> pixX) << 1) | ((line[0] & (1 << pixX)) >> pixX);
             
             bool paintSprite = ObjAboveBG(spritePriority, xSprite + countX, ySprite + countY);
             
@@ -401,9 +402,9 @@ void Video::UpdateOAM(int y)
 			if (paintSprite && (index > 0))
 			{
                 if (m_colorMode) {
-                    BYTE r = colorPalette[index][0];
-                    BYTE g = colorPalette[index][1];
-                    BYTE b = colorPalette[index][2];
+                    u8 r = colorPalette[index][0];
+                    u8 g = colorPalette[index][1];
+                    u8 b = colorPalette[index][2];
                     
                     if (m_screen)
                         m_screen->OnDrawPixel(r, g, b, xSprite + countX, ySprite + countY);
@@ -428,7 +429,7 @@ void Video::UpdateOAM(int y)
 // 2 - BG Map Attribute Bit 7 *
 // 3 - OAM Attribute Bit 7
 // * El valor de BG Map Attr está almacenado en priorityBGWnd
-bool Video::ObjAboveBG(BYTE oamBit7, int x, int y) {
+bool Video::ObjAboveBG(u8 oamBit7, int x, int y) {
     if (m_colorMode) {
         bool paintSprite = (BIT0(MEMR(LCDC)) == 0);
         if (!paintSprite) {
@@ -444,7 +445,7 @@ bool Video::ObjAboveBG(BYTE oamBit7, int x, int y) {
 
 void Video::GetDMGPalette(int *palette, int dir)
 {
-	BYTE paletteData = MEMR(dir);
+	u8 paletteData = MEMR(dir);
 
 	palette[0] = ABS((int)(BITS01(paletteData) - 3));
 	palette[1] = ABS((int)((BITS23(paletteData) >> 2) - 3));
@@ -452,12 +453,12 @@ void Video::GetDMGPalette(int *palette, int dir)
 	palette[3] = ABS((int)((BITS67(paletteData) >> 6) - 3));
 }
 
-void Video::GetColorPalette(BYTE palette[4][3], int address)
+void Video::GetColorPalette(u8 palette[4][3], int address)
 {
 	for (int i=0; i<4; i++)
     {
-        BYTE data1 = MEMR(address+0);
-        BYTE data2 = MEMR(address+1);
+        u8 data1 = MEMR(address+0);
+        u8 data2 = MEMR(address+1);
         
         palette[i][0] = data1 & 0x1F;
         palette[i][1] = ((data2 & 0x03) << 3) | ((data1 & 0xE0) >> 5);
@@ -473,7 +474,7 @@ void Video::GetColorPalette(BYTE palette[4][3], int address)
     }
 }
 
-void Video::GetTile(BYTE *buffer, int widthSize, int tile, int bank)
+void Video::GetTile(u8 *buffer, int widthSize, int tile, int bank)
 {
     int line[2];
     
@@ -493,13 +494,13 @@ void Video::GetTile(BYTE *buffer, int widthSize, int tile, int bank)
     {
         for (int x=0; x<8; x++)
         {
-            int addressLineTile = addressTile + (y * 2); //yTile * 2 porque cada linea de 1 tile ocupa 2 bytes
+            int addressLineTile = addressTile + (y * 2); //yTile * 2 porque cada linea de 1 tile ocupa 2 u8s
             
             line[0] = MEMR(addressLineTile + 0);
             line[1] = MEMR(addressLineTile + 1);
             
             int pixX = ABS(x - 7);
-            //Un pixel lo componen 2 bits. Seleccionar la posicion del bit en los dos bytes (line[0] y line[1])
+            //Un pixel lo componen 2 bits. Seleccionar la posicion del bit en los dos u8s (line[0] y line[1])
             //Esto devolvera un numero de color que junto a la paleta de color nos dara el color requerido
             int indexColor = (((line[1] & (1 << pixX)) >> pixX) << 1) | ((line[0] & (1 << pixX)) >> pixX);
             

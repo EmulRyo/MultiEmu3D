@@ -25,6 +25,7 @@
 #include "Pad.h"
 #include "GBException.h"
 #include "InstructionsDef.h"
+#include "../Common/Bit.h"
 
 #ifdef MAKEGBLOG
 #include "Log.h"
@@ -78,7 +79,7 @@ void CPU::ResetGlobalVariables()
     m_lcdMode1 = LCD_MODE_1;
     m_lcdMode2 = LCD_MODE_2;
     m_lcdMode3 = LCD_MODE_3;
-    m_cyclesFrame = FRAME_CYCLES;
+    m_cyclesFrame = GB_FRAME_CYCLES;
 }
 
 void CPU::Reset()
@@ -104,7 +105,7 @@ int CPU::Execute(int cyclesToExecute)
 		return 0;
 	
     int cycles = 0;
-	BYTE OpCode = 0, NextOpcode = 0, lastOpCode = 0;
+	u8 OpCode = 0, NextOpcode = 0, lastOpCode = 0;
 
 	Instructions inst(this->GetPtrRegisters(), this->GetPtrMemory());
 
@@ -442,7 +443,7 @@ int CPU::Execute(int cyclesToExecute)
 
 void CPU::OpCodeCB(Instructions * inst)
 {
-    BYTE OpCode;
+    u8 OpCode;
 
     OpCode = MemR(GetPC() + 1);
 
@@ -738,10 +739,10 @@ void CPU::UpdatePad(bool buttonsState[8])
         SetIntFlag(4);
 }
 
-void CPU::OnWriteLCDC(BYTE value)
+void CPU::OnWriteLCDC(u8 value)
 {
-    BYTE lastScreenOn = BIT7(memory[LCDC]);
-    BYTE screenOn = BIT7(value);
+    u8 lastScreenOn = BIT7(memory[LCDC]);
+    u8 screenOn = BIT7(value);
     if (lastScreenOn && !screenOn)
     {
         memory[LY] = 0;
@@ -761,7 +762,7 @@ void CPU::UpdateStateLCD(int cycles)
 {
     m_cyclesLCD += cycles;
     
-	BYTE screenOn = BIT7(memory[LCDC]);
+	u8 screenOn = BIT7(memory[LCDC]);
     if (screenOn)
         UpdateStateLCDOn();
     else
@@ -776,7 +777,7 @@ void CPU::UpdateStateLCD(int cycles)
 
 void CPU::UpdateStateLCDOn()
 {
-    BYTE mode = BITS01(memory[STAT]);
+    u8 mode = BITS01(memory[STAT]);
     
     switch (mode)
     {
@@ -939,7 +940,7 @@ void CPU::Interrupts(Instructions * inst)
 	if (!GetIME())
 		return;
 
-	BYTE interrupts = memory[IE] & memory[IF];
+	u8 interrupts = memory[IE] & memory[IF];
 	if (!interrupts)
 		return;
 	
@@ -982,13 +983,13 @@ void CPU::UpdateTimer(int cycles)
 	// 4096, 262144, 65536, 16384
 	// En overflowTimer se encuentran estos valores en ciclos
 	// maquina
-	WORD overflowTimer[] = {1024, 16, 64, 256};
+	u16 overflowTimer[] = {1024, 16, 64, 256};
     
 	if (BIT2(memory[TAC])) //Si esta habilitado el timer
 	{
         m_cyclesTimer += cycles;
         
-        WORD cyclesOverflow = overflowTimer[BITS01(memory[TAC])];
+        u16 cyclesOverflow = overflowTimer[BITS01(memory[TAC])];
 		while (m_cyclesTimer >= cyclesOverflow)
 		{
 			if (memory[TIMA] == 0xFF)
@@ -1012,7 +1013,7 @@ void CPU::UpdateTimer(int cycles)
 	}
 }
 
-BYTE CPU::TACChanged(BYTE newValue)
+u8 CPU::TACChanged(u8 newValue)
 {
     newValue &= 0x07;
     if (((newValue & 0x03) != (memory[TAC] & 0x03)) ||
@@ -1024,16 +1025,16 @@ BYTE CPU::TACChanged(BYTE newValue)
     return newValue;
 }
 
-BYTE CPU::DIVChanged(BYTE newValue)
+u8 CPU::DIVChanged(u8 newValue)
 {
     m_cyclesDIV = 0;
     
     return 0;
 }
 
-BYTE CPU::P1Changed(BYTE newValue)
+u8 CPU::P1Changed(u8 newValue)
 {
-    BYTE oldP1 = memory[P1];
+    u8 oldP1 = memory[P1];
     newValue = (newValue & 0xF0) | (oldP1 & ~0xF0);
     newValue = m_p->Update(newValue);
     if ((newValue != oldP1) && ((newValue & 0x0F) != 0x0F))
@@ -1044,7 +1045,7 @@ BYTE CPU::P1Changed(BYTE newValue)
     return newValue;
 }
 
-void CPU::StatChanged(BYTE newValue) {
+void CPU::StatChanged(u8 newValue) {
     memory[STAT] = (newValue & ~0x07) | (memory[STAT] & 0x07);
     
     if (BIT5(memory[STAT]) && ((memory[STAT] & 0x11) == 2))
@@ -1080,7 +1081,7 @@ void CPU::ChangeSpeed()
             m_lcdMode1 = LCD_MODE_1;
             m_lcdMode2 = LCD_MODE_2;
             m_lcdMode3 = LCD_MODE_3;
-            m_cyclesFrame = FRAME_CYCLES;
+            m_cyclesFrame = GB_FRAME_CYCLES;
         }
         else {
             // Velocidad doble
@@ -1090,7 +1091,7 @@ void CPU::ChangeSpeed()
             m_lcdMode1 = LCD_MODE_1 * 2;
             m_lcdMode2 = LCD_MODE_2 * 2;
             m_lcdMode3 = LCD_MODE_3 * 2;
-            m_cyclesFrame = FRAME_CYCLES * 2;
+            m_cyclesFrame = GB_FRAME_CYCLES * 2;
         }
     }
 }
@@ -1124,7 +1125,7 @@ void CPU::SaveState(string saveDirectory, int numSlot)
 
 	if (file && file->is_open())
 	{
-		int version = SAVE_STATE_VERSION;
+		int version = GB_SAVE_STATE_VERSION;
 		file->write((char *)&version, sizeof(int));
 		file->write(m_c->GetName().c_str(), 16);
 		
@@ -1156,7 +1157,7 @@ void CPU::LoadState(string loadDirectory, int numSlot)
 	{
 		int version = 0;
 		file->read((char *)&version, sizeof(int));
-		if (version != SAVE_STATE_VERSION)
+		if (version != GB_SAVE_STATE_VERSION)
 		{
 			file->close();
 			delete file;

@@ -18,7 +18,7 @@
 #ifndef __SOUND_H__
 #define __SOUND_H__
 
-#include "Def.h"
+#include "../Common/Types.h"
 
 class Basic_Gb_Apu;
 
@@ -52,8 +52,8 @@ namespace GameBoy {
         int Stop();
         bool GetEnabled();
         void SetEnabled(bool enabled);
-        void WriteRegister(WORD address, BYTE value);
-        BYTE ReadRegister(WORD address);
+        void WriteRegister(u16 address, u8 value);
+        u8 ReadRegister(u16 address);
         void EndFrame();
     };
 

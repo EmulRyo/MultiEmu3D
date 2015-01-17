@@ -21,6 +21,7 @@
 #include <fstream>
 #include "Cartridge.h"
 #include "Sound.h"
+#include "Def.h"
 
 #define SIZE_MAIN       0x10000
 #define SIZE_WRAMCOLOR  0x8000
@@ -47,21 +48,21 @@ namespace GameBoy {
         bool m_colorMode;
         bool m_hdmaActive;
     private:
-        BYTE *m_wRam;
-        BYTE *m_vRam;
-        void OamDmaTransfer(BYTE direction);
-        BYTE VRamDmaTransfer(BYTE value);
+        u8 *m_wRam;
+        u8 *m_vRam;
+        void OamDmaTransfer(u8 direction);
+        u8 VRamDmaTransfer(u8 value);
     public:
-        BYTE memory[SIZE_MEM];
+        u8 memory[SIZE_MEM];
     public:
         Memory(CPU *cpu, Sound *s);
         ~Memory();
         Memory *GetPtrMemory();
         void ResetMem();
         void LoadCartridge(Cartridge *c);
-        void MemW(WORD direction, BYTE value);
-        inline void MemWNoCheck(WORD address, BYTE value){ memory[address] = value; };
-        inline BYTE MemR(WORD address)
+        void MemW(u16 direction, u8 value);
+        inline void MemWNoCheck(u16 address, u8 value){ memory[address] = value; };
+        inline u8 MemR(u16 address)
         {
             if ((address < 0x8000) || ((address >=0xA000) && (address < 0xC000)))
                 return m_c->Read(address);
@@ -73,19 +74,19 @@ namespace GameBoy {
                 return m_wRam[address - 0xD000];
             else if (m_colorMode && (address == BGPD))
             {
-                BYTE index = memory[BGPI] & 0x3F;
+                u8 index = memory[BGPI] & 0x3F;
                 return memory[BGP_OFFSET + index];
             }
             else if (m_colorMode && (address == OBPD))
             {
-                BYTE index = memory[OBPI] & 0x3F;
+                u8 index = memory[OBPI] & 0x3F;
                 return memory[OBP_OFFSET + index];
             }
             else
                 return memory[address];
         }
-        BYTE MemRVRam(WORD address, int slot);
-        BYTE MemRWRam(WORD address, int slot);
+        u8 MemRVRam(u16 address, int slot);
+        u8 MemRWRam(u16 address, int slot);
         void UpdateHDMA();
         void SaveMemory(std::ofstream *file);
         void LoadMemory(std::ifstream *file);
