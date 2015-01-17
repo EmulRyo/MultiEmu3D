@@ -22,8 +22,8 @@
 #include <iomanip>
 #include <assert.h>
 #include "Cartridge.h"
-#include "Def.h"
 #include "SMSException.h"
+#include "../Common/Bit.h"
 
 using namespace std;
 using namespace MasterSystem;

@@ -15,22 +15,14 @@
  along with DMGBoy.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef __ISMSSCREENDRAWABLE_H__
-#define __ISMSSCREENDRAWABLE_H__
+#ifndef __APPDEFS_H__
+#define __APPDEFS_H__
 
-#include "../Common/Types.h"
-
-namespace MasterSystem {
-    
-    class ISMSScreenDrawable
-    {
-    public:
-        virtual u8*  GetBufferPtr() = 0;
-        virtual void OnDrawPixel(u8 r, u8 g, u8 b, int x, int y) = 0;
-        virtual void OnSizeChanged(int x, int y, int width, int height) = 0;
-        virtual void OnRefreshGBScreen() = 0;
-        virtual void OnClear() = 0;
-    };
-}
+#define APP_NAME		"MarkSystem"
+#define APP_VERSION		"0.1"
+#define APP_MAINT		"Pablo Gascó"
+#define APP_LICENCE		"GPL v3"
+#define APP_COPYRIGTH	"(C) 2014 Pablo Gasco"
+#define APP_WEBSITE		"http://code.google.com/p/marksystem/"
 
 #endif

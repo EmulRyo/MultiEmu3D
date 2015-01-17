@@ -340,7 +340,7 @@ void Debugger::StepInto() {
 
 bool Debugger::ExecuteOneFrame() {
     int cycles = 0;
-    while(cycles < FRAME_CYCLES) {
+    while(cycles < SMS_FRAME_CYCLES) {
         cycles += m_cpu->Execute(1);
         if (GetBreakpointNode(m_cpu->GetPC()))
             return false;

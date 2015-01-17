@@ -18,7 +18,7 @@
 #ifndef __INSTRUCTIONSNAME_H__
 #define __INSTRUCTIONSNAME_H__
 
-#include "Def.h"
+#include "../Common/Types.h"
 
 const char *GetInstructionName(u8 opcode);
 const char *GetInstructionCBName(u8 opcode);

@@ -18,7 +18,7 @@
 #ifndef __REGISTERS_H__
 #define __REGISTERS_H__
 
-#include "Def.h"
+#include "../Common/Types.h"
 #include <iostream>
 
 namespace MasterSystem {

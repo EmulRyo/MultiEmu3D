@@ -21,6 +21,7 @@
 #include "Registers.h"
 #include "Memory.h"
 #include "Instructions.h"
+#include "../Common/Bit.h"
 
 using namespace std;
 using namespace MasterSystem;

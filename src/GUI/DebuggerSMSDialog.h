@@ -20,7 +20,7 @@
 
 #include <wx/wx.h>
 #include <wx/listctrl.h>
-#include "../SMS-GG/Def.h"
+#include "../Common/Types.h"
 
 class wxListView;
 namespace MasterSystem {

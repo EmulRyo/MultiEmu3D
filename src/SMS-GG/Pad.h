@@ -18,7 +18,7 @@
 #ifndef __PAD_H__
 #define __PAD_H__
 
-#include "Def.h"
+#include "../Common/Types.h"
 
 namespace MasterSystem {
 

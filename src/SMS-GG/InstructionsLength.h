@@ -18,7 +18,7 @@
 #ifndef __INSTRUCTIONSLENGTH_H__
 #define __INSTRUCTIONSLENGTH_H__
 
-#include "Def.h"
+#include "../Common/Types.h"
 
 u8 GetInstructionLength(u8 opcode);
 u8 GetInstructionCBLength(u8 opcode);

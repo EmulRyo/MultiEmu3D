@@ -41,6 +41,7 @@
 		6E78491E1A60B7D40039E80D /* SoundPortaudio.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 6E7849091A60B7D40039E80D /* SoundPortaudio.cpp */; };
 		6E7849211A60B7D40039E80D /* Video.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 6E78490E1A60B7D40039E80D /* Video.cpp */; };
 		6E7849241A628BAA0039E80D /* SMS.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 6E7849221A628BAA0039E80D /* SMS.cpp */; };
+		6E7849271A69C3D00039E80D /* GB.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 6E7849251A69C3D00039E80D /* GB.cpp */; };
 		6E81E465190AE64200725E92 /* dmgboy.mo in CopyFiles */ = {isa = PBXBuildFile; fileRef = 6E81E460190AE57D00725E92 /* dmgboy.mo */; };
 		6E81E466190AE65500725E92 /* dmgboy.mo in CopyFiles */ = {isa = PBXBuildFile; fileRef = 6E41039B175A41CF00B5D091 /* dmgboy.mo */; };
 		6E81E4691914011900725E92 /* dmgboy.mo in CopyFiles */ = {isa = PBXBuildFile; fileRef = 6E81E4681914011900725E92 /* dmgboy.mo */; };
@@ -203,6 +204,11 @@
 		6E78490F1A60B7D40039E80D /* Video.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Video.h; sourceTree = "<group>"; };
 		6E7849221A628BAA0039E80D /* SMS.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = SMS.cpp; path = "../../../src/SMS-GG/SMS.cpp"; sourceTree = "<group>"; };
 		6E7849231A628BAA0039E80D /* SMS.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SMS.h; path = "../../../src/SMS-GG/SMS.h"; sourceTree = "<group>"; };
+		6E7849251A69C3D00039E80D /* GB.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = GB.cpp; sourceTree = "<group>"; };
+		6E7849261A69C3D00039E80D /* GB.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GB.h; sourceTree = "<group>"; };
+		6E7849291A6A82650039E80D /* Bit.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Bit.h; sourceTree = "<group>"; };
+		6E78492A1A6A82650039E80D /* Types.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Types.h; sourceTree = "<group>"; };
+		6E78492B1A6A87310039E80D /* AppDefs.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDefs.h; sourceTree = "<group>"; };
 		6E81E460190AE57D00725E92 /* dmgboy.mo */ = {isa = PBXFileReference; lastKnownFileType = file; name = dmgboy.mo; path = ../../languages/fr/dmgboy.mo; sourceTree = "<group>"; };
 		6E81E4681914011900725E92 /* dmgboy.mo */ = {isa = PBXFileReference; lastKnownFileType = file; name = dmgboy.mo; path = ../../languages/el/dmgboy.mo; sourceTree = "<group>"; };
 		6E82ED72194391BF001D8B2D /* Joystick.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Joystick.cpp; sourceTree = "<group>"; };
@@ -340,6 +346,7 @@
 				6EFA5275126354F2000E541D /* ToDo.txt */,
 				6E2B3EC417C136420066D9C6 /* 3D */,
 				6E23C6BD11D7CA0C0043AF47 /* GUI */,
+				6E7849281A6A82650039E80D /* Common */,
 				6E7848EB1A60B7D40039E80D /* GB-GBC */,
 				6E373B0B1A5C7CB1009E02D1 /* SMS-GG */,
 				6EF214511A6094A10045C4A1 /* Gb_Snd_Emu-0.1.4 */,
@@ -379,6 +386,7 @@
 			isa = PBXGroup;
 			children = (
 				6E23C6BE11D7CA0C0043AF47 /* IDControls.h */,
+				6E78492B1A6A87310039E80D /* AppDefs.h */,
 				6E90990E18D8D822005DF1C1 /* BreakpointsDialog.cpp */,
 				6E90990F18D8D822005DF1C1 /* BreakpointsDialog.h */,
 				6EF404E418AFE5F3006A0FDC /* DebuggerSMSDialog.h */,
@@ -491,6 +499,8 @@
 				6E7848F01A60B7D40039E80D /* Debugger.cpp */,
 				6E7848F11A60B7D40039E80D /* Debugger.h */,
 				6E7848F21A60B7D40039E80D /* Def.h */,
+				6E7849251A69C3D00039E80D /* GB.cpp */,
+				6E7849261A69C3D00039E80D /* GB.h */,
 				6E7848F31A60B7D40039E80D /* GBException.cpp */,
 				6E7848F41A60B7D40039E80D /* GBException.h */,
 				6E7848F61A60B7D40039E80D /* IGBScreenDrawable.h */,
@@ -519,6 +529,16 @@
 			);
 			name = "GB-GBC";
 			path = "../../../src/GB-GBC";
+			sourceTree = "<group>";
+		};
+		6E7849281A6A82650039E80D /* Common */ = {
+			isa = PBXGroup;
+			children = (
+				6E7849291A6A82650039E80D /* Bit.h */,
+				6E78492A1A6A82650039E80D /* Types.h */,
+			);
+			name = Common;
+			path = ../../../src/Common;
 			sourceTree = "<group>";
 		};
 		6E81E462190AE5AD00725E92 /* es */ = {
@@ -704,6 +724,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				6E7849271A69C3D00039E80D /* GB.cpp in Sources */,
 				6ED4CF6C195381BA0003C70B /* InstructionsName.cpp in Sources */,
 				6ED4CF73195381BA0003C70B /* Sound.cpp in Sources */,
 				6E7849121A60B7D40039E80D /* Debugger.cpp in Sources */,

@@ -19,6 +19,7 @@
 #include "Memory.h"
 #include "ISMSScreenDrawable.h"
 #include "Video.h"
+#include "../Common/Bit.h"
 
 #define ABS(x) ((x) < 0 ? -(x) : (x))
 #define MEMR(address) (m_mem->memory[(address)])
@@ -218,8 +219,8 @@ u16 Video::GetAddress() {
 void Video::Update(u8 cycles) {
     m_cycles += cycles;
     
-    if (m_cycles > FRAME_CYCLES) {
-        m_cycles -= FRAME_CYCLES;
+    if (m_cycles > SMS_FRAME_CYCLES) {
+        m_cycles -= SMS_FRAME_CYCLES;
         m_cyclesLine = 0;
         m_line = 0;
         m_lineIrqCounter = m_regs[10];

@@ -44,6 +44,7 @@
 #include "RendererOGL.h"
 #include "RendererSW.h"
 #include "EmulationThread.h"
+#include "AppDefs.h"
 
 using namespace std;
 

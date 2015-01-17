@@ -176,7 +176,7 @@ void CPU::SaveState(string saveDirectory, int numSlot)
 
 	if (file && file->is_open())
 	{
-		int version = SAVE_STATE_VERSION;
+		int version = SMS_SAVE_STATE_VERSION;
 		file->write((char *)&version, sizeof(int));
 		
 		SaveRegs(file);
@@ -208,7 +208,7 @@ void CPU::LoadState(string loadDirectory, int numSlot)
 	{
 		int version = 0;
 		file->read((char *)&version, sizeof(int));
-		if (version != SAVE_STATE_VERSION)
+		if (version != SMS_SAVE_STATE_VERSION)
 		{
 			file->close();
 			delete file;

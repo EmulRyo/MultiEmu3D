@@ -17,6 +17,7 @@
 
 #include <iostream>
 #include "Pad.h"
+#include "../Common/Bit.h"
 
 using namespace MasterSystem;
 

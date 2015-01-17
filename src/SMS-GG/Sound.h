@@ -18,7 +18,7 @@
 #ifndef __SOUND_H__
 #define __SOUND_H__
 
-#include "Def.h"
+#include "../Common/Types.h"
 
 class Sms_Apu;
 class Stereo_Buffer;

@@ -19,7 +19,7 @@
 #define __CARTRIDGE_H__
 
 #include <string>
-#include "Def.h"
+#include "../Common/Types.h"
 
 namespace MasterSystem {
     

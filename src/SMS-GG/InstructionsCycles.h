@@ -18,7 +18,7 @@
 #ifndef __INSTRUCTIONSCYCLES_H__
 #define __INSTRUCTIONSCYCLES_H__
 
-#include "Def.h"
+#include "../Common/Types.h"
 
 u8 GetInstructionCycles(u8 opcode);
 u8 GetInstructionCondicionalCycles(u8 opcode);
