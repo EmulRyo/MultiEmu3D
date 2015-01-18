@@ -44,7 +44,7 @@ namespace MasterSystem {
         void SetGGMode(bool value);
         void LoadState(std::string fileName, int id);
         void SaveState(std::string fileName, int id);
-        void PadSetButtons(bool *buttonsState, bool pause);
+        void PadSetButtons(bool *buttonsState);
         void SetScreen(IScreenDrawable *screen);
         
         CPU *GetCPU();

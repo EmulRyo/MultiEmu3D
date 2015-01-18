@@ -264,8 +264,8 @@ void EmulationThread::SetScreen(IScreenDrawable *screen)
 void EmulationThread::UpdatePad()
 {
     if (emuState == Playing) {
-        bool buttonsState[12];
-        for (int i=0; i<12; i++)
+        bool buttonsState[13];
+        for (int i=0; i<13; i++)
             buttonsState[i] = wxGetKeyState(keysUsed[i]);
         joystick->UpdateButtonsState(buttonsState);
         bool back = wxGetKeyState(WXK_BACK);
@@ -274,7 +274,7 @@ void EmulationThread::UpdatePad()
         
         if (!m_rewind.IsEnabled() && (!back)) {
             wxMutexLocker lock(*mutex);
-            m_sms->PadSetButtons(buttonsState, wxGetKeyState(keysUsed[12]));
+            m_sms->PadSetButtons(buttonsState);
             
             SetSpeed(space ? SpeedMax : SpeedNormal);
         }

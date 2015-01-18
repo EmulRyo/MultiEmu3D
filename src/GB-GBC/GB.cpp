@@ -93,7 +93,7 @@ void GB::SaveState(std::string fileName, int id) {
     m_cpu->SaveState(fileName, id);
 }
 
-void GB::PadSetButtons(bool *buttonsState, bool pause) {
+void GB::PadSetButtons(bool *buttonsState) {
     /*
     m_pad->SetButtonsStatePad1(buttonsState);
     m_pad->SetButtonsStatePad2(&buttonsState[6]);
