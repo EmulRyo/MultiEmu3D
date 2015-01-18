@@ -15,8 +15,8 @@
  along with DMGBoy.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef SOUNDPORTAUDIO_H
-#define SOUNDPORTAUDIO_H
+#ifndef __SOUNDPORTAUDIO_H__
+#define __SOUNDPORTAUDIO_H__
 
 #include "portaudio.h"
 

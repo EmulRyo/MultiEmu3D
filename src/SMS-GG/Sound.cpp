@@ -22,9 +22,9 @@
 #include "Sms_Apu.h"
 #include "Stereo_Buffer.h"
 #ifdef __WXMSW__
-#include "SoundSDL.h"
+#include "../Common/SoundSDL.h"
 #else
-#include "SoundPortaudio.h"
+#include "../Common/SoundPortaudio.h"
 #endif
 #include "Sound.h"
 

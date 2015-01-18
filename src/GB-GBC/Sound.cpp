@@ -21,9 +21,9 @@
 #define BLARGG_COMPILER_HAS_NAMESPACE 1
 #include "Basic_Gb_Apu.h"
 #ifdef __WXMSW__
-#include "SoundSDL.h"
+#include "../Common/SoundSDL.h"
 #else
-#include "SoundPortaudio.h"
+#include "../Common/SoundPortaudio.h"
 #endif
 #include "Sound.h"
 #include "Def.h"

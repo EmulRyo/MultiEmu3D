@@ -21,14 +21,13 @@
 #include "../Common/Types.h"
 
 class Basic_Gb_Apu;
+#ifdef __WXMSW__
+class SoundSDL;
+#else
+class SoundPortaudio;
+#endif
 
 namespace GameBoy {
-
-#ifdef __WXMSW__
-    class SoundSDL;
-#else
-    class SoundPortaudio;
-#endif
     
     class Sound {
     private:
