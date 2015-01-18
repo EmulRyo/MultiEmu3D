@@ -15,27 +15,42 @@
  along with DMGBoy.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef __GBEXCEPTION_H__
-#define __GBEXCEPTION_H__
+#include "Exception.h"
 
-#include <string>
+using namespace std;
 
-enum ExceptionType { GBUnknown, GBError, GBExit };
-
-class GBException: public std::exception
+Exception::Exception(): exception()
 {
-private:
-	std::string m_description;
-	ExceptionType m_type;
-	void newException(std::string desc, ExceptionType type);
+	newException("", Unknown);
+}
 
-public:
-	GBException();
-	GBException(std::string desc);
-	GBException(std::string desc, ExceptionType type);
-	const char* what() const throw();
-	ExceptionType GetType();
-	~GBException() throw();
-};
+Exception::Exception(string description): exception()
+{
+	newException(description, Unknown);
+}
 
-#endif
+Exception::Exception(string description, ExceptionType type): exception()
+{
+	newException(description, type);
+}
+
+Exception::~Exception() throw()
+{
+
+}
+
+ExceptionType Exception::GetType()
+{
+	return m_type;
+}
+
+void Exception::newException(string description, ExceptionType type)
+{
+	m_description = description;
+	m_type = type;
+}
+
+const char *Exception::what() const throw()
+{
+	return m_description.c_str();
+}

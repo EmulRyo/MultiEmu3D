@@ -21,7 +21,7 @@
 #include "Instructions.h"
 #include "InstructionsLength.h"
 #include "InstructionsCycles.h"
-#include "SMSException.h"
+#include "../Common/Exception.h"
 
 using namespace std;
 using namespace MasterSystem;
@@ -331,7 +331,7 @@ void CPU::ExecuteOpcode(u8 opcode, Instructions &inst) {
             out << "Error, instruction not implemented: 0x";
             out << setfill('0') << setw(2) << uppercase << hex << (int)opcode << endl;
             cout << out.str();
-            throw SMSException(out.str());
+            throw Exception(out.str());
             
     } // end switch
     
@@ -633,7 +633,7 @@ void CPU::OpcodeCB(Instructions &inst, bool &executed)
 			out << "Error, instruction not implemented: 0xCB";
 			out << setfill('0') << setw(2) << uppercase << hex << (int)opcode << "\n";
             cout << out.str();
-			throw SMSException(out.str().data());
+			throw Exception(out.str().data());
     }
     
     if (!executed) {
@@ -781,7 +781,7 @@ void CPU::OpcodeDD(Instructions &inst, bool &executed)
 			out << "Error, instruction not implemented: 0xDD";
 			out << setfill('0') << setw(2) << uppercase << hex << (int)opcode << "\n";
             cout << out.str();
-			throw SMSException(out.str().data());
+			throw Exception(out.str().data());
     }
     
     if (!executed) {
@@ -884,7 +884,7 @@ void CPU::OpcodeED(Instructions &inst, bool &executed)
 			out << "Error, instruction not implemented: 0xED";
 			out << setfill('0') << setw(2) << uppercase << hex << (int)opcode << "\n";
             cout << out.str();
-			throw SMSException(out.str().data());
+			throw Exception(out.str().data());
     }
     
     if (!executed) {
@@ -1038,7 +1038,7 @@ void CPU::OpcodeFD(Instructions &inst, bool &executed)
 			out << "Error, instruction not implemented: 0xFD";
 			out << setfill('0') << setw(2) << uppercase << hex << (int)opcode << "\n";
             cout << out.str();
-			throw SMSException(out.str().data());
+			throw Exception(out.str().data());
     }
     
     if (!executed) {
@@ -1335,7 +1335,7 @@ void CPU::OpcodeDDCB(Instructions &inst, bool &executed)
 			out << "Error, instruction not implemented: 0xDDCB";
 			out << setfill('0') << setw(2) << uppercase << hex << (int)opcode << "\n";
             cout << out.str();
-			throw SMSException(out.str().data());
+			throw Exception(out.str().data());
     }
     
     if (!executed) {
@@ -1629,7 +1629,7 @@ void CPU::OpcodeFDCB(Instructions &inst, bool &executed)
 			out << "Error, instruction not implemented: 0xFDCB";
 			out << setfill('0') << setw(2) << uppercase << hex << (int)opcode << "\n";
             cout << out.str();
-			throw SMSException(out.str().data());
+			throw Exception(out.str().data());
     }
     
     if (!executed) {

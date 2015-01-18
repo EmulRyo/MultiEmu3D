@@ -23,9 +23,9 @@
 #include "Registers.h"
 #include "Video.h"
 #include "Pad.h"
-#include "GBException.h"
 #include "InstructionsDef.h"
 #include "../Common/Bit.h"
+#include "../Common/Exception.h"
 
 #ifdef MAKEGBLOG
 #include "Log.h"
@@ -402,7 +402,7 @@ int CPU::Execute(int cyclesToExecute)
 #ifdef MAKEGBLOG
                     SaveLog();
 #endif
-					throw GBException(out.str());
+					throw Exception(out.str());
                     
 			} // end switch
             
@@ -728,7 +728,7 @@ void CPU::OpCodeCB(Instructions * inst)
 #ifdef MAKEGBLOG
             SaveLog();
 #endif
-			throw GBException(out.str().data());
+			throw Exception(out.str().data());
     }
 }
 
@@ -1114,7 +1114,7 @@ void CPU::SaveState(string saveDirectory, int numSlot)
 {
 	if (m_c == NULL)
 	{
-		throw GBException("There is not rom loaded. The process can't continue.");
+		throw Exception("There is not rom loaded. The process can't continue.");
 	}
 	
 	stringstream st;
@@ -1144,7 +1144,7 @@ void CPU::LoadState(string loadDirectory, int numSlot)
 {
 	if (!m_c)
 	{
-		throw GBException("There is not rom loaded. The process can't continue.");
+		throw Exception("There is not rom loaded. The process can't continue.");
 	}
 	
 	stringstream st;
@@ -1161,7 +1161,7 @@ void CPU::LoadState(string loadDirectory, int numSlot)
 		{
 			file->close();
 			delete file;
-			throw GBException("This filesave is not compatible and can't be loaded.");
+			throw Exception("This filesave is not compatible and can't be loaded.");
 		}
 		
 		char *buffer = new char[16];
@@ -1173,7 +1173,7 @@ void CPU::LoadState(string loadDirectory, int numSlot)
 		{
 			file->close();
 			delete file;
-			throw GBException("This filesave does not belong to this rom and can't be loaded.");
+			throw Exception("This filesave does not belong to this rom and can't be loaded.");
 		}
 		
 		LoadRegs(file);
@@ -1189,6 +1189,6 @@ void CPU::LoadState(string loadDirectory, int numSlot)
 		if (file)
 			delete file;
 		
-		throw GBException("Unable to open the filesave.");
+		throw Exception("Unable to open the filesave.");
 	}
 }

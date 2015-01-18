@@ -23,8 +23,8 @@
 #include <assert.h>
 #include "Cartridge.h"
 #include "Def.h"
-#include "GBException.h"
 #include "MBC.h"
+#include "../Common/Exception.h"
 
 using namespace std;
 using namespace GameBoy;
@@ -166,7 +166,7 @@ void Cartridge::CheckCartridge(string batteriesPath)
 			 case 0xFD:						//Bandai TAMA5
 			 case 0xFE: mbc = Other; break;	//Hudson HuC-3
 			 case 0xFF: mbc = HuC1; break;	//Hudson HuC-1*/
-		default: throw GBException("MBC not implemented yet");
+		default: throw Exception("MBC not implemented yet");
 	}
 }
 

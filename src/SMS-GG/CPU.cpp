@@ -21,11 +21,7 @@
 #include "Registers.h"
 #include "Video.h"
 #include "Pad.h"
-#include "SMSException.h"
-
-#ifdef MAKEGBLOG
-#include "Log.h"
-#endif
+#include "../Common/Exception.h"
 
 using namespace std;
 using namespace MasterSystem;
@@ -165,7 +161,7 @@ void CPU::SaveState(string saveDirectory, int numSlot)
 {
 	if (m_c == NULL)
 	{
-		throw SMSException("There is not rom loaded. The process can't continue.");
+		throw Exception("There is not rom loaded. The process can't continue.");
 	}
 	
 	stringstream st;
@@ -195,7 +191,7 @@ void CPU::LoadState(string loadDirectory, int numSlot)
 {
 	if (!m_c)
 	{
-		throw SMSException("There is not rom loaded. The process can't continue.");
+		throw Exception("There is not rom loaded. The process can't continue.");
 	}
 	
 	stringstream st;
@@ -212,7 +208,7 @@ void CPU::LoadState(string loadDirectory, int numSlot)
 		{
 			file->close();
 			delete file;
-			throw SMSException("This filesave is not compatible and can't be loaded.");
+			throw Exception("This filesave is not compatible and can't be loaded.");
 		}
 		
 		LoadRegs(file);
@@ -229,6 +225,6 @@ void CPU::LoadState(string loadDirectory, int numSlot)
 		if (file)
 			delete file;
 		
-		throw SMSException("Unable to open the filesave.");
+		throw Exception("Unable to open the filesave.");
 	}
 }

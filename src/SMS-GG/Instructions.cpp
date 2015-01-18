@@ -17,7 +17,6 @@
 
 #include <iostream>
 #include <assert.h>
-#include "SMSException.h"
 #include "Registers.h"
 #include "Memory.h"
 #include "Instructions.h"

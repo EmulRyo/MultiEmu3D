@@ -19,7 +19,7 @@
 #include <fstream>
 #include <iomanip>
 #include "Registers.h"
-#include "SMSException.h"
+#include "../Common/Exception.h"
 
 using namespace std;
 using namespace MasterSystem;
@@ -76,7 +76,7 @@ u16 Registers::GetReg(e_registers reg)
 		default:
 			stringstream out;
 			out << "Get_Reg - Error, incorrect register: " << reg << endl;
-			throw SMSException(out.str().data());
+			throw Exception(out.str().data());
 	}
 }
 
@@ -102,7 +102,7 @@ void Registers::SetReg(e_registers reg, u16 value)
 		default:
 			stringstream out;
 			out << "Set_Reg - Error, incorrect register: " << reg << endl;
-			throw SMSException(out.str().data());
+			throw Exception(out.str().data());
 	}
 }
 
@@ -118,7 +118,7 @@ u8 Registers::GetFlag(e_registers flag)
 		default:
 			stringstream out;
 			out << "Error, incorrect flag (Get): " << flag << endl;
-			throw SMSException(out.str().data());
+			throw Exception(out.str().data());
 	}
 }
 
@@ -134,7 +134,7 @@ void Registers::SetFlag(e_registers flag, u8 value)
 		default:
 			stringstream out;
 			out << "Error, incorrect flag (Set): " << flag << endl;
-			throw SMSException(out.str().data());
+			throw Exception(out.str().data());
 	}
 }
 
