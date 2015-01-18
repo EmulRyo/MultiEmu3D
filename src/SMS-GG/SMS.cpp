@@ -22,6 +22,7 @@
 #include "Cartridge.h"
 #include "Debugger.h"
 #include "SMS.h"
+#include "../Common/IScreenDrawable.h"
 
 using namespace MasterSystem;
 
@@ -101,7 +102,7 @@ void SMS::PadSetButtons(bool *buttonsState, bool pause) {
     m_pad->SetPauseState(pause);
 }
 
-void SMS::SetScreen(ISMSScreenDrawable *screen) {
+void SMS::SetScreen(IScreenDrawable *screen) {
     m_video->SetScreen(screen);
 }
 

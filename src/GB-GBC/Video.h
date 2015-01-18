@@ -22,10 +22,11 @@
 #include "Def.h"
 #include "../Common/Types.h"
 
+class IScreenDrawable;
+
 namespace GameBoy {
     
     class Memory;
-    class IGBScreenDrawable;
 
     struct VideoPixel
     {
@@ -45,12 +46,12 @@ namespace GameBoy {
         bool m_colorMode;
         std::multimap<int, int> m_orderedOAM;	//posicion x, dir. memoria
         bool m_priorityBGWnd[GB_SCREEN_W][GB_SCREEN_H]; // Aqui se almacena la prioridad de pintado de BG y Window
-        IGBScreenDrawable *m_screen;
+        IScreenDrawable *m_screen;
         VideoPixel *m_pixel;
     public:
-        Video(IGBScreenDrawable * screen);
+        Video(IScreenDrawable * screen);
         ~Video(void);
-        void SetScreen(IGBScreenDrawable * screen);
+        void SetScreen(IScreenDrawable * screen);
         void SetColorMode(bool value);
         void SetMem(Memory *mem);
         void RefreshScreen();

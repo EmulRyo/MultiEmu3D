@@ -18,15 +18,15 @@
 #ifndef __GB_H__
 #define __GB_H__
 
-namespace GameBoy {
+class IScreenDrawable;
 
+namespace GameBoy {
     class Cartridge;
     class Video;
     class Sound;
     class Pad;
     class CPU;
     class Debugger;
-    class ISMSScreenDrawable;
 
     class GB {
     public:
@@ -43,7 +43,7 @@ namespace GameBoy {
         void LoadState(std::string fileName, int id);
         void SaveState(std::string fileName, int id);
         void PadSetButtons(bool *buttonsState, bool pause);
-        void SetScreen(IGBScreenDrawable *screen);
+        void SetScreen(IScreenDrawable *screen);
         
         CPU *GetCPU();
         Debugger *GetDebugger();

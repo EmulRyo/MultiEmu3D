@@ -101,7 +101,7 @@ void GB::PadSetButtons(bool *buttonsState, bool pause) {
     */
 }
 
-void GB::SetScreen(IGBScreenDrawable *screen) {
+void GB::SetScreen(IScreenDrawable *screen) {
     m_video->SetScreen(screen);
 }
 

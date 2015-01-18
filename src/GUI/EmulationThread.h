@@ -20,6 +20,7 @@
 
 #include <wx/thread.h>
 #include <wx/stopwatch.h>
+#include "../Common/IScreenDrawable.h"
 #include "Rewind.h"
 
 enum enumEmuStates { NotStartedYet, Stopped, Paused, Playing };
@@ -44,7 +45,7 @@ public:
     void LoadState(std::string fileName, int id);
     void SaveState(std::string fileName, int id);
     void ApplySettings();
-    void SetScreen(MasterSystem::ISMSScreenDrawable *screen);
+    void SetScreen(IScreenDrawable *screen);
     void UpdatePad();
     MasterSystem::Debugger *GetDebugger();
     void SetSpeed(EnumSpeed speed);
@@ -62,7 +63,7 @@ private:
     bool m_finished;
     EnumSpeed m_speed;
     bool m_soundEnabled;
-    MasterSystem::ISMSScreenDrawable *m_screen;
+    IScreenDrawable *m_screen;
     
     Rewind m_rewind;
     

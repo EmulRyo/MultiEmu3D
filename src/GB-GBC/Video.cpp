@@ -17,9 +17,9 @@
 
 #include <iostream>
 #include "Memory.h"
-#include "IGBScreenDrawable.h"
 #include "Video.h"
 #include "../Common/Bit.h"
+#include "../Common/IScreenDrawable.h"
 
 #define ABS(x) ((x) < 0 ? -(x) : (x))
 #define MEMR(address) (m_mem->memory[(address)])
@@ -27,7 +27,7 @@
 using namespace std;
 using namespace GameBoy;
 
-Video::Video(IGBScreenDrawable *screen)
+Video::Video(IScreenDrawable *screen)
 {
     m_colorMode = false;
 	m_pixel = new VideoPixel();
@@ -39,7 +39,7 @@ Video::~Video(void)
 	
 }
 
-void Video::SetScreen(IGBScreenDrawable *screen)
+void Video::SetScreen(IScreenDrawable *screen)
 {
     m_screen = screen;
 }
@@ -56,22 +56,16 @@ void Video::SetMem(Memory *mem)
 
 void Video::UpdateLine(u8 y)
 {
-    if (m_screen)
-        m_screen->OnPreDraw();
-
-	OrderOAM(y);
+    OrderOAM(y);
 	UpdateBG(y);
 	UpdateWin(y);
 	UpdateOAM(y);
-
-    if (m_screen)
-        m_screen->OnPostDraw();
 }
 
 void Video::RefreshScreen()
 {
     if (m_screen)
-        m_screen->OnRefreshGBScreen();
+        m_screen->OnRefreshFalseScreen();
 }
 
 void Video::ClearScreen()

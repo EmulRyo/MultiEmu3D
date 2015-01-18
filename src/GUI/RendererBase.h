@@ -19,7 +19,7 @@
 #define __BASERENDERER_H__
 
 #include <wx/dnd.h>
-#include "../SMS-GG/ISMSScreenDrawable.h"
+#include "../Common/IScreenDrawable.h"
 
 /*******************************************************************************
  * RendererBase Class
@@ -29,7 +29,7 @@ namespace Renderer {
     enum Icon { Play, Pause, Stop, RewindL, RewindR };
 };
 
-class RendererBase: public MasterSystem::ISMSScreenDrawable {
+class RendererBase: public IScreenDrawable {
     
 public:
 	RendererBase();
@@ -45,8 +45,9 @@ public:
     void SetIcon(Renderer::Icon icon, int frames=120);
 	
 	void OnClear();
-	void OnRefreshGBScreen();
+	void OnRefreshFalseScreen();
     void OnRefreshRealScreen();
+    void OnDrawPixel(int idColor, int x, int y);
     void OnDrawPixel(u8 r, u8 g, u8 b, int x, int y);
     u8*  GetBufferPtr();
     void OnSizeChanged(int x, int y, int width, int height);
@@ -65,6 +66,7 @@ protected:
 private:
 	wxWindow *m_winRenderer;
     wxWindow *m_parent;
+    int       m_selPalette;
     
     void PageFlip();
 };

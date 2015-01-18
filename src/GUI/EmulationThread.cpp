@@ -252,7 +252,7 @@ void EmulationThread::ApplySettings()
     m_sms->SoundEnable(SettingsGetSoundEnabled());
 }
 
-void EmulationThread::SetScreen(MasterSystem::ISMSScreenDrawable *screen)
+void EmulationThread::SetScreen(IScreenDrawable *screen)
 {
     wxMutexLocker lock(*mutex);
     

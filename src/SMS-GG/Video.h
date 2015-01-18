@@ -24,6 +24,8 @@
 
 #define VDP_MEM 0x4000
 
+class IScreenDrawable;
+
 namespace MasterSystem {
 
     enum t_VDPMODES {
@@ -34,7 +36,6 @@ namespace MasterSystem {
     };
 
     class Memory;
-    class ISMSScreenDrawable;
 
     struct VideoPixel
     {
@@ -50,9 +51,9 @@ namespace MasterSystem {
     class Video
     {
     public:
-        Video(ISMSScreenDrawable *screen);
+        Video(IScreenDrawable *screen);
         ~Video(void);
-        void SetScreen(ISMSScreenDrawable *screen);
+        void SetScreen(IScreenDrawable *screen);
         void Reset();
         void RefreshScreen();
         void ClearScreen();
@@ -97,7 +98,7 @@ namespace MasterSystem {
         s16 m_lineIrqCounter;
         bool m_vramAddress;
         u8  m_readBuffer;
-        ISMSScreenDrawable *m_screen;
+        IScreenDrawable *m_screen;
         VideoPixel *m_pixel;
         bool m_pendingVIRQ;
         bool m_pendingLIRQ;

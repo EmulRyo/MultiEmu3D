@@ -17,9 +17,9 @@
 
 #include <iostream>
 #include "Memory.h"
-#include "ISMSScreenDrawable.h"
 #include "Video.h"
 #include "../Common/Bit.h"
+#include "../Common/IScreenDrawable.h"
 
 #define ABS(x) ((x) < 0 ? -(x) : (x))
 #define MEMR(address) (m_mem->memory[(address)])
@@ -53,7 +53,7 @@ const t_VDPMODES SMS2Modes[16] = {
     MODE_4_192
 };
 
-Video::Video(ISMSScreenDrawable *screen)
+Video::Video(IScreenDrawable *screen)
 {
     m_GameGear = false;
     m_pixel = new VideoPixel();
@@ -66,14 +66,14 @@ Video::~Video(void)
 	delete m_pixel;
 }
 
-void Video::SetScreen(ISMSScreenDrawable *screen)
+void Video::SetScreen(IScreenDrawable *screen)
 {
     m_screen = screen;
 }
 
 void Video::RefreshScreen()
 {
-    m_screen->OnRefreshGBScreen();
+    m_screen->OnRefreshFalseScreen();
 }
 
 void Video::Reset() {

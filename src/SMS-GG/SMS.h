@@ -18,6 +18,8 @@
 #ifndef __SMS_H__
 #define __SMS_H__
 
+class IScreenDrawable;
+
 namespace MasterSystem {
 
     class Cartridge;
@@ -26,7 +28,6 @@ namespace MasterSystem {
     class Pad;
     class CPU;
     class Debugger;
-    class ISMSScreenDrawable;
 
     class SMS {
     public:
@@ -44,7 +45,7 @@ namespace MasterSystem {
         void LoadState(std::string fileName, int id);
         void SaveState(std::string fileName, int id);
         void PadSetButtons(bool *buttonsState, bool pause);
-        void SetScreen(ISMSScreenDrawable *screen);
+        void SetScreen(IScreenDrawable *screen);
         
         CPU *GetCPU();
         Debugger *GetDebugger();

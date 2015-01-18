@@ -15,21 +15,19 @@
  along with DMGBoy.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef __IGBSCREENDRAWABLE_H__
-#define __IGBSCREENDRAWABLE_H__
+#ifndef __ISCREENDRAWABLE_H__
+#define __ISCREENDRAWABLE_H__
 
-namespace GameBoy {
+#include "Types.h"
     
-    class IGBScreenDrawable
-    {
-    public:
-        virtual void OnPreDraw() = 0;
-        virtual void OnPostDraw() = 0;
-        virtual void OnDrawPixel(int idColor, int x, int y) = 0;
-        virtual void OnDrawPixel(u8 r, u8 g, u8 b, int x, int y) = 0;
-        virtual void OnRefreshGBScreen() = 0;
-        virtual void OnClear() = 0;
-    };
-}
+class IScreenDrawable {
+public:
+    virtual u8*  GetBufferPtr() = 0;
+    virtual void OnDrawPixel(int idColor, int x, int y) = 0;
+    virtual void OnDrawPixel(u8 r, u8 g, u8 b, int x, int y) = 0;
+    virtual void OnSizeChanged(int x, int y, int width, int height) = 0;
+    virtual void OnRefreshFalseScreen() = 0;
+    virtual void OnClear() = 0;
+};
 
 #endif

@@ -20,6 +20,21 @@
 #include "RendererBase.h"
 #include "../SMS-GG/Def.h"
 
+static u8 gbPalettes[][4][3] = {
+    {
+        { 16,  57,  16},
+        { 49,  99,  49},
+        {140, 173,  16},
+        {156, 189,  16}
+    },
+    {
+        {  0,   0,   0},
+        { 85,  85,  85},
+        {170, 170, 170},
+        {255, 255, 255}
+    }
+};
+
 RendererBase::RendererBase()
 {
     m_imgBuf1 = NULL;
@@ -86,7 +101,7 @@ void RendererBase::PageFlip()
 }
 
 //Cuando se actualiza la pantalla de la master system
-void RendererBase::OnRefreshGBScreen()
+void RendererBase::OnRefreshFalseScreen()
 {
 	PageFlip();
 }
@@ -97,6 +112,14 @@ void RendererBase::OnRefreshRealScreen() {
         m_winRenderer->Refresh(false);
         m_winRenderer->Update();
     }
+}
+
+void RendererBase::OnDrawPixel(int idColor, int x, int y) {
+    u8 r = gbPalettes[m_selPalette][idColor][0];
+    u8 g = gbPalettes[m_selPalette][idColor][1];
+    u8 b = gbPalettes[m_selPalette][idColor][2];
+    
+    OnDrawPixel(r, g, b, x, y);
 }
 
 void RendererBase::OnDrawPixel(u8 r, u8 g, u8 b, int x, int y)
