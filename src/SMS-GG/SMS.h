@@ -18,6 +18,8 @@
 #ifndef __SMS_H__
 #define __SMS_H__
 
+#include "../Common/VideoGameDevice.h"
+
 class IScreenDrawable;
 
 namespace MasterSystem {
@@ -29,7 +31,7 @@ namespace MasterSystem {
     class CPU;
     class Debugger;
 
-    class SMS {
+    class SMS: public VideoGameDevice {
     public:
         SMS();
         ~SMS();
@@ -37,17 +39,27 @@ namespace MasterSystem {
         void Reset();
         void ExecuteOneFrame();
         void CartridgeExtract();
-        void CartridgeLoad(std::string fileName, std::string batteriesPath="", unsigned char *cartridgeBuffer=NULL, unsigned long size=0);
+        void CartridgeLoad(const std::string &fileName, const std::string &batteriesPath="",
+                           unsigned char *cartridgeBuffer=NULL, unsigned long size=0);
         bool SoundIsEnabled();
         void SoundEnable(bool value);
         void SoundSetSampleRate(long sampleRate);
-        void SetGGMode(bool value);
-        void LoadState(std::string fileName, int id);
-        void SaveState(std::string fileName, int id);
+        void LoadState(const std::string &fileName, int id);
+        void SaveState(const std::string &fileName, int id);
+        void LoadStateFromRAM(std::istream *stream);
+        void SaveStateToRAM(std::ostream *stream);
         void PadSetButtons(bool *buttonsState);
+        int  PadIdAcceptButton();
+        int  PadIdCancelButton();
+        int  PadIdLeftButton();
+        int  PadIdRightButton();
         void SetScreen(IScreenDrawable *screen);
+        int  GetWidth();
+        int  GetHeight();
+        void SetExtraData(const std::string &key, void *value);
         
-        CPU *GetCPU();
+        static bool IsValidExtension(const std::string &extension);
+        
         Debugger *GetDebugger();
         
     private:
@@ -57,6 +69,9 @@ namespace MasterSystem {
         Cartridge *m_cartridge;
         CPU       *m_cpu;
         Debugger  *m_debugger;
+        
+        bool EndsWith(const std::string &fullString, const std::string &ending);
+        
     };
 }
 

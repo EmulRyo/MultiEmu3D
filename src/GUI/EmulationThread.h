@@ -21,17 +21,14 @@
 #include <wx/thread.h>
 #include <wx/stopwatch.h>
 #include "../Common/IScreenDrawable.h"
-#include "Rewind.h"
 
 enum enumEmuStates { NotStartedYet, Stopped, Paused, Playing };
 enum EnumSpeed { SpeedNormal, SpeedMax };
 
-namespace MasterSystem {
-    class SMS;
-}
-
 class Joystick;
 class wxMutex;
+class Rewind;
+class VideoGameDevice;
 
 class EmulationThread : public wxThread
 {
@@ -47,7 +44,7 @@ public:
     void ApplySettings();
     void SetScreen(IScreenDrawable *screen);
     void UpdatePad();
-    MasterSystem::Debugger *GetDebugger();
+    //MasterSystem::Debugger *GetDebugger();
     void SetSpeed(EnumSpeed speed);
     
     enumEmuStates GetState();
@@ -55,7 +52,7 @@ public:
     bool Finished();
     
 private:
-    MasterSystem::SMS *m_sms;
+    VideoGameDevice *m_device;
     Joystick *joystick;
     wxMutex *mutex;
     wxStopWatch swFrame;
@@ -64,12 +61,13 @@ private:
     EnumSpeed m_speed;
     bool m_soundEnabled;
     IScreenDrawable *m_screen;
-    
-    Rewind m_rewind;
+    Rewind *m_rewind;
     
 	enumEmuStates emuState;
     
-    void LoadZip(const wxString zipPath, unsigned char **buffer, unsigned long *size, bool *gg);
+    void ApplySettingsNoMutex();
+    void SetScreenNoMutex(IScreenDrawable *screen);
+    void LoadZip(const wxString &zipPath, unsigned char **buffer, unsigned long *size, wxString &extension);
     void PadSetKeys(int* keys1, int* keys2);
     void UpdateRewindScreen();
     void SetRewindPosition();

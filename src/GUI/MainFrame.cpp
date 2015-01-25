@@ -698,8 +698,10 @@ void MainFrame::OnChangeView(wxCommandEvent &event) {
 }
 
 void MainFrame::OnDebug(wxCommandEvent &event) {
+    /*
     m_emulation->SetState(Paused);
     
     DebuggerSMSDialog debugger(this, m_emulation->GetDebugger());
     debugger.ShowModal();
+    */
 }

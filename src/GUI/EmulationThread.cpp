@@ -21,21 +21,22 @@
 #include <wx/stdpaths.h>
 #include <wx/msgdlg.h>
 #include "../SMS-GG/SMS.h"
+#include "../Common/VideoGameDevice.h"
 #include "Settings.h"
 #include "EmulationThread.h"
 #include "Joystick.h"
 #include "RendererOGL.h"
+#include "Rewind.h"
 
 using namespace std;
-using namespace MasterSystem;
 
 EmulationThread::EmulationThread()
 {
     mutex = new wxMutex();
     
     m_screen = NULL;
-    
-    m_sms = new MasterSystem::SMS();
+    m_device = NULL;
+    m_rewind = NULL;
     
     keysUsed[0] = WXK_UP;
     keysUsed[1] = WXK_DOWN;
@@ -53,21 +54,22 @@ EmulationThread::EmulationThread()
     
     keysUsed[12] = WXK_RETURN;
     
-    ApplySettings();
+    //ApplySettings();
     
-    SetState(NotStartedYet);
+    //SetState(NotStartedYet);
+    emuState = NotStartedYet;
     
     joystick = new Joystick();
     m_finished = false;
     m_speed = SpeedNormal;
-    m_soundEnabled = m_sms->SoundIsEnabled();
-    
-    m_rewind.SetCPU(m_sms->GetCPU());
+    //m_soundEnabled = m_device->SoundIsEnabled();
 }
 
 EmulationThread::~EmulationThread() {
     emuState = Stopped;
-    delete m_sms;
+    delete m_rewind;
+    if (m_device)
+        delete m_device;
     
     delete joystick;
 }
@@ -79,20 +81,20 @@ void EmulationThread::SetState(enumEmuStates state)
     this->emuState = state;
     
     if (state == Playing) {
-        m_sms->SoundEnable(SettingsGetSoundEnabled());
+        m_device->SoundEnable(SettingsGetSoundEnabled());
         ((RendererBase *)m_screen)->SetIcon(Renderer::Play);
     }
     else
-        m_sms->SoundEnable(false);
+        m_device->SoundEnable(false);
     
     if (state == Stopped)
     {
         ((RendererBase *)m_screen)->SetIcon(Renderer::Stop);
         ((RendererBase *)m_screen)->SetRewindValue(-1);
-        m_rewind.Disable();
+        m_rewind->Disable();
         
-        m_sms->CartridgeExtract();
-        m_sms->Reset();
+        m_device->CartridgeExtract();
+        m_device->Reset();
     }
     else if (state == Paused) {
         ((RendererBase *)m_screen)->SetIcon(Renderer::Pause);
@@ -116,9 +118,9 @@ wxThread::ExitCode EmulationThread::Entry()
 			wxMutexLocker lock(*mutex);
 			if (emuState == Playing)
             {
-                if (!m_rewind.IsEnabled()) {
-                    m_sms->ExecuteOneFrame();
-                    m_rewind.AddFrame();
+                if (!m_rewind->IsEnabled()) {
+                    m_device->ExecuteOneFrame();
+                    m_rewind->AddFrame();
                 }
             }
 		} // Desbloquear el mutex
@@ -142,28 +144,34 @@ bool EmulationThread::ChangeFile(wxString fileName)
     {
         wxMutexLocker lock(*mutex);
         
-        u8 *buffer = NULL;
-        unsigned long size = 0;
-        bool isZip = false;
-        
-        if (!wxFileExists(fileName))
-        {
+        if (!wxFileExists(fileName)) {
             wxMessageBox(_("The file:\n")+fileName+_("\ndoesn't exist"), _("Error"));
             return false;
         }
         
-        wxString fileLower = fileName.Lower();
-        bool sms = fileLower.EndsWith(wxT(".sms"));
-        bool gg  = fileLower.EndsWith(wxT(".gg"));
-        if (fileLower.EndsWith(wxT(".zip")))
-        {
-            isZip = true;
-            this->LoadZip(fileName, &buffer, &size, &gg);
+        int dotPos = fileName.Find('.', true);
+        if (dotPos == wxNOT_FOUND) {
+            wxMessageBox(_("File without extension"), _("Error"));
+            return false;
+        }
+        
+        wxString extension = fileName.AfterLast('.').Lower();
+        
+        u8 *buffer = NULL;
+        unsigned long size = 0;
+        bool zip, sms;
+        zip = sms = false;
+        
+        if (extension == "zip") {
+            zip = true;
+            LoadZip(fileName, &buffer, &size, extension);
             if ((buffer == NULL) || (size == 0))
                 return false;
         }
-        else if (!sms && !gg)
-        {
+        
+        sms = MasterSystem::SMS::IsValidExtension(extension.ToStdString());
+        
+        if (!sms) {
             wxMessageBox(_("Only sms, gg and zip files allowed!"), _("Error"));
             return false;
         }
@@ -177,14 +185,21 @@ bool EmulationThread::ChangeFile(wxString fileName)
         
         battsDir += wxFileName::GetPathSeparator();
         
-        if (isZip)
-            m_sms->CartridgeLoad(string(fileName.mb_str()), string(battsDir.mb_str()), buffer, size);
-        else
-            m_sms->CartridgeLoad(string(fileName.mb_str()), string(battsDir.mb_str()));
+        if (m_device)
+            delete m_device;
         
-        m_sms->SetGGMode(gg);
+        if (sms)
+            m_device = new MasterSystem::SMS();
+        
+        m_rewind = new Rewind(m_device);
+        ApplySettingsNoMutex();
+        SetScreenNoMutex(m_screen);
+        
+        if (zip)
+            m_device->CartridgeLoad(string(fileName.mb_str()), string(battsDir.mb_str()), buffer, size);
+        else
+            m_device->CartridgeLoad(string(fileName.mb_str()), string(battsDir.mb_str()));
     }
-    
     
 	SetState(Playing);
     
@@ -196,7 +211,7 @@ bool EmulationThread::ChangeFile(wxString fileName)
  * Si existe mas de una rom solo carga la primera. Si se ha encontrado, la rom se devuelve en un buffer
  * junto con su tamaño, sino las variables se dejan intactas
  */
-void EmulationThread::LoadZip(const wxString zipPath, u8 ** buffer, unsigned long *size, bool *gg)
+void EmulationThread::LoadZip(const wxString &zipPath, u8 ** buffer, unsigned long *size, wxString &extension)
 {
 	wxString fileInZip, fileLower;
 	wxZipEntry* entry;
@@ -206,17 +221,20 @@ void EmulationThread::LoadZip(const wxString zipPath, u8 ** buffer, unsigned lon
 	{
 		fileInZip = entry->GetName();
         
-		fileLower = fileInZip.Lower();
-        bool sms = fileLower.EndsWith(wxT(".sms"));
-        *gg = fileLower.EndsWith(wxT(".gg"));
-		if (sms || *gg)
-		{
-			*size = zip.GetSize();
-			*buffer = new u8[*size];
-			zip.Read(*buffer, *size);
-			delete entry;
-			return;
-		}
+        int dotPos = fileInZip.Find('.', true);
+        if (dotPos != wxNOT_FOUND) {
+            extension = fileInZip.AfterLast('.').Lower();
+            
+            bool sms = MasterSystem::SMS::IsValidExtension(extension.ToStdString());
+            if (sms)
+            {
+                *size = zip.GetSize();
+                *buffer = new u8[*size];
+                zip.Read(*buffer, *size);
+                delete entry;
+                return;
+            }
+        }
 		else
 		{
 			delete entry;
@@ -233,32 +251,42 @@ void EmulationThread::LoadState(std::string fileName, int id)
 {
     wxMutexLocker lock(*mutex);
     
-    m_sms->LoadState(fileName, id);
+    m_device->LoadState(fileName, id);
 }
 
 void EmulationThread::SaveState(std::string fileName, int id)
 {
     wxMutexLocker lock(*mutex);
     
-    m_sms->SaveState(fileName, id);
+    m_device->SaveState(fileName, id);
 }
 
 void EmulationThread::ApplySettings()
 {
     wxMutexLocker lock(*mutex);
     
-    PadSetKeys(SettingsGetInput1(), SettingsGetInput2());
-    m_sms->SoundSetSampleRate(SettingsGetSoundSampleRate());
-    m_sms->SoundEnable(SettingsGetSoundEnabled());
+    ApplySettingsNoMutex();
 }
 
-void EmulationThread::SetScreen(IScreenDrawable *screen)
+void EmulationThread::ApplySettingsNoMutex()
 {
+    PadSetKeys(SettingsGetInput1(), SettingsGetInput2());
+    m_device->SoundSetSampleRate(SettingsGetSoundSampleRate());
+    m_device->SoundEnable(SettingsGetSoundEnabled());
+}
+
+void EmulationThread::SetScreen(IScreenDrawable *screen) {
     wxMutexLocker lock(*mutex);
     
+    SetScreenNoMutex(screen);
+}
+
+void EmulationThread::SetScreenNoMutex(IScreenDrawable *screen) {
     m_screen = screen;
-    m_sms->SetScreen(screen);
-    m_rewind.SetRenderer((RendererBase *)screen);
+    if (m_device)
+        m_device->SetScreen(screen);
+    if (m_rewind)
+        m_rewind->SetRenderer((RendererBase *)screen);
 }
 
 void EmulationThread::UpdatePad()
@@ -270,21 +298,21 @@ void EmulationThread::UpdatePad()
         joystick->UpdateButtonsState(buttonsState);
         bool back = wxGetKeyState(WXK_BACK);
         bool space = wxGetKeyState(WXK_SPACE);
-        m_rewind.UpdatePad(buttonsState, back);
+        m_rewind->UpdatePad(buttonsState, back);
         
-        if (!m_rewind.IsEnabled() && (!back)) {
+        if (!m_rewind->IsEnabled() && (!back)) {
             wxMutexLocker lock(*mutex);
-            m_sms->PadSetButtons(buttonsState);
+            m_device->PadSetButtons(buttonsState);
             
             SetSpeed(space ? SpeedMax : SpeedNormal);
         }
     }
 }
-
+/*
 MasterSystem::Debugger *EmulationThread::GetDebugger() {
     return m_sms->GetDebugger();
 }
-
+*/
 void EmulationThread::PadSetKeys(int* keys1, int* keys2) {
 	for (int i=0; i<6; i++)
 		keysUsed[i] = (wxKeyCode)keys1[i];
@@ -299,11 +327,11 @@ bool EmulationThread::Finished() {
 void EmulationThread::SetSpeed(EnumSpeed speed) {
     if (m_speed != speed) {
         if (speed == SpeedMax) {
-            m_soundEnabled = m_sms->SoundIsEnabled();
-            m_sms->SoundEnable(false);
+            m_soundEnabled = m_device->SoundIsEnabled();
+            m_device->SoundEnable(false);
         }
         else
-            m_sms->SoundEnable(m_soundEnabled);
+            m_device->SoundEnable(m_soundEnabled);
         m_speed = speed;
     }
 }

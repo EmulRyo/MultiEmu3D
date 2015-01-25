@@ -16,20 +16,20 @@
  */
 
 #include "RendererBase.h"
-#include "../SMS-GG/Def.h"
 #include "../SMS-GG/Pad.h"
-#include "../SMS-GG/CPU.h"
+#include "../SMS-GG/SMS.h"
+#include "../Common/VideoGameDevice.h"
 #include "Rewind.h"
 
 using namespace std;
-using namespace MasterSystem;
 
-Rewind::Rewind()
+Rewind::Rewind(VideoGameDevice *device)
 {
     m_tail = -1;
     m_head = 0;
     m_length = 0;
     m_enabled = false;
+    m_device = device;
 }
 
 Rewind::~Rewind() {
@@ -43,10 +43,6 @@ void Rewind::Disable() {
 
 bool Rewind::IsEnabled() {
     return m_enabled;
-}
-
-void Rewind::SetCPU(MasterSystem::CPU *cpu) {
-    m_cpu = cpu;
 }
 
 void Rewind::SetRenderer(RendererBase *renderer) {
@@ -66,14 +62,14 @@ void Rewind::AddFrame() {
     
     m_data[m_tail] = new stringstream();
     u8 *data = m_renderer->GetBufferPtr();
-    int size = SMS_SCREEN_W*SMS_SCREEN_H*3;
+    int size = m_device->GetWidth()*m_device->GetHeight()*3;
     m_data[m_tail]->write((char *)data, size);
-    m_cpu->SaveStateToRAM(m_data[m_tail]);
+    m_device->SaveStateToRAM(m_data[m_tail]);
 }
 
 void Rewind::UpdateScreen() {
     u8 *data = m_renderer->GetBufferPtr();
-    int size = SMS_SCREEN_W*SMS_SCREEN_H*3;
+    int size = m_device->GetWidth()*m_device->GetHeight()*3;
     stringstream *stream = m_data[m_visible];
     stream->seekg(0, stream->beg);
     stream->read((char *)data, size);
@@ -98,19 +94,19 @@ void Rewind::SetPosition() {
 
 void Rewind::UpdatePad(bool buttonsState[12], bool buttonRewind) {
     if (m_enabled) {
-        if (buttonsState[B1]) {
+        if (buttonsState[m_device->PadIdAcceptButton()]) {
             m_enabled = false;
-            m_cpu->LoadStateFromRAM(m_data[m_visible]);
+            m_device->LoadStateFromRAM(m_data[m_visible]);
             m_tail = m_visible;
             m_renderer->SetIcon(Renderer::Play);
             SetPosition();
         }
-        else if (buttonsState[B2]) {
+        else if (buttonsState[m_device->PadIdCancelButton()]) {
             m_enabled = false;
             m_renderer->SetIcon(Renderer::Play);
             SetPosition();
         }
-        else if (buttonsState[LEFT]) {
+        else if (buttonsState[m_device->PadIdLeftButton()]) {
             if (m_visible != m_head) {
                 m_visible = (m_visible + MAX_REWINDS-1) % MAX_REWINDS;
                 m_renderer->SetIcon(Renderer::RewindL);
@@ -118,7 +114,7 @@ void Rewind::UpdatePad(bool buttonsState[12], bool buttonRewind) {
                 UpdateScreen();
             }
         }
-        else if (buttonsState[RIGHT]) {
+        else if (buttonsState[m_device->PadIdRightButton()]) {
             if (m_visible != m_tail) {
                 m_visible = (m_visible + 1) % MAX_REWINDS;
                 m_renderer->SetIcon(Renderer::RewindR);

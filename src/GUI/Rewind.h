@@ -23,17 +23,14 @@
 #define MAX_REWINDS 600
 
 class RendererBase;
-namespace MasterSystem {
-    class CPU;
-}
+class VideoGameDevice;
 
 class Rewind {
 public:
-    Rewind();
+    Rewind(VideoGameDevice *device);
     ~Rewind();
     bool IsEnabled();
     void Disable();
-    void SetCPU(MasterSystem::CPU *cpu);
     void SetRenderer(RendererBase *renderer);
     void AddFrame();
     void UpdateScreen();
@@ -42,7 +39,7 @@ public:
 private:
     bool m_enabled;
     RendererBase *m_renderer;
-    MasterSystem::CPU *m_cpu;
+    VideoGameDevice *m_device;
     std::stringstream *m_data[MAX_REWINDS];
     int m_tail, m_head, m_length;
     int m_visible;

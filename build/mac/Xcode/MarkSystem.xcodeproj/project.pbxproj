@@ -207,6 +207,7 @@
 		6E78492F1A6BD0610039E80D /* IScreenDrawable.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = IScreenDrawable.h; sourceTree = "<group>"; };
 		6E7849301A6C0AB50039E80D /* SoundPortaudio.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SoundPortaudio.cpp; sourceTree = "<group>"; };
 		6E7849311A6C0AB50039E80D /* SoundPortaudio.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SoundPortaudio.h; sourceTree = "<group>"; };
+		6E7849331A729DC40039E80D /* VideoGameDevice.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = VideoGameDevice.h; sourceTree = "<group>"; };
 		6E81E460190AE57D00725E92 /* dmgboy.mo */ = {isa = PBXFileReference; lastKnownFileType = file; name = dmgboy.mo; path = ../../languages/fr/dmgboy.mo; sourceTree = "<group>"; };
 		6E81E4681914011900725E92 /* dmgboy.mo */ = {isa = PBXFileReference; lastKnownFileType = file; name = dmgboy.mo; path = ../../languages/el/dmgboy.mo; sourceTree = "<group>"; };
 		6E82ED72194391BF001D8B2D /* Joystick.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Joystick.cpp; sourceTree = "<group>"; };
@@ -524,6 +525,7 @@
 				6E7849301A6C0AB50039E80D /* SoundPortaudio.cpp */,
 				6E7849311A6C0AB50039E80D /* SoundPortaudio.h */,
 				6E78492A1A6A82650039E80D /* Types.h */,
+				6E7849331A729DC40039E80D /* VideoGameDevice.h */,
 			);
 			name = Common;
 			path = ../../../src/Common;
