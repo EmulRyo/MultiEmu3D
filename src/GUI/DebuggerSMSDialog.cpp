@@ -22,6 +22,7 @@
 #include "IDControls.h"
 #include "DebuggerSMSDialog.h"
 #include "BreakpointsDialog.h"
+#include "../SMS-GG/SMS.h"
 #include "../SMS-GG/Debugger.h"
 
 #include "Xpm/currentRow.xpm"
@@ -43,12 +44,13 @@ EVT_LIST_ITEM_ACTIVATED(ID_DEBUG_DISASSEMBLER, DebuggerSMSDialog::OnActivated)
 EVT_RADIOBOX(ID_DEBUG_MEMSELECT, DebuggerSMSDialog::OnMemSelectChange)
 END_EVENT_TABLE()
 
-DebuggerSMSDialog::DebuggerSMSDialog(wxWindow *parent, Debugger *debugger)
+DebuggerSMSDialog::DebuggerSMSDialog(wxWindow *parent, VideoGameDevice *device)
 {
     this->Create(parent, ID_DEBUGGERDIALOG, wxT("Debugger"), wxDefaultPosition,
            wxDefaultSize, wxDEFAULT_DIALOG_STYLE);
     
-    m_debugger = debugger;
+    MasterSystem::SMS *sms = (MasterSystem::SMS *)device;
+    m_debugger = sms->GetDebugger();
     
     wxStaticText *regsText = new wxStaticText(this, -1, wxT("Registers:"));
     

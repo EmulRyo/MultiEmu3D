@@ -23,6 +23,7 @@
 #include "../Common/Types.h"
 
 class wxListView;
+class VideoGameDevice;
 namespace MasterSystem {
     class Debugger;
 }
@@ -37,7 +38,7 @@ public:
     /**
      * Creates a new DebuggerDialog.
      */
-    DebuggerSMSDialog(wxWindow *parent, MasterSystem::Debugger *debugger);
+    DebuggerSMSDialog(wxWindow *parent, VideoGameDevice *device);
 	~DebuggerSMSDialog();
     
 protected:

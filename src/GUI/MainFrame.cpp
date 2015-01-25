@@ -33,6 +33,7 @@
 #include "IDControls.h"
 #include "Settings.h"
 #include "../Common/Exception.h"
+#include "../Common/VideoGameDevice.h"
 #include "Xpm/open.xpm"
 #include "Xpm/play.xpm"
 #include "Xpm/pause.xpm"
@@ -698,10 +699,11 @@ void MainFrame::OnChangeView(wxCommandEvent &event) {
 }
 
 void MainFrame::OnDebug(wxCommandEvent &event) {
-    /*
     m_emulation->SetState(Paused);
     
-    DebuggerSMSDialog debugger(this, m_emulation->GetDebugger());
-    debugger.ShowModal();
-    */
+    VideoGameDevice *device = m_emulation->GetVideoGameDevice();
+    if ((device->GetType() == MASTERSYSTEM) || (device->GetType() == GAMEGEAR)) {
+        DebuggerSMSDialog debugger(this, device);
+        debugger.ShowModal();
+    }
 }

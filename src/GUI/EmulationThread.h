@@ -44,7 +44,7 @@ public:
     void ApplySettings();
     void SetScreen(IScreenDrawable *screen);
     void UpdatePad();
-    //MasterSystem::Debugger *GetDebugger();
+    VideoGameDevice *GetVideoGameDevice();
     void SetSpeed(EnumSpeed speed);
     
     enumEmuStates GetState();

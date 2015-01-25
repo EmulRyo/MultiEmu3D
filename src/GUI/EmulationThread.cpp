@@ -308,11 +308,11 @@ void EmulationThread::UpdatePad()
         }
     }
 }
-/*
-MasterSystem::Debugger *EmulationThread::GetDebugger() {
-    return m_sms->GetDebugger();
+
+VideoGameDevice *EmulationThread::GetVideoGameDevice() {
+    return m_device;
 }
-*/
+
 void EmulationThread::PadSetKeys(int* keys1, int* keys2) {
 	for (int i=0; i<6; i++)
 		keysUsed[i] = (wxKeyCode)keys1[i];
