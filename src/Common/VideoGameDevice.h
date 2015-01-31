@@ -38,6 +38,7 @@ public:
     virtual void SaveState(const std::string &fileName, int id) = 0;
     virtual void LoadStateFromRAM(std::istream *stream) = 0;
     virtual void SaveStateToRAM(std::ostream *stream) = 0;
+    virtual int  PadGetNumButtons() = 0;
     virtual void PadSetButtons(bool *buttonsState) = 0;
     virtual int  PadIdAcceptButton() = 0;
     virtual int  PadIdCancelButton() = 0;

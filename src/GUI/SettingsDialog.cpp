@@ -94,21 +94,21 @@ bool SettingsDialog::TransferDataToWindow() {
 	}
 	soundSRCtrl->SetSelection(idSampleRate);
 	
-	up1Ctrl->OnChangeKey(	m_settings.pad1Keys[0]);
-	down1Ctrl->OnChangeKey(	m_settings.pad1Keys[1]);
-	left1Ctrl->OnChangeKey(	m_settings.pad1Keys[2]);
-	right1Ctrl->OnChangeKey(m_settings.pad1Keys[3]);
-	a1Ctrl->OnChangeKey(	m_settings.pad1Keys[4]);
-	b1Ctrl->OnChangeKey(	m_settings.pad1Keys[5]);
+	up1Ctrl->OnChangeKey(	m_settings.smsKeys[0]);
+	down1Ctrl->OnChangeKey(	m_settings.smsKeys[1]);
+	left1Ctrl->OnChangeKey(	m_settings.smsKeys[2]);
+	right1Ctrl->OnChangeKey(m_settings.smsKeys[3]);
+	a1Ctrl->OnChangeKey(	m_settings.smsKeys[4]);
+	b1Ctrl->OnChangeKey(	m_settings.smsKeys[5]);
     
-    up2Ctrl->OnChangeKey(	m_settings.pad2Keys[0]);
-    down2Ctrl->OnChangeKey(	m_settings.pad2Keys[1]);
-    left2Ctrl->OnChangeKey(	m_settings.pad2Keys[2]);
-    right2Ctrl->OnChangeKey(m_settings.pad2Keys[3]);
-    a2Ctrl->OnChangeKey(	m_settings.pad2Keys[4]);
-    b2Ctrl->OnChangeKey(	m_settings.pad2Keys[5]);
+    up2Ctrl->OnChangeKey(	m_settings.smsKeys[6]);
+    down2Ctrl->OnChangeKey(	m_settings.smsKeys[7]);
+    left2Ctrl->OnChangeKey(	m_settings.smsKeys[8]);
+    right2Ctrl->OnChangeKey(m_settings.smsKeys[9]);
+    a2Ctrl->OnChangeKey(	m_settings.smsKeys[10]);
+    b2Ctrl->OnChangeKey(	m_settings.smsKeys[11]);
     
-	startCtrl->OnChangeKey(	m_settings.pauseStartKey);
+	startCtrl->OnChangeKey(	m_settings.smsKeys[12]);
 
 	return true;
 }
@@ -139,21 +139,21 @@ bool SettingsDialog::TransferDataFromWindow() {
 	int idSampleRate = soundSRCtrl->GetSelection();
 	m_settings.soundSampleRate = sampleRates[idSampleRate];
 
-	m_settings.pad1Keys[0] = up1Ctrl->keyCode;
-	m_settings.pad1Keys[1] = down1Ctrl->keyCode;
-	m_settings.pad1Keys[2] = left1Ctrl->keyCode;
-	m_settings.pad1Keys[3] = right1Ctrl->keyCode;
-	m_settings.pad1Keys[4] = a1Ctrl->keyCode;
-	m_settings.pad1Keys[5] = b1Ctrl->keyCode;
+	m_settings.smsKeys[ 0] = up1Ctrl->keyCode;
+	m_settings.smsKeys[ 1] = down1Ctrl->keyCode;
+	m_settings.smsKeys[ 2] = left1Ctrl->keyCode;
+	m_settings.smsKeys[ 3] = right1Ctrl->keyCode;
+	m_settings.smsKeys[ 4] = a1Ctrl->keyCode;
+	m_settings.smsKeys[ 5] = b1Ctrl->keyCode;
     
-    m_settings.pad2Keys[0] = up2Ctrl->keyCode;
-    m_settings.pad2Keys[1] = down2Ctrl->keyCode;
-    m_settings.pad2Keys[2] = left2Ctrl->keyCode;
-    m_settings.pad2Keys[3] = right2Ctrl->keyCode;
-    m_settings.pad2Keys[4] = a2Ctrl->keyCode;
-    m_settings.pad2Keys[5] = b2Ctrl->keyCode;
+    m_settings.smsKeys[ 6] = up2Ctrl->keyCode;
+    m_settings.smsKeys[ 7] = down2Ctrl->keyCode;
+    m_settings.smsKeys[ 8] = left2Ctrl->keyCode;
+    m_settings.smsKeys[ 9] = right2Ctrl->keyCode;
+    m_settings.smsKeys[10] = a2Ctrl->keyCode;
+    m_settings.smsKeys[11] = b2Ctrl->keyCode;
     
-	m_settings.pauseStartKey = startCtrl->keyCode;
+	m_settings.smsKeys[12] = startCtrl->keyCode;
 	
     SettingsSetNewValues(m_settings);
 	SettingsSaveToFile();

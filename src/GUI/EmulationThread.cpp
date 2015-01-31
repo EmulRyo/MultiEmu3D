@@ -38,31 +38,11 @@ EmulationThread::EmulationThread()
     m_device = NULL;
     m_rewind = NULL;
     
-    keysUsed[0] = WXK_UP;
-    keysUsed[1] = WXK_DOWN;
-    keysUsed[2] = WXK_LEFT;
-    keysUsed[3] = WXK_RIGHT;
-    keysUsed[4] = (wxKeyCode)'A';
-    keysUsed[5] = (wxKeyCode)'S';
-    
-    keysUsed[ 6] = (wxKeyCode)'I';
-    keysUsed[ 7] = (wxKeyCode)'K';
-    keysUsed[ 8] = (wxKeyCode)'J';
-    keysUsed[ 9] = (wxKeyCode)'L';
-    keysUsed[10] = (wxKeyCode)'G';
-    keysUsed[11] = (wxKeyCode)'H';
-    
-    keysUsed[12] = WXK_RETURN;
-    
-    //ApplySettings();
-    
-    //SetState(NotStartedYet);
     emuState = NotStartedYet;
     
     joystick = new Joystick();
     m_finished = false;
     m_speed = SpeedNormal;
-    //m_soundEnabled = m_device->SoundIsEnabled();
 }
 
 EmulationThread::~EmulationThread() {
@@ -270,7 +250,8 @@ void EmulationThread::ApplySettings()
 
 void EmulationThread::ApplySettingsNoMutex()
 {
-    PadSetKeys(SettingsGetInput1(), SettingsGetInput2());
+    if (m_device)
+        PadSetKeys(SettingsGetInput(m_device->GetType()));
     m_device->SoundSetSampleRate(SettingsGetSoundSampleRate());
     m_device->SoundEnable(SettingsGetSoundEnabled());
 }
@@ -292,8 +273,9 @@ void EmulationThread::SetScreenNoMutex(IScreenDrawable *screen) {
 void EmulationThread::UpdatePad()
 {
     if (emuState == Playing) {
-        bool buttonsState[13];
-        for (int i=0; i<13; i++)
+        int numButtons = m_device->PadGetNumButtons();
+        bool buttonsState[numButtons];
+        for (int i=0; i<numButtons; i++)
             buttonsState[i] = wxGetKeyState(keysUsed[i]);
         joystick->UpdateButtonsState(buttonsState);
         bool back = wxGetKeyState(WXK_BACK);
@@ -313,11 +295,9 @@ VideoGameDevice *EmulationThread::GetVideoGameDevice() {
     return m_device;
 }
 
-void EmulationThread::PadSetKeys(int* keys1, int* keys2) {
-	for (int i=0; i<6; i++)
-		keysUsed[i] = (wxKeyCode)keys1[i];
-    for (int i=6; i<12; i++)
-        keysUsed[i] = (wxKeyCode)keys2[i-6];
+void EmulationThread::PadSetKeys(int* keys) {
+    for (int i=0; i<m_device->PadGetNumButtons(); i++)
+		keysUsed[i] = (wxKeyCode)keys[i];
 }
 
 bool EmulationThread::Finished() {

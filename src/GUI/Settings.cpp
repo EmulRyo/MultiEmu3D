@@ -36,21 +36,30 @@ Settings::Settings()
 	soundSampleRate = 44100;
     language = wxLANGUAGE_DEFAULT;
 	
-	pad1Keys[0]	= WXK_UP;	// Up
-	pad1Keys[1]	= WXK_DOWN; // Down
-	pad1Keys[2]	= WXK_LEFT; // Left
-	pad1Keys[3]	= WXK_RIGHT;// Right
-	pad1Keys[4]	= 'A';		// A
-	pad1Keys[5]	= 'S';		// B
+	smsKeys[ 0]	= WXK_UP;	// Up
+	smsKeys[ 1]	= WXK_DOWN; // Down
+	smsKeys[ 2]	= WXK_LEFT; // Left
+	smsKeys[ 3]	= WXK_RIGHT;// Right
+	smsKeys[ 4]	= 'A';		// 1
+	smsKeys[ 5]	= 'S';		// 2
     
-    pad2Keys[0]	= 'I'; // Up
-    pad2Keys[1]	= 'K'; // Down
-    pad2Keys[2]	= 'J'; // Left
-    pad2Keys[3]	= 'L'; // Right
-    pad2Keys[4]	= 'G'; // A
-    pad2Keys[5]	= 'H'; // B
+    smsKeys[ 6]	= 'I'; // Up
+    smsKeys[ 7]	= 'K'; // Down
+    smsKeys[ 8]	= 'J'; // Left
+    smsKeys[ 9]	= 'L'; // Right
+    smsKeys[10]	= 'G'; // 1
+    smsKeys[11]	= 'H'; // 2
     
-	pauseStartKey = WXK_RETURN; // Start
+	smsKeys[12] = WXK_RETURN; // Start / Pause
+    
+    gbKeys[0]	= WXK_UP;	// Up
+    gbKeys[1]	= WXK_DOWN; // Down
+    gbKeys[2]	= WXK_LEFT; // Left
+    gbKeys[3]	= WXK_RIGHT;// Right
+    gbKeys[4]	= 'A';		// A
+    gbKeys[5]	= 'S';		// B
+    gbKeys[6]	= WXK_SHIFT;  // Select
+    gbKeys[7]	= WXK_RETURN; // Start
 }
 
 Settings SettingsGetCopy() {
@@ -109,30 +118,33 @@ void SettingsSetLanguage(long language) {
 	settings.language = language;
 }
 
-int* SettingsGetInput1() {
-	return &settings.pad1Keys[0];
+int* SettingsGetInput(e_devicetype type) {
+    switch (type) {
+        case MASTERSYSTEM:
+        case GAMEGEAR:
+            return &settings.smsKeys[0];
+        case GAMEBOY:
+        case GAMEBOYCOLOR:
+            return &settings.gbKeys[0];
+            
+        default:
+            return NULL;
+    }
 }
 
-int* SettingsGetInput2() {
-    return &settings.pad2Keys[0];
-}
-
-int SettingsGetPauseStart() {
-    return settings.pauseStartKey;
-}
-
-void SettingsSetInput1(const int* padKeys) {
-	for (int i=0; i<6; i++)
-		settings.pad1Keys[i] = padKeys[i];
-}
-
-void SettingsSetInput2(const int* padKeys) {
-    for (int i=0; i<6; i++)
-        settings.pad2Keys[i] = padKeys[i];
-}
-
-void SettingsSetPauseStart(int padKey) {
-    settings.pauseStartKey = padKey;
+void SettingsSetInput(e_devicetype type, const int* padKeys) {
+    switch (type) {
+        case MASTERSYSTEM:
+        case GAMEGEAR:
+            for (int i=0; i<13; i++)
+                settings.smsKeys[i] = padKeys[i];
+            break;
+        case GAMEBOY:
+        case GAMEBOYCOLOR:
+            for (int i=0; i<8; i++)
+                settings.gbKeys[i] = padKeys[i];
+            break;
+    }
 }
 
 string* SettingsGetRecentRoms() {
@@ -165,19 +177,28 @@ void SettingsSaveToFile() {
 	fileConfig.Write(wxT("Sound/enabled"), settings.soundEnabled);
 	fileConfig.Write(wxT("Sound/sampleRate"), settings.soundSampleRate);
 	
-	fileConfig.Write(wxT("Input1/up"), settings.pad1Keys[0]);
-	fileConfig.Write(wxT("Input1/down"), settings.pad1Keys[1]);
-	fileConfig.Write(wxT("Input1/left"), settings.pad1Keys[2]);
-	fileConfig.Write(wxT("Input1/right"), settings.pad1Keys[3]);
-	fileConfig.Write(wxT("Input1/a"), settings.pad1Keys[4]);
-	fileConfig.Write(wxT("Input1/b"), settings.pad1Keys[5]);
-    fileConfig.Write(wxT("Input2/up"), settings.pad2Keys[0]);
-    fileConfig.Write(wxT("Input2/down"), settings.pad2Keys[1]);
-    fileConfig.Write(wxT("Input2/left"), settings.pad2Keys[2]);
-    fileConfig.Write(wxT("Input2/right"), settings.pad2Keys[3]);
-    fileConfig.Write(wxT("Input2/a"), settings.pad2Keys[4]);
-    fileConfig.Write(wxT("Input2/b"), settings.pad2Keys[5]);
-	fileConfig.Write(wxT("Input/pauseStart"), settings.pauseStartKey);
+    fileConfig.Write(wxT("Input/GB/up"), settings.gbKeys[0]);
+    fileConfig.Write(wxT("Input/GB/down"), settings.gbKeys[1]);
+    fileConfig.Write(wxT("Input/GB/left"), settings.gbKeys[2]);
+    fileConfig.Write(wxT("Input/GB/right"), settings.gbKeys[3]);
+    fileConfig.Write(wxT("Input/GB/a"), settings.gbKeys[4]);
+    fileConfig.Write(wxT("Input/GB/b"), settings.gbKeys[5]);
+    fileConfig.Write(wxT("Input/GB/select"), settings.gbKeys[6]);
+    fileConfig.Write(wxT("Input/GB/start"), settings.gbKeys[7]);
+    
+	fileConfig.Write(wxT("Input/SMS/Pad1/up"), settings.smsKeys[0]);
+	fileConfig.Write(wxT("Input/SMS/Pad1/down"), settings.smsKeys[1]);
+	fileConfig.Write(wxT("Input/SMS/Pad1/left"), settings.smsKeys[2]);
+	fileConfig.Write(wxT("Input/SMS/Pad1/right"), settings.smsKeys[3]);
+	fileConfig.Write(wxT("Input/SMS/Pad1/1"), settings.smsKeys[4]);
+	fileConfig.Write(wxT("Input/SMS/Pad1/2"), settings.smsKeys[5]);
+    fileConfig.Write(wxT("Input/SMS/Pad2/up"), settings.smsKeys[6]);
+    fileConfig.Write(wxT("Input/SMS/Pad2/down"), settings.smsKeys[7]);
+    fileConfig.Write(wxT("Input/SMS/Pad2/left"), settings.smsKeys[8]);
+    fileConfig.Write(wxT("Input/SMS/Pad2/right"), settings.smsKeys[9]);
+    fileConfig.Write(wxT("Input/SMS/Pad2/1"), settings.smsKeys[10]);
+    fileConfig.Write(wxT("Input/SMS/Pad2/2"), settings.smsKeys[11]);
+	fileConfig.Write(wxT("Input/SMS/pauseStart"), settings.smsKeys[12]);
 	
 	wxString auxString[10];
 	for (int i=0; i<10; i++)
@@ -213,20 +234,29 @@ Settings SettingsLoadFromFile()
 	
 	fileConfig.Read(wxT("Sound/enabled"),	 &settings.soundEnabled);
 	fileConfig.Read(wxT("Sound/sampleRate"), &settings.soundSampleRate);
-	
-	fileConfig.Read(wxT("Input1/up"),    &settings.pad1Keys[0]);
-	fileConfig.Read(wxT("Input1/down"),	 &settings.pad1Keys[1]);
-	fileConfig.Read(wxT("Input1/left"),	 &settings.pad1Keys[2]);
-	fileConfig.Read(wxT("Input1/right"), &settings.pad1Keys[3]);
-	fileConfig.Read(wxT("Input1/a"),     &settings.pad1Keys[4]);
-	fileConfig.Read(wxT("Input1/b"),     &settings.pad1Keys[5]);
-    fileConfig.Read(wxT("Input2/up"),    &settings.pad2Keys[0]);
-    fileConfig.Read(wxT("Input2/down"),	 &settings.pad2Keys[1]);
-    fileConfig.Read(wxT("Input2/left"),	 &settings.pad2Keys[2]);
-    fileConfig.Read(wxT("Input2/right"), &settings.pad2Keys[3]);
-    fileConfig.Read(wxT("Input2/a"),     &settings.pad2Keys[4]);
-    fileConfig.Read(wxT("Input2/b"),     &settings.pad2Keys[5]);
-	fileConfig.Read(wxT("Input/pauseStart"),  &settings.pauseStartKey);
+    
+    fileConfig.Read(wxT("Input/GB/up"), &settings.gbKeys[0]);
+    fileConfig.Read(wxT("Input/GB/down"), &settings.gbKeys[1]);
+    fileConfig.Read(wxT("Input/GB/left"), &settings.gbKeys[2]);
+    fileConfig.Read(wxT("Input/GB/right"), &settings.gbKeys[3]);
+    fileConfig.Read(wxT("Input/GB/a"), &settings.gbKeys[4]);
+    fileConfig.Read(wxT("Input/GB/b"), &settings.gbKeys[5]);
+    fileConfig.Read(wxT("Input/GB/select"), &settings.gbKeys[6]);
+    fileConfig.Read(wxT("Input/GB/start"), &settings.gbKeys[7]);
+    
+    fileConfig.Read(wxT("Input/SMS/Pad1/up"), &settings.smsKeys[0]);
+    fileConfig.Read(wxT("Input/SMS/Pad1/down"), &settings.smsKeys[1]);
+    fileConfig.Read(wxT("Input/SMS/Pad1/left"), &settings.smsKeys[2]);
+    fileConfig.Read(wxT("Input/SMS/Pad1/right"), &settings.smsKeys[3]);
+    fileConfig.Read(wxT("Input/SMS/Pad1/1"), &settings.smsKeys[4]);
+    fileConfig.Read(wxT("Input/SMS/Pad1/2"), &settings.smsKeys[5]);
+    fileConfig.Read(wxT("Input/SMS/Pad2/up"), &settings.smsKeys[6]);
+    fileConfig.Read(wxT("Input/SMS/Pad2/down"), &settings.smsKeys[7]);
+    fileConfig.Read(wxT("Input/SMS/Pad2/left"), &settings.smsKeys[8]);
+    fileConfig.Read(wxT("Input/SMS/Pad2/right"), &settings.smsKeys[9]);
+    fileConfig.Read(wxT("Input/SMS/Pad2/1"), &settings.smsKeys[10]);
+    fileConfig.Read(wxT("Input/SMS/Pad2/2"), &settings.smsKeys[11]);
+    fileConfig.Read(wxT("Input/SMS/pauseStart"), &settings.smsKeys[12]);
 	
 	wxString auxString[10];
 	fileConfig.Read(wxT("RecentRoms/01"), &auxString[0]);

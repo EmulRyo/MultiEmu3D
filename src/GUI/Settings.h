@@ -19,6 +19,7 @@
 #define __SETTINGS_H__
 
 #include <string>
+#include "../Common/VideoGameDevice.h"
 
 class Settings
 {
@@ -30,9 +31,8 @@ public:
 	int  soundSampleRate;
     long language;
 	
-	int  pad1Keys[6];
-    int  pad2Keys[6];
-    int  pauseStartKey;
+	int  gbKeys[8];
+    int  smsKeys[13];
 	std::string recentRoms[10];
 	
 public:
@@ -47,9 +47,7 @@ int  SettingsGetWindowZoom();
 bool SettingsGetSoundEnabled();
 int  SettingsGetSoundSampleRate();
 long SettingsGetLanguage();
-int* SettingsGetInput1();
-int* SettingsGetInput2();
-int  SettingsGetPauseStart();
+int* SettingsGetInput(e_devicetype type);
 std::string* SettingsGetRecentRoms();
 
 void SettingsSetNewValues(Settings newSettings);
@@ -60,9 +58,7 @@ void SettingsSetWindowZoom(int windowZoom);
 void SettingsSetSoundEnabled(bool enabled);
 void SettingsSetSoundSampleRate(int sampleRate);
 void SettingsSetLanguage(long language);
-void SettingsSetInput1(const int* padKeys);
-void SettingsSetInput2(const int* padKeys);
-void SettingsSetPauseStart(int padKey);
+void SettingsSetInput(e_devicetype type, const int* padKeys);
 void SettingsSetRecentRoms(const std::string* recentRoms);
 
 void SettingsSaveToFile();

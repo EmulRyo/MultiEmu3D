@@ -48,6 +48,7 @@ namespace MasterSystem {
         void SaveState(const std::string &fileName, int id);
         void LoadStateFromRAM(std::istream *stream);
         void SaveStateToRAM(std::ostream *stream);
+        int  PadGetNumButtons();
         void PadSetButtons(bool *buttonsState);
         int  PadIdAcceptButton();
         int  PadIdCancelButton();

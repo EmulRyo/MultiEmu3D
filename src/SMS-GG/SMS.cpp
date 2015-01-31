@@ -94,11 +94,7 @@ void SMS::CartridgeLoad(const std::string &fileName, const std::string &batterie
 }
 
 void SMS::SetExtraData(const std::string &key, void *value) {
-    if (key == "GGMode") {
-        bool gg = *(bool *)value;
-        SetType(gg ? GAMEGEAR : MASTERSYSTEM);
-        m_cpu->SetGGMode(gg);
-    }
+    
 }
 
 void SMS::LoadState(const std::string &fileName, int id) {
@@ -115,6 +111,10 @@ void SMS::LoadStateFromRAM(std::istream *stream) {
 
 void SMS::SaveStateToRAM(std::ostream *stream) {
     m_cpu->SaveStateToRAM(stream);
+}
+
+int SMS::PadGetNumButtons() {
+    return 13;
 }
 
 void SMS::PadSetButtons(bool *buttonsState) {

@@ -68,7 +68,7 @@ private:
     void ApplySettingsNoMutex();
     void SetScreenNoMutex(IScreenDrawable *screen);
     void LoadZip(const wxString &zipPath, unsigned char **buffer, unsigned long *size, wxString &extension);
-    void PadSetKeys(int* keys1, int* keys2);
+    void PadSetKeys(int* keys);
     void UpdateRewindScreen();
     void SetRewindPosition();
 };
