@@ -136,32 +136,32 @@ string Registers::ToString()
 	return out.str();
 }
 
-void Registers::SaveRegs(ofstream * file)
+void Registers::SaveRegs(ostream *stream)
 {
-	file->write((char *)&m_af.doble, sizeof(u16));
-	file->write((char *)&m_bc.doble, sizeof(u16));
-	file->write((char *)&m_de.doble, sizeof(u16));
-	file->write((char *)&m_hl.doble, sizeof(u16));
-	file->write((char *)&m_pc, sizeof(u16));
-	file->write((char *)&m_sp, sizeof(u16));
-	file->write((char *)&m_IME, sizeof(bool));
-	file->write((char *)&m_pendingIME, sizeof(bool));
-	file->write((char *)&m_pendingIMEvalue, sizeof(bool));
-	file->write((char *)&m_halt, sizeof(bool));
-	file->write((char *)&m_stop, sizeof(bool));
+	stream->write((char *)&m_af.doble, sizeof(u16));
+	stream->write((char *)&m_bc.doble, sizeof(u16));
+	stream->write((char *)&m_de.doble, sizeof(u16));
+	stream->write((char *)&m_hl.doble, sizeof(u16));
+	stream->write((char *)&m_pc, sizeof(u16));
+	stream->write((char *)&m_sp, sizeof(u16));
+	stream->write((char *)&m_IME, sizeof(bool));
+	stream->write((char *)&m_pendingIME, sizeof(bool));
+	stream->write((char *)&m_pendingIMEvalue, sizeof(bool));
+	stream->write((char *)&m_halt, sizeof(bool));
+	stream->write((char *)&m_stop, sizeof(bool));
 }
 
-void Registers::LoadRegs(ifstream * file)
+void Registers::LoadRegs(istream *stream)
 {
-	file->read((char *)&m_af.doble, sizeof(u16));
-	file->read((char *)&m_bc.doble, sizeof(u16));
-	file->read((char *)&m_de.doble, sizeof(u16));
-	file->read((char *)&m_hl.doble, sizeof(u16));
-	file->read((char *)&m_pc, sizeof(u16));
-	file->read((char *)&m_sp, sizeof(u16));
-	file->read((char *)&m_IME, sizeof(bool));
-	file->read((char *)&m_pendingIME, sizeof(bool));
-	file->read((char *)&m_pendingIMEvalue, sizeof(bool));
-	file->read((char *)&m_halt, sizeof(bool));
-	file->read((char *)&m_stop, sizeof(bool));
+	stream->read((char *)&m_af.doble, sizeof(u16));
+	stream->read((char *)&m_bc.doble, sizeof(u16));
+	stream->read((char *)&m_de.doble, sizeof(u16));
+	stream->read((char *)&m_hl.doble, sizeof(u16));
+	stream->read((char *)&m_pc, sizeof(u16));
+	stream->read((char *)&m_sp, sizeof(u16));
+	stream->read((char *)&m_IME, sizeof(bool));
+	stream->read((char *)&m_pendingIME, sizeof(bool));
+	stream->read((char *)&m_pendingIMEvalue, sizeof(bool));
+	stream->read((char *)&m_halt, sizeof(bool));
+	stream->read((char *)&m_stop, sizeof(bool));
 }

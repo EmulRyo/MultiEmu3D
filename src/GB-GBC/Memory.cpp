@@ -331,21 +331,21 @@ void Memory::UpdateHDMA()
     }
 }
 
-void Memory::SaveMemory(ofstream * file)
+void Memory::SaveMemory(ostream *stream)
 {
-	file->write((char *)&memory[0x8000], 0x8000);
+	stream->write((char *)&memory[0x8000], 0x8000);
     if (m_colorMode) {
-        file->write((char *)&m_hdmaActive, sizeof(m_hdmaActive));
-        file->write((char *)&memory[WRAM_OFFSET], SIZE_MEM - WRAM_OFFSET);
+        stream->write((char *)&m_hdmaActive, sizeof(m_hdmaActive));
+        stream->write((char *)&memory[WRAM_OFFSET], SIZE_MEM - WRAM_OFFSET);
     }
 }
 
-void Memory::LoadMemory(ifstream * file)
+void Memory::LoadMemory(istream *stream)
 {
-	file->read((char *)&memory[0x8000], 0x8000);
+	stream->read((char *)&memory[0x8000], 0x8000);
     if (m_colorMode) {
-        file->read((char *)&m_hdmaActive, sizeof(m_hdmaActive));
-        file->read((char *)&memory[WRAM_OFFSET], SIZE_MEM - WRAM_OFFSET);
+        stream->read((char *)&m_hdmaActive, sizeof(m_hdmaActive));
+        stream->read((char *)&memory[WRAM_OFFSET], SIZE_MEM - WRAM_OFFSET);
     }
 	if (m_s)
 	{

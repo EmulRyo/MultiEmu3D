@@ -88,8 +88,8 @@ namespace GameBoy {
         u8 MemRVRam(u16 address, int slot);
         u8 MemRWRam(u16 address, int slot);
         void UpdateHDMA();
-        void SaveMemory(std::ofstream *file);
-        void LoadMemory(std::ifstream *file);
+        void SaveMemory(std::ostream *stream);
+        void LoadMemory(std::istream *stream);
     };
 }
 

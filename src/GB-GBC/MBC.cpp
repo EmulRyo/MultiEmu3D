@@ -454,32 +454,32 @@ void MBCPathBatteries(string path)
 	_pathBatteries = path;
 }
 
-void MBCSaveState(ofstream * file)
+void MBCSaveState(ostream *stream)
 {
-	file->write((char *)&_memMode, sizeof(int));
-	file->write((char *)&_romBank, sizeof(int));
-	file->write((char *)&_romSize, sizeof(int));
-	file->write((char *)&_ramBank, sizeof(int));
-	file->write((char *)&_ramSize, sizeof(int));
-	file->write((char *)&_ramEnabled, sizeof(int));
-	file->write((char *)_memRamMBC, _ramSize);
+	stream->write((char *)&_memMode, sizeof(int));
+	stream->write((char *)&_romBank, sizeof(int));
+	stream->write((char *)&_romSize, sizeof(int));
+	stream->write((char *)&_ramBank, sizeof(int));
+	stream->write((char *)&_ramSize, sizeof(int));
+	stream->write((char *)&_ramEnabled, sizeof(int));
+	stream->write((char *)_memRamMBC, _ramSize);
     if (_rtc)
-        _rtc->SaveState(file);
+        _rtc->SaveState(stream);
 }
 
-void MBCLoadState(ifstream * file)
+void MBCLoadState(istream *stream)
 {
-	file->read((char *)&_memMode, sizeof(int));
-	file->read((char *)&_romBank, sizeof(int));
-	file->read((char *)&_romSize, sizeof(int));
-	file->read((char *)&_ramBank, sizeof(int));
-	file->read((char *)&_ramSize, sizeof(int));
-	file->read((char *)&_ramEnabled, sizeof(int));
-	file->read((char *)_memRamMBC, _ramSize);
+	stream->read((char *)&_memMode, sizeof(int));
+	stream->read((char *)&_romBank, sizeof(int));
+	stream->read((char *)&_romSize, sizeof(int));
+	stream->read((char *)&_ramBank, sizeof(int));
+	stream->read((char *)&_ramSize, sizeof(int));
+	stream->read((char *)&_ramEnabled, sizeof(int));
+	stream->read((char *)_memRamMBC, _ramSize);
 	_ptrCartridge = _memCartridge + _romBank * 0x4000;
 	_ptrRamMBC = _memRamMBC + _ramBank * 0x2000;
     if (_rtc)
-        _rtc->LoadState(file);
+        _rtc->LoadState(stream);
 }
 
 /*

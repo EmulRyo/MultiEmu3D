@@ -69,7 +69,8 @@ void GB::CartridgeExtract() {
         m_cartridge->Extract();
 }
 
-void GB::CartridgeLoad(std::string fileName, std::string batteriesPath, u8 *cartridgeBuffer, unsigned long size) {
+void GB::CartridgeLoad(const std::string &fileName, const std::string &batteriesPath,
+                       u8 *cartridgeBuffer, unsigned long size) {
     if (m_cartridge)
         delete m_cartridge;
     
@@ -85,30 +86,69 @@ void GB::CartridgeLoad(std::string fileName, std::string batteriesPath, u8 *cart
     m_debugger = new Debugger(m_sound, m_video, m_cpu, m_cartridge);
 }
 
-void GB::LoadState(std::string fileName, int id) {
+void GB::LoadState(const std::string &fileName, int id) {
     m_cpu->LoadState(fileName, id);
 }
 
-void GB::SaveState(std::string fileName, int id) {
+void GB::SaveState(const std::string &fileName, int id) {
     m_cpu->SaveState(fileName, id);
 }
 
+void GB::LoadStateFromRAM(std::istream *stream) {
+    
+}
+
+void GB::SaveStateToRAM(std::ostream *stream) {
+    
+}
+
+int GB::PadGetNumButtons() {
+    return 8;
+}
+
 void GB::PadSetButtons(bool *buttonsState) {
-    /*
-    m_pad->SetButtonsStatePad1(buttonsState);
-    m_pad->SetButtonsStatePad2(&buttonsState[6]);
-    m_pad->SetPauseState(pause);
-    */
+    m_cpu->UpdatePad(buttonsState);
+}
+
+int GB::PadIdAcceptButton() {
+    return BA;
+}
+
+int GB::PadIdCancelButton() {
+    return BB;
+}
+
+int GB::PadIdLeftButton() {
+    return LEFT;
+}
+
+int GB::PadIdRightButton() {
+    return RIGHT;
 }
 
 void GB::SetScreen(IScreenDrawable *screen) {
     m_video->SetScreen(screen);
 }
 
-GameBoy::CPU *GB::GetCPU() {
-    return m_cpu;
+int GB::GetWidth() {
+    return GB_SCREEN_W;
+}
+
+int GB::GetHeight() {
+    return GB_SCREEN_H;
 }
 
 Debugger *GB::GetDebugger() {
     return m_debugger;
+}
+
+bool GB::IsValidExtension(const std::string &extension) {
+    if ((extension == "gb") || (extension == "gbc"))
+        return true;
+    else
+        return false;
+}
+
+void GB::SetExtraData(const std::string &key, void *value) {
+    
 }

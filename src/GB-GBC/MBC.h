@@ -47,7 +47,7 @@ void MBCPathBatteries(std::string path);
 
 void MBCExtract();
 
-void MBCSaveState(std::ofstream * file);
-void MBCLoadState(std::ifstream * file);
+void MBCSaveState(std::ostream *stream);
+void MBCLoadState(std::istream *stream);
 
 #endif

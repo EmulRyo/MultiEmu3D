@@ -148,18 +148,18 @@ void RTC::GetFileData(int *data) {
     data[11] = 0;
 }
 
-void RTC::SaveState(ofstream *file) {
-    file->write((char *)m_latchedRegs,  sizeof(int)*5);
-    file->write((char *)&m_selectedReg, sizeof(int));
-    file->write((char *)&m_latchData,   sizeof(int));
-    file->write((char *)m_refRegs,      sizeof(int)*5);
-    file->write((char *)&m_refTime,     sizeof(time_t));
+void RTC::SaveState(ostream *stream) {
+    stream->write((char *)m_latchedRegs,  sizeof(int)*5);
+    stream->write((char *)&m_selectedReg, sizeof(int));
+    stream->write((char *)&m_latchData,   sizeof(int));
+    stream->write((char *)m_refRegs,      sizeof(int)*5);
+    stream->write((char *)&m_refTime,     sizeof(time_t));
 }
 
-void RTC::LoadState(ifstream *file) {
-    file->read((char *)m_latchedRegs,  sizeof(int)*5);
-    file->read((char *)&m_selectedReg, sizeof(int));
-    file->read((char *)&m_latchData,   sizeof(int));
-    file->read((char *)m_refRegs,      sizeof(int)*5);
-    file->read((char *)&m_refTime,     sizeof(time_t));
+void RTC::LoadState(istream *stream) {
+    stream->read((char *)m_latchedRegs,  sizeof(int)*5);
+    stream->read((char *)&m_selectedReg, sizeof(int));
+    stream->read((char *)&m_latchData,   sizeof(int));
+    stream->read((char *)m_refRegs,      sizeof(int)*5);
+    stream->read((char *)&m_refTime,     sizeof(time_t));
 }

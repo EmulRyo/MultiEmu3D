@@ -20,14 +20,16 @@
 
 #include "../Common/Types.h"
 
+enum e_gbpad { UP, DOWN, LEFT, RIGHT, BA, BB, SELECT, START };
+
 namespace GameBoy {
     
     class Pad {
     public:
         Pad();
         
-        int  SetButtonsState(bool buttonsState[8], u8 *valueP1);
-        u8 Update(u8 valueP1);
+        int SetButtonsState(bool buttonsState[8], u8 *valueP1);
+        u8  Update(u8 valueP1);
         
     private:
         bool m_buttonsState[8];

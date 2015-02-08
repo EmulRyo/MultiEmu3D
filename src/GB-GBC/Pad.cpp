@@ -20,8 +20,6 @@
 
 using namespace GameBoy;
 
-enum e_gbpad { UP, DOWN, LEFT, RIGHT, A, B, SELECT, START };
-
 Pad::Pad() {
     for (int i=0; i<8; i++)
         m_buttonsState[i] = false;
@@ -34,8 +32,8 @@ u8 Pad::Update(u8 valueP1)
 	if(!BIT5(valueP1)) {
         u8 start  = (m_buttonsState[START]  ? 0 : 1) << 3;
         u8 select = (m_buttonsState[SELECT] ? 0 : 1) << 2;
-        u8 b      = (m_buttonsState[B]      ? 0 : 1) << 1;
-        u8 a      = (m_buttonsState[A]      ? 0 : 1);
+        u8 b      = (m_buttonsState[BB]      ? 0 : 1) << 1;
+        u8 a      = (m_buttonsState[BA]      ? 0 : 1);
 		newValue = start | select | b | a;
     }
     else if(!BIT4(valueP1)) {

@@ -28,8 +28,8 @@ public:
     
     void SetFileData(int *data);
     void GetFileData(int *data);
-    void SaveState(std::ofstream *file);
-    void LoadState(std::ifstream *file);
+    void SaveState(std::ostream *stream);
+    void LoadState(std::istream *stream);
     
 private:
     void Update(int *regs);

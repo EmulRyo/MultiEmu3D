@@ -136,8 +136,8 @@ namespace GameBoy {
         bool GetConditionalTaken() { return m_conditionalTaken; }
 
         void ResetRegs();
-        void SaveRegs(std::ofstream *file);
-        void LoadRegs(std::ifstream *file);
+        void SaveRegs(std::ostream *stream);
+        void LoadRegs(std::istream *stream);
         
         std::string ToString();
     };

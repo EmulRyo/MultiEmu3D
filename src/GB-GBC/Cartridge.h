@@ -57,8 +57,8 @@ namespace GameBoy {
         inline u8 Read(u16 direction) { return ptrRead(direction); };
         inline void Write(u16 direction, u8 value) { ptrWrite(direction, value); };
         
-        void SaveStateMBC(std::ofstream *file);
-        void LoadStateMBC(std::ifstream *file);
+        void SaveStateMBC(std::ostream *stream);
+        void LoadStateMBC(std::istream *stream);
         
         void Extract();
     };

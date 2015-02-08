@@ -21,6 +21,7 @@
 #include <wx/stdpaths.h>
 #include <wx/msgdlg.h>
 #include "../SMS-GG/SMS.h"
+#include "../GB-GBC/GB.h"
 #include "../Common/VideoGameDevice.h"
 #include "Settings.h"
 #include "EmulationThread.h"
@@ -57,6 +58,9 @@ EmulationThread::~EmulationThread() {
 void EmulationThread::SetState(enumEmuStates state)
 {
     wxMutexLocker lock(*mutex);
+    
+    if (!m_device)
+        return;
     
     this->emuState = state;
     
@@ -139,8 +143,8 @@ bool EmulationThread::ChangeFile(wxString fileName)
         
         u8 *buffer = NULL;
         unsigned long size = 0;
-        bool zip, sms;
-        zip = sms = false;
+        bool zip, sms, gb;
+        zip = sms = gb = false;
         
         if (extension == "zip") {
             zip = true;
@@ -150,9 +154,10 @@ bool EmulationThread::ChangeFile(wxString fileName)
         }
         
         sms = MasterSystem::SMS::IsValidExtension(extension.ToStdString());
+        gb  = GameBoy::GB::IsValidExtension(extension.ToStdString());
         
-        if (!sms) {
-            wxMessageBox(_("Only sms, gg and zip files allowed!"), _("Error"));
+        if (!sms && !gb) {
+            wxMessageBox(_("Not valid files found!"), _("Error"));
             return false;
         }
         
@@ -170,6 +175,8 @@ bool EmulationThread::ChangeFile(wxString fileName)
         
         if (sms)
             m_device = new MasterSystem::SMS();
+        else if (gb)
+            m_device = new GameBoy::GB();
         
         m_rewind = new Rewind(m_device);
         ApplySettingsNoMutex();
@@ -206,7 +213,8 @@ void EmulationThread::LoadZip(const wxString &zipPath, u8 ** buffer, unsigned lo
             extension = fileInZip.AfterLast('.').Lower();
             
             bool sms = MasterSystem::SMS::IsValidExtension(extension.ToStdString());
-            if (sms)
+            bool gb  = GameBoy::GB::IsValidExtension(extension.ToStdString());
+            if (sms || gb)
             {
                 *size = zip.GetSize();
                 *buffer = new u8[*size];

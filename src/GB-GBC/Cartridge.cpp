@@ -208,14 +208,14 @@ bool Cartridge::IsLoaded()
 	return m_isLoaded;
 }
 
-void Cartridge::SaveStateMBC(ofstream * file)
+void Cartridge::SaveStateMBC(ostream *stream)
 {
-	MBCSaveState(file);
+	MBCSaveState(stream);
 }
 
-void Cartridge::LoadStateMBC(ifstream * file)
+void Cartridge::LoadStateMBC(istream *stream)
 {
-	MBCLoadState(file);
+	MBCLoadState(stream);
 }
 
 void Cartridge::Extract() {

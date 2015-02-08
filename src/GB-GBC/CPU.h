@@ -70,6 +70,8 @@ namespace GameBoy {
     #ifdef MAKEGBLOG
         void SaveLog();
     #endif
+        void LoadStateFromRAM(std::istream *stream);
+        void SaveStateToRAM(std::ostream *stream);
         void SaveState(std::string saveDirectory, int numSlot);
         void LoadState(std::string loadDirectory, int numSlot);
     private:

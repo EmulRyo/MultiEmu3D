@@ -70,8 +70,10 @@ void Video::RefreshScreen()
 
 void Video::ClearScreen()
 {
-    if (m_screen)
+    if (m_screen) {
+        m_screen->OnSizeChanged(0, 0, GB_SCREEN_W, GB_SCREEN_H);
         m_screen->OnClear();
+    }
 }
 
 void Video::UpdateBG(int y)
