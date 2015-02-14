@@ -19,18 +19,18 @@
 #define __DEBUGGER_H__
 
 #include "string"
-#include "Def.h"
+#include "../Common/Debuggable.h"
+#include "../Common/Types.h"
 
 class Sound;
 class Video;
 class CPU;
 class Cartridge;
-struct BreakpointNode;
 
 namespace GameBoy {
-    class Debugger {
+    class Debugger: public Debuggable {
     public:
-        Debugger(GameBoy::Sound *sound, Video *video, CPU *cpu, Cartridge *cartridge);
+        Debugger(Sound *sound, Video *video, CPU *cpu, Cartridge *cartridge);
         ~Debugger();
         
         std::string GetRegAF();
@@ -60,25 +60,11 @@ namespace GameBoy {
         void StepInto();
         bool ExecuteOneFrame();
         
-        void AddBreakpoint(u16 address);
-        void DelBreakpoint(u16 address);
-        bool HasBreakpoint(u16 address);
-        int  GetNumBreakpoints();
-        u16 GetBreakpoint(int i);
-        
-        std::string ToHex(int value, int width, char fill);
-        void AppendHex(std::stringstream &ss, int value, int width, char fill);
-        
     private:
-        GameBoy::Sound *m_sound;
+        Sound *m_sound;
         Video *m_video;
         CPU   *m_cpu;
         Cartridge *m_cartridge;
-        BreakpointNode *m_firstBreakpoint;
-        BreakpointNode *m_lastBreakpoint;
-        
-        BreakpointNode *GetBreakpointNode(u16 address);
-        void ClearBreakpoints();
     };
 }
 

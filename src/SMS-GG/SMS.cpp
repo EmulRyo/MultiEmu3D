@@ -151,20 +151,13 @@ int SMS::GetHeight() {
     return SMS_SCREEN_H;
 }
 
-Debugger *SMS::GetDebugger() {
+Debuggable *SMS::GetDebugger() {
     return m_debugger;
 }
 
 bool SMS::IsValidExtension(const std::string &extension) {
     if ((extension == "sms") || (extension == "gg"))
         return true;
-    else
-        return false;
-}
-
-bool SMS::EndsWith(const std::string &fullString, const std::string &ending) {
-    if (fullString.length() >= ending.length())
-        return (0 == fullString.compare (fullString.length() - ending.length(), ending.length(), ending));
     else
         return false;
 }

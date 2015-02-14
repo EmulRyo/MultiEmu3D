@@ -28,12 +28,6 @@
 using namespace std;
 using namespace GameBoy;
 
-struct BreakpointNode {
-    u16 value;
-    BreakpointNode *prev;
-    BreakpointNode *next;
-};
-
 Debugger::Debugger(GameBoy::Sound *sound, Video *video, CPU *cpu, Cartridge *cartridge)
 {
     m_sound = sound;
@@ -320,104 +314,4 @@ bool Debugger::ExecuteOneFrame() {
             return false;
     }
     return true;
-}
-
-std::string Debugger::ToHex(int value, int width, char fill)
-{
-    stringstream ss;
-    ss << setfill(fill) << setw(width) << uppercase << hex << value;
-    return ss.str();
-}
-
-void Debugger::AppendHex(stringstream &ss, int value, int width, char fill)
-{
-    ss << setfill(fill) << setw(width) << uppercase << hex << (int)value;
-}
-
-void Debugger::AddBreakpoint(u16 address) {
-    if (GetBreakpointNode(address))
-        return;
-    
-    BreakpointNode *node = new BreakpointNode;
-    node->value = address;
-    node->prev = m_lastBreakpoint;
-    node->next = NULL;
-    if (m_lastBreakpoint)
-        m_lastBreakpoint->next = node;
-    if (m_firstBreakpoint == NULL)
-        m_firstBreakpoint = node;
-    m_lastBreakpoint = node;
-}
-
-void Debugger::DelBreakpoint(u16 address) {
-    BreakpointNode *node = GetBreakpointNode(address);
-    if (node) {
-        if (node->prev)
-            node->prev->next = node->next;
-        if (node->next)
-            node->next->prev = node->prev;
-        if (m_firstBreakpoint == node)
-            m_firstBreakpoint = node->next;
-        if (m_lastBreakpoint == node)
-            m_lastBreakpoint = node->prev;
-        
-        delete node;
-    }
-}
-
-int Debugger::GetNumBreakpoints() {
-    int count = 0;
-    BreakpointNode *node = m_firstBreakpoint;
-    
-    while (node) {
-        count++;
-        node = node->next;
-    }
-    
-    return count;
-}
-
-u16 Debugger::GetBreakpoint(int i) {
-    int count = 0;
-    u16 value = 0;
-    BreakpointNode *node = m_firstBreakpoint;
-    
-    while (node) {
-        if (count == i)
-            value = node->value;
-        count++;
-        node = node->next;
-    }
-    
-    return value;
-}
-
-bool Debugger::HasBreakpoint(u16 address) {
-    return GetBreakpointNode(address) ? true : false;
-}
-
-BreakpointNode *Debugger::GetBreakpointNode(u16 address) {
-    BreakpointNode *node = m_firstBreakpoint;
-    while (node) {
-        if (node->value == address)
-            return node;
-        
-        node = node->next;
-    }
-    
-    return NULL;
-}
-
-void Debugger::ClearBreakpoints() {
-    BreakpointNode *node = m_firstBreakpoint;
-    BreakpointNode *next;
-    
-    while (node) {
-        next = node->next;
-        delete node;
-        node = next;
-    }
-    
-    m_firstBreakpoint = NULL;
-    m_lastBreakpoint  = NULL;
 }

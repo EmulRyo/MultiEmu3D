@@ -21,6 +21,7 @@
 #include "../Common/VideoGameDevice.h"
 
 class IScreenDrawable;
+class Debuggable;
 
 namespace GameBoy{
     class Cartridge;
@@ -58,7 +59,7 @@ namespace GameBoy{
         int  GetHeight();
         void SetExtraData(const std::string &key, void *value);
         
-        Debugger *GetDebugger();
+        Debuggable *GetDebugger();
         
         static bool IsValidExtension(const std::string &extension);
         

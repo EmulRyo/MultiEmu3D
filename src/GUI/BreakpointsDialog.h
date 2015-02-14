@@ -22,9 +22,7 @@
 
 class wxListView;
 
-namespace MasterSystem {
-    class Debugger;
-}
+class Debuggable;
 
 /*******************************************************************************
  // BreakpointsDialog Class
@@ -33,14 +31,14 @@ namespace MasterSystem {
 class BreakpointsDialog : public wxDialog {
 public:
 	
-    BreakpointsDialog(wxWindow *parent, MasterSystem::Debugger *debugger);
+    BreakpointsDialog(wxWindow *parent, Debuggable *debugger);
 	~BreakpointsDialog();
     
 protected:
 	DECLARE_EVENT_TABLE()
     
 private:
-    MasterSystem::Debugger *m_debugger;
+    Debuggable *m_debugger;
     wxFont *m_font;
     wxListView *m_breakpointsView;
     wxTextCtrl *m_addressCtrl;

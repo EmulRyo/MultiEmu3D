@@ -15,6 +15,8 @@
 		6E2B3ED417C13BD80066D9C6 /* Array.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 6E2B3ED017C13BD80066D9C6 /* Array.cpp */; };
 		6E2B3ED517C13BD80066D9C6 /* Geo.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 6E2B3ED217C13BD80066D9C6 /* Geo.cpp */; };
 		6E2B3EDA17C14B6E0066D9C6 /* wxImageLoader.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 6E2B3ED917C14B6E0066D9C6 /* wxImageLoader.cpp */; };
+		6E32A2361A8E801300595331 /* DebuggerGBDialog.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 6E32A2341A8E801300595331 /* DebuggerGBDialog.cpp */; };
+		6E32A2391A8E859500595331 /* Debuggable.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 6E32A2371A8E859500595331 /* Debuggable.cpp */; };
 		6E4754F51719936000602FE1 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6E4754F41719936000602FE1 /* Cocoa.framework */; };
 		6E47553A1719970B00602FE1 /* EmulationThread.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 6EBF280C146746D100F2D9F8 /* EmulationThread.cpp */; };
 		6E47553C1719970B00602FE1 /* MainApp.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 6E23C6BF11D7CA0C0043AF47 /* MainApp.cpp */; };
@@ -165,6 +167,10 @@
 		6E2B3ED317C13BD80066D9C6 /* Geo.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Geo.h; path = ../../../src/GUI/3D/Geo.h; sourceTree = "<group>"; };
 		6E2B3ED817C14B570066D9C6 /* wxImageLoader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = wxImageLoader.h; path = ../../../src/GUI/3D/wxImageLoader.h; sourceTree = "<group>"; };
 		6E2B3ED917C14B6E0066D9C6 /* wxImageLoader.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = wxImageLoader.cpp; path = ../../../src/GUI/3D/wxImageLoader.cpp; sourceTree = "<group>"; };
+		6E32A2341A8E801300595331 /* DebuggerGBDialog.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = DebuggerGBDialog.cpp; sourceTree = "<group>"; };
+		6E32A2351A8E801300595331 /* DebuggerGBDialog.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DebuggerGBDialog.h; sourceTree = "<group>"; };
+		6E32A2371A8E859500595331 /* Debuggable.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Debuggable.cpp; sourceTree = "<group>"; };
+		6E32A2381A8E859500595331 /* Debuggable.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Debuggable.h; sourceTree = "<group>"; };
 		6E41039B175A41CF00B5D091 /* dmgboy.mo */ = {isa = PBXFileReference; lastKnownFileType = file; name = dmgboy.mo; path = ../../languages/es/dmgboy.mo; sourceTree = "<group>"; };
 		6E4754F31719936000602FE1 /* MarkSystem.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = MarkSystem.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		6E4754F41719936000602FE1 /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = System/Library/Frameworks/Cocoa.framework; sourceTree = SDKROOT; };
@@ -383,6 +389,8 @@
 				6E78492B1A6A87310039E80D /* AppDefs.h */,
 				6E90990E18D8D822005DF1C1 /* BreakpointsDialog.cpp */,
 				6E90990F18D8D822005DF1C1 /* BreakpointsDialog.h */,
+				6E32A2341A8E801300595331 /* DebuggerGBDialog.cpp */,
+				6E32A2351A8E801300595331 /* DebuggerGBDialog.h */,
 				6EF404E418AFE5F3006A0FDC /* DebuggerSMSDialog.h */,
 				6EF404E318AFE5F3006A0FDC /* DebuggerSMSDialog.cpp */,
 				6EBF280D146746D100F2D9F8 /* EmulationThread.h */,
@@ -519,6 +527,8 @@
 			isa = PBXGroup;
 			children = (
 				6E7849291A6A82650039E80D /* Bit.h */,
+				6E32A2371A8E859500595331 /* Debuggable.cpp */,
+				6E32A2381A8E859500595331 /* Debuggable.h */,
 				6E78492C1A6BC6950039E80D /* Exception.cpp */,
 				6E78492D1A6BC6950039E80D /* Exception.h */,
 				6E78492F1A6BD0610039E80D /* IScreenDrawable.h */,
@@ -715,6 +725,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				6E7849271A69C3D00039E80D /* GB.cpp in Sources */,
+				6E32A2361A8E801300595331 /* DebuggerGBDialog.cpp in Sources */,
 				6ED4CF6C195381BA0003C70B /* InstructionsName.cpp in Sources */,
 				6ED4CF73195381BA0003C70B /* Sound.cpp in Sources */,
 				6E7849121A60B7D40039E80D /* Debugger.cpp in Sources */,
@@ -770,6 +781,7 @@
 				6E7849101A60B7D40039E80D /* Cartridge.cpp in Sources */,
 				6E9BF3C61A3603AD0009849A /* RendererOGL.Overlay.cpp in Sources */,
 				6EE5987C17CCB0EE008B5A91 /* Camera.cpp in Sources */,
+				6E32A2391A8E859500595331 /* Debuggable.cpp in Sources */,
 				6E7849111A60B7D40039E80D /* CPU.cpp in Sources */,
 				6EF2144E1A6094680045C4A1 /* Sms_Blip_Buffer.cpp in Sources */,
 			);

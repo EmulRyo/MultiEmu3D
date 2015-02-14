@@ -19,6 +19,7 @@
 #define __DEBUGGER_H__
 
 #include "string"
+#include "../Common/Debuggable.h"
 #include "../Common/Types.h"
 
 namespace MasterSystem {
@@ -28,10 +29,8 @@ namespace MasterSystem {
     class CPU;
     class Cartridge;
     class Pad;
-    struct BreakpointNode;
 
-    class Debugger
-    {
+    class Debugger: public Debuggable {
     public:
         Debugger(Sound *sound, Video *video, CPU *cpu, Cartridge *cartridge, Pad *pad);
         ~Debugger();
@@ -78,26 +77,12 @@ namespace MasterSystem {
         void StepInto();
         bool ExecuteOneFrame();
         
-        void AddBreakpoint(u16 address);
-        void DelBreakpoint(u16 address);
-        bool HasBreakpoint(u16 address);
-        int  GetNumBreakpoints();
-        u16  GetBreakpoint(int i);
-        
-        std::string ToHex(int value, int width, char fill);
-        void AppendHex(std::stringstream &ss, int value, int width, char fill);
-        
     private:
         Sound *m_sound;
         Video *m_video;
         CPU   *m_cpu;
         Cartridge *m_cartridge;
         Pad   *m_pad;
-        BreakpointNode *m_firstBreakpoint;
-        BreakpointNode *m_lastBreakpoint;
-        
-        BreakpointNode *GetBreakpointNode(u16 address);
-        void ClearBreakpoints();
     };
 }
 

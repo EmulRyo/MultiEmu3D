@@ -30,6 +30,7 @@
 #include "AboutDialog.h"
 #include "SettingsDialog.h"
 #include "DebuggerSMSDialog.h"
+#include "DebuggerGBDialog.h"
 #include "IDControls.h"
 #include "Settings.h"
 #include "../Common/Exception.h"
@@ -704,6 +705,10 @@ void MainFrame::OnDebug(wxCommandEvent &event) {
     VideoGameDevice *device = m_emulation->GetVideoGameDevice();
     if ((device->GetType() == MASTERSYSTEM) || (device->GetType() == GAMEGEAR)) {
         DebuggerSMSDialog debugger(this, device);
+        debugger.ShowModal();
+    }
+    else if ((device->GetType() == GAMEBOY) || (device->GetType() == GAMEBOYCOLOR)) {
+        DebuggerGBDialog debugger(this, device);
         debugger.ShowModal();
     }
 }

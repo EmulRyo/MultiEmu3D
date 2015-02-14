@@ -50,7 +50,7 @@ DebuggerSMSDialog::DebuggerSMSDialog(wxWindow *parent, VideoGameDevice *device)
            wxDefaultSize, wxDEFAULT_DIALOG_STYLE);
     
     MasterSystem::SMS *sms = (MasterSystem::SMS *)device;
-    m_debugger = sms->GetDebugger();
+    m_debugger = (MasterSystem::Debugger *)sms->GetDebugger();
     
     wxStaticText *regsText = new wxStaticText(this, -1, wxT("Registers:"));
     

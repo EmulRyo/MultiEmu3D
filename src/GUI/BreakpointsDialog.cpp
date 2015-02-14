@@ -29,7 +29,7 @@ EVT_BUTTON(ID_BREAK_DEL, BreakpointsDialog::OnDelBreakpoint)
 EVT_LIST_ITEM_SELECTED(ID_BREAK_LIST, BreakpointsDialog::OnItemSelected)
 END_EVENT_TABLE()
 
-BreakpointsDialog::BreakpointsDialog(wxWindow *parent, MasterSystem::Debugger *debugger)
+BreakpointsDialog::BreakpointsDialog(wxWindow *parent, Debuggable *debugger)
 {
     this->Create(parent, wxID_ANY, wxT("Breakpoints"), wxDefaultPosition,
            wxDefaultSize, wxDEFAULT_DIALOG_STYLE);

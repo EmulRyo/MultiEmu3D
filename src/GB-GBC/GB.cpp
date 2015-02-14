@@ -26,6 +26,7 @@
 using namespace GameBoy;
 
 GB::GB() {
+    SetType(GAMEBOY);
     m_sound = new Sound();
     m_video = new Video(NULL);
     m_pad = new Pad();
@@ -81,6 +82,13 @@ void GB::CartridgeLoad(const std::string &fileName, const std::string &batteries
     
     m_cpu->LoadCartridge(m_cartridge);
     m_cpu->Reset();
+    
+    std::string fileNameLower = fileName;
+    std::transform(fileNameLower.begin(), fileNameLower.end(), fileNameLower.begin(), ::tolower);
+    if (EndsWith(fileNameLower, "gbc"))
+        SetType(GAMEBOYCOLOR);
+    else
+        SetType(GAMEBOY);
     
     delete m_debugger;
     m_debugger = new Debugger(m_sound, m_video, m_cpu, m_cartridge);
@@ -138,7 +146,7 @@ int GB::GetHeight() {
     return GB_SCREEN_H;
 }
 
-Debugger *GB::GetDebugger() {
+Debuggable *GB::GetDebugger() {
     return m_debugger;
 }
 

@@ -19,6 +19,7 @@
 #define __VIDEOGAMEDEVICE_H__
 
 class IScreenDrawable;
+class Debuggable;
 
 enum e_devicetype { GAMEBOY, GAMEBOYCOLOR, MASTERSYSTEM, GAMEGEAR };
     
@@ -48,9 +49,18 @@ public:
     virtual int  GetWidth() = 0;
     virtual int  GetHeight() = 0;
     virtual void SetExtraData(const std::string &key, void *value) = 0;
+    virtual Debuggable *GetDebugger() = 0;
     
     e_devicetype GetType() { return m_deviceType; };
     void SetType(e_devicetype type) { m_deviceType = type; };
+    
+protected:
+    bool EndsWith(const std::string &fullString, const std::string &ending) {
+        if (fullString.length() >= ending.length())
+            return (0 == fullString.compare (fullString.length() - ending.length(), ending.length(), ending));
+        else
+            return false;
+    }
     
 private:
     e_devicetype m_deviceType;

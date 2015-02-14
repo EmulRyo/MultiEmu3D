@@ -21,6 +21,7 @@
 #include "../Common/VideoGameDevice.h"
 
 class IScreenDrawable;
+class Debuggable;
 
 namespace MasterSystem {
 
@@ -61,7 +62,7 @@ namespace MasterSystem {
         
         static bool IsValidExtension(const std::string &extension);
         
-        Debugger *GetDebugger();
+        Debuggable *GetDebugger();
         
     private:
         Video     *m_video;
@@ -70,8 +71,6 @@ namespace MasterSystem {
         Cartridge *m_cartridge;
         CPU       *m_cpu;
         Debugger  *m_debugger;
-        
-        bool EndsWith(const std::string &fullString, const std::string &ending);
         
     };
 }
