@@ -478,7 +478,10 @@ void MainFrame::OnSettings(wxCommandEvent &)
     if (m_settingsDialog->ShowModal() == wxID_OK)
 	{
 		m_settingsDialog->AcceptValues();
-		m_emulation->ApplySettings();
+        m_emulation->ApplySettings();
+        
+        if (m_renderer)
+            m_renderer->SetGBPalette(SettingsGetGreenScale());
 	}
 
     m_emulation->SetState(lastState);

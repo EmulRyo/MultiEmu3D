@@ -115,9 +115,9 @@ void RendererBase::OnRefreshRealScreen() {
 }
 
 void RendererBase::OnDrawPixel(int idColor, int x, int y) {
-    u8 r = gbPalettes[m_selPalette][idColor][0];
-    u8 g = gbPalettes[m_selPalette][idColor][1];
-    u8 b = gbPalettes[m_selPalette][idColor][2];
+    u8 r = gbPalettes[m_gbPalette][idColor][0];
+    u8 g = gbPalettes[m_gbPalette][idColor][1];
+    u8 b = gbPalettes[m_gbPalette][idColor][2];
     
     OnDrawPixel(r, g, b, x, y);
 }
@@ -172,6 +172,14 @@ void RendererBase::SetRewindValue(float value) {
 void RendererBase::SetIcon(Renderer::Icon icon, int frames) {
     m_icon = icon;
     m_iconFrames = frames;
+}
+
+void RendererBase::SetGBPalette(bool original)
+{
+    if (original)
+        m_gbPalette = 0;
+    else
+        m_gbPalette = 1;
 }
 
 DnDFile::DnDFile(wxWindow * parent)

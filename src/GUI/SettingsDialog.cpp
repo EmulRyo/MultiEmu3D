@@ -65,6 +65,7 @@ SettingsDialog::~SettingsDialog()
 bool SettingsDialog::TransferDataToWindow() {
 	m_settings = SettingsGetCopy();
 	
+    wxRadioBox* greenscaleCtrl = (wxRadioBox*)	  FindWindow(ID_GREENSCALE);
 	wxCheckBox* soundEnabledCtrl = (wxCheckBox*)  FindWindow(ID_SOUND_ENABLED);
 	wxChoice* soundSRCtrl =		 (wxChoice*)	  FindWindow(ID_SOUND_SR);
     
@@ -84,6 +85,8 @@ bool SettingsDialog::TransferDataToWindow() {
     
 	InputTextCtrl* startCtrl =	 (InputTextCtrl*) FindWindow(ID_TEXTCTRL_START);
 	
+    greenscaleCtrl->SetSelection(m_settings.greenScale);
+    
 	soundEnabledCtrl->SetValue(m_settings.soundEnabled);
 	int sampleRates[] = { 22050, 32000, 44100, 48000 };
 	int idSampleRate = 2;
@@ -115,6 +118,8 @@ bool SettingsDialog::TransferDataToWindow() {
 
 /*! * Transfer data from the window */
 bool SettingsDialog::TransferDataFromWindow() {
+    wxRadioBox* greenscaleCtrl = (wxRadioBox*)	  FindWindow(ID_GREENSCALE);
+    
 	wxCheckBox* soundEnabledCtrl = (wxCheckBox*)  FindWindow(ID_SOUND_ENABLED);
 	wxChoice* soundSRCtrl =		 (wxChoice*)	  FindWindow(ID_SOUND_SR);
     
@@ -134,6 +139,8 @@ bool SettingsDialog::TransferDataFromWindow() {
     
 	InputTextCtrl* startCtrl =	 (InputTextCtrl*) FindWindow(ID_TEXTCTRL_START);
 
+    m_settings.greenScale = greenscaleCtrl->GetSelection();
+    
 	m_settings.soundEnabled = soundEnabledCtrl->GetValue();
 	int sampleRates[] = { 22050, 32000, 44100, 48000 };
 	int idSampleRate = soundSRCtrl->GetSelection();
@@ -164,7 +171,25 @@ bool SettingsDialog::TransferDataFromWindow() {
 wxPanel* SettingsDialog::CreateVideoSettingsPage(wxWindow* parent)
 {
     wxPanel* panel = new wxPanel(parent, wxID_ANY);
-
+    
+    wxStaticText * grayGreenLabel = new wxStaticText(panel, wxID_ANY, _("DMG color palette:"));
+    wxString grayGreenChoices[2];
+    grayGreenChoices[0] = _("Grayscale");
+    grayGreenChoices[1] = _("Greenscale");
+    wxRadioBox* grayGreenRadioBox = new wxRadioBox(panel, ID_GREENSCALE, wxT(""),
+                                                   wxDefaultPosition, wxDefaultSize, 2, grayGreenChoices, 1, wxRA_SPECIFY_COLS);
+    
+    
+    
+    wxFlexGridSizer *grid = new wxFlexGridSizer(2, 3, 5);
+    grid->Add(grayGreenLabel, 0, wxUP, 7);
+    grid->Add(grayGreenRadioBox);
+    
+    wxBoxSizer *topSizer = new wxBoxSizer( wxVERTICAL );
+    topSizer->Add(grid, 0, wxALL, 10);
+    
+    panel->SetSizerAndFit(topSizer);
+    
     return panel;
 }
 

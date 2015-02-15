@@ -258,10 +258,11 @@ void EmulationThread::ApplySettings()
 
 void EmulationThread::ApplySettingsNoMutex()
 {
-    if (m_device)
+    if (m_device) {
         PadSetKeys(SettingsGetInput(m_device->GetType()));
-    m_device->SoundSetSampleRate(SettingsGetSoundSampleRate());
-    m_device->SoundEnable(SettingsGetSoundEnabled());
+        m_device->SoundSetSampleRate(SettingsGetSoundSampleRate());
+        m_device->SoundEnable(SettingsGetSoundEnabled());
+    }
 }
 
 void EmulationThread::SetScreen(IScreenDrawable *screen) {

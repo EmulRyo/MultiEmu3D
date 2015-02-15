@@ -43,6 +43,7 @@ public:
     int  GetMinimunHeight();
     void SetRewindValue(float value);
     void SetIcon(Renderer::Icon icon, int frames=120);
+    void SetGBPalette(bool original);
 	
 	void OnClear();
 	void OnRefreshFalseScreen();
@@ -66,7 +67,7 @@ protected:
 private:
 	wxWindow *m_winRenderer;
     wxWindow *m_parent;
-    int       m_selPalette;
+    int       m_gbPalette;
     
     void PageFlip();
 };
