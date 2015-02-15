@@ -69,7 +69,6 @@ EVT_MENU(ID_FULLSCREEN, MainFrame::OnFullScreen)
 EVT_UPDATE_UI( ID_START, MainFrame::OnPlayUpdateUI )
 EVT_UPDATE_UI( ID_PAUSE, MainFrame::OnPauseUpdateUI )
 EVT_UPDATE_UI( ID_STOP, MainFrame::OnStopUpdateUI )
-EVT_UPDATE_UI( ID_FULLSCREEN, MainFrame::OnFullScreenUpdateUI )
 EVT_UPDATE_UI( ID_DEBUG, MainFrame::OnDebugUpdateUI )
 EVT_UPDATE_UI_RANGE(ID_LOADSTATE0, ID_LOADSTATE9, MainFrame::OnLoadStateUpdateUI)
 EVT_UPDATE_UI_RANGE(ID_SAVESTATE0, ID_SAVESTATE9, MainFrame::OnSaveStateUpdateUI)
@@ -267,8 +266,8 @@ void MainFrame::OnFileOpen(wxCommandEvent &) {
 	enumEmuStates copyState = m_emulation->GetState();
     m_emulation->SetState(Paused);
 	
-	wxFileDialog* openDialog = new wxFileDialog(this, _("Choose a gameboy rom to open"), wxEmptyString, wxEmptyString,
-												wxT("Gameboy roms (*.sms; *.zip)|*.sms;*.zip"),
+	wxFileDialog* openDialog = new wxFileDialog(this, _("Choose a rom to open"), wxEmptyString, wxEmptyString,
+												wxT("All roms (*.sms; *.gg; *.gb; *.gbc; *.zip)|*.sms;*.gg;*.gb;*.gbc;*.zip"),
 												wxFD_OPEN, wxDefaultPosition);
 
 	
@@ -572,11 +571,6 @@ void MainFrame::OnSaveStateUpdateUI(wxUpdateUIEvent& event)
 		event.Enable(false);
 	else
 		event.Enable(true);
-}
-
-void MainFrame::OnFullScreenUpdateUI(wxUpdateUIEvent& event)
-{
-    event.Enable(m_typeRenderer == 1);
 }
 
 void MainFrame::OnDoubleClick(wxMouseEvent &event)

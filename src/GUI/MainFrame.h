@@ -95,7 +95,6 @@ private:
     void OnDebugUpdateUI(wxUpdateUIEvent& event);
 	void OnLoadStateUpdateUI(wxUpdateUIEvent& event);
 	void OnSaveStateUpdateUI(wxUpdateUIEvent& event);
-    void OnFullScreenUpdateUI(wxUpdateUIEvent& event);
     void OnRefreshScreen(wxCommandEvent& evt);
     void OnTimer(wxTimerEvent &event);
 	void CreateMenuBar();

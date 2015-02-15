@@ -152,7 +152,7 @@ DebuggerGBDialog::DebuggerGBDialog(wxWindow *parent, VideoGameDevice *device)
     m_addressMemCtrl->SetValue(wxT("0000"));
     m_addressMemCtrl->SetMaxLength(4);
     
-    m_memCtrl = new wxTextCtrl(this, -1, wxEmptyString, wxDefaultPosition, wxSize(398, 146), wxTE_MULTILINE | wxTE_READONLY);
+    m_memCtrl = new wxTextCtrl(this, -1, wxEmptyString, wxDefaultPosition, wxSize(420, 146), wxTE_MULTILINE | wxTE_READONLY);
     m_memCtrl->SetFont(*m_font);
     
     wxSizer *buttonsSizer = new wxBoxSizer(wxHORIZONTAL);
