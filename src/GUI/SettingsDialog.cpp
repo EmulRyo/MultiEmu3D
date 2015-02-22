@@ -23,10 +23,10 @@
 #include <wx/checkbox.h>
 #include <wx/stattext.h>
 #include <wx/sizer.h>
+#include <wx/collpane.h>
 #include <wx/config.h>
 #include "SettingsDialog.h"
 #include "IDControls.h"
-#include "InputTextCtrl.h"
 #include "../SMS-GG/Pad.h"
 
 
@@ -68,23 +68,7 @@ bool SettingsDialog::TransferDataToWindow() {
     wxRadioBox* greenscaleCtrl = (wxRadioBox*)	  FindWindow(ID_GREENSCALE);
 	wxCheckBox* soundEnabledCtrl = (wxCheckBox*)  FindWindow(ID_SOUND_ENABLED);
 	wxChoice* soundSRCtrl =		 (wxChoice*)	  FindWindow(ID_SOUND_SR);
-    
-	InputTextCtrl* up1Ctrl =     (InputTextCtrl*) FindWindow(ID_TEXTCTRL_UP1);
-	InputTextCtrl* down1Ctrl =	 (InputTextCtrl*) FindWindow(ID_TEXTCTRL_DOWN1);
-	InputTextCtrl* left1Ctrl =	 (InputTextCtrl*) FindWindow(ID_TEXTCTRL_LEFT1);
-	InputTextCtrl* right1Ctrl =	 (InputTextCtrl*) FindWindow(ID_TEXTCTRL_RIGHT1);
-	InputTextCtrl* a1Ctrl =		 (InputTextCtrl*) FindWindow(ID_TEXTCTRL_A1);
-	InputTextCtrl* b1Ctrl =		 (InputTextCtrl*) FindWindow(ID_TEXTCTRL_B1);
-    
-    InputTextCtrl* up2Ctrl =     (InputTextCtrl*) FindWindow(ID_TEXTCTRL_UP2);
-    InputTextCtrl* down2Ctrl =	 (InputTextCtrl*) FindWindow(ID_TEXTCTRL_DOWN2);
-    InputTextCtrl* left2Ctrl =	 (InputTextCtrl*) FindWindow(ID_TEXTCTRL_LEFT2);
-    InputTextCtrl* right2Ctrl =	 (InputTextCtrl*) FindWindow(ID_TEXTCTRL_RIGHT2);
-    InputTextCtrl* a2Ctrl =		 (InputTextCtrl*) FindWindow(ID_TEXTCTRL_A2);
-    InputTextCtrl* b2Ctrl =		 (InputTextCtrl*) FindWindow(ID_TEXTCTRL_B2);
-    
-	InputTextCtrl* startCtrl =	 (InputTextCtrl*) FindWindow(ID_TEXTCTRL_START);
-	
+
     greenscaleCtrl->SetSelection(m_settings.greenScale);
     
 	soundEnabledCtrl->SetValue(m_settings.soundEnabled);
@@ -96,23 +80,12 @@ bool SettingsDialog::TransferDataToWindow() {
 			idSampleRate = i;
 	}
 	soundSRCtrl->SetSelection(idSampleRate);
-	
-	up1Ctrl->OnChangeKey(	m_settings.smsKeys[0]);
-	down1Ctrl->OnChangeKey(	m_settings.smsKeys[1]);
-	left1Ctrl->OnChangeKey(	m_settings.smsKeys[2]);
-	right1Ctrl->OnChangeKey(m_settings.smsKeys[3]);
-	a1Ctrl->OnChangeKey(	m_settings.smsKeys[4]);
-	b1Ctrl->OnChangeKey(	m_settings.smsKeys[5]);
-    
-    up2Ctrl->OnChangeKey(	m_settings.smsKeys[6]);
-    down2Ctrl->OnChangeKey(	m_settings.smsKeys[7]);
-    left2Ctrl->OnChangeKey(	m_settings.smsKeys[8]);
-    right2Ctrl->OnChangeKey(m_settings.smsKeys[9]);
-    a2Ctrl->OnChangeKey(	m_settings.smsKeys[10]);
-    b2Ctrl->OnChangeKey(	m_settings.smsKeys[11]);
-    
-	startCtrl->OnChangeKey(	m_settings.smsKeys[12]);
 
+    for (int i=0; i<8; i++)
+        gbCtrl[i]->OnChangeKey(m_settings.gbKeys[i]);
+    for (int i=0; i<13; i++)
+        smsCtrl[i]->OnChangeKey(m_settings.smsKeys[i]);
+    
 	return true;
 }
 
@@ -122,22 +95,6 @@ bool SettingsDialog::TransferDataFromWindow() {
     
 	wxCheckBox* soundEnabledCtrl = (wxCheckBox*)  FindWindow(ID_SOUND_ENABLED);
 	wxChoice* soundSRCtrl =		 (wxChoice*)	  FindWindow(ID_SOUND_SR);
-    
-	InputTextCtrl* up1Ctrl    =	(InputTextCtrl*) FindWindow(ID_TEXTCTRL_UP1);
-	InputTextCtrl* down1Ctrl  =	(InputTextCtrl*) FindWindow(ID_TEXTCTRL_DOWN1);
-	InputTextCtrl* left1Ctrl  =	(InputTextCtrl*) FindWindow(ID_TEXTCTRL_LEFT1);
-	InputTextCtrl* right1Ctrl =	(InputTextCtrl*) FindWindow(ID_TEXTCTRL_RIGHT1);
-	InputTextCtrl* a1Ctrl     =	(InputTextCtrl*) FindWindow(ID_TEXTCTRL_A1);
-	InputTextCtrl* b1Ctrl     =	(InputTextCtrl*) FindWindow(ID_TEXTCTRL_B1);
-    
-    InputTextCtrl* up2Ctrl    =	(InputTextCtrl*) FindWindow(ID_TEXTCTRL_UP2);
-    InputTextCtrl* down2Ctrl  =	(InputTextCtrl*) FindWindow(ID_TEXTCTRL_DOWN2);
-    InputTextCtrl* left2Ctrl  =	(InputTextCtrl*) FindWindow(ID_TEXTCTRL_LEFT2);
-    InputTextCtrl* right2Ctrl =	(InputTextCtrl*) FindWindow(ID_TEXTCTRL_RIGHT2);
-    InputTextCtrl* a2Ctrl     =	(InputTextCtrl*) FindWindow(ID_TEXTCTRL_A2);
-    InputTextCtrl* b2Ctrl     =	(InputTextCtrl*) FindWindow(ID_TEXTCTRL_B2);
-    
-	InputTextCtrl* startCtrl =	 (InputTextCtrl*) FindWindow(ID_TEXTCTRL_START);
 
     m_settings.greenScale = greenscaleCtrl->GetSelection();
     
@@ -145,23 +102,12 @@ bool SettingsDialog::TransferDataFromWindow() {
 	int sampleRates[] = { 22050, 32000, 44100, 48000 };
 	int idSampleRate = soundSRCtrl->GetSelection();
 	m_settings.soundSampleRate = sampleRates[idSampleRate];
-
-	m_settings.smsKeys[ 0] = up1Ctrl->keyCode;
-	m_settings.smsKeys[ 1] = down1Ctrl->keyCode;
-	m_settings.smsKeys[ 2] = left1Ctrl->keyCode;
-	m_settings.smsKeys[ 3] = right1Ctrl->keyCode;
-	m_settings.smsKeys[ 4] = a1Ctrl->keyCode;
-	m_settings.smsKeys[ 5] = b1Ctrl->keyCode;
     
-    m_settings.smsKeys[ 6] = up2Ctrl->keyCode;
-    m_settings.smsKeys[ 7] = down2Ctrl->keyCode;
-    m_settings.smsKeys[ 8] = left2Ctrl->keyCode;
-    m_settings.smsKeys[ 9] = right2Ctrl->keyCode;
-    m_settings.smsKeys[10] = a2Ctrl->keyCode;
-    m_settings.smsKeys[11] = b2Ctrl->keyCode;
+    for (int i=0; i<8; i++)
+        m_settings.gbKeys[i] = gbCtrl[i]->keyCode;
+    for (int i=0; i<13; i++)
+        m_settings.smsKeys[i] = smsCtrl[i]->keyCode;
     
-	m_settings.smsKeys[12] = startCtrl->keyCode;
-	
     SettingsSetNewValues(m_settings);
 	SettingsSaveToFile();
 
@@ -178,8 +124,6 @@ wxPanel* SettingsDialog::CreateVideoSettingsPage(wxWindow* parent)
     grayGreenChoices[1] = _("Greenscale");
     wxRadioBox* grayGreenRadioBox = new wxRadioBox(panel, ID_GREENSCALE, wxT(""),
                                                    wxDefaultPosition, wxDefaultSize, 2, grayGreenChoices, 1, wxRA_SPECIFY_COLS);
-    
-    
     
     wxFlexGridSizer *grid = new wxFlexGridSizer(2, 3, 5);
     grid->Add(grayGreenLabel, 0, wxUP, 7);
@@ -226,69 +170,109 @@ wxPanel* SettingsDialog::CreateSoundSettingsPage(wxWindow* parent)
 wxPanel* SettingsDialog::CreateInputSettingsPage(wxWindow* parent)
 {
 	wxPanel* panel = new wxPanel(parent, wxID_ANY);
-	
-    wxStaticText *pad1Label   = new wxStaticText(panel, wxID_ANY, _("Pad 1"));
-    wxStaticText *pad2Label   = new wxStaticText(panel, wxID_ANY, _("Pad 2"));
     
-    wxStaticText *upLabel    = new wxStaticText(panel, wxID_ANY, _("Up:"));
-    wxStaticText *downLabel  = new wxStaticText(panel, wxID_ANY, _("Down:"));
-    wxStaticText *leftLabel  = new wxStaticText(panel, wxID_ANY, _("Left:"));
-    wxStaticText *rightLabel = new wxStaticText(panel, wxID_ANY, _("Right:"));
-    wxStaticText *aLabel     = new wxStaticText(panel, wxID_ANY, wxT("1:"));
-    wxStaticText *bLabel     = new wxStaticText(panel, wxID_ANY, wxT("2:"));
+    wxWindow *gbPane = CreateInputSMS(panel);
+    wxWindow *smsPane = CreateInputGB(panel);
     
-    wxStaticText *startLabel  = new wxStaticText(panel, wxID_ANY, wxT("Pause/Start:"));
-    
-	InputTextCtrl *up1TextCtrl    = new InputTextCtrl(panel, ID_TEXTCTRL_UP1);
-	InputTextCtrl *down1TextCtrl  = new InputTextCtrl(panel, ID_TEXTCTRL_DOWN1);
-	InputTextCtrl *left1TextCtrl  = new InputTextCtrl(panel, ID_TEXTCTRL_LEFT1);
-	InputTextCtrl *right1TextCtrl = new InputTextCtrl(panel, ID_TEXTCTRL_RIGHT1);
-	InputTextCtrl *a1TextCtrl     = new InputTextCtrl(panel, ID_TEXTCTRL_A1);
-	InputTextCtrl *b1TextCtrl     = new InputTextCtrl(panel, ID_TEXTCTRL_B1);
-    
-    InputTextCtrl *up2TextCtrl    = new InputTextCtrl(panel, ID_TEXTCTRL_UP2);
-    InputTextCtrl *down2TextCtrl  = new InputTextCtrl(panel, ID_TEXTCTRL_DOWN2);
-    InputTextCtrl *left2TextCtrl  = new InputTextCtrl(panel, ID_TEXTCTRL_LEFT2);
-    InputTextCtrl *right2TextCtrl = new InputTextCtrl(panel, ID_TEXTCTRL_RIGHT2);
-    InputTextCtrl *a2TextCtrl     = new InputTextCtrl(panel, ID_TEXTCTRL_A2);
-    InputTextCtrl *b2TextCtrl     = new InputTextCtrl(panel, ID_TEXTCTRL_B2);
-    
-	InputTextCtrl *startTextCtrl = new InputTextCtrl(panel, ID_TEXTCTRL_START);
-	
-	wxFlexGridSizer *grid = new wxFlexGridSizer(3, 3, 5);
-    grid->AddSpacer(0);
-    grid->Add(pad1Label, 0, wxALL|wxALIGN_CENTER_VERTICAL, 0);
-    grid->Add(pad2Label, 0, wxALL|wxALIGN_CENTER_VERTICAL, 0);
-	grid->Add(upLabel, 0, wxALL|wxALIGN_CENTER_VERTICAL, 0);
-	grid->Add(up1TextCtrl);
-    grid->Add(up2TextCtrl);
-	grid->Add(downLabel, 0, wxALL|wxALIGN_CENTER_VERTICAL, 0);
-    grid->Add(down1TextCtrl);
-    grid->Add(down2TextCtrl);
-	grid->Add(leftLabel, 0, wxALL|wxALIGN_CENTER_VERTICAL, 0);
-	grid->Add(left1TextCtrl);
-    grid->Add(left2TextCtrl);
-	grid->Add(rightLabel, 0, wxALL|wxALIGN_CENTER_VERTICAL, 0);
-	grid->Add(right1TextCtrl);
-    grid->Add(right2TextCtrl);
-	grid->Add(aLabel, 0, wxALL|wxALIGN_CENTER_VERTICAL, 0);
-	grid->Add(a1TextCtrl);
-    grid->Add(a2TextCtrl);
-	grid->Add(bLabel, 0, wxALL|wxALIGN_CENTER_VERTICAL, 0);
-	grid->Add(b1TextCtrl);
-    grid->Add(b2TextCtrl);
-    
-	grid->Add(startLabel, 0, wxALL|wxALIGN_CENTER_VERTICAL, 0);
-	grid->Add(startTextCtrl);
-	
-	wxBoxSizer * topSizer = new wxBoxSizer(wxVERTICAL);
+	wxBoxSizer *topSizer = new wxBoxSizer(wxVERTICAL);
 	topSizer->Add(0, 10);
-	topSizer->Add(grid, 0, wxRIGHT|wxLEFT, 30);
+    topSizer->Add(gbPane,  0, wxGROW|wxRIGHT|wxLEFT, 30);
+    topSizer->Add(0, 10);
+    topSizer->Add(smsPane, 0, wxGROW|wxRIGHT|wxLEFT, 30);
 	topSizer->Add(0, 10);
 	
 	panel->SetSizerAndFit(topSizer);
 	
     return panel;
+}
+
+wxWindow* SettingsDialog::CreateInputGB(wxWindow *parent) {
+    wxCollapsiblePane *collPane = new wxCollapsiblePane(parent, wxID_ANY, "GameBoy / GameBoy Color:");
+    wxWindow *pane = collPane->GetPane();
+    
+    wxStaticText *upLabel    = new wxStaticText(pane, wxID_ANY, _("Up:"));
+    wxStaticText *downLabel  = new wxStaticText(pane, wxID_ANY, _("Down:"));
+    wxStaticText *leftLabel  = new wxStaticText(pane, wxID_ANY, _("Left:"));
+    wxStaticText *rightLabel = new wxStaticText(pane, wxID_ANY, _("Right:"));
+    wxStaticText *aLabel     = new wxStaticText(pane, wxID_ANY, wxT("A:"));
+    wxStaticText *bLabel     = new wxStaticText(pane, wxID_ANY, wxT("B:"));
+    wxStaticText *selectLabel = new wxStaticText(pane, wxID_ANY, wxT("Select:"));
+    wxStaticText *startLabel  = new wxStaticText(pane, wxID_ANY, wxT("Start:"));
+
+    for (int i=0; i<8; i++)
+        gbCtrl[i] = new InputTextCtrl(pane, wxID_ANY);
+    
+    wxFlexGridSizer *grid = new wxFlexGridSizer(2, 3, 5);
+    grid->Add(upLabel, 0, wxALL|wxALIGN_CENTER_VERTICAL, 0);
+    grid->Add(gbCtrl[0]);
+    grid->Add(downLabel, 0, wxALL|wxALIGN_CENTER_VERTICAL, 0);
+    grid->Add(gbCtrl[1]);
+    grid->Add(leftLabel, 0, wxALL|wxALIGN_CENTER_VERTICAL, 0);
+    grid->Add(gbCtrl[2]);
+    grid->Add(rightLabel, 0, wxALL|wxALIGN_CENTER_VERTICAL, 0);
+    grid->Add(gbCtrl[3]);
+    grid->Add(aLabel, 0, wxALL|wxALIGN_CENTER_VERTICAL, 0);
+    grid->Add(gbCtrl[4]);
+    grid->Add(bLabel, 0, wxALL|wxALIGN_CENTER_VERTICAL, 0);
+    grid->Add(gbCtrl[5]);
+    grid->Add(selectLabel, 0, wxALL|wxALIGN_CENTER_VERTICAL, 0);
+    grid->Add(gbCtrl[6]);
+    grid->Add(startLabel, 0, wxALL|wxALIGN_CENTER_VERTICAL, 0);
+    grid->Add(gbCtrl[7]);
+    
+    pane->SetSizer(grid);
+    
+    return collPane;
+}
+
+wxWindow* SettingsDialog::CreateInputSMS(wxWindow *parent) {
+    wxCollapsiblePane *collPane = new wxCollapsiblePane(parent, wxID_ANY, "Master System / GameGear:");
+    wxWindow *pane = collPane->GetPane();
+    
+    wxStaticText *pad1Label  = new wxStaticText(pane, wxID_ANY, _("Pad 1"));
+    wxStaticText *pad2Label  = new wxStaticText(pane, wxID_ANY, _("Pad 2"));
+    
+    wxStaticText *upLabel    = new wxStaticText(pane, wxID_ANY, _("Up:"));
+    wxStaticText *downLabel  = new wxStaticText(pane, wxID_ANY, _("Down:"));
+    wxStaticText *leftLabel  = new wxStaticText(pane, wxID_ANY, _("Left:"));
+    wxStaticText *rightLabel = new wxStaticText(pane, wxID_ANY, _("Right:"));
+    wxStaticText *aLabel     = new wxStaticText(pane, wxID_ANY, wxT("1:"));
+    wxStaticText *bLabel     = new wxStaticText(pane, wxID_ANY, wxT("2:"));
+    
+    wxStaticText *startLabel  = new wxStaticText(pane, wxID_ANY, wxT("Pause/Start:"));
+
+    for (int i=0; i<13; i++)
+        smsCtrl[i] = new InputTextCtrl(pane, wxID_ANY);
+     
+    wxFlexGridSizer *grid = new wxFlexGridSizer(3, 3, 5);
+    grid->AddSpacer(0);
+    grid->Add(pad1Label, 0, wxALL|wxALIGN_CENTER_VERTICAL, 0);
+    grid->Add(pad2Label, 0, wxALL|wxALIGN_CENTER_VERTICAL, 0);
+    grid->Add(upLabel, 0, wxALL|wxALIGN_CENTER_VERTICAL, 0);
+    grid->Add(smsCtrl[0]);
+    grid->Add(smsCtrl[6]);
+    grid->Add(downLabel, 0, wxALL|wxALIGN_CENTER_VERTICAL, 0);
+    grid->Add(smsCtrl[1]);
+    grid->Add(smsCtrl[7]);
+    grid->Add(leftLabel, 0, wxALL|wxALIGN_CENTER_VERTICAL, 0);
+    grid->Add(smsCtrl[2]);
+    grid->Add(smsCtrl[8]);
+    grid->Add(rightLabel, 0, wxALL|wxALIGN_CENTER_VERTICAL, 0);
+    grid->Add(smsCtrl[3]);
+    grid->Add(smsCtrl[9]);
+    grid->Add(aLabel, 0, wxALL|wxALIGN_CENTER_VERTICAL, 0);
+    grid->Add(smsCtrl[4]);
+    grid->Add(smsCtrl[10]);
+    grid->Add(bLabel, 0, wxALL|wxALIGN_CENTER_VERTICAL, 0);
+    grid->Add(smsCtrl[5]);
+    grid->Add(smsCtrl[11]);
+    
+    grid->Add(startLabel, 0, wxALL|wxALIGN_CENTER_VERTICAL, 0);
+    grid->Add(smsCtrl[12]);
+    
+    pane->SetSizer(grid);
+    
+    return collPane;
 }
 
 void SettingsDialog::Reload() {

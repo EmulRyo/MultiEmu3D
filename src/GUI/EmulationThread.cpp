@@ -231,7 +231,7 @@ void EmulationThread::LoadZip(const wxString &zipPath, u8 ** buffer, unsigned lo
 	}
     
 	// Archivo no encontrado
-	wxMessageBox(_("Master System or Game Gear rom not found in the file:\n")+zipPath, _("Error"));
+	wxMessageBox(_("Not valid rom found in the file:\n")+zipPath, _("Error"));
 	return;
 }
 

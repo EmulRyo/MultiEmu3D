@@ -22,6 +22,7 @@
 #include <wx/propdlg.h>
 #include <wx/imaglist.h>
 #include "Settings.h"
+#include "InputTextCtrl.h"
 
 class SettingsDialog: public wxPropertySheetDialog
 {
@@ -36,6 +37,8 @@ protected:
     
 private:
     Settings m_settings;
+    InputTextCtrl* gbCtrl[8];
+    InputTextCtrl* smsCtrl[13];
     
 	bool TransferDataToWindow();
 	bool TransferDataFromWindow();
@@ -43,6 +46,8 @@ private:
 	wxPanel* CreateVideoSettingsPage(wxWindow* parent);
 	wxPanel* CreateSoundSettingsPage(wxWindow* parent);
 	wxPanel* CreateInputSettingsPage(wxWindow* parent);
+    wxWindow* CreateInputGB(wxWindow *parent);
+    wxWindow* CreateInputSMS(wxWindow *parent);
 };
 
 
