@@ -1,0 +1,476 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="GUI">
+      <UniqueIdentifier>{4861e1cf-2efa-493e-ba9c-9c63b428d2ab}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="3D">
+      <UniqueIdentifier>{1ed34d05-de34-4a44-b8a4-c5c30d34911f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="3D\GLEW">
+      <UniqueIdentifier>{8ba27f37-37e5-4162-bd52-dca5d805b0b4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Sms_Snd_Emu-0.1.1">
+      <UniqueIdentifier>{6bfd2d70-aca9-42d7-8699-90dcc94439dd}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="GB-GBC">
+      <UniqueIdentifier>{93c6054f-0899-4d43-909b-ff5cfcfde5d4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="SMS-GG">
+      <UniqueIdentifier>{4299b5c3-c1cc-42df-b21e-9ef5afb23898}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Common">
+      <UniqueIdentifier>{39cca68f-ca33-4403-b955-0585b3a34a0c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Gb_Snd_Emu-0.1.4">
+      <UniqueIdentifier>{185b026c-daaf-40b9-9acc-95a78c4e3cc0}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\..\src\GUI\AboutDialog.h">
+      <Filter>GUI</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\GUI\IDControls.h">
+      <Filter>GUI</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\GUI\InputTextCtrl.h">
+      <Filter>GUI</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\GUI\MainApp.h">
+      <Filter>GUI</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\GUI\MainFrame.h">
+      <Filter>GUI</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\GUI\SettingsDialog.h">
+      <Filter>GUI</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\GUI\RendererSW.h">
+      <Filter>GUI</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\GUI\RendererBase.h">
+      <Filter>GUI</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\GUI\RendererOGL.h">
+      <Filter>GUI</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\GUI\EmulationThread.h">
+      <Filter>GUI</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\GUI\Settings.h">
+      <Filter>GUI</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\GUI\3D\Array.h">
+      <Filter>3D</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\GUI\3D\Camera.h">
+      <Filter>3D</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\GUI\3D\Geo.h">
+      <Filter>3D</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\GUI\3D\wxImageLoader.h">
+      <Filter>3D</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\GUI\BreakpointsDialog.h">
+      <Filter>GUI</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\Sms_Snd_Emu-0.1.1\boost\array.hpp">
+      <Filter>Sms_Snd_Emu-0.1.1</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\Sms_Snd_Emu-0.1.1\boost\config.hpp">
+      <Filter>Sms_Snd_Emu-0.1.1</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\Sms_Snd_Emu-0.1.1\boost\cstdint.hpp">
+      <Filter>Sms_Snd_Emu-0.1.1</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\Sms_Snd_Emu-0.1.1\boost\scoped_ptr.hpp">
+      <Filter>Sms_Snd_Emu-0.1.1</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\Sms_Snd_Emu-0.1.1\boost\static_assert.hpp">
+      <Filter>Sms_Snd_Emu-0.1.1</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\Sms_Snd_Emu-0.1.1\blargg_common.h">
+      <Filter>Sms_Snd_Emu-0.1.1</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\Sms_Snd_Emu-0.1.1\Blip_Synth.h">
+      <Filter>Sms_Snd_Emu-0.1.1</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\Sms_Snd_Emu-0.1.1\Sms_Oscs.h">
+      <Filter>Sms_Snd_Emu-0.1.1</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\GUI\Joystick.h">
+      <Filter>GUI</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\GUI\DebuggerGBDialog.h">
+      <Filter>GUI</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\GUI\DebuggerSMSDialog.h">
+      <Filter>GUI</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\GB-GBC\Cartridge.h">
+      <Filter>GB-GBC</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\GB-GBC\CPU.h">
+      <Filter>GB-GBC</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\GB-GBC\Debugger.h">
+      <Filter>GB-GBC</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\GB-GBC\Def.h">
+      <Filter>GB-GBC</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\GB-GBC\GB.h">
+      <Filter>GB-GBC</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\GB-GBC\Instructions.h">
+      <Filter>GB-GBC</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\GB-GBC\InstructionsDef.h">
+      <Filter>GB-GBC</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\GB-GBC\Log.h">
+      <Filter>GB-GBC</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\GB-GBC\MBC.h">
+      <Filter>GB-GBC</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\GB-GBC\Memory.h">
+      <Filter>GB-GBC</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\GB-GBC\Pad.h">
+      <Filter>GB-GBC</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\GB-GBC\Registers.h">
+      <Filter>GB-GBC</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\GB-GBC\RTC.h">
+      <Filter>GB-GBC</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\GB-GBC\Sound.h">
+      <Filter>GB-GBC</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\GB-GBC\Video.h">
+      <Filter>GB-GBC</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\SMS-GG\Cartridge.h">
+      <Filter>SMS-GG</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\SMS-GG\CPU.h">
+      <Filter>SMS-GG</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\SMS-GG\Debugger.h">
+      <Filter>SMS-GG</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\SMS-GG\Def.h">
+      <Filter>SMS-GG</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\SMS-GG\Instructions.h">
+      <Filter>SMS-GG</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\SMS-GG\InstructionsCycles.h">
+      <Filter>SMS-GG</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\SMS-GG\InstructionsLength.h">
+      <Filter>SMS-GG</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\SMS-GG\InstructionsName.h">
+      <Filter>SMS-GG</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\SMS-GG\Memory.h">
+      <Filter>SMS-GG</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\SMS-GG\Pad.h">
+      <Filter>SMS-GG</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\SMS-GG\Registers.h">
+      <Filter>SMS-GG</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\SMS-GG\SMS.h">
+      <Filter>SMS-GG</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\SMS-GG\Sound.h">
+      <Filter>SMS-GG</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\SMS-GG\Video.h">
+      <Filter>SMS-GG</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\Common\Bit.h">
+      <Filter>Common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\Common\Debuggable.h">
+      <Filter>Common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\Common\Exception.h">
+      <Filter>Common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\Common\IScreenDrawable.h">
+      <Filter>Common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\Common\SoundSDL.h">
+      <Filter>Common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\Common\Types.h">
+      <Filter>Common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\Common\VideoGameDevice.h">
+      <Filter>Common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\External\Gb_Snd_Emu-0.1.4\Basic_Gb_Apu.h">
+      <Filter>Gb_Snd_Emu-0.1.4</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\External\Gb_Snd_Emu-0.1.4\gb_apu\blargg_common.h">
+      <Filter>Gb_Snd_Emu-0.1.4</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\External\Gb_Snd_Emu-0.1.4\gb_apu\blargg_source.h">
+      <Filter>Gb_Snd_Emu-0.1.4</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\External\Gb_Snd_Emu-0.1.4\gb_apu\Blip_Synth.h">
+      <Filter>Gb_Snd_Emu-0.1.4</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\External\Gb_Snd_Emu-0.1.4\boost\config.hpp">
+      <Filter>Gb_Snd_Emu-0.1.4</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\External\Gb_Snd_Emu-0.1.4\boost\cstdint.hpp">
+      <Filter>Gb_Snd_Emu-0.1.4</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\External\Gb_Snd_Emu-0.1.4\gb_apu\Gb_Apu.h">
+      <Filter>Gb_Snd_Emu-0.1.4</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\External\Gb_Snd_Emu-0.1.4\gb_apu\Gb_Blip_Buffer.h">
+      <Filter>Gb_Snd_Emu-0.1.4</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\External\Gb_Snd_Emu-0.1.4\gb_apu\Gb_Oscs.h">
+      <Filter>Gb_Snd_Emu-0.1.4</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\External\Gb_Snd_Emu-0.1.4\gb_apu\Multi_Buffer.h">
+      <Filter>Gb_Snd_Emu-0.1.4</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\External\Gb_Snd_Emu-0.1.4\Sound_Queue.h">
+      <Filter>Gb_Snd_Emu-0.1.4</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\External\Gb_Snd_Emu-0.1.4\boost\static_assert.hpp">
+      <Filter>Gb_Snd_Emu-0.1.4</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\External\Gb_Snd_Emu-0.1.4\Wave_Writer.h">
+      <Filter>Gb_Snd_Emu-0.1.4</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\External\Sms_Snd_Emu-0.1.1\Sms_Blip_Buffer.h">
+      <Filter>Sms_Snd_Emu-0.1.1</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\External\Sms_Snd_Emu-0.1.1\Sms_Apu.h">
+      <Filter>Sms_Snd_Emu-0.1.1</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\External\Sms_Snd_Emu-0.1.1\Sound_Writer.hpp">
+      <Filter>Sms_Snd_Emu-0.1.1</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\External\Sms_Snd_Emu-0.1.1\Stereo_Buffer.h">
+      <Filter>Sms_Snd_Emu-0.1.1</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\GUI\Rewind.h">
+      <Filter>GUI</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\..\src\GUI\AboutDialog.cpp">
+      <Filter>GUI</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\GUI\InputTextCtrl.cpp">
+      <Filter>GUI</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\GUI\MainApp.cpp">
+      <Filter>GUI</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\GUI\MainFrame.cpp">
+      <Filter>GUI</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\GUI\SettingsDialog.cpp">
+      <Filter>GUI</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\GUI\RendererBase.cpp">
+      <Filter>GUI</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\GUI\RendererOGL.cpp">
+      <Filter>GUI</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\GUI\RendererSW.cpp">
+      <Filter>GUI</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\GUI\EmulationThread.cpp">
+      <Filter>GUI</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\GUI\Settings.cpp">
+      <Filter>GUI</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\GUI\3D\Array.cpp">
+      <Filter>3D</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\GUI\3D\Camera.cpp">
+      <Filter>3D</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\GUI\3D\Geo.cpp">
+      <Filter>3D</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\GUI\3D\wxImageLoader.cpp">
+      <Filter>3D</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\GUI\3D\glew-1.10.0\src\glew.c">
+      <Filter>3D\GLEW</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\GUI\BreakpointsDialog.cpp">
+      <Filter>GUI</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\GUI\Joystick.cpp">
+      <Filter>GUI</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\GUI\DebuggerGBDialog.cpp">
+      <Filter>GUI</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\GUI\DebuggerSMSDialog.cpp">
+      <Filter>GUI</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\GB-GBC\Cartridge.cpp">
+      <Filter>GB-GBC</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\GB-GBC\CPU.cpp">
+      <Filter>GB-GBC</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\GB-GBC\Debugger.cpp">
+      <Filter>GB-GBC</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\GB-GBC\GB.cpp">
+      <Filter>GB-GBC</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\GB-GBC\Instructions.cpp">
+      <Filter>GB-GBC</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\GB-GBC\InstructionsDef.cpp">
+      <Filter>GB-GBC</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\GB-GBC\Log.cpp">
+      <Filter>GB-GBC</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\GB-GBC\MBC.cpp">
+      <Filter>GB-GBC</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\GB-GBC\Memory.cpp">
+      <Filter>GB-GBC</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\GB-GBC\Pad.cpp">
+      <Filter>GB-GBC</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\GB-GBC\Registers.cpp">
+      <Filter>GB-GBC</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\GB-GBC\RTC.cpp">
+      <Filter>GB-GBC</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\GB-GBC\Sound.cpp">
+      <Filter>GB-GBC</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\GB-GBC\Video.cpp">
+      <Filter>GB-GBC</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\SMS-GG\Cartridge.cpp">
+      <Filter>SMS-GG</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\SMS-GG\CPU.cpp">
+      <Filter>SMS-GG</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\SMS-GG\CPU.Opcode.cpp">
+      <Filter>SMS-GG</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\SMS-GG\Debugger.cpp">
+      <Filter>SMS-GG</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\SMS-GG\Instructions.cpp">
+      <Filter>SMS-GG</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\SMS-GG\InstructionsCycles.cpp">
+      <Filter>SMS-GG</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\SMS-GG\InstructionsLength.cpp">
+      <Filter>SMS-GG</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\SMS-GG\InstructionsName.cpp">
+      <Filter>SMS-GG</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\SMS-GG\Memory.cpp">
+      <Filter>SMS-GG</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\SMS-GG\Pad.cpp">
+      <Filter>SMS-GG</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\SMS-GG\Registers.cpp">
+      <Filter>SMS-GG</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\SMS-GG\SMS.cpp">
+      <Filter>SMS-GG</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\SMS-GG\Sound.cpp">
+      <Filter>SMS-GG</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\SMS-GG\Video.cpp">
+      <Filter>SMS-GG</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\Common\Debuggable.cpp">
+      <Filter>Common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\Common\Exception.cpp">
+      <Filter>Common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\Common\SoundSDL.cpp">
+      <Filter>Common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\External\Gb_Snd_Emu-0.1.4\Basic_Gb_Apu.cpp">
+      <Filter>Gb_Snd_Emu-0.1.4</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\External\Gb_Snd_Emu-0.1.4\demo.cpp">
+      <Filter>Gb_Snd_Emu-0.1.4</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\External\Gb_Snd_Emu-0.1.4\demo_sdl.cpp">
+      <Filter>Gb_Snd_Emu-0.1.4</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\External\Gb_Snd_Emu-0.1.4\gb_apu\Gb_Apu.cpp">
+      <Filter>Gb_Snd_Emu-0.1.4</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\External\Gb_Snd_Emu-0.1.4\gb_apu\Gb_Blip_Buffer.cpp">
+      <Filter>Gb_Snd_Emu-0.1.4</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\External\Gb_Snd_Emu-0.1.4\gb_apu\Gb_Oscs.cpp">
+      <Filter>Gb_Snd_Emu-0.1.4</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\External\Gb_Snd_Emu-0.1.4\gb_apu\Multi_Buffer.cpp">
+      <Filter>Gb_Snd_Emu-0.1.4</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\External\Gb_Snd_Emu-0.1.4\Sound_Queue.cpp">
+      <Filter>Gb_Snd_Emu-0.1.4</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\External\Gb_Snd_Emu-0.1.4\Wave_Writer.cpp">
+      <Filter>Gb_Snd_Emu-0.1.4</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\External\Sms_Snd_Emu-0.1.1\Sms_Blip_Buffer.cpp">
+      <Filter>Sms_Snd_Emu-0.1.1</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\External\Sms_Snd_Emu-0.1.1\Sms_Apu.cpp">
+      <Filter>Sms_Snd_Emu-0.1.1</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\External\Sms_Snd_Emu-0.1.1\Sound_Writer.cpp">
+      <Filter>Sms_Snd_Emu-0.1.1</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\External\Sms_Snd_Emu-0.1.1\Stereo_Buffer.cpp">
+      <Filter>Sms_Snd_Emu-0.1.1</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\GUI\Rewind.cpp">
+      <Filter>GUI</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\GUI\RendererOGL.Overlay.cpp">
+      <Filter>GUI</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="..\..\..\src\GUI\Windows\DMGBoy.rc">
+      <Filter>GB-GBC</Filter>
+    </ResourceCompile>
+  </ItemGroup>
+</Project>

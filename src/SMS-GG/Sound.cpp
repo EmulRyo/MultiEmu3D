@@ -19,6 +19,7 @@
 // Definir la siguiente linea para que en Visual Studio no haya conflicto
 // entre SDL y Sms_Snd_Emu al definir tipos basicos
 #define BLARGG_COMPILER_HAS_NAMESPACE 1
+#define BLARGG_USE_NAMESPACE 1
 #include "Sms_Apu.h"
 #include "Stereo_Buffer.h"
 #ifdef __WXMSW__

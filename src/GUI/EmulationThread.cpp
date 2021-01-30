@@ -283,7 +283,7 @@ void EmulationThread::UpdatePad()
 {
     if (emuState == Playing) {
         int numButtons = m_device->PadGetNumButtons();
-        bool buttonsState[numButtons];
+        bool *buttonsState = new bool[numButtons];
         for (int i=0; i<numButtons; i++)
             buttonsState[i] = wxGetKeyState(keysUsed[i]);
         joystick->UpdateButtonsState(buttonsState);
@@ -297,6 +297,7 @@ void EmulationThread::UpdatePad()
             
             SetSpeed(space ? SpeedMax : SpeedNormal);
         }
+		delete[] buttonsState;
     }
 }
 

@@ -15,6 +15,7 @@
  along with DMGBoy.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include <algorithm>
 #include "CPU.h"
 #include "Sound.h"
 #include "Video.h"

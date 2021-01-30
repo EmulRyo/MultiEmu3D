@@ -17,6 +17,7 @@
 
 #include <assert.h>
 #include <string.h>
+#include "SDL.h"
 #include "SoundSDL.h"
 
 static bool sdlInitialized = false;

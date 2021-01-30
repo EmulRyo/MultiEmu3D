@@ -95,11 +95,7 @@
 #endif
 
 #ifndef BOOST
-	#if BLARGG_USE_NAMESPACE
-		#define BOOST boost
-	#else
-		#define BOOST
-	#endif
+	#define BOOST boost
 #endif
 
 #undef BLARGG_BEGIN_NAMESPACE

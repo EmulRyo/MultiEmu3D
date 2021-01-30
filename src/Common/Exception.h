@@ -20,7 +20,7 @@
 
 #include <string>
 
-enum ExceptionType { Unknown, Error, Exit };
+enum ExceptionType { UnknownExc, Error, Exit };
 
 class Exception: public std::exception
 {

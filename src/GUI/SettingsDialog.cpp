@@ -27,7 +27,6 @@
 #include <wx/config.h>
 #include "SettingsDialog.h"
 #include "IDControls.h"
-#include "../SMS-GG/Pad.h"
 
 
 BEGIN_EVENT_TABLE(SettingsDialog, wxPropertySheetDialog)
@@ -118,7 +117,7 @@ wxPanel* SettingsDialog::CreateVideoSettingsPage(wxWindow* parent)
 {
     wxPanel* panel = new wxPanel(parent, wxID_ANY);
     
-    wxStaticText * grayGreenLabel = new wxStaticText(panel, wxID_ANY, _("DMG color palette:"));
+    wxStaticText * grayGreenLabel = new wxStaticText(panel, wxID_ANY, _("GameBoy palette:"));
     wxString grayGreenChoices[2];
     grayGreenChoices[0] = _("Grayscale");
     grayGreenChoices[1] = _("Greenscale");

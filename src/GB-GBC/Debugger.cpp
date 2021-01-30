@@ -28,7 +28,7 @@
 using namespace std;
 using namespace GameBoy;
 
-Debugger::Debugger(GameBoy::Sound *sound, Video *video, CPU *cpu, Cartridge *cartridge)
+Debugger::Debugger(GameBoy::Sound *sound, GameBoy::Video *video, GameBoy::CPU *cpu, GameBoy::Cartridge *cartridge)
 {
     m_sound = sound;
     m_video = video;

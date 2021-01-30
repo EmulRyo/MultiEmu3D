@@ -21,12 +21,12 @@ using namespace std;
 
 Exception::Exception(): exception()
 {
-	newException("", Unknown);
+	newException("", UnknownExc);
 }
 
 Exception::Exception(string description): exception()
 {
-	newException(description, Unknown);
+	newException(description, UnknownExc);
 }
 
 Exception::Exception(string description, ExceptionType type): exception()

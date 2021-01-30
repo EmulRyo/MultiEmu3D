@@ -27,3 +27,7 @@ build/linux/CodeBlocks/gb.jpg
 */log.txt
 build/installers/MarkSystem*
 build/installers/binaries/*
+build/src/
+build/win32/vs2017/.vs/
+*.zip
+*.7z

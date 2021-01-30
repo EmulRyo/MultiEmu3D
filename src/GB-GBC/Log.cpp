@@ -61,7 +61,7 @@ void QueueLog::Empty()
 	m_last = NULL;
 }
 
-void QueueLog::Enqueue(string prefix, Registers *regs, string suffix)
+void QueueLog::Enqueue(string prefix, GameBoy::Registers *regs, string suffix)
 {
 	ItemLog * newItem = new ItemLog;
 	newItem->prefix = prefix;
