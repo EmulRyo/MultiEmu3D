@@ -1,5 +1,5 @@
 /*
- This file is part of DMGBoy.
+ This file is part of MultiEmu3D.
  
  DMGBoy is free software: you can redistribute it and/or modify
  it under the terms of the GNU General Public License as published by
@@ -18,11 +18,11 @@
 #ifndef __APPDEFS_H__
 #define __APPDEFS_H__
 
-#define APP_NAME		"MarkSystem"
+#define APP_NAME		"MultiEmu3D"
 #define APP_VERSION		"0.1"
 #define APP_MAINT		"Pablo Gascó"
 #define APP_LICENCE		"GPL v3"
-#define APP_COPYRIGTH	"(C) 2014 Pablo Gasco"
-#define APP_WEBSITE		"http://code.google.com/p/marksystem/"
+#define APP_COPYRIGTH	"(C) 2021 Pablo Gasco"
+#define APP_WEBSITE		"https://github.com/EmulRyo/MultiEmu3D"
 
 #endif

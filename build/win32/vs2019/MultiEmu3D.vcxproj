@@ -164,13 +164,13 @@
     <ClCompile Include="..\..\..\src\SMS-GG\Video.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ResourceCompile Include="..\..\..\src\GUI\Windows\DMGBoy.rc" />
+    <ResourceCompile Include="..\..\..\src\GUI\Windows\MultiEmu3D.rc" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{F8EA2224-322E-4208-BDE5-3DF28CEB5100}</ProjectGuid>
     <RootNamespace>GB</RootNamespace>
     <Keyword>Win32Proj</Keyword>
-    <ProjectName>MarkSystem</ProjectName>
+    <ProjectName>MultiEmu3D</ProjectName>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
