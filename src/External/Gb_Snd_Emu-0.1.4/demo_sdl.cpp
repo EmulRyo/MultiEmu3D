@@ -5,6 +5,7 @@
 #include "Sound_Queue.h"
 #include "SDL.h"
 
+#include <stdio.h>
 #include <stdlib.h>
 
 static Basic_Gb_Apu apu;

@@ -37,9 +37,10 @@ AboutDialog::AboutDialog (wxWindow *parent)
     SetTitle (_("About ..."));
 
 #ifdef __WXMSW__
-	const SDL_version* sdlVersion = SDL_Linked_Version();
+    SDL_version sdlVersion;
+    SDL_GetVersion(&sdlVersion);
 	wxString stringSDLVersion;
-	stringSDLVersion << (int)sdlVersion->major << wxT(".") << (int)sdlVersion->minor << wxT(".") << (int)sdlVersion->patch;
+	stringSDLVersion << (int)sdlVersion.major << wxT(".") << (int)sdlVersion.minor << wxT(".") << (int)sdlVersion.patch;
 #endif
 
     // about info
