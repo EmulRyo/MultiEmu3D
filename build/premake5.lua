@@ -77,3 +77,9 @@ project "MultiEmu3D"
 
     -- Reset the filter for other settings
     filter { }
+
+    -- copy a file from the objects directory to the target directory
+   postbuildcommands {
+      "{COPY} %{wks.location}\\..\\..\\libraries\\wxWidgets-3.0.5\\lib\\vc142_dll\\*.dll %{wks.location}\\bin\\%{cfg.buildcfg}",
+      "{COPY} %{wks.location}\\..\\..\\libraries\\SDL2-2.0.14\\lib\\x86\\SDL2.dll %{wks.location}\\bin\\%{cfg.buildcfg}",
+   }
