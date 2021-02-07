@@ -2,3 +2,7 @@ build/src/
 build/win32/vs2019/.vs/
 build/win32/vs2019/Debug/
 build/win32/vs2019/MultiEmu3D.vcxproj.user
+libraries/wxWidgets-3.0.5/
+libraries/SDL2-2.0.14/
+build/vs2019/
+build/premake5.exe
