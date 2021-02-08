@@ -7,7 +7,7 @@ workspace "MultiEmu3D"
    language "C++"
    
    -- We will compile for x86_64. You can change this to x86 for 32 bit builds.
-   architecture "x86"
+   architecture "x86_64"
 
    -- Configurations are often used to store some compiler / linker settings together.
    -- The Debug configuration will be used by us while debugging.
@@ -26,12 +26,12 @@ workspace "MultiEmu3D"
        "GLEW_STATIC"
     }
     
-    -- Here we use some "tokens" (the things between %{ ... }). They will be replaced by Premake
+   -- Here we use some "tokens" (the things between %{ ... }). They will be replaced by Premake
 	-- automatically when configuring the projects.
 	-- * %{prj.name} will be replaced by "MultiEmu3D"
 	--  * %{cfg.longname} will be replaced by "Debug" or "Release" depending on the configuration
-    -- The path is relative to *this* folder
-    targetdir "%{wks.location}/bin/%{cfg.buildcfg}"
+   -- The path is relative to *this* folder
+   targetdir "%{wks.location}/bin/%{cfg.buildcfg}"
 	objdir "%{wks.location}/obj/%{cfg.buildcfg}"
 
 project "MultiEmu3D"
@@ -61,10 +61,17 @@ project "MultiEmu3D"
         "../libraries/Sms_Snd_Emu-0.1.1",
         "../libraries/Gb_Snd_Emu-0.1.4"
    }
-   libdirs {
-        "../libraries/SDL2-2.0.14/lib/x86",
-        "../libraries/wxWidgets-3.0.5/lib/vc142_dll"
-   }
+   filter "architecture:x86"
+      libdirs {
+         "../libraries/SDL2-2.0.14/lib/x86",
+         "../libraries/wxWidgets-3.0.5/lib/vc142_dll"
+      }
+   filter "architecture:x86_64"
+      libdirs {
+         "../libraries/SDL2-2.0.14/lib/x64",
+         "../libraries/wxWidgets-3.0.5/lib/vc142_x64_dll"
+      }
+   filter { }
    links { "opengl32", "glu32", "SDL2", "SDL2main" }
     
    filter "configurations:Debug"
@@ -75,11 +82,18 @@ project "MultiEmu3D"
       defines { "NDEBUG" }
       optimize "On"
 
-    -- Reset the filter for other settings
-    filter { }
+   -- copy dlls from the libraries directories to the target directory
+   filter "architecture:x86"
+      postbuildcommands {
+         "{COPY} %{wks.location}\\..\\..\\libraries\\wxWidgets-3.0.5\\lib\\vc142_dll\\*.dll %{wks.location}\\bin\\%{cfg.buildcfg}",
+         "{COPY} %{wks.location}\\..\\..\\libraries\\SDL2-2.0.14\\lib\\x86\\SDL2.dll %{wks.location}\\bin\\%{cfg.buildcfg}",
+      }
 
-    -- copy a file from the objects directory to the target directory
-   postbuildcommands {
-      "{COPY} %{wks.location}\\..\\..\\libraries\\wxWidgets-3.0.5\\lib\\vc142_dll\\*.dll %{wks.location}\\bin\\%{cfg.buildcfg}",
-      "{COPY} %{wks.location}\\..\\..\\libraries\\SDL2-2.0.14\\lib\\x86\\SDL2.dll %{wks.location}\\bin\\%{cfg.buildcfg}",
-   }
+   filter "architecture:x86_64"
+      postbuildcommands {
+         "{COPY} %{wks.location}\\..\\..\\libraries\\wxWidgets-3.0.5\\lib\\vc142_x64_dll\\*.dll %{wks.location}\\bin\\%{cfg.buildcfg}",
+         "{COPY} %{wks.location}\\..\\..\\libraries\\SDL2-2.0.14\\lib\\x64\\SDL2.dll %{wks.location}\\bin\\%{cfg.buildcfg}",
+      }
+
+   -- Reset the filter for other settings
+   filter { }
