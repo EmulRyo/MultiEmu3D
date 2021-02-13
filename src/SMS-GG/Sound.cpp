@@ -157,13 +157,13 @@ void Sound::EndFrame(u32 cyclesElapsed) {
 	m_apu->end_frame(cyclesElapsed);
     m_mixer->end_frame(cyclesElapsed);
 	
-	int const bufSize = m_mixer->samples_avail();
+	const size_t bufSize = m_mixer->samples_avail();
 	blip_sample_t *buf = new blip_sample_t[bufSize];
 	
     // Play whatever samples are available
-    long count = m_mixer->read_samples(buf, bufSize);
+    size_t count = m_mixer->read_samples(buf, bufSize);
     
-    m_sound->Write(buf, count);
+    m_sound->Write(buf, (int)count);
 
 	delete[] buf;
 }
