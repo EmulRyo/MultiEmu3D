@@ -263,8 +263,8 @@ void MainFrame::OnRecent(wxCommandEvent &event)
 
 void MainFrame::OnFileOpen(wxCommandEvent &) {
 
-	enumEmuStates copyState = m_emulation->GetState();
-    m_emulation->SetState(Paused);
+	EmuState copyState = m_emulation->GetState();
+    m_emulation->SetState(EmuState::Paused);
 	
 	wxFileDialog* openDialog = new wxFileDialog(this, _("Choose a rom to open"), wxEmptyString, wxEmptyString,
 												wxT("All roms (*.sms; *.gg; *.gb; *.gbc; *.zip)|*.sms;*.gg;*.gb;*.gbc;*.zip"),
@@ -470,9 +470,9 @@ void MainFrame::OnClose(wxCloseEvent&)
  */
 void MainFrame::OnSettings(wxCommandEvent &)
 {
-	enumEmuStates lastState = m_emulation->GetState();
-	if (m_emulation->GetState() == Playing)
-		m_emulation->SetState(Paused);
+	EmuState lastState = m_emulation->GetState();
+	if (m_emulation->GetState() == EmuState::Playing)
+		m_emulation->SetState(EmuState::Paused);
 
 
     if (m_settingsDialog->ShowModal() == wxID_OK)
@@ -515,25 +515,25 @@ void MainFrame::OnAbout(wxCommandEvent &)
 
 void MainFrame::OnPlay(wxCommandEvent &)
 {
-    m_emulation->SetState(Playing);
+    m_emulation->SetState(EmuState::Playing);
 }
 
 void MainFrame::OnPause(wxCommandEvent &)
 {
-	if (m_emulation->GetState() == Playing)
-		m_emulation->SetState(Paused);
-	else if (m_emulation->GetState() == Paused)
-		m_emulation->SetState(Playing);
+	if (m_emulation->GetState() == EmuState::Playing)
+		m_emulation->SetState(EmuState::Paused);
+	else if (m_emulation->GetState() == EmuState::Paused)
+		m_emulation->SetState(EmuState::Playing);
 }
 
 void MainFrame::OnStop(wxCommandEvent &)
 {
-    m_emulation->SetState(Stopped);
+    m_emulation->SetState(EmuState::Stopped);
 }
 
 void MainFrame::OnPlayUpdateUI(wxUpdateUIEvent& event)
 {
-	if ((m_emulation->GetState() == NotStartedYet) || (m_emulation->GetState() == Playing))
+	if ((m_emulation->GetState() == EmuState::NotStartedYet) || (m_emulation->GetState() == EmuState::Playing))
 		event.Enable(false);
 	else
 		event.Enable(true);
@@ -541,7 +541,7 @@ void MainFrame::OnPlayUpdateUI(wxUpdateUIEvent& event)
 
 void MainFrame::OnPauseUpdateUI(wxUpdateUIEvent& event)
 {
-	if ((m_emulation->GetState() == NotStartedYet) || (m_emulation->GetState() == Stopped))
+	if ((m_emulation->GetState() == EmuState::NotStartedYet) || (m_emulation->GetState() == EmuState::Stopped))
 		event.Enable(false);
 	else
 		event.Enable(true);
@@ -549,20 +549,20 @@ void MainFrame::OnPauseUpdateUI(wxUpdateUIEvent& event)
 
 void MainFrame::OnStopUpdateUI(wxUpdateUIEvent& event)
 {
-	if ((m_emulation->GetState() == Stopped) || (m_emulation->GetState() == NotStartedYet))
+	if ((m_emulation->GetState() == EmuState::Stopped) || (m_emulation->GetState() == EmuState::NotStartedYet))
 		event.Enable(false);
 	else
 		event.Enable(true);
 }
 
 void MainFrame::OnDebugUpdateUI(wxUpdateUIEvent& event) {
-    bool enabled = (m_emulation->GetState() != NotStartedYet);
+    bool enabled = (m_emulation->GetState() != EmuState::NotStartedYet);
     event.Enable(enabled);
 }
 
 void MainFrame::OnLoadStateUpdateUI(wxUpdateUIEvent& event)
 {
-	if ((m_emulation->GetState() == Stopped) || (m_emulation->GetState() == NotStartedYet))
+	if ((m_emulation->GetState() == EmuState::Stopped) || (m_emulation->GetState() == EmuState::NotStartedYet))
 		event.Enable(false);
 	else
 		event.Enable(true);
@@ -570,7 +570,7 @@ void MainFrame::OnLoadStateUpdateUI(wxUpdateUIEvent& event)
 
 void MainFrame::OnSaveStateUpdateUI(wxUpdateUIEvent& event)
 {
-	if ((m_emulation->GetState() == Stopped)||(m_emulation->GetState() == NotStartedYet))
+	if ((m_emulation->GetState() == EmuState::Stopped)||(m_emulation->GetState() == EmuState::NotStartedYet))
 		event.Enable(false);
 	else
 		event.Enable(true);
@@ -697,7 +697,7 @@ void MainFrame::OnChangeView(wxCommandEvent &event) {
 }
 
 void MainFrame::OnDebug(wxCommandEvent &event) {
-    m_emulation->SetState(Paused);
+    m_emulation->SetState(EmuState::Paused);
     
     VideoGameDevice *device = m_emulation->GetVideoGameDevice();
     if ((device->GetType() == MASTERSYSTEM) || (device->GetType() == GAMEGEAR)) {

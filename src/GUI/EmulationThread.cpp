@@ -39,15 +39,15 @@ EmulationThread::EmulationThread()
     m_device = NULL;
     m_rewind = NULL;
     
-    emuState = NotStartedYet;
+    emuState = EmuState::NotStartedYet;
     
     joystick = new Joystick();
     m_finished = false;
-    m_speed = SpeedNormal;
+    m_speed = EmuSpeed::Normal;
 }
 
 EmulationThread::~EmulationThread() {
-    emuState = Stopped;
+    emuState = EmuState::Stopped;
     delete m_rewind;
     if (m_device)
         delete m_device;
@@ -55,7 +55,7 @@ EmulationThread::~EmulationThread() {
     delete joystick;
 }
 
-void EmulationThread::SetState(enumEmuStates state)
+void EmulationThread::SetState(EmuState state)
 {
     wxMutexLocker lock(*mutex);
     
@@ -64,14 +64,14 @@ void EmulationThread::SetState(enumEmuStates state)
     
     this->emuState = state;
     
-    if (state == Playing) {
+    if (state == EmuState::Playing) {
         m_device->SoundEnable(SettingsGetSoundEnabled());
         ((RendererBase *)m_screen)->SetIcon(Renderer::Play);
     }
     else
         m_device->SoundEnable(false);
     
-    if (state == Stopped)
+    if (state == EmuState::Stopped)
     {
         ((RendererBase *)m_screen)->SetIcon(Renderer::Stop);
         ((RendererBase *)m_screen)->SetRewindValue(-1);
@@ -80,12 +80,12 @@ void EmulationThread::SetState(enumEmuStates state)
         m_device->CartridgeExtract();
         m_device->Reset();
     }
-    else if (state == Paused) {
+    else if (state == EmuState::Paused) {
         ((RendererBase *)m_screen)->SetIcon(Renderer::Pause);
     }
 }
 
-enumEmuStates EmulationThread::GetState()
+EmuState EmulationThread::GetState()
 {
     return this->emuState;
 }
@@ -100,7 +100,7 @@ wxThread::ExitCode EmulationThread::Entry()
         swFrame.Start();
 		{
 			wxMutexLocker lock(*mutex);
-			if (emuState == Playing)
+			if (emuState == EmuState::Playing)
             {
                 if (!m_rewind->IsEnabled()) {
                     m_device->ExecuteOneFrame();
@@ -109,7 +109,7 @@ wxThread::ExitCode EmulationThread::Entry()
             }
 		} // Desbloquear el mutex
         
-        if (m_speed == SpeedNormal) {
+        if (m_speed == EmuSpeed::Normal) {
             long time = swFrame.Time();
             if (time < desired)
                 this->Sleep(desired-time);
@@ -188,7 +188,7 @@ bool EmulationThread::ChangeFile(wxString fileName)
             m_device->CartridgeLoad(string(fileName.mb_str()), string(battsDir.mb_str()));
     }
     
-	SetState(Playing);
+	SetState(EmuState::Playing);
     
     return true;
 }
@@ -281,7 +281,7 @@ void EmulationThread::SetScreenNoMutex(IScreenDrawable *screen) {
 
 void EmulationThread::UpdatePad()
 {
-    if (emuState == Playing) {
+    if (emuState == EmuState::Playing) {
         int numButtons = m_device->PadGetNumButtons();
         bool *buttonsState = new bool[numButtons];
         for (int i=0; i<numButtons; i++)
@@ -295,7 +295,7 @@ void EmulationThread::UpdatePad()
             wxMutexLocker lock(*mutex);
             m_device->PadSetButtons(buttonsState);
             
-            SetSpeed(space ? SpeedMax : SpeedNormal);
+            SetSpeed(space ? EmuSpeed::Max : EmuSpeed::Normal);
         }
 		delete[] buttonsState;
     }
@@ -314,9 +314,9 @@ bool EmulationThread::Finished() {
     return m_finished;
 }
 
-void EmulationThread::SetSpeed(EnumSpeed speed) {
+void EmulationThread::SetSpeed(EmuSpeed speed) {
     if (m_speed != speed) {
-        if (speed == SpeedMax) {
+        if (speed == EmuSpeed::Max) {
             m_soundEnabled = m_device->SoundIsEnabled();
             m_device->SoundEnable(false);
         }

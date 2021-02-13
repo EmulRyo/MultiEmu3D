@@ -22,8 +22,8 @@
 #include <wx/stopwatch.h>
 #include "../Common/IScreenDrawable.h"
 
-enum enumEmuStates { NotStartedYet, Stopped, Paused, Playing };
-enum EnumSpeed { SpeedNormal, SpeedMax };
+enum class EmuState { NotStartedYet, Stopped, Paused, Playing };
+enum class EmuSpeed { Normal, Max };
 
 class Joystick;
 class wxMutex;
@@ -45,10 +45,10 @@ public:
     void SetScreen(IScreenDrawable *screen);
     void UpdatePad();
     VideoGameDevice *GetVideoGameDevice();
-    void SetSpeed(EnumSpeed speed);
+    void SetSpeed(EmuSpeed speed);
     
-    enumEmuStates GetState();
-    void SetState(enumEmuStates state);
+    EmuState GetState();
+    void SetState(EmuState state);
     bool Finished();
     
 private:
@@ -58,12 +58,12 @@ private:
     wxStopWatch swFrame;
     wxKeyCode keysUsed[13];
     bool m_finished;
-    EnumSpeed m_speed;
+    EmuSpeed m_speed;
     bool m_soundEnabled;
     IScreenDrawable *m_screen;
     Rewind *m_rewind;
     
-	enumEmuStates emuState;
+	EmuState emuState;
     
     void ApplySettingsNoMutex();
     void SetScreenNoMutex(IScreenDrawable *screen);
