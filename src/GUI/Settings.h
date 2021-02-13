@@ -47,7 +47,7 @@ int  SettingsGetWindowZoom();
 bool SettingsGetSoundEnabled();
 int  SettingsGetSoundSampleRate();
 long SettingsGetLanguage();
-int* SettingsGetInput(e_devicetype type);
+int* SettingsGetInput(DeviceType type);
 std::string* SettingsGetRecentRoms();
 
 void SettingsSetNewValues(Settings newSettings);
@@ -58,7 +58,7 @@ void SettingsSetWindowZoom(int windowZoom);
 void SettingsSetSoundEnabled(bool enabled);
 void SettingsSetSoundSampleRate(int sampleRate);
 void SettingsSetLanguage(long language);
-void SettingsSetInput(e_devicetype type, const int* padKeys);
+void SettingsSetInput(DeviceType type, const int* padKeys);
 void SettingsSetRecentRoms(const std::string* recentRoms);
 
 void SettingsSaveToFile();

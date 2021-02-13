@@ -21,7 +21,7 @@
 class IScreenDrawable;
 class Debuggable;
 
-enum e_devicetype { GAMEBOY, GAMEBOYCOLOR, MASTERSYSTEM, GAMEGEAR };
+enum class DeviceType { GAMEBOY, GAMEBOYCOLOR, MASTERSYSTEM, GAMEGEAR };
     
 class VideoGameDevice {
 public:
@@ -51,8 +51,8 @@ public:
     virtual void SetExtraData(const std::string &key, void *value) = 0;
     virtual Debuggable *GetDebugger() = 0;
     
-    e_devicetype GetType() { return m_deviceType; };
-    void SetType(e_devicetype type) { m_deviceType = type; };
+    DeviceType GetType() { return m_deviceType; };
+    void SetType(DeviceType type) { m_deviceType = type; };
     
 protected:
     bool EndsWith(const std::string &fullString, const std::string &ending) {
@@ -63,7 +63,7 @@ protected:
     }
     
 private:
-    e_devicetype m_deviceType;
+    DeviceType m_deviceType;
 };
 
 #endif

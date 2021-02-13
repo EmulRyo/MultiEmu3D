@@ -28,7 +28,7 @@
 using namespace MasterSystem;
 
 SMS::SMS() {
-    SetType(MASTERSYSTEM);
+    SetType(DeviceType::MASTERSYSTEM);
     m_sound = new Sound();
     m_video = new Video(NULL);
     m_pad = new Pad();
@@ -84,11 +84,11 @@ void SMS::CartridgeLoad(const std::string &fileName, const std::string &batterie
     std::string fileNameLower = fileName;
     std::transform(fileNameLower.begin(), fileNameLower.end(), fileNameLower.begin(), ::tolower);
     if (EndsWith(fileNameLower, "gg"))
-        SetType(GAMEGEAR);
+        SetType(DeviceType::GAMEGEAR);
     else
-        SetType(MASTERSYSTEM);
+        SetType(DeviceType::MASTERSYSTEM);
     
-    m_cpu->SetGGMode(GetType() == GAMEGEAR);
+    m_cpu->SetGGMode(GetType() == DeviceType::GAMEGEAR);
     
     delete m_debugger;
     m_debugger = new Debugger(m_sound, m_video, m_cpu, m_cartridge, m_pad);

@@ -118,13 +118,13 @@ void SettingsSetLanguage(long language) {
 	settings.language = language;
 }
 
-int* SettingsGetInput(e_devicetype type) {
+int* SettingsGetInput(DeviceType type) {
     switch (type) {
-        case MASTERSYSTEM:
-        case GAMEGEAR:
+        case DeviceType::MASTERSYSTEM:
+        case DeviceType::GAMEGEAR:
             return &settings.smsKeys[0];
-        case GAMEBOY:
-        case GAMEBOYCOLOR:
+        case DeviceType::GAMEBOY:
+        case DeviceType::GAMEBOYCOLOR:
             return &settings.gbKeys[0];
             
         default:
@@ -132,15 +132,15 @@ int* SettingsGetInput(e_devicetype type) {
     }
 }
 
-void SettingsSetInput(e_devicetype type, const int* padKeys) {
+void SettingsSetInput(DeviceType type, const int* padKeys) {
     switch (type) {
-        case MASTERSYSTEM:
-        case GAMEGEAR:
+        case DeviceType::MASTERSYSTEM:
+        case DeviceType::GAMEGEAR:
             for (int i=0; i<13; i++)
                 settings.smsKeys[i] = padKeys[i];
             break;
-        case GAMEBOY:
-        case GAMEBOYCOLOR:
+        case DeviceType::GAMEBOY:
+        case DeviceType::GAMEBOYCOLOR:
             for (int i=0; i<8; i++)
                 settings.gbKeys[i] = padKeys[i];
             break;

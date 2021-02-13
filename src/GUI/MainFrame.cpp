@@ -700,11 +700,11 @@ void MainFrame::OnDebug(wxCommandEvent &event) {
     m_emulation->SetState(EmuState::Paused);
     
     VideoGameDevice *device = m_emulation->GetVideoGameDevice();
-    if ((device->GetType() == MASTERSYSTEM) || (device->GetType() == GAMEGEAR)) {
+    if ((device->GetType() == DeviceType::MASTERSYSTEM) || (device->GetType() == DeviceType::GAMEGEAR)) {
         DebuggerSMSDialog debugger(this, device);
         debugger.ShowModal();
     }
-    else if ((device->GetType() == GAMEBOY) || (device->GetType() == GAMEBOYCOLOR)) {
+    else if ((device->GetType() == DeviceType::GAMEBOY) || (device->GetType() == DeviceType::GAMEBOYCOLOR)) {
         DebuggerGBDialog debugger(this, device);
         debugger.ShowModal();
     }
