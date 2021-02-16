@@ -267,7 +267,7 @@ void MainFrame::OnFileOpen(wxCommandEvent &) {
     m_emulation->SetState(EmuState::Paused);
 	
 	wxFileDialog* openDialog = new wxFileDialog(this, _("Choose a rom to open"), wxEmptyString, wxEmptyString,
-												wxT("All roms (*.sms; *.gg; *.gb; *.gbc; *.zip)|*.sms;*.gg;*.gb;*.gbc;*.zip"),
+												wxT("All roms (*.gb; *.gbc; *.nes; *.sms; *.gg; *.zip)|**.gb;*.gbc;*.nes;.sms;*.gg;*.zip"),
 												wxFD_OPEN, wxDefaultPosition);
 
 	

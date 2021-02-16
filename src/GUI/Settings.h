@@ -33,6 +33,7 @@ public:
 	
 	int  gbKeys[8];
     int  smsKeys[13];
+	int  nesKeys[8];
 	std::string recentRoms[10];
 	
 public:

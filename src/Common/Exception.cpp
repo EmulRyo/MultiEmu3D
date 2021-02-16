@@ -21,12 +21,12 @@ using namespace std;
 
 Exception::Exception(): exception()
 {
-	newException("", UnknownExc);
+	newException("", ExceptionType::Unknown);
 }
 
 Exception::Exception(string description): exception()
 {
-	newException(description, UnknownExc);
+	newException(description, ExceptionType::Unknown);
 }
 
 Exception::Exception(string description, ExceptionType type): exception()
@@ -34,7 +34,7 @@ Exception::Exception(string description, ExceptionType type): exception()
 	newException(description, type);
 }
 
-Exception::~Exception() throw()
+Exception::~Exception() noexcept
 {
 
 }

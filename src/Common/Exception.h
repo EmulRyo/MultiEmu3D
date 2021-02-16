@@ -20,7 +20,7 @@
 
 #include <string>
 
-enum ExceptionType { UnknownExc, Error, Exit };
+enum class ExceptionType { Unknown, Error, Exit };
 
 class Exception: public std::exception
 {
@@ -35,7 +35,7 @@ public:
 	Exception(std::string desc, ExceptionType type);
 	const char* what() const throw();
 	ExceptionType GetType();
-	~Exception() throw();
+	~Exception() noexcept;
 };
 
 #endif

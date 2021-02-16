@@ -22,7 +22,9 @@
 #include <wx/msgdlg.h>
 #include "../SMS-GG/SMS.h"
 #include "../GB-GBC/GB.h"
+#include "../NES/NES.h"
 #include "../Common/VideoGameDevice.h"
+#include "../Common/Exception.h"
 #include "Settings.h"
 #include "EmulationThread.h"
 #include "Joystick.h"
@@ -92,28 +94,33 @@ EmuState EmulationThread::GetState()
 
 wxThread::ExitCode EmulationThread::Entry()
 {
-    while (!TestDestroy())
-    {
-        long desired = 15;  // Milisegundos deseados por frame
-        // Deberia ser 16 pero con ese valor en linux el sonido se entrecorta
-        
-        swFrame.Start();
-		{
-			wxMutexLocker lock(*mutex);
-			if (emuState == EmuState::Playing)
+    try {
+        while (!TestDestroy())
+        {
+            long desired = 15;  // Milisegundos deseados por frame
+            // Deberia ser 16 pero con ese valor en linux el sonido se entrecorta
+
+            swFrame.Start();
             {
-                if (!m_rewind->IsEnabled()) {
-                    m_device->ExecuteOneFrame();
-                    m_rewind->AddFrame();
+                wxMutexLocker lock(*mutex);
+                if (emuState == EmuState::Playing)
+                {
+                    if (!m_rewind->IsEnabled()) {
+                        m_device->ExecuteOneFrame();
+                        m_rewind->AddFrame();
+                    }
                 }
+            } // Desbloquear el mutex
+
+            if (m_speed == EmuSpeed::Normal) {
+                long time = swFrame.Time();
+                if (time < desired)
+                    this->Sleep(desired - time);
             }
-		} // Desbloquear el mutex
-        
-        if (m_speed == EmuSpeed::Normal) {
-            long time = swFrame.Time();
-            if (time < desired)
-                this->Sleep(desired-time);
         }
+    }
+    catch (Exception& exc) {
+        wxMessageBox(exc.what());
     }
     
     m_finished = true;
@@ -143,8 +150,8 @@ bool EmulationThread::ChangeFile(wxString fileName)
         
         u8 *buffer = NULL;
         unsigned long size = 0;
-        bool zip, sms, gb;
-        zip = sms = gb = false;
+        bool zip, sms, gb, nes;
+        zip = sms = gb = nes = false;
         
         if (extension == "zip") {
             zip = true;
@@ -155,8 +162,9 @@ bool EmulationThread::ChangeFile(wxString fileName)
         
         sms = MasterSystem::SMS::IsValidExtension(extension.ToStdString());
         gb  = GameBoy::GB::IsValidExtension(extension.ToStdString());
+        nes = Nes::NES::IsValidExtension(extension.ToStdString());
         
-        if (!sms && !gb) {
+        if (!sms && !gb && !nes) {
             wxMessageBox(_("Not valid files found!"), _("Error"));
             return false;
         }
@@ -177,6 +185,8 @@ bool EmulationThread::ChangeFile(wxString fileName)
             m_device = new MasterSystem::SMS();
         else if (gb)
             m_device = new GameBoy::GB();
+        else if (nes)
+            m_device = new Nes::NES();
         
         m_rewind = new Rewind(m_device);
         ApplySettingsNoMutex();
@@ -194,7 +204,7 @@ bool EmulationThread::ChangeFile(wxString fileName)
 }
 
 /*
- * Carga un fichero comprimido con zip y busca una rom de gameboy (un fichero con extension gb o gbc).
+ * Carga un fichero comprimido con zip y busca una rom.
  * Si existe mas de una rom solo carga la primera. Si se ha encontrado, la rom se devuelve en un buffer
  * junto con su tamaño, sino las variables se dejan intactas
  */
@@ -214,7 +224,8 @@ void EmulationThread::LoadZip(const wxString &zipPath, u8 ** buffer, unsigned lo
             
             bool sms = MasterSystem::SMS::IsValidExtension(extension.ToStdString());
             bool gb  = GameBoy::GB::IsValidExtension(extension.ToStdString());
-            if (sms || gb)
+            bool nes = Nes::NES::IsValidExtension(extension.ToStdString());
+            if (sms || gb || nes)
             {
                 *size = zip.GetSize();
                 *buffer = new u8[*size];

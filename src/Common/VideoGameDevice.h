@@ -21,7 +21,7 @@
 class IScreenDrawable;
 class Debuggable;
 
-enum class DeviceType { GAMEBOY, GAMEBOYCOLOR, MASTERSYSTEM, GAMEGEAR };
+enum class DeviceType { GAMEBOY, GAMEBOYCOLOR, MASTERSYSTEM, GAMEGEAR, NES };
     
 class VideoGameDevice {
 public:

@@ -126,7 +126,8 @@ int* SettingsGetInput(DeviceType type) {
         case DeviceType::GAMEBOY:
         case DeviceType::GAMEBOYCOLOR:
             return &settings.gbKeys[0];
-            
+        case DeviceType::NES:
+            return &settings.nesKeys[0];
         default:
             return NULL;
     }
