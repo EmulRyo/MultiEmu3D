@@ -61,7 +61,11 @@ namespace Nes {
         
         u8  Get8BitsInmValue(u8 offset);
         u16 Get16BitsInmValue(u8 offset);
-
+        u16 GetZeroPageIndexed(u8 regValue);
+        u16 GetZeroPage();
+        u16 GetIndexedIndirect();
+        u16 GetIndirectIndexed();
+        u16 GetAbsoluteIndexed(u8 regValue);
     };
 }
 #endif

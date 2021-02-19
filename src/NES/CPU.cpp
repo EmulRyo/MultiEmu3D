@@ -56,6 +56,7 @@ void CPU::ResetGlobalVariables() {
 void CPU::Reset() {
     ResetGlobalVariables();
 	ResetRegs();
+	SetPC((MemR(0xFFFD) << 8) | MemR(0xFFFC));
 	ResetMem();
     m_v->Reset();
 	m_v->ClearScreen();
@@ -78,7 +79,7 @@ int CPU::Execute(int cyclesToExecute)
 		return 0;
 	
     m_cycles = 0;
-	u8 opcode = 0, nextOpcode = 0, lastOpcode = 0;
+	u8 opcode = 0, lastOpcode = 0;
 
 	Instructions inst(GetPtrRegisters(), GetPtrMemory());
 
@@ -87,7 +88,6 @@ int CPU::Execute(int cyclesToExecute)
 		m_numInstructions++;
 		lastOpcode = opcode;
 		opcode = MemR(GetPC());
-        nextOpcode = MemR(GetPC() + 1);
 		
 		ExecuteOpcode(opcode, inst);
         

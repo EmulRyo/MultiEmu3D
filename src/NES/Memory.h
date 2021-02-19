@@ -21,6 +21,7 @@
 #include <fstream>
 #include "Cartridge.h"
 #include "Sound.h"
+#include "../Common/Exception.h"
 
 #define SIZE_RAM   0x0800
 #define SIZE_MEM (SIZE_RAM)
@@ -42,6 +43,28 @@ namespace Nes {
         void MemW(u16 direction, u8 value);
         inline u8 MemR(u16 address)
         {
+            if (address < 0x0800)
+                return memory[address];
+            else if (address < 0x1000)
+                return memory[address - 0x0800];
+            else if (address < 0x1800)
+                return memory[address - 0x1000];
+            else if (address < 0x2000)
+                return memory[address - 0x1800];
+            else if (address < 0x4000)
+                throw(Exception("MemR PPU registers"));
+            else if (address < 0x4014)
+                throw(Exception("MemR APU registers"));
+            else if (address == 0x4014)
+                throw(Exception("MemR OAM DMA"));
+            else if (address == 0x4015)
+                throw(Exception("MemR APU registers"));
+            else if (address < 0x4018)
+                throw(Exception("MemR Joystick"));
+            else if (address < 0x4020)
+                throw(Exception("MemR test registers"));
+            else
+                return m_c->Read(address);
             return 0;
         }
         void SaveMemory(std::ostream* stream);

@@ -26,6 +26,7 @@
 using namespace std;
 using namespace Nes;
 
+// #v
 u8 CPU::Get8BitsInmValue(u8 offset) {
     return (MemR(GetPC() + offset));
 }
@@ -34,11 +35,46 @@ u16 CPU::Get16BitsInmValue(u8 offset) {
     return ((MemR(GetPC() + offset + 1)) << 8) | MemR(GetPC() + offset);
 }
 
+// d,x | d,y
+u16 CPU::GetZeroPageIndexed(u8 regValue) {
+    return MemR((Get8BitsInmValue(1) + regValue) % 256);
+}
+
+// d
+u16 CPU::GetZeroPage() {
+    return MemR(Get8BitsInmValue(1));
+}
+
+// (d,x)
+u16 CPU::GetIndexedIndirect() {
+    return MemR(MemR((Get8BitsInmValue(1) + GetX()) % 256) + MemR((Get8BitsInmValue(1) + GetX() + 1) % 256) * 256);
+}
+
+// (d),y
+u16 CPU::GetIndirectIndexed() {
+    return MemR(MemR(Get8BitsInmValue(1)) + MemR((Get8BitsInmValue(1) + 1) % 256) * 256 + GetY());
+}
+
+// a,x | a,y
+u16 CPU::GetAbsoluteIndexed(u8 regValue) {
+    return MemR(Get16BitsInmValue(1) + regValue);
+}
+
+
 void CPU::ExecuteOpcode(u8 opcode, Instructions &inst) {
     
     
     switch(opcode)
     {
+        case (0xC1): inst.CMP(GetIndexedIndirect(), 2); break;
+        case (0xC5): inst.CMP(GetZeroPage(), 2); break;
+        case (0xC9): inst.CMP(Get8BitsInmValue(1), 2); break;
+        case (0xCD): inst.CMP(GetAbsoluteIndexed(0), 3); break;
+
+        case (0xD1): inst.CMP(GetIndirectIndexed(), 2); break;
+        case (0xD5): inst.CMP(GetZeroPageIndexed(GetX()), 2); break;
+        case (0xD9): inst.CMP(GetAbsoluteIndexed(GetY()), 3); break;
+        case (0xDD): inst.CMP(GetAbsoluteIndexed(GetX()), 3); break;
         
         default:
             stringstream out;

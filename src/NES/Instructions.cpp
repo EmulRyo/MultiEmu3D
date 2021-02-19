@@ -37,3 +37,10 @@ Instructions::~Instructions(void) {
     
 }
 
+void Instructions::CMP(u8 value, u8 length) {
+	u8 result = m_reg->GetA() - value;
+	m_reg->SetFlagZ(result == 0 ? 1 : 0);
+	m_reg->SetFlagN(BIT7(result) >> 7);
+	m_reg->SetFlagC(m_reg->GetA() < value ? 0 : 1);
+	m_reg->AddPC(length);
+}

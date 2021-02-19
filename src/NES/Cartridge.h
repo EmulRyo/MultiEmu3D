@@ -44,30 +44,26 @@ namespace Nes {
         std::string GetName();
         bool IsLoaded();
 
-        u8 Read(u16 address);
+        u8   Read(u16 address);
         void Write(u16 address, u8 value);
         
         void SaveStateMBC(std::ostream *stream);
         void LoadStateMBC(std::istream *stream);
         
         void Extract();
-        
-        u8   GetNumBank(u8 bank);
-        bool GetRAMEnabled();
-        u8   GetRAMNumBank();
 
     private:
         unsigned long m_romSize;
         std::string m_name;
         bool m_isLoaded;
-        u8  *m_buffer;
-        u8  *m_mem;
-        u8  *m_pages[3];
-        u8   m_numBanks[3];
-        u8   m_maskPages;
-        Ram  m_ram;
+        u8*  m_buffer;
+        u8*  m_prgData;
+        u8*  m_chrData;
+        u8   m_prgBanks;
+        u8   m_chrBanks;
 
         void LoadFile(std::string fileName, std::string batteriesPath);
+        void ReadHeader();
         std::string GetShortName(std::string fileName);
         u32 RoundUpPowerOf2(u32 v);
     };

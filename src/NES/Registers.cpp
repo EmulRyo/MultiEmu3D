@@ -31,8 +31,8 @@ void Registers::ResetRegs()
 	SetA(0x00);
 	SetX(0x00);
 	SetY(0x00);
-	SetS(0x00);
-	SetP(0x00);
+	SetS(0xFD);
+	SetP(0x34);
 	SetPC(0x0000);
 }
 

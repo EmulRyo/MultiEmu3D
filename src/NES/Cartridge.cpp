@@ -29,15 +29,16 @@ using namespace Nes;
 
 Cartridge::Cartridge(string fileName, string batteriesPath, u8 *cartridgeBuffer, unsigned long size)
 {
+    m_prgBanks = 0;
     m_romSize = size;
     m_buffer = cartridgeBuffer;
-    m_mem = cartridgeBuffer;
     m_name = GetShortName(fileName);
     if ((cartridgeBuffer != NULL) && (size > 0))
         m_isLoaded = true;
     else
         LoadFile(fileName, batteriesPath);
-	   
+	
+    ReadHeader();
     Reset();
 }
 
@@ -47,7 +48,8 @@ Cartridge::~Cartridge(void)
 		delete [] m_buffer;
     
     m_buffer = NULL;
-	m_mem = NULL;
+	m_prgData = NULL;
+    m_chrData = NULL;
 }
 
 u32 Cartridge::RoundUpPowerOf2(u32 v) {
@@ -75,9 +77,7 @@ string Cartridge::GetShortName(string fileName) {
 
 void Cartridge::Reset()
 {
-    m_ram.enabled = false;
-    m_ram.numBank = 0;
-    m_ram.page = &m_ram.mem[0x0000];
+    
 }
 
 void Cartridge::LoadFile(string fileName, string batteriesPath) {
@@ -88,7 +88,6 @@ void Cartridge::LoadFile(string fileName, string batteriesPath) {
 		size = file.tellg();
 		m_romSize = (unsigned long)size;
 		m_buffer = new u8 [size];
-        m_mem = m_buffer;
 		file.seekg (0, ios::beg);
 		file.read((char *)m_buffer, (streamsize)size);
 		file.close();
@@ -103,9 +102,43 @@ void Cartridge::LoadFile(string fileName, string batteriesPath) {
 	}
 }
 
+#define SIZE_PRG_ROM 4
+#define SIZE_CHR_ROM 5
+
+void Cartridge::ReadHeader() {
+    bool iNESFormat = false;
+    if (m_buffer[0] == 'N' && m_buffer[1] == 'E' && m_buffer[2] == 'S' && m_buffer[3] == 0x1A)
+        iNESFormat = true;
+
+    bool nes20Format = false;
+    if (iNESFormat == true && (m_buffer[7] & 0x0C) == 0x08)
+        nes20Format = true;
+
+    m_prgBanks = m_buffer[SIZE_PRG_ROM];
+    m_chrBanks = m_buffer[SIZE_CHR_ROM];
+    size_t sizePrgRom = m_prgBanks * 16384ULL;
+    size_t sizeChrRom = m_chrBanks * 8192ULL;
+
+    u8   mirroring = m_buffer[6] & 0x01;
+    bool battery = ((m_buffer[6] & 0x02) > 0) ? true : false;
+    u8   trainer = ((m_buffer[6] & 0x04) > 0) ? 1 : 0;
+    bool fourScreenMode = ((m_buffer[6] & 0x08) > 0) ? true : false;
+
+    bool VSUnisystem = ((m_buffer[7] & 0x01) > 0) ? true : false;
+    bool playChoice10 = ((m_buffer[7] & 0x02) > 0) ? true : false;
+    u16 mapper = (m_buffer[7] & 0xF0) | ((m_buffer[6] & 0xF0) >> 4);
+    if (nes20Format)
+        mapper = ((m_buffer[8] & 0x0F) << 8) | mapper;
+
+    size_t headerSize = 16;
+    size_t trainerSize = 512;
+    m_prgData = m_buffer + trainer * trainerSize;
+    m_chrData = m_prgData + sizePrgRom;
+}
+
 u8 *Cartridge::GetData()
 {
-	return m_mem;
+	return nullptr;
 }
 
 unsigned int Cartridge::GetSize()
@@ -138,21 +171,20 @@ void Cartridge::Extract() {
 }
 
 u8 Cartridge::Read(u16 address) {
-    return m_mem[address];
+    if (address < 0x8000)
+        return 0;
+    else if (address < 0x8000)
+        return m_prgData[address-0x8000];
+    else if (address < 0xC000)
+        return m_prgData[address - 0x8000];
+    else {
+        if (m_prgBanks == 2)
+            return m_prgData[address - 0x8000];
+        else
+            return m_prgData[address - 0xC000];
+    }
 };
 
 void Cartridge::Write(u16 address, u8 value) {
     
 };
-
-u8 Cartridge::GetNumBank(u8 bank) {
-    return m_numBanks[bank & 0x03];
-}
-
-bool Cartridge::GetRAMEnabled() {
-    return m_ram.enabled;
-}
-
-u8 Cartridge::GetRAMNumBank() {
-    return m_ram.numBank;
-}

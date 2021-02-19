@@ -28,6 +28,8 @@ namespace Nes {
     public:
         Instructions(Registers *reg, Memory *mem);
         ~Instructions(void);
+
+        void CMP(u8 value, u8 length);
         
     private:
         Registers   *m_reg;
