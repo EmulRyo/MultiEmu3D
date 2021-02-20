@@ -66,11 +66,25 @@ void CPU::ExecuteOpcode(u8 opcode, Instructions &inst) {
     
     switch(opcode)
     {
+        case (0x10): inst.BPL(); break;
+
+        case (0x30): inst.BMI(); break;
+
+        case (0x50): inst.BVC(); break;
+
+        case (0x70): inst.BVS(); break;
+
+        case (0x90): inst.BCC(); break;
+
+        case (0xB0): inst.BCS(); break;
+
+        case (0xC0): inst.BNE(); break;
         case (0xC1): inst.CMP(GetIndexedIndirect(), 2); break;
         case (0xC5): inst.CMP(GetZeroPage(), 2); break;
         case (0xC9): inst.CMP(Get8BitsInmValue(1), 2); break;
         case (0xCD): inst.CMP(GetAbsoluteIndexed(0), 3); break;
 
+        case (0xD0): inst.BEQ(); break;
         case (0xD1): inst.CMP(GetIndirectIndexed(), 2); break;
         case (0xD5): inst.CMP(GetZeroPageIndexed(GetX()), 2); break;
         case (0xD9): inst.CMP(GetAbsoluteIndexed(GetY()), 3); break;

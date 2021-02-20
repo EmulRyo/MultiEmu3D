@@ -29,6 +29,18 @@ namespace Nes {
         Instructions(Registers *reg, Memory *mem);
         ~Instructions(void);
 
+        u8  Get8BitsInmValue();
+        u16 Get16BitsInmValue();
+
+        void BMI();
+        void BPL();
+        void BCC();
+        void BCS();
+        void BEQ();
+        void BNE();
+        void BVS();
+        void BVC();
+
         void CMP(u8 value, u8 length);
         
     private:

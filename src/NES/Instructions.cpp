@@ -25,9 +25,6 @@
 using namespace std;
 using namespace Nes;
 
-#define _8bitsInmValue (m_mem->MemR(m_reg->GetPC() + 1))
-#define _16bitsInmValue ((m_mem->MemR(m_reg->GetPC() + 2)) << 8) | m_mem->MemR(m_reg->GetPC() + 1)
-
 Instructions::Instructions(Registers* reg, Memory* mem) {
 	m_reg = reg;
 	m_mem = mem;
@@ -35,6 +32,70 @@ Instructions::Instructions(Registers* reg, Memory* mem) {
 
 Instructions::~Instructions(void) {
     
+}
+
+u8 Instructions::Get8BitsInmValue() {
+	return m_mem->MemR(m_reg->GetPC() + 1);
+}
+
+u16 Instructions::Get16BitsInmValue() {
+	return ((m_mem->MemR(m_reg->GetPC() + 2)) << 8) | m_mem->MemR(m_reg->GetPC() + 1);
+}
+
+void Instructions::BMI() {
+	if (m_reg->GetFlagN() == 1)
+		m_reg->AddPC((s8)Get8BitsInmValue());
+	else
+		m_reg->AddPC(2);
+}
+
+void Instructions::BPL() {
+	if (m_reg->GetFlagN() == 0)
+		m_reg->AddPC((s8)Get8BitsInmValue());
+	else
+		m_reg->AddPC(2);
+}
+
+void Instructions::BCC() {
+	if (m_reg->GetFlagC() == 0)
+		m_reg->AddPC((s8)Get8BitsInmValue());
+	else
+		m_reg->AddPC(2);
+}
+
+void Instructions::BCS() {
+	if (m_reg->GetFlagC() == 1)
+		m_reg->AddPC((s8)Get8BitsInmValue());
+	else
+		m_reg->AddPC(2);
+}
+;
+void Instructions::BEQ() {
+	if (m_reg->GetFlagZ() == 1)
+		m_reg->AddPC((s8)Get8BitsInmValue());
+	else
+		m_reg->AddPC(2);
+}
+
+void Instructions::BNE() {
+	if (m_reg->GetFlagZ() == 0)
+		m_reg->AddPC((s8)Get8BitsInmValue());
+	else
+		m_reg->AddPC(2);
+}
+
+void Instructions::BVS() {
+	if (m_reg->GetFlagV() == 1)
+		m_reg->AddPC((s8)Get8BitsInmValue());
+	else
+		m_reg->AddPC(2);
+}
+
+void Instructions::BVC() {
+	if (m_reg->GetFlagV() == 0)
+		m_reg->AddPC((s8)Get8BitsInmValue());
+	else
+		m_reg->AddPC(2);
 }
 
 void Instructions::CMP(u8 value, u8 length) {
