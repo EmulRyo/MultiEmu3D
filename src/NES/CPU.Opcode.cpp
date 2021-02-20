@@ -31,6 +31,7 @@ u8 CPU::Get8BitsInmValue(u8 offset) {
     return (MemR(GetPC() + offset));
 }
 
+// a
 u16 CPU::Get16BitsInmValue(u8 offset) {
     return ((MemR(GetPC() + offset + 1)) << 8) | MemR(GetPC() + offset);
 }
@@ -70,7 +71,11 @@ void CPU::ExecuteOpcode(u8 opcode, Instructions &inst) {
 
         case (0x30): inst.BMI(); break;
 
+        case (0x4C): inst.JMP(); break;
+
         case (0x50): inst.BVC(); break;
+
+        case (0x6C): inst.JMPIndirect(); break;
 
         case (0x70): inst.BVS(); break;
 
@@ -78,17 +83,25 @@ void CPU::ExecuteOpcode(u8 opcode, Instructions &inst) {
 
         case (0xB0): inst.BCS(); break;
 
-        case (0xC0): inst.BNE(); break;
+        case (0xC0): inst.CPY(Get8BitsInmValue(1), 2); break;
         case (0xC1): inst.CMP(GetIndexedIndirect(), 2); break;
+        case (0xC4): inst.CPY(GetZeroPage(), 2); break;
         case (0xC5): inst.CMP(GetZeroPage(), 2); break;
         case (0xC9): inst.CMP(Get8BitsInmValue(1), 2); break;
+        case (0xCC): inst.CPY(Get16BitsInmValue(1), 3); break;
         case (0xCD): inst.CMP(GetAbsoluteIndexed(0), 3); break;
 
-        case (0xD0): inst.BEQ(); break;
+        case (0xD0): inst.BNE(); break;
         case (0xD1): inst.CMP(GetIndirectIndexed(), 2); break;
         case (0xD5): inst.CMP(GetZeroPageIndexed(GetX()), 2); break;
         case (0xD9): inst.CMP(GetAbsoluteIndexed(GetY()), 3); break;
         case (0xDD): inst.CMP(GetAbsoluteIndexed(GetX()), 3); break;
+
+        case (0xE0): inst.CPX(Get8BitsInmValue(1), 2); break;
+        case (0xE4): inst.CPX(GetZeroPage(), 2); break;
+        case (0xEC): inst.CPX(Get16BitsInmValue(1), 3); break;
+
+        case (0xF0): inst.BEQ(); break;
         
         default:
             stringstream out;

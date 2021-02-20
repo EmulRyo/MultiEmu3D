@@ -105,3 +105,32 @@ void Instructions::CMP(u8 value, u8 length) {
 	m_reg->SetFlagC(m_reg->GetA() < value ? 0 : 1);
 	m_reg->AddPC(length);
 }
+
+void Instructions::CPX(u8 value, u8 length) {
+	u8 result = m_reg->GetX() - value;
+	m_reg->SetFlagZ(result == 0 ? 1 : 0);
+	m_reg->SetFlagN(BIT7(result) >> 7);
+	m_reg->SetFlagC(m_reg->GetX() < value ? 0 : 1);
+	m_reg->AddPC(length);
+}
+
+void Instructions::CPY(u8 value, u8 length) {
+	u8 result = m_reg->GetY() - value;
+	m_reg->SetFlagZ(result == 0 ? 1 : 0);
+	m_reg->SetFlagN(BIT7(result) >> 7);
+	m_reg->SetFlagC(m_reg->GetY() < value ? 0 : 1);
+	m_reg->AddPC(length);
+}
+
+void Instructions::JMP() {
+	u16 address = Get16BitsInmValue();
+	m_reg->SetPC(address);
+}
+
+void Instructions::JMPIndirect() {
+	u16 indirectAddress = Get16BitsInmValue();
+	u8 iaL = m_mem->MemR(indirectAddress);
+	u8 iaH = m_mem->MemR(indirectAddress+1);
+	u16 address = (iaH << 8) | iaL;
+	m_reg->SetPC(address);
+}

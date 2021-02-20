@@ -42,6 +42,11 @@ namespace Nes {
         void BVC();
 
         void CMP(u8 value, u8 length);
+        void CPX(u8 value, u8 length);
+        void CPY(u8 value, u8 length);
+
+        void JMP();
+        void JMPIndirect();
         
     private:
         Registers   *m_reg;
