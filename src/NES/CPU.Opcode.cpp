@@ -88,10 +88,18 @@ void CPU::ExecuteOpcode(u8 opcode, Instructions &inst) {
 
         case (0x50): inst.BVC(); break;
 
+        case (0x61): inst.ADC(GetIndexedIndirect(), 2); break;
+        case (0x65): inst.ADC(GetZeroPage(), 2); break;
         case (0x68): inst.PLA(); break;
+        case (0x69): inst.ADC(Get8BitsInmValue(), 2); break;
         case (0x6C): inst.JMPIndirect(); break;
+        case (0x6D): inst.ADC(Get16BitsInmValue(), 3); break;
 
         case (0x70): inst.BVS(); break;
+        case (0x71): inst.ADC(GetIndirectIndexed(), 2); break;
+        case (0x75): inst.ADC(GetZeroPageIndexed(GetX()), 2); break;
+        case (0x79): inst.ADC(GetAbsoluteIndexed(GetY()), 3); break;
+        case (0x7D): inst.ADC(GetAbsoluteIndexed(GetX()), 3); break;
 
         case (0x90): inst.BCC(); break;
 

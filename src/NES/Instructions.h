@@ -32,6 +32,8 @@ namespace Nes {
         u8  Get8BitsInmValue();
         u16 Get16BitsInmValue();
 
+        void ADC(u8 value, u8 length);
+
         void BMI();
         void BPL();
         void BCC();
