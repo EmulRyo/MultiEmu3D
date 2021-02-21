@@ -49,12 +49,15 @@ namespace Nes {
 
         void JMP();
         void JMPIndirect();
+        void JSR();
 
         void ORA(u8 value, u8 length);
         void PHP();
         void PHA();
         void PLP();
         void PLA();
+
+        void RTS();
         
     private:
         Registers   *m_reg;

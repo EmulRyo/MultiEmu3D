@@ -145,6 +145,19 @@ void Instructions::JMPIndirect() {
 	m_reg->SetPC(address);
 }
 
+void Instructions::JSR() {
+	u16 address = m_reg->GetPC() + 2;
+	u8 pch = address >> 8;
+	u8 pcl = address & 0xFF;
+
+	u16 stackAddress = 0x100 | m_reg->GetS();
+	m_mem->MemW(stackAddress, pch);
+	m_mem->MemW(stackAddress-1, pcl);
+	m_reg->SetS(m_reg->GetS() - 2);
+
+	m_reg->SetPC(Get16BitsInmValue());
+}
+
 void Instructions::ORA(u8 value, u8 length) {
 	u8 result = m_reg->GetA() | value;
 	m_reg->SetA(result);
@@ -179,4 +192,14 @@ void Instructions::PLP() {
 	m_reg->SetP(m_mem->MemR(address));
 	m_reg->SetS(address & 0xFF);
 	m_reg->AddPC(1);
+}
+
+void Instructions::RTS() {
+	u16 stackAddress = 0x100 | m_reg->GetS();
+	u8 pcl = m_mem->MemR(stackAddress + 1);
+	u8 pch = m_mem->MemR(stackAddress + 2);
+	m_reg->SetS(m_reg->GetS() + 2);
+
+	u16 address = pch << 8 | pcl;
+	m_reg->SetPC(address + 1);
 }

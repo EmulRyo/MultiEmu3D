@@ -79,6 +79,7 @@ void CPU::ExecuteOpcode(u8 opcode, Instructions &inst) {
         case (0x19): inst.ORA(GetAbsoluteIndexed(GetY()), 3); break;
         case (0x1D): inst.ORA(GetAbsoluteIndexed(GetX()), 3); break;
 
+        case (0x20): inst.JSR(); break;
         case (0x28): inst.PLP(); break;
 
         case (0x30): inst.BMI(); break;
@@ -88,6 +89,7 @@ void CPU::ExecuteOpcode(u8 opcode, Instructions &inst) {
 
         case (0x50): inst.BVC(); break;
 
+        case (0x60): inst.RTS(); break;
         case (0x61): inst.ADC(GetIndexedIndirect(), 2); break;
         case (0x65): inst.ADC(GetZeroPage(), 2); break;
         case (0x68): inst.PLA(); break;
