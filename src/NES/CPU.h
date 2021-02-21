@@ -59,8 +59,8 @@ namespace Nes {
         
         void ExecuteOpcode(u8 opcode, Instructions &inst);
         
-        u8  Get8BitsInmValue(u8 offset);
-        u16 Get16BitsInmValue(u8 offset);
+        u8  Get8BitsInmValue();
+        u16 Get16BitsInmValue();
         u16 GetZeroPageIndexed(u8 regValue);
         u16 GetZeroPage();
         u16 GetIndexedIndirect();

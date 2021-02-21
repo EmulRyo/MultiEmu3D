@@ -47,6 +47,8 @@ namespace Nes {
 
         void JMP();
         void JMPIndirect();
+
+        void ORA(u8 value, u8 length);
         
     private:
         Registers   *m_reg;

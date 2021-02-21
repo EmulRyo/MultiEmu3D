@@ -134,3 +134,11 @@ void Instructions::JMPIndirect() {
 	u16 address = (iaH << 8) | iaL;
 	m_reg->SetPC(address);
 }
+
+void Instructions::ORA(u8 value, u8 length) {
+	u8 result = m_reg->GetA() | value;
+	m_reg->SetA(result);
+	m_reg->SetFlagZ(result == 0 ? 0 : 1);
+	m_reg->SetFlagN(BIT7(result) >> 7);
+	m_reg->AddPC(length);
+}
