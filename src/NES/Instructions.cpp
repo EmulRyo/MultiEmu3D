@@ -142,3 +142,31 @@ void Instructions::ORA(u8 value, u8 length) {
 	m_reg->SetFlagN(BIT7(result) >> 7);
 	m_reg->AddPC(length);
 }
+
+void Instructions::PHA() {
+	u16 address = 0x100 | m_reg->GetS();
+	m_mem->MemW(address, m_reg->GetA());
+	m_reg->SetS(m_reg->GetS() - 1);
+	m_reg->AddPC(1);
+}
+
+void Instructions::PHP() {
+	u16 address = 0x100 | m_reg->GetS();
+	m_mem->MemW(address, m_reg->GetP());
+	m_reg->SetS(m_reg->GetS() - 1);
+	m_reg->AddPC(1);
+}
+
+void Instructions::PLA() {
+	u16 address = 0x100 | m_reg->GetS() + 1;
+	m_reg->SetA(m_mem->MemR(address));
+	m_reg->SetS(address & 0xFF);
+	m_reg->AddPC(1);
+}
+
+void Instructions::PLP() {
+	u16 address = 0x100 | m_reg->GetS()+1;
+	m_reg->SetP(m_mem->MemR(address));
+	m_reg->SetS(address & 0xFF);
+	m_reg->AddPC(1);
+}
