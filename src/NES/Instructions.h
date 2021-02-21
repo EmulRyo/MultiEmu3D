@@ -43,6 +43,8 @@ namespace Nes {
         void BVS();
         void BVC();
 
+        void CLI();
+
         void CMP(u8 value, u8 length);
         void CPX(u8 value, u8 length);
         void CPY(u8 value, u8 length);
@@ -58,6 +60,8 @@ namespace Nes {
         void PLA();
 
         void RTS();
+
+        void SEI();
         
     private:
         Registers   *m_reg;

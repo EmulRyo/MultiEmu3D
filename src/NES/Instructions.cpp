@@ -203,3 +203,13 @@ void Instructions::RTS() {
 	u16 address = pch << 8 | pcl;
 	m_reg->SetPC(address + 1);
 }
+
+void Instructions::SEI() {
+	m_reg->SetFlagI(1);
+	m_reg->AddPC(1);
+}
+
+void Instructions::CLI() {
+	m_reg->SetFlagI(0);
+	m_reg->AddPC(1);
+}
