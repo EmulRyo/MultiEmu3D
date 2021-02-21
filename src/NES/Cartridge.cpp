@@ -132,7 +132,7 @@ void Cartridge::ReadHeader() {
 
     size_t headerSize = 16;
     size_t trainerSize = 512;
-    m_prgData = m_buffer + trainer * trainerSize;
+    m_prgData = m_buffer + headerSize + trainer * trainerSize;
     m_chrData = m_prgData + sizePrgRom;
 }
 
@@ -172,8 +172,6 @@ void Cartridge::Extract() {
 
 u8 Cartridge::Read(u16 address) {
     if (address < 0x8000)
-        return 0;
-    else if (address < 0x8000)
         return m_prgData[address-0x8000];
     else if (address < 0xC000)
         return m_prgData[address - 0x8000];

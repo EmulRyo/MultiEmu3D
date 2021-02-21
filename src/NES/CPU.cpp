@@ -56,7 +56,9 @@ void CPU::ResetGlobalVariables() {
 void CPU::Reset() {
     ResetGlobalVariables();
 	ResetRegs();
-	SetPC((MemR(0xFFFD) << 8) | MemR(0xFFFC));
+	u8 pch = MemR(0xFFFD);
+	u8 pcl = MemR(0xFFFC);
+	SetPC(pch << 8 | pcl);
 	ResetMem();
     m_v->Reset();
 	m_v->ClearScreen();
