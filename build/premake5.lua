@@ -21,6 +21,7 @@ workspace "MultiEmu3D"
        "UNICODE",
        "WXUSINGDLL",
        "wxMSVC_VERSION_AUTO",
+       "wxMSVC_VERSION_ABI_COMPAT",
        "_CRT_SECURE_NO_DEPRECATE",
        "_CRT_NONSTDC_NO_DEPRECATE",
        "GLEW_STATIC"
@@ -36,8 +37,10 @@ workspace "MultiEmu3D"
 
 project "MultiEmu3D"
 
+   local wxWidgetsVersion = "3.1.4"
    local wxWidgetsArchFolder = ""
    local wxWidgetsFileFilter = ""
+   local sdlVersion = "2.0.14"
    local sdlArchFolder = ""
    
    kind "WindowedApp"
@@ -61,27 +64,27 @@ project "MultiEmu3D"
     }
     
    includedirs {
-        "../libraries/wxWidgets-3.0.5/include/msvc",
-        "../libraries/wxWidgets-3.0.5/include",
+        "../libraries/wxWidgets-"..wxWidgetsVersion.."/include/msvc",
+        "../libraries/wxWidgets-"..wxWidgetsVersion.."/include",
         "../libraries/glew-1.10.0/include",
-        "../libraries/SDL2-2.0.14/include",
+        "../libraries/SDL2-"..sdlVersion.."/include",
         "../libraries/Sms_Snd_Emu-0.1.1",
         "../libraries/Gb_Snd_Emu-0.1.4"
    }
    
    filter "architecture:x86"
-      wxWidgetsArchFolder = "vc142_dll"
+      wxWidgetsArchFolder = "vc14x_dll"
       sdlArchFolder = "x86"
 
    filter "architecture:x86_64"
-      wxWidgetsArchFolder = "vc142_x64_dll"
+      wxWidgetsArchFolder = "vc14x_x64_dll"
       sdlArchFolder = "x64"
    
    filter { }
 
    libdirs {
-      "../libraries/SDL2-2.0.14/lib/"..sdlArchFolder,
-      "../libraries/wxWidgets-3.0.5/lib/"..wxWidgetsArchFolder
+      "../libraries/SDL2-"..sdlVersion.."/lib/"..sdlArchFolder,
+      "../libraries/wxWidgets-"..wxWidgetsVersion.."/lib/"..wxWidgetsArchFolder
    }
 
    links { "opengl32", "glu32", "SDL2", "SDL2main" }
@@ -89,23 +92,23 @@ project "MultiEmu3D"
    filter "configurations:Debug"
       defines { "DEBUG" }
       symbols "On"
-      wxWidgetsFileFilter = "*30ud_*.dll"
+      wxWidgetsFileFilter = "*314ud_*.dll"
 
       -- copy dlls from the libraries directories to the target directory
       postbuildcommands {
-         "{COPY} %{wks.location}\\..\\..\\libraries\\wxWidgets-3.0.5\\lib\\"..wxWidgetsArchFolder.."\\"..wxWidgetsFileFilter.." %{wks.location}\\bin\\%{cfg.buildcfg}",
-         "{COPY} %{wks.location}\\..\\..\\libraries\\SDL2-2.0.14\\lib\\"..sdlArchFolder.."\\SDL2.dll %{wks.location}\\bin\\%{cfg.buildcfg}",
+         "{COPY} %{wks.location}\\..\\..\\libraries\\wxWidgets-"..wxWidgetsVersion.."\\lib\\"..wxWidgetsArchFolder.."\\"..wxWidgetsFileFilter.." %{wks.location}\\bin\\%{cfg.buildcfg}",
+         "{COPY} %{wks.location}\\..\\..\\libraries\\SDL2-"..sdlVersion.."\\lib\\"..sdlArchFolder.."\\SDL2.dll %{wks.location}\\bin\\%{cfg.buildcfg}",
       }
 
    filter "configurations:Release"
       defines { "NDEBUG" }
       optimize "On"
-      wxWidgetsFileFilter = "*30u_*.dll"
+      wxWidgetsFileFilter = "*314u_*.dll"
 
       -- copy dlls from the libraries directories to the target directory
       postbuildcommands {
-         "{COPY} %{wks.location}\\..\\..\\libraries\\wxWidgets-3.0.5\\lib\\"..wxWidgetsArchFolder.."\\"..wxWidgetsFileFilter.." %{wks.location}\\bin\\%{cfg.buildcfg}",
-         "{COPY} %{wks.location}\\..\\..\\libraries\\SDL2-2.0.14\\lib\\"..sdlArchFolder.."\\SDL2.dll %{wks.location}\\bin\\%{cfg.buildcfg}",
+         "{COPY} %{wks.location}\\..\\..\\libraries\\wxWidgets-"..wxWidgetsVersion.."\\lib\\"..wxWidgetsArchFolder.."\\"..wxWidgetsFileFilter.." %{wks.location}\\bin\\%{cfg.buildcfg}",
+         "{COPY} %{wks.location}\\..\\..\\libraries\\SDL2-"..sdlVersion.."\\lib\\"..sdlArchFolder.."\\SDL2.dll %{wks.location}\\bin\\%{cfg.buildcfg}",
       }
 
    -- Reset the filter for other settings
