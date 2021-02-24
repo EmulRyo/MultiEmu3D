@@ -59,13 +59,19 @@ namespace Nes {
         
         void ExecuteOpcode(u8 opcode, Instructions &inst);
         
-        u8  Get8BitsInmValue();
-        u16 Get16BitsInmValue();
-        u16 GetZeroPageIndexed(u8 regValue);
-        u16 GetZeroPage();
-        u16 GetIndexedIndirect();
-        u16 GetIndirectIndexed();
-        u16 GetAbsoluteIndexed(u8 regValue);
+        inline u16 AddressZeroPageIndexed(u8 regValue);
+        inline u16 AddressZeroPage();
+        inline u16 AddressIndexedIndirect();
+        inline u16 AddressIndirectIndexed();
+        inline u16 AddressAbsoluteIndexed(u8 regValue);
+
+        inline u8  Get8BitsInmValue();
+        inline u16 Get16BitsInmValue();
+        inline u8 GetZeroPageIndexed(u8 regValue);
+        inline u8 GetZeroPage();
+        inline u8 GetIndexedIndirect();
+        inline u8 GetIndirectIndexed();
+        inline u8 GetAbsoluteIndexed(u8 regValue);
     };
 }
 #endif

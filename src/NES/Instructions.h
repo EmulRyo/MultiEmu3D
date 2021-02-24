@@ -43,6 +43,7 @@ namespace Nes {
         void BVS();
         void BVC();
 
+        void CLD();
         void CLI();
 
         void CMP(u8 value, u8 length);
@@ -53,6 +54,8 @@ namespace Nes {
         void JMPIndirect();
         void JSR();
 
+        void LDA(u8 value, u8 length);
+
         void ORA(u8 value, u8 length);
         void PHP();
         void PHA();
@@ -61,7 +64,9 @@ namespace Nes {
 
         void RTS();
 
+        void SED();
         void SEI();
+        void STA(u16 address, u8 length);
         
     private:
         Registers   *m_reg;

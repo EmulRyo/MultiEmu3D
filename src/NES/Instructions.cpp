@@ -213,3 +213,25 @@ void Instructions::CLI() {
 	m_reg->SetFlagI(0);
 	m_reg->AddPC(1);
 }
+
+void Instructions::SED() {
+	m_reg->SetFlagD(1);
+	m_reg->AddPC(1);
+}
+
+void Instructions::CLD() {
+	m_reg->SetFlagD(0);
+	m_reg->AddPC(1);
+}
+
+void Instructions::LDA(u8 value, u8 length) {
+	m_reg->SetA(value);
+	m_reg->SetFlagZ(value == 0 ? 1 : 0);
+	m_reg->SetFlagN(BIT7(value) >> 7);
+	m_reg->AddPC(length);
+}
+
+void Instructions::STA(u16 address, u8 length) {
+	m_mem->MemW(address, m_reg->GetA());
+	m_reg->AddPC(length);
+}
