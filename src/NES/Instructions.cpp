@@ -231,7 +231,31 @@ void Instructions::LDA(u8 value, u8 length) {
 	m_reg->AddPC(length);
 }
 
+void Instructions::LDX(u8 value, u8 length) {
+	m_reg->SetX(value);
+	m_reg->SetFlagZ(value == 0 ? 1 : 0);
+	m_reg->SetFlagN(BIT7(value) >> 7);
+	m_reg->AddPC(length);
+}
+
+void Instructions::LDY(u8 value, u8 length) {
+	m_reg->SetY(value);
+	m_reg->SetFlagZ(value == 0 ? 1 : 0);
+	m_reg->SetFlagN(BIT7(value) >> 7);
+	m_reg->AddPC(length);
+}
+
 void Instructions::STA(u16 address, u8 length) {
 	m_mem->MemW(address, m_reg->GetA());
+	m_reg->AddPC(length);
+}
+
+void Instructions::STX(u16 address, u8 length) {
+	m_mem->MemW(address, m_reg->GetX());
+	m_reg->AddPC(length);
+}
+
+void Instructions::STY(u16 address, u8 length) {
+	m_mem->MemW(address, m_reg->GetY());
 	m_reg->AddPC(length);
 }

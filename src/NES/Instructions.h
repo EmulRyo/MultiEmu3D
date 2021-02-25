@@ -55,6 +55,8 @@ namespace Nes {
         void JSR();
 
         void LDA(u8 value, u8 length);
+        void LDX(u8 value, u8 length);
+        void LDY(u8 value, u8 length);
 
         void ORA(u8 value, u8 length);
         void PHP();
@@ -67,6 +69,8 @@ namespace Nes {
         void SED();
         void SEI();
         void STA(u16 address, u8 length);
+        void STX(u16 address, u8 length);
+        void STY(u16 address, u8 length);
         
     private:
         Registers   *m_reg;

@@ -131,25 +131,41 @@ void CPU::ExecuteOpcode(u8 opcode, Instructions &inst) {
         case (0x7D): inst.ADC(GetAbsoluteIndexed(GetX()), 3); break;
 
         case (0x81): inst.STA(AddressIndexedIndirect(), 2); break;
+        case (0x84): inst.STY(GetZeroPage(), 2); break;
         case (0x85): inst.STA(AddressZeroPage(), 2); break;
+        case (0x86): inst.STX(GetZeroPage(), 2); break;
+        case (0x8C): inst.STY(Get16BitsInmValue(), 3); break;
         case (0x8D): inst.STA(Get16BitsInmValue(), 3); break;
+        case (0x8E): inst.STX(Get16BitsInmValue(), 2); break;
 
         case (0x90): inst.BCC(); break;
         case (0x91): inst.STA(AddressIndirectIndexed(), 2); break;
+        case (0x94): inst.STY(AddressZeroPageIndexed(GetX()), 2); break;
         case (0x95): inst.STA(AddressZeroPageIndexed(GetX()), 2); break;
+        case (0x96): inst.STX(AddressZeroPageIndexed(GetY()), 2); break;
         case (0x99): inst.STA(AddressAbsoluteIndexed(GetY()), 3); break;
         case (0x9D): inst.STA(AddressAbsoluteIndexed(GetX()), 3); break;
 
+        case (0xA0): inst.LDY(Get8BitsInmValue(), 2); break;
         case (0xA1): inst.LDA(GetIndexedIndirect(), 2); break;
+        case (0xA2): inst.LDX(Get8BitsInmValue(), 2); break;
+        case (0xA4): inst.LDY(GetZeroPage(), 2); break;
         case (0xA5): inst.LDA(GetZeroPage(), 2); break;
+        case (0xA6): inst.LDX(GetZeroPage(), 2); break;
         case (0xA9): inst.LDA(Get8BitsInmValue(), 2); break;
+        case (0xAC): inst.LDY(Get16BitsInmValue(), 3); break;
         case (0xAD): inst.LDA(Get16BitsInmValue(), 3); break;
+        case (0xAE): inst.LDX(Get16BitsInmValue(), 3); break;
 
         case (0xB0): inst.BCS(); break;
         case (0xB1): inst.LDA(GetIndirectIndexed(), 2); break;
+        case (0xB4): inst.LDY(GetZeroPageIndexed(GetX()), 2); break;
         case (0xB5): inst.LDA(GetZeroPageIndexed(GetX()), 2); break;
+        case (0xB6): inst.LDX(GetZeroPageIndexed(GetY()), 2); break;
         case (0xB9): inst.LDA(GetAbsoluteIndexed(GetY()), 3); break;
+        case (0xBC): inst.LDY(GetAbsoluteIndexed(GetX()), 3); break;
         case (0xBD): inst.LDA(GetAbsoluteIndexed(GetX()), 3); break;
+        case (0xBE): inst.LDX(GetAbsoluteIndexed(GetY()), 3); break;
 
         case (0xC0): inst.CPY(Get8BitsInmValue(), 2); break;
         case (0xC1): inst.CMP(GetIndexedIndirect(), 2); break;
