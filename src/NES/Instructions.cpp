@@ -158,10 +158,18 @@ void Instructions::JSR() {
 	m_reg->SetPC(Get16BitsInmValue());
 }
 
+void Instructions::AND(u8 value, u8 length) {
+	u8 result = m_reg->GetA() & value;
+	m_reg->SetA(result);
+	m_reg->SetFlagZ(result == 0 ? 1 : 0);
+	m_reg->SetFlagN(BIT7(result) >> 7);
+	m_reg->AddPC(length);
+}
+
 void Instructions::ORA(u8 value, u8 length) {
 	u8 result = m_reg->GetA() | value;
 	m_reg->SetA(result);
-	m_reg->SetFlagZ(result == 0 ? 0 : 1);
+	m_reg->SetFlagZ(result == 0 ? 1 : 0);
 	m_reg->SetFlagN(BIT7(result) >> 7);
 	m_reg->AddPC(length);
 }
@@ -258,4 +266,18 @@ void Instructions::STX(u16 address, u8 length) {
 void Instructions::STY(u16 address, u8 length) {
 	m_mem->MemW(address, m_reg->GetY());
 	m_reg->AddPC(length);
+}
+
+void Instructions::TSX() {
+	u16 address = 0x100 | m_reg->GetS() + 1;
+	m_reg->SetX(m_mem->MemR(address));
+	m_reg->SetS(address & 0xFF);
+	m_reg->AddPC(1);
+}
+
+void Instructions::TXS() {
+	u16 address = 0x100 | m_reg->GetS();
+	m_mem->MemW(address, m_reg->GetX());
+	m_reg->SetS(m_reg->GetS() - 1);
+	m_reg->AddPC(1);
 }

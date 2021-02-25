@@ -105,9 +105,17 @@ void CPU::ExecuteOpcode(u8 opcode, Instructions &inst) {
         case (0x1D): inst.ORA(GetAbsoluteIndexed(GetX()), 3); break;
 
         case (0x20): inst.JSR(); break;
+        case (0x21): inst.AND(GetIndexedIndirect(), 2); break;
+        case (0x25): inst.AND(GetZeroPage(), 2); break;
         case (0x28): inst.PLP(); break;
+        case (0x29): inst.AND(Get8BitsInmValue(), 2); break;
+        case (0x2D): inst.AND(Get16BitsInmValue(), 3); break;
 
         case (0x30): inst.BMI(); break;
+        case (0x31): inst.AND(GetIndirectIndexed(), 2); break;
+        case (0x35): inst.AND(GetZeroPageIndexed(GetX()), 2); break;
+        case (0x39): inst.AND(GetAbsoluteIndexed(GetY()), 3); break;
+        case (0x3D): inst.AND(GetAbsoluteIndexed(GetX()), 3); break;
 
         case (0x48): inst.PHA(); break;
         case (0x4C): inst.JMP(); break;
@@ -145,6 +153,7 @@ void CPU::ExecuteOpcode(u8 opcode, Instructions &inst) {
         case (0x96): inst.STX(AddressZeroPageIndexed(GetY()), 2); break;
         case (0x99): inst.STA(AddressAbsoluteIndexed(GetY()), 3); break;
         case (0x9D): inst.STA(AddressAbsoluteIndexed(GetX()), 3); break;
+        case (0x9A): inst.TXS(); break;
 
         case (0xA0): inst.LDY(Get8BitsInmValue(), 2); break;
         case (0xA1): inst.LDA(GetIndexedIndirect(), 2); break;
@@ -166,6 +175,7 @@ void CPU::ExecuteOpcode(u8 opcode, Instructions &inst) {
         case (0xBC): inst.LDY(GetAbsoluteIndexed(GetX()), 3); break;
         case (0xBD): inst.LDA(GetAbsoluteIndexed(GetX()), 3); break;
         case (0xBE): inst.LDX(GetAbsoluteIndexed(GetY()), 3); break;
+        case (0xBA): inst.TSX(); break;
 
         case (0xC0): inst.CPY(Get8BitsInmValue(), 2); break;
         case (0xC1): inst.CMP(GetIndexedIndirect(), 2); break;

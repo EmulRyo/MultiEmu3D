@@ -33,6 +33,7 @@ namespace Nes {
         u16 Get16BitsInmValue();
 
         void ADC(u8 value, u8 length);
+        void AND(u8 value, u8 length);
 
         void BMI();
         void BPL();
@@ -71,6 +72,9 @@ namespace Nes {
         void STA(u16 address, u8 length);
         void STX(u16 address, u8 length);
         void STY(u16 address, u8 length);
+
+        void TSX();
+        void TXS();
         
     private:
         Registers   *m_reg;
