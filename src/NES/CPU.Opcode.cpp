@@ -142,6 +142,7 @@ void CPU::ExecuteOpcode(u8 opcode, Instructions &inst) {
         case (0x84): inst.STY(GetZeroPage(), 2); break;
         case (0x85): inst.STA(AddressZeroPage(), 2); break;
         case (0x86): inst.STX(GetZeroPage(), 2); break;
+        case (0x88): inst.DEY(); break;
         case (0x8C): inst.STY(Get16BitsInmValue(), 3); break;
         case (0x8D): inst.STA(Get16BitsInmValue(), 3); break;
         case (0x8E): inst.STX(Get16BitsInmValue(), 2); break;
@@ -181,9 +182,11 @@ void CPU::ExecuteOpcode(u8 opcode, Instructions &inst) {
         case (0xC1): inst.CMP(GetIndexedIndirect(), 2); break;
         case (0xC4): inst.CPY(GetZeroPage(), 2); break;
         case (0xC5): inst.CMP(GetZeroPage(), 2); break;
+        case (0xC8): inst.INY(); break;
         case (0xC9): inst.CMP(Get8BitsInmValue(), 2); break;
         case (0xCC): inst.CPY(Get16BitsInmValue(), 3); break;
         case (0xCD): inst.CMP(Get16BitsInmValue(), 3); break;
+        case (0xCA): inst.DEX(); break;
 
         case (0xD0): inst.BNE(); break;
         case (0xD1): inst.CMP(GetIndirectIndexed(), 2); break;
@@ -194,6 +197,7 @@ void CPU::ExecuteOpcode(u8 opcode, Instructions &inst) {
 
         case (0xE0): inst.CPX(Get8BitsInmValue(), 2); break;
         case (0xE4): inst.CPX(GetZeroPage(), 2); break;
+        case (0xE8): inst.INX(); break;
         case (0xEC): inst.CPX(Get16BitsInmValue(), 3); break;
 
         case (0xF0): inst.BEQ(); break;

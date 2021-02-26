@@ -281,3 +281,35 @@ void Instructions::TXS() {
 	m_reg->SetS(m_reg->GetS() - 1);
 	m_reg->AddPC(1);
 }
+
+void Instructions::DEX() {
+	u8 value = m_reg->GetX() - 1;
+	m_reg->SetX(value);
+	m_reg->SetFlagZ(value == 0 ? 1 : 0);
+	m_reg->SetFlagN(BIT7(value) >> 7);
+	m_reg->AddPC(1);
+}
+
+void Instructions::DEY() {
+	u8 value = m_reg->GetY() - 1;
+	m_reg->SetY(value);
+	m_reg->SetFlagZ(value == 0 ? 1 : 0);
+	m_reg->SetFlagN(BIT7(value) >> 7);
+	m_reg->AddPC(1);
+}
+
+void Instructions::INX() {
+	u8 value = m_reg->GetX() + 1;
+	m_reg->SetX(value);
+	m_reg->SetFlagZ(value == 0 ? 1 : 0);
+	m_reg->SetFlagN(BIT7(value) >> 7);
+	m_reg->AddPC(1);
+}
+
+void Instructions::INY() {
+	u8 value = m_reg->GetY() + 1;
+	m_reg->SetY(value);
+	m_reg->SetFlagZ(value == 0 ? 1 : 0);
+	m_reg->SetFlagN(BIT7(value) >> 7);
+	m_reg->AddPC(1);
+}

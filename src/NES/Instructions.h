@@ -47,9 +47,15 @@ namespace Nes {
         void CLD();
         void CLI();
 
+        void DEX();
+        void DEY();
+
         void CMP(u8 value, u8 length);
         void CPX(u8 value, u8 length);
         void CPY(u8 value, u8 length);
+
+        void INX();
+        void INY();
 
         void JMP();
         void JMPIndirect();
