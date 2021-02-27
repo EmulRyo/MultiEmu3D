@@ -21,12 +21,6 @@
 #include "../Common/Types.h"
 namespace Nes {
 	u8 GetInstructionCycles(u8 opcode);
-	u8 GetInstructionCondicionalCycles(u8 opcode);
-	u8 GetInstructionCyclesCB(u8 opcode);
-	u8 GetInstructionCyclesED(u8 opcode);
-	u8 GetInstructionCondicionalCyclesED(u8 opcode);
-	u8 GetInstructionCyclesXD(u8 opcode);
-	u8 GetInstructionCyclesXDCB(u8 opcode);
 }
 
 #endif
