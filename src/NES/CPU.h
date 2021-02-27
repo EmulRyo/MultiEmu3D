@@ -57,7 +57,7 @@ namespace Nes {
         void ResetGlobalVariables();
         void Interrupts(Instructions &inst);
         
-        void ExecuteOpcode(u8 opcode, Instructions &inst);
+        u8 ExecuteOpcode(u8 opcode, Instructions &inst);
         
         inline u16 AddressZeroPageIndexed(u8 regValue);
         inline u16 AddressZeroPage();

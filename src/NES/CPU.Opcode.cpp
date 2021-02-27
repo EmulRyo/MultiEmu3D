@@ -87,8 +87,7 @@ u8 CPU::GetAbsoluteIndexed(u8 regValue) {
 }
 
 
-void CPU::ExecuteOpcode(u8 opcode, Instructions &inst) {
-    
+u8 CPU::ExecuteOpcode(u8 opcode, Instructions &inst) {
     
     switch(opcode)
     {
@@ -212,5 +211,6 @@ void CPU::ExecuteOpcode(u8 opcode, Instructions &inst) {
             
     } // end switch
     
+    return GetInstructionCycles(opcode);
 }
 

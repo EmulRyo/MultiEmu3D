@@ -87,6 +87,10 @@ std::string Debugger::GetRegs()
     return regs;
 }
 
+bool Debugger::GetFlag(int i) {
+    return ((m_cpu->GetP() & (1 << i)) >> i) == 1 ? true : false;
+}
+
 std::string Debugger::GetMem(u16 address) {
     stringstream ss;
     
@@ -192,4 +196,8 @@ bool Debugger::ExecuteOneFrame() {
             return false;
     }
     return true;
+}
+
+void Debugger::UpdatePad1(bool* buttonsState) {
+    //m_pad->SetButtonsStatePad1(buttonsState);
 }

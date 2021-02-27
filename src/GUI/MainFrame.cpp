@@ -31,6 +31,7 @@
 #include "SettingsDialog.h"
 #include "DebuggerSMSDialog.h"
 #include "DebuggerGBDialog.h"
+#include "DebuggerNESDialog.h"
 #include "IDControls.h"
 #include "Settings.h"
 #include "../Common/Exception.h"
@@ -708,4 +709,8 @@ void MainFrame::OnDebug(wxCommandEvent &event) {
         DebuggerGBDialog debugger(this, device);
         debugger.ShowModal();
     }
+	else if (device->GetType() == DeviceType::NES) {
+		DebuggerNESDialog debugger(this, device);
+		debugger.ShowModal();
+	}
 }

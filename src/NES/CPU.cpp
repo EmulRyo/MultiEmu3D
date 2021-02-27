@@ -91,16 +91,13 @@ int CPU::Execute(int cyclesToExecute)
 		lastOpcode = opcode;
 		opcode = MemR(GetPC());
 		
-		ExecuteOpcode(opcode, inst);
+		u8 cycles = ExecuteOpcode(opcode, inst);
         
-        int tmpCycles = m_lastCycles;
-        
-        m_v->Update(m_lastCycles);
+        m_v->Update(cycles);
         
         Interrupts(inst);
         
-        m_cycles += m_lastCycles;
-        m_lastCycles -= tmpCycles;
+        m_cycles += cycles;
 		
 	}//end while
     

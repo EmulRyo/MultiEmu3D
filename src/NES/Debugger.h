@@ -41,6 +41,8 @@ namespace Nes {
         std::string GetRegS();
         std::string GetRegP();
         std::string GetRegPC();
+
+        bool GetFlag(int i);
         
         std::string GetRegs();
         
@@ -55,6 +57,8 @@ namespace Nes {
         void Reset();
         void StepInto();
         bool ExecuteOneFrame();
+
+        void UpdatePad1(bool* buttonsState);
         
     private:
         Sound *m_sound;
