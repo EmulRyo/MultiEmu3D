@@ -56,8 +56,8 @@ DebuggerNESDialog::DebuggerNESDialog(wxWindow *parent, VideoGameDevice *device)
     
 #ifdef __WXMSW__
 	m_font = new wxFont(8, wxTELETYPE, wxNORMAL, wxNORMAL);
-    int height1 = 152;
-    int height2 = 360;
+    int height1 = 176;
+    int height2 = 430;
 #endif
 #ifdef __WXGTK__
 	m_font = new wxFont(8, wxTELETYPE, wxNORMAL, wxNORMAL);
@@ -70,11 +70,11 @@ DebuggerNESDialog::DebuggerNESDialog(wxWindow *parent, VideoGameDevice *device)
     int height2 = 426;
 #endif
     
-    m_regsView = new wxListView(this, wxID_ANY, wxDefaultPosition, wxSize(82, height1), wxLC_REPORT);
+    m_regsView = new wxListView(this, wxID_ANY, wxDefaultPosition, FromDIP(wxSize(88, height1)), wxLC_REPORT);
     m_regsView->InsertColumn (0, "Name");
-    m_regsView->SetColumnWidth (0, 41);
+    m_regsView->SetColumnWidth (0, 45);
     m_regsView->InsertColumn (1, "Value");
-    m_regsView->SetColumnWidth (1, 41);
+    m_regsView->SetColumnWidth (1, 43);
     
     // --- Dissassembler ---
     wxStaticText *disassemblerText = new wxStaticText(this, -1, wxT("Disassembler:"));
@@ -122,7 +122,7 @@ DebuggerNESDialog::DebuggerNESDialog(wxWindow *parent, VideoGameDevice *device)
     wxStaticText *memText = new wxStaticText(this, -1, wxT("Memory:"));
     
     wxString choices[2];
-    choices[0] = "Z80";
+    choices[0] = "6502";
     choices[1] = "VRAM";
     m_memSelRBox = new wxRadioBox(this, ID_DEBUG_MEMSELECT, wxT(""), wxDefaultPosition, wxDefaultSize, 2, choices, 1, wxRA_SPECIFY_ROWS);
     
@@ -428,7 +428,7 @@ void DebuggerNESDialog::UpdateDisassembler() {
 void DebuggerNESDialog::UpdateFlags() {
     for (int i=0; i<8; i++) {
         bool value = m_debugger->GetFlag(i);
-        m_flags[7-i]->SetValue(value);
+        m_flags[i]->SetValue(value);
     }
 }
 
