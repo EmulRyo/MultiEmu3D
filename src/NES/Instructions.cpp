@@ -53,57 +53,73 @@ void Instructions::ADC(u8 value, u8 length) {
 }
 
 void Instructions::BMI() {
-	if (m_reg->GetFlagN() == 1)
-		m_reg->AddPC((s8)Get8BitsInmValue());
+	if (m_reg->GetFlagN() == 1) {
+		s8 rel = (s8)Get8BitsInmValue();
+		m_reg->AddPC(rel + 2);
+	}
 	else
 		m_reg->AddPC(2);
 }
 
 void Instructions::BPL() {
-	if (m_reg->GetFlagN() == 0)
-		m_reg->AddPC((s8)Get8BitsInmValue());
+	if (m_reg->GetFlagN() == 0) {
+		s8 rel = (s8)Get8BitsInmValue();
+		m_reg->AddPC(rel + 2);
+	}
 	else
 		m_reg->AddPC(2);
 }
 
 void Instructions::BCC() {
-	if (m_reg->GetFlagC() == 0)
-		m_reg->AddPC((s8)Get8BitsInmValue());
+	if (m_reg->GetFlagC() == 0) {
+		s8 rel = (s8)Get8BitsInmValue();
+		m_reg->AddPC(rel + 2);
+	}
 	else
 		m_reg->AddPC(2);
 }
 
 void Instructions::BCS() {
-	if (m_reg->GetFlagC() == 1)
-		m_reg->AddPC((s8)Get8BitsInmValue());
+	if (m_reg->GetFlagC() == 1) {
+		s8 rel = (s8)Get8BitsInmValue();
+		m_reg->AddPC(rel + 2);
+	}
 	else
 		m_reg->AddPC(2);
 }
 ;
 void Instructions::BEQ() {
-	if (m_reg->GetFlagZ() == 1)
-		m_reg->AddPC((s8)Get8BitsInmValue());
+	if (m_reg->GetFlagZ() == 1) {
+		s8 rel = (s8)Get8BitsInmValue();
+		m_reg->AddPC(rel + 2);
+	}
 	else
 		m_reg->AddPC(2);
 }
 
 void Instructions::BNE() {
-	if (m_reg->GetFlagZ() == 0)
-		m_reg->AddPC((s8)Get8BitsInmValue());
+	if (m_reg->GetFlagZ() == 0) {
+		s8 rel = (s8)Get8BitsInmValue();
+		m_reg->AddPC(rel + 2);
+	}
 	else
 		m_reg->AddPC(2);
 }
 
 void Instructions::BVS() {
-	if (m_reg->GetFlagV() == 1)
-		m_reg->AddPC((s8)Get8BitsInmValue());
+	if (m_reg->GetFlagV() == 1) {
+		s8 rel = (s8)Get8BitsInmValue();
+		m_reg->AddPC(rel + 2);
+	}
 	else
 		m_reg->AddPC(2);
 }
 
 void Instructions::BVC() {
-	if (m_reg->GetFlagV() == 0)
-		m_reg->AddPC((s8)Get8BitsInmValue());
+	if (m_reg->GetFlagV() == 0) {
+		s8 rel = (s8)Get8BitsInmValue();
+		m_reg->AddPC(rel + 2);
+	}
 	else
 		m_reg->AddPC(2);
 }
@@ -269,16 +285,15 @@ void Instructions::STY(u16 address, u8 length) {
 }
 
 void Instructions::TSX() {
-	u16 address = 0x100 | m_reg->GetS() + 1;
-	m_reg->SetX(m_mem->MemR(address));
-	m_reg->SetS(address & 0xFF);
+	u8 value = m_reg->GetS();
+	m_reg->SetX(value);
+	m_reg->SetFlagZ(value == 0 ? 1 : 0);
+	m_reg->SetFlagN(BIT7(value) >> 7);
 	m_reg->AddPC(1);
 }
 
 void Instructions::TXS() {
-	u16 address = 0x100 | m_reg->GetS();
-	m_mem->MemW(address, m_reg->GetX());
-	m_reg->SetS(m_reg->GetS() - 1);
+	m_reg->SetS(m_reg->GetX());
 	m_reg->AddPC(1);
 }
 
