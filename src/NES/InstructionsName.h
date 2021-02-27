@@ -22,12 +22,6 @@
 
 namespace Nes {
 	const char* GetInstructionName(u8 opcode);
-	const char* GetInstructionCBName(u8 opcode);
-	const char* GetInstructionDDName(u8 opcode);
-	const char* GetInstructionEDName(u8 opcode);
-	const char* GetInstructionFDName(u8 opcode);
-	const char* GetInstructionDDCBName(u8 opcode);
-	const char* GetInstructionFDCBName(u8 opcode);
 }
 
 #endif
