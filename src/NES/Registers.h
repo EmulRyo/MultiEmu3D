@@ -65,27 +65,27 @@ namespace Nes {
         // Carry
         inline void SetFlagC(u8 value) { m_P = (m_P & 0xFE) | (value & 0x01); }
         // Zero
-        inline u8 GetFlagZ() { return (m_P & 0x02 >> 1); }
+        inline u8 GetFlagZ() { return ((m_P & 0x02) >> 1); }
         // Zero
         inline void SetFlagZ(u8 value) { m_P = (m_P & 0xFD) | ((value & 0x01) << 1); }
         // Interrupt
-        inline u8 GetFlagI() { return (m_P & 0x04 >> 2); }
+        inline u8 GetFlagI() { return ((m_P & 0x04) >> 2); }
         // Interrupt
         inline void SetFlagI(u8 value) { m_P = (m_P & 0xFB) | ((value & 0x01) << 2); }
         // Decimal
-        inline u8 GetFlagD() { return (m_P & 0x08 >> 3); }
+        inline u8 GetFlagD() { return ((m_P & 0x08) >> 3); }
         // Decimal
         inline void SetFlagD(u8 value) { m_P = (m_P & 0xF7) | ((value & 0x01) << 3); }
         // B flag
-        inline u8 GetFlagB() { return (m_P & 0x30 >> 4); }
+        inline u8 GetFlagB() { return ((m_P & 0x30) >> 4); }
         // B flag
         inline void SetFlagB(u8 value) { m_P = (m_P & 0xCF) | ((value & 0x02) << 4); }
         // Overflow
-        inline u8 GetFlagV() { return (m_P & 0x40 >> 6); }
+        inline u8 GetFlagV() { return ((m_P & 0x40) >> 6); }
         // Overflow
         inline void SetFlagV(u8 value) { m_P = (m_P & 0xBF) | ((value & 0x01) << 6); }
         // Negative
-        inline u8 GetFlagN() { return (m_P & 0x80 >> 7); }
+        inline u8 GetFlagN() { return ((m_P & 0x80) >> 7); }
         // Negative
         inline void SetFlagN(u8 value) { m_P = (m_P & 0x7F) | ((value & 0x01) << 7); }
 
