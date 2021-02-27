@@ -56,7 +56,30 @@ void Memory::ResetMem() {
 
 void Memory::MemW(u16 address, u8 value)
 {
-    
+    if (address < 0x0800)
+        memory[address] = value;
+    else if (address < 0x1000)
+        memory[address - 0x0800] = value;
+    else if (address < 0x1800)
+        memory[address - 0x1000] = value;
+    else if (address < 0x2000)
+        memory[address - 0x1800] = value;
+    /*
+    else if (address < 0x4000)
+        throw(Exception("MemW PPU registers"));
+    else if (address < 0x4014)
+        throw(Exception("MemW APU registers"));
+    else if (address == 0x4014)
+        throw(Exception("MemW OAM DMA"));
+    else if (address == 0x4015)
+        throw(Exception("MemW APU registers"));
+    else if (address < 0x4018)
+        throw(Exception("MemW Joystick"));
+    else if (address < 0x4020)
+        throw(Exception("MemW test registers"));
+    */
+    else
+        m_c->Write(address, value);
 }
 
 void Memory::SaveMemory(ostream *stream)

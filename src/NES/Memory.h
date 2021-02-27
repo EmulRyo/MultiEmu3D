@@ -52,9 +52,9 @@ namespace Nes {
             else if (address < 0x2000)
                 return memory[address - 0x1800];
             else if (address < 0x4000)
-                throw(Exception("MemR PPU registers"));
+                return 0; //throw(Exception("MemR PPU registers"));
             else if (address < 0x4014)
-                throw(Exception("MemR APU registers"));
+                return 0; //throw(Exception("MemR APU registers"));
             else if (address == 0x4014)
                 throw(Exception("MemR OAM DMA"));
             else if (address == 0x4015)
