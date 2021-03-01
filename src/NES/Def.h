@@ -22,8 +22,9 @@
 
 // 256x240
 #define NES_SCREEN_W 256
-#define NES_SCREEN_H 224
+#define NES_SCREEN_H 240
 
-#define NES_FRAME_CYCLES    29780.5
+#define NES_SCANLINE_CYCLES 113.666f
+#define NES_FRAME_CYCLES    29780.5f
 
 #endif

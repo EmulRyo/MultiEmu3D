@@ -59,66 +59,33 @@ namespace Nes {
         void ClearScreen();
         bool Interrupt();
         
-        u8   GetV();                //0x7E
-        u8   GetH();                //0x7F
-        u8   GetData();             //0xBE
-        void SetData(u8 value);     //0xBE
-        u8   GetControl();          //0xBF
-        void SetControl(u8 value);  //0xBF
-        
-        u8   MemR(u16 address);
-        u8   RegR(u8 reg);
-        u8   PalR(u8 pal);
+        void WriteReg(u16 address, u8 value);
+        u8   ReadReg(u16 address);
         void GetTile(u8 *buffer, int widthSize, int tile);
         
         void Update(u8 cycles);
         
         u16  GetLine();
         u8   GetCyclesLine();
-        u8   GetStatus();
-        bool GetIE0();
-        bool GetIE1();
-        u16  GetAddress();
         void SaveState(std::ostream *file);
         void LoadState(std::istream *file);
-        void SetGGMode(bool value);
         
     private:
-        u8  m_memory[VDP_MEM];
-        u8  m_regs[16];
-        u8  m_palettes[64];
-        u8  m_rgbPalettes[32][3];
-        u16 m_address;
-        u8  m_numWrite;
-        u8  m_partialAddress;
+        u8  m_regs[8];
+        Memory* m_mem;
         u16 m_line;
-        u32 m_cycles;
-        u16 m_cyclesLine;
-        u8  m_status;
-        s16 m_lineIrqCounter;
-        bool m_vramAddress;
-        u8  m_readBuffer;
+        float m_cycles;
+        float m_cyclesLine;
         IScreenDrawable *m_screen;
         VideoPixel *m_pixel;
-        bool m_pendingVIRQ;
-        bool m_pendingLIRQ;
-        t_VDPMODES m_mode;
         
         // Contendrá -1 en los píxeles en los que el BG tiene prioridad, 0 en los que se
         // pinta BG pero no sprite, 1 cuando se pinta un sprite, 2 cuando se pintan 2
         // sprites, etc.
         s8   m_pixelAux[NES_SCREEN_W][NES_SCREEN_H];
-        bool m_GameGear;
-        u8   m_latch;
+        u8   m_genLatch;
 
         void UpdateLine(u8 line);
-        void UpdateBG(u8 y);
-        void UpdateSprites(u8 y);
-        inline void GetColor(VideoPixel * p);
-        void UpdatePalette(u8 numPalette);
-        void UpdatePaletteGG(u8 numPalette);
-        void CheckReg(u8 reg);
-        u8   GetSprites(u8 y, u16 spriteBase, u8 hSprite, u8 *sprites);
     };
 }
 

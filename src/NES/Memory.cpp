@@ -64,9 +64,8 @@ void Memory::MemW(u16 address, u8 value)
         memory[address - 0x1000] = value;
     else if (address < 0x2000)
         memory[address - 0x1800] = value;
-    /*
     else if (address < 0x4000)
-        throw(Exception("MemW PPU registers"));
+        m_video->WriteReg(address, value);
     else if (address < 0x4014)
         throw(Exception("MemW APU registers"));
     else if (address == 0x4014)
@@ -77,7 +76,6 @@ void Memory::MemW(u16 address, u8 value)
         throw(Exception("MemW Joystick"));
     else if (address < 0x4020)
         throw(Exception("MemW test registers"));
-    */
     else
         m_c->Write(address, value);
 }

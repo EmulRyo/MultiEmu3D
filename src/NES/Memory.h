@@ -20,6 +20,7 @@
 
 #include <fstream>
 #include "Cartridge.h"
+#include "Video.h"
 #include "Sound.h"
 #include "../Common/Exception.h"
 
@@ -29,7 +30,6 @@
 namespace Nes {
     
     class CPU;
-    class Video;
     class Pad;
 
     class Memory
@@ -52,9 +52,9 @@ namespace Nes {
             else if (address < 0x2000)
                 return memory[address - 0x1800];
             else if (address < 0x4000)
-                return 0; //throw(Exception("MemR PPU registers"));
+                return m_video->ReadReg(address);
             else if (address < 0x4014)
-                return 0; //throw(Exception("MemR APU registers"));
+                throw(Exception("MemR APU registers"));
             else if (address == 0x4014)
                 throw(Exception("MemR OAM DMA"));
             else if (address == 0x4015)
