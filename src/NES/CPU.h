@@ -66,7 +66,8 @@ namespace Nes {
         inline u16 AddressAbsoluteIndexed(u8 regValue);
 
         inline u8  Get8BitsInmValue();
-        inline u16 Get16BitsInmValue();
+        inline u16 Address16BitsInmValue();
+        inline u8 Get16BitsInmValue();
         inline u8 GetZeroPageIndexed(u8 regValue);
         inline u8 GetZeroPage();
         inline u8 GetIndexedIndirect();

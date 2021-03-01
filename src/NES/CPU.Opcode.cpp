@@ -32,8 +32,13 @@ u8 CPU::Get8BitsInmValue() {
 }
 
 // a
-u16 CPU::Get16BitsInmValue() {
+u16 CPU::Address16BitsInmValue() {
     return ((MemR(GetPC() + 2)) << 8) | MemR(GetPC() + 1);
+}
+
+// a
+u8 CPU::Get16BitsInmValue() {
+    return MemR(Address16BitsInmValue());
 }
 
 // d,x | d,y
@@ -78,7 +83,7 @@ u8 CPU::GetIndirectIndexed() {
 
 // a,x | a,y
 u16 CPU::AddressAbsoluteIndexed(u8 regValue) {
-    return Get16BitsInmValue() + regValue;
+    return Address16BitsInmValue() + regValue;
 }
 
 // a,x | a,y
@@ -142,9 +147,9 @@ u8 CPU::ExecuteOpcode(u8 opcode, Instructions &inst) {
         case (0x85): inst.STA(AddressZeroPage(), 2); break;
         case (0x86): inst.STX(GetZeroPage(), 2); break;
         case (0x88): inst.DEY(); break;
-        case (0x8C): inst.STY(Get16BitsInmValue(), 3); break;
-        case (0x8D): inst.STA(Get16BitsInmValue(), 3); break;
-        case (0x8E): inst.STX(Get16BitsInmValue(), 2); break;
+        case (0x8C): inst.STY(Address16BitsInmValue(), 3); break;
+        case (0x8D): inst.STA(Address16BitsInmValue(), 3); break;
+        case (0x8E): inst.STX(Address16BitsInmValue(), 2); break;
 
         case (0x90): inst.BCC(); break;
         case (0x91): inst.STA(AddressIndirectIndexed(), 2); break;
