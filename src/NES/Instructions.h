@@ -47,6 +47,7 @@ namespace Nes {
         void CLD();
         void CLI();
 
+        void DEC(u16 address, u8 length);
         void DEX();
         void DEY();
 
@@ -54,6 +55,7 @@ namespace Nes {
         void CPX(u8 value, u8 length);
         void CPY(u8 value, u8 length);
 
+        void INC(u16 address, u8 length);
         void INX();
         void INY();
 

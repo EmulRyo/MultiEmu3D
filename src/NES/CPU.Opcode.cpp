@@ -143,9 +143,9 @@ u8 CPU::ExecuteOpcode(u8 opcode, Instructions &inst) {
         case (0x7D): inst.ADC(GetAbsoluteIndexed(GetX()), 3); break;
 
         case (0x81): inst.STA(AddressIndexedIndirect(), 2); break;
-        case (0x84): inst.STY(GetZeroPage(), 2); break;
+        case (0x84): inst.STY(AddressZeroPage(), 2); break;
         case (0x85): inst.STA(AddressZeroPage(), 2); break;
-        case (0x86): inst.STX(GetZeroPage(), 2); break;
+        case (0x86): inst.STX(AddressZeroPage(), 2); break;
         case (0x88): inst.DEY(); break;
         case (0x8C): inst.STY(Address16BitsInmValue(), 3); break;
         case (0x8D): inst.STA(Address16BitsInmValue(), 3); break;
@@ -186,26 +186,34 @@ u8 CPU::ExecuteOpcode(u8 opcode, Instructions &inst) {
         case (0xC1): inst.CMP(GetIndexedIndirect(), 2); break;
         case (0xC4): inst.CPY(GetZeroPage(), 2); break;
         case (0xC5): inst.CMP(GetZeroPage(), 2); break;
+        case (0xC6): inst.DEC(AddressZeroPage(), 2); break;
         case (0xC8): inst.INY(); break;
         case (0xC9): inst.CMP(Get8BitsInmValue(), 2); break;
         case (0xCC): inst.CPY(Get16BitsInmValue(), 3); break;
         case (0xCD): inst.CMP(Get16BitsInmValue(), 3); break;
         case (0xCA): inst.DEX(); break;
+        case (0xCE): inst.DEC(Address16BitsInmValue(), 3); break;
 
         case (0xD0): inst.BNE(); break;
         case (0xD1): inst.CMP(GetIndirectIndexed(), 2); break;
         case (0xD5): inst.CMP(GetZeroPageIndexed(GetX()), 2); break;
+        case (0xD6): inst.DEC(AddressZeroPageIndexed(GetX()), 2); break;
         case (0xD8): inst.CLD(); break;
         case (0xD9): inst.CMP(GetAbsoluteIndexed(GetY()), 3); break;
         case (0xDD): inst.CMP(GetAbsoluteIndexed(GetX()), 3); break;
+        case (0xDE): inst.DEC(AddressAbsoluteIndexed(GetX()), 3); break;
 
         case (0xE0): inst.CPX(Get8BitsInmValue(), 2); break;
         case (0xE4): inst.CPX(GetZeroPage(), 2); break;
+        case (0xE6): inst.INC(AddressZeroPage(), 2); break;
         case (0xE8): inst.INX(); break;
         case (0xEC): inst.CPX(Get16BitsInmValue(), 3); break;
+        case (0xEE): inst.INC(Address16BitsInmValue(), 3); break;
 
         case (0xF0): inst.BEQ(); break;
+        case (0xF6): inst.INC(AddressZeroPageIndexed(GetX()), 2); break;
         case (0xF8): inst.SED(); break;
+        case (0xFE): inst.INC(AddressAbsoluteIndexed(GetX()), 3); break;
         
         default:
             stringstream out;

@@ -297,6 +297,14 @@ void Instructions::TXS() {
 	m_reg->AddPC(1);
 }
 
+void Instructions::DEC(u16 address, u8 length) {
+	u8 value = m_mem->MemR(address) - 1;
+	m_mem->MemW(address, value);
+	m_reg->SetFlagZ(value == 0 ? 1 : 0);
+	m_reg->SetFlagN(BIT7(value) >> 7);
+	m_reg->AddPC(length);
+}
+
 void Instructions::DEX() {
 	u8 value = m_reg->GetX() - 1;
 	m_reg->SetX(value);
@@ -311,6 +319,14 @@ void Instructions::DEY() {
 	m_reg->SetFlagZ(value == 0 ? 1 : 0);
 	m_reg->SetFlagN(BIT7(value) >> 7);
 	m_reg->AddPC(1);
+}
+
+void Instructions::INC(u16 address, u8 length) {
+	u8 value = m_mem->MemR(address) + 1;
+	m_mem->MemW(address, value);
+	m_reg->SetFlagZ(value == 0 ? 1 : 0);
+	m_reg->SetFlagN(BIT7(value) >> 7);
+	m_reg->AddPC(length);
 }
 
 void Instructions::INX() {
