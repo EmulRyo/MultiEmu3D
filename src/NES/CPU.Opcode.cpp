@@ -147,6 +147,7 @@ u8 CPU::ExecuteOpcode(u8 opcode, Instructions &inst) {
         case (0x85): inst.STA(AddressZeroPage(), 2); break;
         case (0x86): inst.STX(AddressZeroPage(), 2); break;
         case (0x88): inst.DEY(); break;
+        case (0x8A): inst.TXA(); break;
         case (0x8C): inst.STY(Address16BitsInmValue(), 3); break;
         case (0x8D): inst.STA(Address16BitsInmValue(), 3); break;
         case (0x8E): inst.STX(Address16BitsInmValue(), 2); break;
@@ -156,6 +157,7 @@ u8 CPU::ExecuteOpcode(u8 opcode, Instructions &inst) {
         case (0x94): inst.STY(AddressZeroPageIndexed(GetX()), 2); break;
         case (0x95): inst.STA(AddressZeroPageIndexed(GetX()), 2); break;
         case (0x96): inst.STX(AddressZeroPageIndexed(GetY()), 2); break;
+        case (0x98): inst.TYA(); break;
         case (0x99): inst.STA(AddressAbsoluteIndexed(GetY()), 3); break;
         case (0x9D): inst.STA(AddressAbsoluteIndexed(GetX()), 3); break;
         case (0x9A): inst.TXS(); break;

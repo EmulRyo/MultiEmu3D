@@ -82,7 +82,9 @@ namespace Nes {
         void STY(u16 address, u8 length);
 
         void TSX();
+        void TXA();
         void TXS();
+        void TYA();
         
     private:
         Registers   *m_reg;

@@ -292,6 +292,22 @@ void Instructions::TSX() {
 	m_reg->AddPC(1);
 }
 
+void Instructions::TXA() {
+	u8 value = m_reg->GetX();
+	m_reg->SetA(value);
+	m_reg->SetFlagZ(value == 0 ? 1 : 0);
+	m_reg->SetFlagN(BIT7(value) >> 7);
+	m_reg->AddPC(1);
+}
+
+void Instructions::TYA() {
+	u8 value = m_reg->GetY();
+	m_reg->SetA(value);
+	m_reg->SetFlagZ(value == 0 ? 1 : 0);
+	m_reg->SetFlagN(BIT7(value) >> 7);
+	m_reg->AddPC(1);
+}
+
 void Instructions::TXS() {
 	m_reg->SetS(m_reg->GetX());
 	m_reg->AddPC(1);
