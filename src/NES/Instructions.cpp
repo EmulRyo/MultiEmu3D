@@ -190,6 +190,14 @@ void Instructions::ORA(u8 value, u8 length) {
 	m_reg->AddPC(length);
 }
 
+void Instructions::EOR(u8 value, u8 length) {
+	u8 result = m_reg->GetA() ^ value;
+	m_reg->SetA(result);
+	m_reg->SetFlagZ(result == 0 ? 1 : 0);
+	m_reg->SetFlagN(BIT7(result) >> 7);
+	m_reg->AddPC(length);
+}
+
 void Instructions::PHA() {
 	u16 address = 0x100 | m_reg->GetS();
 	m_mem->MemW(address, m_reg->GetA());
@@ -238,6 +246,11 @@ void Instructions::CLI() {
 	m_reg->AddPC(1);
 }
 
+void Instructions::SEC() {
+	m_reg->SetFlagC(1);
+	m_reg->AddPC(1);
+}
+
 void Instructions::SED() {
 	m_reg->SetFlagD(1);
 	m_reg->AddPC(1);
@@ -245,6 +258,16 @@ void Instructions::SED() {
 
 void Instructions::CLD() {
 	m_reg->SetFlagD(0);
+	m_reg->AddPC(1);
+}
+
+void Instructions::CLC() {
+	m_reg->SetFlagC(0);
+	m_reg->AddPC(1);
+}
+
+void Instructions::CLV() {
+	m_reg->SetFlagV(0);
 	m_reg->AddPC(1);
 }
 

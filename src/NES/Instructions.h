@@ -44,12 +44,16 @@ namespace Nes {
         void BVS();
         void BVC();
 
+        void CLC();
         void CLD();
         void CLI();
+        void CLV();
 
         void DEC(u16 address, u8 length);
         void DEX();
         void DEY();
+
+        void EOR(u8 value, u8 length);
 
         void CMP(u8 value, u8 length);
         void CPX(u8 value, u8 length);
@@ -77,6 +81,7 @@ namespace Nes {
 
         void RTS();
 
+        void SEC();
         void SED();
         void SEI();
         void STA(u16 address, u8 length);

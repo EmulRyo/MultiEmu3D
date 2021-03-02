@@ -105,6 +105,7 @@ u8 CPU::ExecuteOpcode(u8 opcode, Instructions &inst) {
         case (0x10): inst.BPL(); break;
         case (0x11): inst.ORA(GetIndirectIndexed(), 2); break;
         case (0x15): inst.ORA(GetZeroPageIndexed(GetX()), 2); break;
+        case (0x18): inst.CLC(); break;
         case (0x19): inst.ORA(GetAbsoluteIndexed(GetY()), 3); break;
         case (0x1D): inst.ORA(GetAbsoluteIndexed(GetX()), 3); break;
 
@@ -118,18 +119,27 @@ u8 CPU::ExecuteOpcode(u8 opcode, Instructions &inst) {
         case (0x30): inst.BMI(); break;
         case (0x31): inst.AND(GetIndirectIndexed(), 2); break;
         case (0x35): inst.AND(GetZeroPageIndexed(GetX()), 2); break;
+        case (0x38): inst.SEC(); break;
         case (0x39): inst.AND(GetAbsoluteIndexed(GetY()), 3); break;
         case (0x3D): inst.AND(GetAbsoluteIndexed(GetX()), 3); break;
 
+        case (0x41): inst.EOR(GetIndexedIndirect(), 2); break;
+        case (0x45): inst.EOR(GetZeroPage(), 2); break;
         case (0x46): inst.LSR(AddressZeroPage(), 2); break;
+        case (0x49): inst.EOR(Get8BitsInmValue(), 2); break;
         case (0x48): inst.PHA(); break;
         case (0x4A): inst.LSR(); break;
         case (0x4C): inst.JMP(); break;
+        case (0x4D): inst.EOR(Get16BitsInmValue(), 3); break;
         case (0x4E): inst.LSR(Address16BitsInmValue(), 3); break;
 
         case (0x50): inst.BVC(); break;
+        case (0x51): inst.EOR(GetIndirectIndexed(), 2); break;
+        case (0x55): inst.EOR(GetZeroPageIndexed(GetX()), 2); break;
         case (0x56): inst.LSR(AddressZeroPageIndexed(GetX()), 2); break;
         case (0x58): inst.CLI(); break;
+        case (0x59): inst.EOR(GetAbsoluteIndexed(GetY()), 3); break;
+        case (0x5D): inst.EOR(GetAbsoluteIndexed(GetX()), 3); break;
         case (0x5E): inst.LSR(AddressAbsoluteIndexed(GetX()), 3); break;
 
         case (0x60): inst.RTS(); break;
@@ -185,6 +195,7 @@ u8 CPU::ExecuteOpcode(u8 opcode, Instructions &inst) {
         case (0xB4): inst.LDY(GetZeroPageIndexed(GetX()), 2); break;
         case (0xB5): inst.LDA(GetZeroPageIndexed(GetX()), 2); break;
         case (0xB6): inst.LDX(GetZeroPageIndexed(GetY()), 2); break;
+        case (0xB8): inst.CLV(); break;
         case (0xB9): inst.LDA(GetAbsoluteIndexed(GetY()), 3); break;
         case (0xBC): inst.LDY(GetAbsoluteIndexed(GetX()), 3); break;
         case (0xBD): inst.LDA(GetAbsoluteIndexed(GetX()), 3); break;
