@@ -66,6 +66,8 @@ namespace Nes {
         void LDA(u8 value, u8 length);
         void LDX(u8 value, u8 length);
         void LDY(u8 value, u8 length);
+        void LSR();
+        void LSR(u16 address, u8 length);
 
         void ORA(u8 value, u8 length);
         void PHP();
@@ -81,6 +83,8 @@ namespace Nes {
         void STX(u16 address, u8 length);
         void STY(u16 address, u8 length);
 
+        void TAX();
+        void TAY();
         void TSX();
         void TXA();
         void TXS();

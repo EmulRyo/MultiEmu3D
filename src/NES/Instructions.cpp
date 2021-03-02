@@ -292,6 +292,22 @@ void Instructions::TSX() {
 	m_reg->AddPC(1);
 }
 
+void Instructions::TAX() {
+	u8 value = m_reg->GetA();
+	m_reg->SetX(value);
+	m_reg->SetFlagZ(value == 0 ? 1 : 0);
+	m_reg->SetFlagN(BIT7(value) >> 7);
+	m_reg->AddPC(1);
+}
+
+void Instructions::TAY() {
+	u8 value = m_reg->GetA();
+	m_reg->SetY(value);
+	m_reg->SetFlagZ(value == 0 ? 1 : 0);
+	m_reg->SetFlagN(BIT7(value) >> 7);
+	m_reg->AddPC(1);
+}
+
 void Instructions::TXA() {
 	u8 value = m_reg->GetX();
 	m_reg->SetA(value);
@@ -359,4 +375,24 @@ void Instructions::INY() {
 	m_reg->SetFlagZ(value == 0 ? 1 : 0);
 	m_reg->SetFlagN(BIT7(value) >> 7);
 	m_reg->AddPC(1);
+}
+
+void Instructions::LSR() {
+	u8 bit0 = m_reg->GetA() & 0x01;
+	u8 value = m_reg->GetA() >> 1;
+	m_reg->SetA(value);
+	m_reg->SetFlagC(bit0);
+	m_reg->SetFlagZ(value == 0 ? 1 : 0);
+	m_reg->SetFlagN(BIT7(value) >> 7);
+	m_reg->AddPC(1);
+}
+
+void Instructions::LSR(u16 address, u8 length) {
+	u8 bit0 = m_mem->MemR(address) & 0x01;
+	u8 value = m_mem->MemR(address) >> 1;
+	m_mem->MemW(address, value);
+	m_reg->SetFlagC(bit0);
+	m_reg->SetFlagZ(value == 0 ? 1 : 0);
+	m_reg->SetFlagN(BIT7(value) >> 7);
+	m_reg->AddPC(length);
 }

@@ -121,11 +121,16 @@ u8 CPU::ExecuteOpcode(u8 opcode, Instructions &inst) {
         case (0x39): inst.AND(GetAbsoluteIndexed(GetY()), 3); break;
         case (0x3D): inst.AND(GetAbsoluteIndexed(GetX()), 3); break;
 
+        case (0x46): inst.LSR(AddressZeroPage(), 2); break;
         case (0x48): inst.PHA(); break;
+        case (0x4A): inst.LSR(); break;
         case (0x4C): inst.JMP(); break;
+        case (0x4E): inst.LSR(Address16BitsInmValue(), 3); break;
 
         case (0x50): inst.BVC(); break;
+        case (0x56): inst.LSR(AddressZeroPageIndexed(GetX()), 2); break;
         case (0x58): inst.CLI(); break;
+        case (0x5E): inst.LSR(AddressAbsoluteIndexed(GetX()), 3); break;
 
         case (0x60): inst.RTS(); break;
         case (0x61): inst.ADC(GetIndexedIndirect(), 2); break;
@@ -168,7 +173,9 @@ u8 CPU::ExecuteOpcode(u8 opcode, Instructions &inst) {
         case (0xA4): inst.LDY(GetZeroPage(), 2); break;
         case (0xA5): inst.LDA(GetZeroPage(), 2); break;
         case (0xA6): inst.LDX(GetZeroPage(), 2); break;
+        case (0xA8): inst.TAY(); break;
         case (0xA9): inst.LDA(Get8BitsInmValue(), 2); break;
+        case (0xAA): inst.TAX(); break;
         case (0xAC): inst.LDY(Get16BitsInmValue(), 3); break;
         case (0xAD): inst.LDA(Get16BitsInmValue(), 3); break;
         case (0xAE): inst.LDX(Get16BitsInmValue(), 3); break;
