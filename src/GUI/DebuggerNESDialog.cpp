@@ -51,6 +51,8 @@ DebuggerNESDialog::DebuggerNESDialog(wxWindow *parent, VideoGameDevice *device)
     
     Nes::NES *nes = (Nes::NES *)device;
     m_debugger = (Nes::Debugger *)nes->GetDebugger();
+
+    double factor = GetDPIScaleFactor();
     
     wxStaticText *regsText = new wxStaticText(this, -1, wxT("Registers:"));
     
@@ -66,20 +68,20 @@ DebuggerNESDialog::DebuggerNESDialog(wxWindow *parent, VideoGameDevice *device)
 #endif
 #ifdef __WXMAC__
     m_font = new wxFont(12, wxTELETYPE, wxNORMAL, wxNORMAL);
-    int height1 = 170;
-    int height2 = 426;
+    int height1 = 170 * factor;
+    int height2 = 426 * factor;
 #endif
     
     m_regsView = new wxListView(this, wxID_ANY, wxDefaultPosition, FromDIP(wxSize(88, height1)), wxLC_REPORT);
     m_regsView->InsertColumn (0, "Name");
-    m_regsView->SetColumnWidth (0, 45);
+    m_regsView->SetColumnWidth (0, 45 * factor);
     m_regsView->InsertColumn (1, "Value");
-    m_regsView->SetColumnWidth (1, 43);
+    m_regsView->SetColumnWidth (1, 43 * factor);
     
     // --- Dissassembler ---
     wxStaticText *disassemblerText = new wxStaticText(this, -1, wxT("Disassembler:"));
     
-    m_disassemblerView = new wxListView(this, ID_DEBUG_DISASSEMBLER, wxDefaultPosition, wxSize(298, height1), wxLC_REPORT);
+    m_disassemblerView = new wxListView(this, ID_DEBUG_DISASSEMBLER, wxDefaultPosition, FromDIP(wxSize(298, height1)), wxLC_REPORT);
     
     wxImageList *imageList = new wxImageList(16, 14);
     wxBitmap bmpCurrentRow(currentRow_xpm);
@@ -93,55 +95,50 @@ DebuggerNESDialog::DebuggerNESDialog(wxWindow *parent, VideoGameDevice *device)
     m_disassemblerView->InsertColumn (0, "");
     m_disassemblerView->SetColumnWidth (0, 26);
     m_disassemblerView->InsertColumn (1, "Address");
-    m_disassemblerView->SetColumnWidth (1, 52);
+    m_disassemblerView->SetColumnWidth (1, 52 * factor);
     m_disassemblerView->InsertColumn (2, "Name");
-    m_disassemblerView->SetColumnWidth (2, 130);
+    m_disassemblerView->SetColumnWidth (2, 130 * factor);
     m_disassemblerView->InsertColumn (3, "Data");
-    m_disassemblerView->SetColumnWidth (3, 90);
+    m_disassemblerView->SetColumnWidth (3, 90 * factor);
     
     m_disassemblerFirst = 0;
     m_disassemblerLast  = 0;
     
     wxStaticText *videoText = new wxStaticText(this, -1, wxT("Video registers:"));
-    m_videoView = new wxListView(this, wxID_ANY, wxDefaultPosition, wxSize(110, height2), wxLC_REPORT);
+    m_videoView = new wxListView(this, wxID_ANY, wxDefaultPosition, FromDIP(wxSize(110, height2)), wxLC_REPORT);
     m_videoView->InsertColumn (0, "Name");
-    m_videoView->SetColumnWidth (0, 60);
+    m_videoView->SetColumnWidth (0, 60 * factor);
     m_videoView->InsertColumn (1, "Value");
-    m_videoView->SetColumnWidth (1, 38);
+    m_videoView->SetColumnWidth (1, 38 * factor);
     
     wxStaticText *othersText = new wxStaticText(this, -1, wxT("Other registers:"));
-    m_othersView = new wxListView(this, wxID_ANY, wxDefaultPosition, wxSize(110, height2), wxLC_REPORT);
+    m_othersView = new wxListView(this, wxID_ANY, wxDefaultPosition, FromDIP(wxSize(110, height2)), wxLC_REPORT);
     m_othersView->InsertColumn (0, "Name");
-    m_othersView->SetColumnWidth (0, 72);
+    m_othersView->SetColumnWidth (0, 72 * factor);
     m_othersView->InsertColumn (1, "Value");
-    m_othersView->SetColumnWidth (1, 38);
+    m_othersView->SetColumnWidth (1, 38 * factor);
     
     wxTextValidator *validator = new wxTextValidator(wxFILTER_INCLUDE_CHAR_LIST);
     validator->SetCharIncludes(wxT("0123456789ABCDEFabcdef"));
     
     wxStaticText *memText = new wxStaticText(this, -1, wxT("Memory:"));
     
-    wxString choices[2];
-    choices[0] = "6502";
-    choices[1] = "VRAM";
-    m_memSelRBox = new wxRadioBox(this, ID_DEBUG_MEMSELECT, wxT(""), wxDefaultPosition, wxDefaultSize, 2, choices, 1, wxRA_SPECIFY_ROWS);
-    
-    m_addressMemCtrl = new wxTextCtrl(this, ID_DEBUG_MEMADDRESS, wxEmptyString, wxDefaultPosition, wxSize(40, 20), 0, *validator);
+    m_addressMemCtrl = new wxTextCtrl(this, ID_DEBUG_MEMADDRESS, wxEmptyString, wxDefaultPosition, FromDIP(wxSize(40, 20)), 0, *validator);
     m_addressMemCtrl->SetFont(*m_font);
     m_addressMemCtrl->SetValue(wxT("0000"));
     m_addressMemCtrl->SetMaxLength(4);
     
-    m_memCtrl = new wxTextCtrl(this, -1, wxEmptyString, wxDefaultPosition, wxSize(411, 146), wxTE_MULTILINE | wxTE_READONLY);
+    m_memCtrl = new wxTextCtrl(this, -1, wxEmptyString, wxDefaultPosition, FromDIP(wxSize(411, 146)), wxTE_MULTILINE | wxTE_READONLY);
     m_memCtrl->SetFont(*m_font);
     
     wxSizer *buttonsSizer = CreateButtons();
     
     wxSizer *regsSizer = new wxBoxSizer(wxVERTICAL);
-    regsSizer->Add(regsText, 0, wxBOTTOM, 5);
+    regsSizer->Add(regsText, 0, wxBOTTOM, 5 * factor);
     regsSizer->Add(m_regsView);
     
     wxSizer *disassemblerSizer = new wxBoxSizer(wxVERTICAL);
-    disassemblerSizer->Add(disassemblerText, 0, wxBOTTOM, 5);
+    disassemblerSizer->Add(disassemblerText, 0, wxBOTTOM, 5 * factor);
     disassemblerSizer->Add(m_disassemblerView);
     
     wxSizer *RegsPlusDisSizer = new wxBoxSizer(wxHORIZONTAL);
@@ -150,9 +147,7 @@ DebuggerNESDialog::DebuggerNESDialog(wxWindow *parent, VideoGameDevice *device)
     RegsPlusDisSizer->Add(disassemblerSizer);
     
     wxSizer *addressAndChoiceSizer = new wxBoxSizer(wxHORIZONTAL);
-    addressAndChoiceSizer->Add(m_addressMemCtrl, 0, wxUP, 10);
-    addressAndChoiceSizer->AddSpacer(80);
-    addressAndChoiceSizer->Add(m_memSelRBox, 0, wxRIGHT, 5);
+    addressAndChoiceSizer->Add(m_addressMemCtrl, 0, wxUP, 10 * factor);
     
     wxSizer *memSizer = new wxBoxSizer(wxVERTICAL);
     memSizer->Add(memText);
@@ -163,26 +158,26 @@ DebuggerNESDialog::DebuggerNESDialog(wxWindow *parent, VideoGameDevice *device)
     
     wxSizer *leftSizer = new wxBoxSizer(wxVERTICAL);
     leftSizer->Add(RegsPlusDisSizer, 0, wxEXPAND);
-    leftSizer->Add(flagsAndInputSizer, 0, wxEXPAND|wxTOP, 5);
+    leftSizer->Add(flagsAndInputSizer, 0, wxEXPAND|wxTOP, 5 * factor);
     leftSizer->AddStretchSpacer();
-    leftSizer->Add(memSizer, 0, wxTOP, 10);
+    leftSizer->Add(memSizer, 0, wxTOP, 10 * factor);
     
     wxSizer *videoSizer = new wxBoxSizer(wxVERTICAL);
-    videoSizer->Add(videoText, 0, wxBOTTOM, 5);
+    videoSizer->Add(videoText, 0, wxBOTTOM, 5 * factor);
     videoSizer->Add(m_videoView);
     
     wxSizer *othersSizer = new wxBoxSizer(wxVERTICAL);
-    othersSizer->Add(othersText, 0, wxBOTTOM, 5);
+    othersSizer->Add(othersText, 0, wxBOTTOM, 5 * factor);
     othersSizer->Add(m_othersView);
     
     wxSizer *hSizer = new wxBoxSizer(wxHORIZONTAL);
     hSizer->Add(leftSizer, 0, wxEXPAND);
-    hSizer->Add(videoSizer, 0, wxLEFT, 10);
-    hSizer->Add(othersSizer, 0, wxLEFT, 10);
+    hSizer->Add(videoSizer, 0, wxLEFT, 10 * factor);
+    hSizer->Add(othersSizer, 0, wxLEFT, 10 * factor);
     
     wxSizer *mainSizer = new wxBoxSizer(wxVERTICAL);
-    mainSizer->Add(buttonsSizer, 0, wxEXPAND|wxALL, 10);
-    mainSizer->Add(hSizer, 0, wxALL, 10);
+    mainSizer->Add(buttonsSizer, 0, wxEXPAND|wxALL, 10 * factor);
+    mainSizer->Add(hSizer, 0, wxALL, 10 * factor);
     
     SetSizerAndFit(mainSizer);
     
@@ -290,8 +285,7 @@ void DebuggerNESDialog::UpdateUI() {
 }
 
 void DebuggerNESDialog::UpdateMemory() {
-    int memSelect = m_memSelRBox->GetSelection();
-    int maxMem = (memSelect == 0) ? 0x10000 : 0x4000;
+    int maxMem = 0x10000;
     wxString address = m_addressMemCtrl->GetValue();
     long value;
     if(address.ToLong(&value, 16)) {
