@@ -49,6 +49,7 @@ void Instructions::ADC(u8 value, u8 length) {
 	m_reg->SetFlagV(BIT7(result) != BIT7(m_reg->GetA() ? 1 : 0));
 	m_reg->SetFlagN(BIT7(result) >> 7);
 	m_reg->SetFlagZ(result == 0 ? 1 : 0);
+	m_reg->SetA(result);
 	m_reg->AddPC(length);
 }
 

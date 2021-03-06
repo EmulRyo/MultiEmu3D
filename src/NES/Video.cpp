@@ -79,9 +79,12 @@ void Video::ClearScreen()
         m_screen->OnClear();
 }
 
-u8 Video::ReadReg(u16 address) {
+u8 Video::ReadReg(u16 address, bool debug) {
     address = ((address - 0x2000) % 8) + 0x2000;
     u8 regID = address & 0x07;
+    if (debug)
+        return m_regs[regID];
+
     if (address == PPUSTATUS) {
         u8 value = (m_regs[regID] & 0xE0) | (m_genLatch & 0x1F); // Los bits 0-4 se cogen del valor del latch
         m_regs[regID] = m_regs[regID] & 0x7F; // Al leer este registro se desactiva el bit 7 (V-Blank)

@@ -41,7 +41,7 @@ namespace Nes {
         void ResetMem();
         void SetCartridge(Cartridge* c);
         void MemW(u16 direction, u8 value);
-        inline u8 MemR(u16 address)
+        inline u8 MemR(u16 address, bool debug=false)
         {
             if (address < 0x0800)
                 return memory[address];
@@ -52,7 +52,7 @@ namespace Nes {
             else if (address < 0x2000)
                 return memory[address - 0x1800];
             else if (address < 0x4000)
-                return m_video->ReadReg(address);
+                return m_video->ReadReg(address, debug);
             else if (address < 0x4014)
                 throw(Exception("MemR APU registers"));
             else if (address == 0x4014)

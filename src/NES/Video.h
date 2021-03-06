@@ -60,7 +60,7 @@ namespace Nes {
         bool Interrupt();
         
         void WriteReg(u16 address, u8 value);
-        u8   ReadReg(u16 address);
+        u8   ReadReg(u16 address, bool debug=false);
         void GetTile(u8 *buffer, int widthSize, int tile);
         
         void Update(u8 cycles);

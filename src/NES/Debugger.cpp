@@ -94,7 +94,7 @@ bool Debugger::GetFlag(int i) {
 std::string Debugger::GetMem(u16 address) {
     stringstream ss;
     
-    u8 value = m_cpu->MemR(address);
+    u8 value = m_cpu->MemR(address, true);
     AppendHex(ss, value, 2, '0');
     return ss.str();
 }
@@ -112,12 +112,12 @@ std::string Debugger::GetMem(u16 start, u16 end)
         ss << ": ";
         for (int i=0x0; i<0xF; i++)
         {
-            u8 value = m_cpu->MemR(row+i);
+            u8 value = m_cpu->MemR(row+i, true);
             AppendHex(ss, value, 2, '0');
             ss << ' ';
         }
         
-        u8 value = m_cpu->MemR(row+0xF);
+        u8 value = m_cpu->MemR(row+0xF, true);
         AppendHex(ss, value, 2, '0');
         if (row < (end & 0xFFF0))
             ss << '\n';
@@ -137,7 +137,7 @@ std::string Debugger::Disassemble(u16 start, int numInstructions) {
         ss << "0x";
         AppendHex(ss, address, 4, '0');
         ss << ": ";
-        u8 opcode = m_cpu->MemR(address);
+        u8 opcode = m_cpu->MemR(address, true);
         ss << GetInstructionName(opcode);
         address += GetInstructionLength(opcode);
         
@@ -163,13 +163,13 @@ void Debugger::DisassembleOne(u16 address, u16 &nextAddress, std::string &name, 
     stringstream ss1, ss2;
     
     int length = 0;
-    u8 opcode1 = m_cpu->MemR(address);
-    u8 opcode2 = m_cpu->MemR(address+1);
+    u8 opcode1 = m_cpu->MemR(address, true);
+    u8 opcode2 = m_cpu->MemR(address+1, true);
     ss1 << GetInstructionName(opcode1);
     length += GetInstructionLength(opcode1);
     
     for (int i=0; i<length; i++) {
-        u16 nextData = m_cpu->MemR(address + i);
+        u16 nextData = m_cpu->MemR(address + i, true);
         AppendHex(ss2, nextData, 2, '0');
         if (i < length-1)
             ss2 << " ";
