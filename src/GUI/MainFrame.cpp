@@ -25,6 +25,7 @@
 #include <wx/filedlg.h>
 #include <wx/button.h>
 #include <wx/settings.h>
+#include <wx/imagpng.h>
 #include "MainApp.h"
 #include "MainFrame.h"
 #include "AboutDialog.h"
@@ -36,14 +37,8 @@
 #include "Settings.h"
 #include "../Common/Exception.h"
 #include "../Common/VideoGameDevice.h"
-#include "Xpm/open.xpm"
-#include "Xpm/play.xpm"
-#include "Xpm/pause.xpm"
-#include "Xpm/stop.xpm"
-#include "Xpm/recent.xpm"
 #include "Xpm/gb16.xpm"
 #include "Xpm/gb32.xpm"
-#include "Xpm/changeView.xpm"
 #include "RendererOGL.h"
 #include "RendererSW.h"
 #include "EmulationThread.h"
@@ -84,6 +79,8 @@ MainFrame::MainFrame(wxString fileName)
 {
 	m_renderer = NULL;
     m_toolBar = NULL;
+
+	wxImage::AddHandler(new wxPNGHandler);
 
     // Create the MainFrame
     this->Create(0, ID_MAINFRAME, wxT(APP_NAME), wxDefaultPosition,
@@ -223,26 +220,32 @@ void MainFrame::CreateMenuBar()
 
 void MainFrame::CreateToolBar()
 {
+	double factor = GetDPIScaleFactor();
+
     m_toolBar = new wxToolBar(this, wxID_ANY);
-    m_toolBar->SetToolBitmapSize(wxSize(16, 16));
-    m_toolBar->SetMinSize(wxSize(SMS_SCREEN_W, 25));
-    
-	wxBitmap bmpOpen(open_xpm);
+    m_toolBar->SetToolBitmapSize(FromDIP(wxSize(18, 18)));
+    m_toolBar->SetMinSize(FromDIP(wxSize(SMS_SCREEN_W, factor < 1.5 ? 26 : 22)));
+
+	wxBitmap bmpOpen = factor < 1.5 ? wxBITMAP_PNG(PNG_FolderOpen_1x) : wxBITMAP_PNG(PNG_FolderOpen_2x);
 	m_toolBar->AddTool(wxID_OPEN, _("Open"), bmpOpen, _("Open"));
 	
-	wxBitmap bmpRecent(recent_xpm);
+	wxBitmap bmpRecent = factor < 1.5 ? wxBITMAP_PNG(PNG_DropDown_1x) : wxBITMAP_PNG(PNG_DropDown_2x);
 	m_toolBar->AddTool(ID_OPEN_RECENT, _("Recent"), bmpRecent, _("Recent"));
 
     m_toolBar->AddStretchableSpace();
 
-	wxBitmap bmpPlay(play_xpm);
-	m_toolBar->AddTool(ID_START, _("Start"), bmpPlay, _("Start"));
+	wxBitmap bmpPlay = factor < 1.5 ? wxBITMAP_PNG(PNG_Play_1x) : wxBITMAP_PNG(PNG_Play_2x);
+	wxBitmap bmpPlayDisabled = factor < 1.5 ? wxBITMAP_PNG(PNG_Play_Disabled_1x) : wxBITMAP_PNG(PNG_Play_Disabled_2x);
+	//m_toolBar->AddTool(ID_START, _("Start"), bmpPlay, _("Start"));
+	m_toolBar->AddTool(ID_START, _("Start"), bmpPlay, bmpPlayDisabled, wxITEM_NORMAL, _("Start"));
 
-	wxBitmap bmpPause(pause_xpm);
-	m_toolBar->AddTool(ID_PAUSE, _("Pause"), bmpPause, _("Pause"));
+	wxBitmap bmpPause = factor < 1.5 ? wxBITMAP_PNG(PNG_Pause_1x) : wxBITMAP_PNG(PNG_Pause_2x);
+	wxBitmap bmpPauseDisabled = factor < 1.5 ? wxBITMAP_PNG(PNG_Pause_Disabled_1x) : wxBITMAP_PNG(PNG_Pause_Disabled_2x);
+	m_toolBar->AddTool(ID_PAUSE, _("Pause"), bmpPause, bmpPauseDisabled, wxITEM_NORMAL, _("Pause"));
 
-	wxBitmap bmpStop(stop_xpm);
-	m_toolBar->AddTool(ID_STOP, _("Stop"), bmpStop, _("Stop"));
+	wxBitmap bmpStop = factor < 1.5 ? wxBITMAP_PNG(PNG_Stop_1x) : wxBITMAP_PNG(PNG_Stop_2x);
+	wxBitmap bmpStopDisabled = factor < 1.5 ? wxBITMAP_PNG(PNG_Stop_Disabled_1x) : wxBITMAP_PNG(PNG_Stop_Disabled_2x);
+	m_toolBar->AddTool(ID_STOP, _("Stop"), bmpStop, bmpStopDisabled, wxITEM_NORMAL, _("Stop"));
 	
 	m_toolBar->EnableTool(ID_START, false);
 	m_toolBar->EnableTool(ID_PAUSE, false);
@@ -250,7 +253,7 @@ void MainFrame::CreateToolBar()
     
     m_toolBar->AddStretchableSpace();
     
-    wxBitmap bmpChangeView(changeView_xpm);
+    wxBitmap bmpChangeView = factor < 1.5 ? wxBITMAP_PNG(PNG_3D_1x) : wxBITMAP_PNG(PNG_3D_2x);
 	m_toolBar->AddTool(ID_CHANGEVIEW, _("Change View"), bmpChangeView, _("Change View"));
 	
     m_toolBar->Realize();

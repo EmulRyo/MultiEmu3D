@@ -44,6 +44,8 @@ project "MultiEmu3D"
    local sdlArchFolder = ""
    
    kind "WindowedApp"
+   -- Turn on DPI awareness (Default, None, High, HighPerMonitor)
+   dpiawareness "High"
 
    files {
        "../src/**.h",
