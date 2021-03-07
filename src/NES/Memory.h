@@ -64,7 +64,7 @@ namespace Nes {
             else if (address < 0x4020)
                 throw(Exception("MemR test registers"));
             else
-                return m_c->Read(address);
+                return m_c->ReadPRG(address);
             return 0;
         }
         void SaveMemory(std::ostream* stream);

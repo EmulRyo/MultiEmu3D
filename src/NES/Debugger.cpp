@@ -198,6 +198,32 @@ bool Debugger::ExecuteOneFrame() {
     return true;
 }
 
+void Debugger::GetTiles(u8* buffer, int width, int height)
+{
+    int x, y, tile;
+    u8* tmpBuffer;
+    int widthSize = width * 3;
+    int tilesInX = width / 8;
+    int tilesInY = height / 8;
+    int maxTiles = 512;
+
+    y = 0;
+    tile = 0;
+    while ((y < tilesInY))
+    {
+        x = 0;
+        tmpBuffer = buffer + (widthSize * y * 8);
+        while ((x < tilesInX) && (tile < maxTiles))
+        {
+            m_video->GetTile(tmpBuffer, widthSize, tile);
+            tmpBuffer += 8 * 3;
+            tile++;
+            x++;
+        }
+        y++;
+    }
+}
+
 void Debugger::UpdatePad1(bool* buttonsState) {
     //m_pad->SetButtonsStatePad1(buttonsState);
 }

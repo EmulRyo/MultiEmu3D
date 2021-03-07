@@ -170,7 +170,7 @@ void Cartridge::Extract() {
     
 }
 
-u8 Cartridge::Read(u16 address) {
+u8 Cartridge::ReadPRG(u16 address) {
     if (address < 0x8000)
         return m_prgData[address-0x8000];
     else if (address < 0xC000)
@@ -183,6 +183,14 @@ u8 Cartridge::Read(u16 address) {
     }
 };
 
-void Cartridge::Write(u16 address, u8 value) {
+void Cartridge::WritePRG(u16 address, u8 value) {
     
+};
+
+u8 Cartridge::ReadCHR(u16 address) {
+    return m_chrData[address];
+};
+
+void Cartridge::WriteCHR(u16 address, u8 value) {
+
 };

@@ -27,15 +27,7 @@
 class IScreenDrawable;
 
 namespace Nes {
-
-    enum t_VDPMODES {
-        GRAPHIC_1, GRAPHIC_2, MODE_12, MODE_13, MODE_23, MODE_123,
-        MULTICOLOR,
-        MODE_4_192, MODE_4_224, MODE_4_240,
-        TEXT, INVALID_TEXT
-    };
-
-    class Memory;
+    class Cartridge;
 
     struct VideoPixel
     {
@@ -54,6 +46,7 @@ namespace Nes {
         Video(IScreenDrawable *screen);
         ~Video(void);
         void SetScreen(IScreenDrawable *screen);
+        void SetCartridge(Cartridge* c);
         void Reset();
         void RefreshScreen();
         void ClearScreen();
@@ -71,8 +64,10 @@ namespace Nes {
         void LoadState(std::istream *file);
         
     private:
-        u8  m_regs[8];
-        Memory* m_mem;
+        u8 m_regs[8];
+        u8 m_VRAM[0x1000];
+        u8 m_palette[0x20];
+        Cartridge* m_cartridge;
         u16 m_line;
         float m_cycles;
         float m_cyclesLine;
@@ -86,6 +81,8 @@ namespace Nes {
         u8   m_genLatch;
 
         void UpdateLine(u8 line);
+        u8   MemR(u16 address);
+        void MemW(u16 address, u8 value);
     };
 }
 

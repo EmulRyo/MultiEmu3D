@@ -57,7 +57,7 @@ namespace Nes {
         void Reset();
         void StepInto();
         bool ExecuteOneFrame();
-
+        void GetTiles(u8* buffer, int width, int height);
         void UpdatePad1(bool* buttonsState);
         
     private:

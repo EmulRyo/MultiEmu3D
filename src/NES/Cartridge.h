@@ -44,8 +44,10 @@ namespace Nes {
         std::string GetName();
         bool IsLoaded();
 
-        u8   Read(u16 address);
-        void Write(u16 address, u8 value);
+        u8   ReadPRG(u16 address);
+        void WritePRG(u16 address, u8 value);
+        u8   ReadCHR(u16 address);
+        void WriteCHR(u16 address, u8 value);
         
         void SaveStateMBC(std::ostream *stream);
         void LoadStateMBC(std::istream *stream);

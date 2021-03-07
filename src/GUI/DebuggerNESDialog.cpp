@@ -497,16 +497,14 @@ void DebuggerNESDialog::OnMemSelectChange(wxCommandEvent &event) {
 }
 
 void DebuggerNESDialog::OnSaveTiles(wxCommandEvent &event) {
-    /*
-    const int width = 16*8;
-    const int height = 28*8;
+    const int width = 128;
+    const int height = 256;
     u8 buffer[width*height*3];
     m_debugger->GetTiles(buffer, width, height);
     wxImage *img = new wxImage(width, height, buffer);
     
-    if (img->SaveFile("tiles.bmp"))
-        wxMessageBox("File succesfully saved as tiles.bmp");
+    if (img->SaveFile("tiles.png"))
+        wxMessageBox("File succesfully saved as tiles.png");
     else
         wxMessageBox("Error trying to save the tiles");
-    */
 }

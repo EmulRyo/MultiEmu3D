@@ -80,6 +80,8 @@ void NES::CartridgeLoad(const std::string &fileName, const std::string &batterie
     m_cartridge = new Cartridge(fileName, batteriesPath, cartridgeBuffer, size);
     m_cpu->SetCartridge(m_cartridge);
     m_cpu->Reset();
+
+    m_video->SetCartridge(m_cartridge);
     
     std::string fileNameLower = fileName;
     std::transform(fileNameLower.begin(), fileNameLower.end(), fileNameLower.begin(), ::tolower);

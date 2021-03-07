@@ -16,7 +16,7 @@
  */
 
 #include <iostream>
-#include "Memory.h"
+#include "Cartridge.h"
 #include "Video.h"
 #include "../Common/Bit.h"
 #include "../Common/IScreenDrawable.h"
@@ -50,6 +50,10 @@ Video::~Video(void)
 void Video::SetScreen(IScreenDrawable *screen)
 {
     m_screen = screen;
+}
+
+void Video::SetCartridge(Cartridge* c) {
+    m_cartridge = c;
 }
 
 void Video::RefreshScreen()
@@ -110,7 +114,6 @@ void Video::WriteReg(u16 address, u8 value) {
         u8 regID = address & 0x07;
         m_regs[regID] = value;
     }
-
 }
 
 void Video::Update(u8 cycles) {
@@ -145,12 +148,56 @@ void Video::UpdateLine(u8 line) {
     
 }
 
+u8 Video::MemR(u16 address) {
+    if (address < 0x2000) // Pattern table 0 y 1
+        return m_cartridge->ReadCHR(address);
+    else if (address < 0x3000) // internal VRAM: Nametable 0, 1, 2, 3
+        return m_VRAM[address - 0x2000];
+    else if (address < 0x3F00) // Mirror
+        return m_VRAM[address - 0x3000];
+    else if (address < 0x3F20) // Palette
+        return m_palette[address - 0x3F00];
+    else if (address < 0x3FFF) // Mirror
+        return m_palette[(address - 0x3F20) % 0x0020];
+    else
+        return 0;
+}
+
+void Video::MemW(u16 address, u8 value) {
+
+}
+
 u16 Video::GetLine() {
     return m_line;
 }
 
 u8 Video::GetCyclesLine() {
     return m_cyclesLine;
+}
+
+void Video::GetTile(u8* buffer, int widthSize, int tile) {
+    int addressTile = tile * 16;
+
+    for (int y = 0; y < 8; y++)
+    {
+        int addressLineTile = addressTile + y;
+        // Cada linea se representa con 2 bytes (dos bit planes)
+        u8 bitPlane0 = MemR(addressLineTile + 0);
+        u8 bitPlane1 = MemR(addressLineTile + 8);
+
+        for (int x = 0; x < 8; x++)
+        {
+            int pixX = ABS(x - 7);
+            u8 mask = (0x01 << pixX);
+            u8 indexColor = (((bitPlane1 & mask)<<1) | (bitPlane0 & mask)) >> pixX;
+
+            int offset = widthSize * y + x * 3;
+
+            buffer[offset + 0] = indexColor * 85;
+            buffer[offset + 1] = indexColor * 85;
+            buffer[offset + 2] = indexColor * 85;
+        }
+    }
 }
 
 void Video::SaveState(ostream *stream) {

@@ -77,7 +77,7 @@ void Memory::MemW(u16 address, u8 value)
     else if (address < 0x4020)
         throw(Exception("MemW test registers"));
     else
-        m_c->Write(address, value);
+        m_c->WritePRG(address, value);
 }
 
 void Memory::SaveMemory(ostream *stream)

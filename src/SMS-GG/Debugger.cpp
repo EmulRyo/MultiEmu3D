@@ -298,6 +298,7 @@ void Debugger::GetTiles(u8 *buffer, int width, int height)
     int widthSize = width*3;
     int tilesInX = width / 8;
     int tilesInY = height / 8;
+    int maxTiles = 448;
     
     y = 0;
     tile = 0;
@@ -305,7 +306,7 @@ void Debugger::GetTiles(u8 *buffer, int width, int height)
     {
         x = 0;
         tmpBuffer = buffer + (widthSize*y*8);
-        while ((x < tilesInX) && (tile < 448))
+        while ((x < tilesInX) && (tile < maxTiles))
         {
             m_video->GetTile(tmpBuffer, widthSize, tile);
             tmpBuffer += 8*3;
