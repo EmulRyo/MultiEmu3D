@@ -75,6 +75,8 @@ void Video::Reset() {
     m_regs[ 7] = 0x00;
     
     m_genLatch = 0;
+    m_addressLatch = 0x0000;
+    m_addressNumWrite = 0;
 }
 
 void Video::ClearScreen()
@@ -92,6 +94,8 @@ u8 Video::ReadReg(u16 address, bool debug) {
     if (address == PPUSTATUS) {
         u8 value = (m_regs[regID] & 0xE0) | (m_genLatch & 0x1F); // Los bits 0-4 se cogen del valor del latch
         m_regs[regID] = m_regs[regID] & 0x7F; // Al leer este registro se desactiva el bit 7 (V-Blank)
+        m_addressLatch = 0x0000; // Y tambien se resetea el address latch
+        m_addressNumWrite = 0;
         m_genLatch = m_regs[regID];
         return value;
     }
@@ -100,8 +104,12 @@ u8 Video::ReadReg(u16 address, bool debug) {
         return m_regs[regID];
     }
     else if (address == PPUDATA) {
-        m_genLatch = m_regs[regID];
-        return m_regs[regID];
+        u8 value = MemR(m_addressLatch);
+        u8 increment = (m_regs[PPUCTRL & 0x07] & 0x04) == 0 ? 1 : 32;
+        m_addressLatch += increment;
+
+        m_genLatch = value;
+        return value;
     }
     else
         return m_genLatch;
@@ -110,6 +118,19 @@ u8 Video::ReadReg(u16 address, bool debug) {
 void Video::WriteReg(u16 address, u8 value) {
     m_genLatch = value;
     address = ((address - 0x2000) % 8) + 0x2000;
+    if (address == PPUADDR) {
+        if ((m_addressNumWrite % 2) == 0) // Primera escritura, upper byte
+            m_addressLatch = (value << 8) | (m_addressLatch & 0x00FF);
+        else // Segunda escritura, lower byte
+            m_addressLatch = (m_addressLatch & 0xFF00) | value;
+        m_addressNumWrite++;
+    }
+    else if (address == PPUDATA) {
+        MemW(m_addressLatch, value);
+        u8 increment = (m_regs[PPUCTRL & 0x07] & 0x04) == 0 ? 1 : 32;
+        m_addressLatch += increment;
+    }
+    
     if (address != PPUSTATUS) {
         u8 regID = address & 0x07;
         m_regs[regID] = value;
@@ -164,7 +185,18 @@ u8 Video::MemR(u16 address) {
 }
 
 void Video::MemW(u16 address, u8 value) {
-
+    if (address < 0x2000) // Pattern table 0 y 1
+        m_cartridge->WriteCHR(address, value);
+    else if (address < 0x3000) // internal VRAM: Nametable 0, 1, 2, 3
+        m_VRAM[address - 0x2000] = value;
+    else if (address < 0x3F00) // Mirror
+        m_VRAM[address - 0x3000] = value;
+    else if (address < 0x3F20) // Palette
+        m_palette[address - 0x3F00] = value;
+    else if (address < 0x3FFF) // Mirror
+        m_palette[(address - 0x3F20) % 0x0020] = value;
+    else
+        return;
 }
 
 u16 Video::GetLine() {

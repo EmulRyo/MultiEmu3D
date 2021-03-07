@@ -67,6 +67,8 @@ namespace Nes {
         u8 m_regs[8];
         u8 m_VRAM[0x1000];
         u8 m_palette[0x20];
+        u16 m_addressLatch;
+        u8  m_addressNumWrite;
         Cartridge* m_cartridge;
         u16 m_line;
         float m_cycles;
