@@ -170,7 +170,7 @@ u8 CPU::ExecuteOpcode(u8 opcode, Instructions &inst) {
         case (0x8A): inst.TXA(); break;
         case (0x8C): inst.STY(Address16BitsInmValue(), 3); break;
         case (0x8D): inst.STA(Address16BitsInmValue(), 3); break;
-        case (0x8E): inst.STX(Address16BitsInmValue(), 2); break;
+        case (0x8E): inst.STX(Address16BitsInmValue(), 3); break;
 
         case (0x90): inst.BCC(); break;
         case (0x91): inst.STA(AddressIndirectIndexed(), 2); break;
@@ -242,7 +242,9 @@ u8 CPU::ExecuteOpcode(u8 opcode, Instructions &inst) {
         
         default:
             stringstream out;
-            out << "Error, instruction not implemented: 0x";
+            out << "Error. Address: 0x";
+            out << setfill('0') << setw(4) << uppercase << hex << (int)GetPC() << endl;
+            out << "Instruction not implemented: 0x";
             out << setfill('0') << setw(2) << uppercase << hex << (int)opcode << endl;
             cout << out.str();
             throw Exception(out.str());
