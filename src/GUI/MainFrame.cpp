@@ -224,7 +224,7 @@ void MainFrame::CreateToolBar()
 
     m_toolBar = new wxToolBar(this, wxID_ANY);
     m_toolBar->SetToolBitmapSize(FromDIP(wxSize(18, 18)));
-    m_toolBar->SetMinSize(FromDIP(wxSize(SMS_SCREEN_W, factor < 1.5 ? 26 : 22)));
+    m_toolBar->SetMinSize(wxSize(SMS_SCREEN_W*factor, factor < 1.5 ? 26 : 22*2));
 
 	wxBitmap bmpOpen = factor < 1.5 ? wxBITMAP_PNG(PNG_FolderOpen_1x) : wxBITMAP_PNG(PNG_FolderOpen_2x);
 	m_toolBar->AddTool(wxID_OPEN, _("Open"), bmpOpen, _("Open"));

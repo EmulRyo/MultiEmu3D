@@ -67,13 +67,13 @@ void Memory::MemW(u16 address, u8 value)
     else if (address < 0x4000)
         m_video->WriteReg(address, value);
     else if (address < 0x4014)
-        throw(Exception("MemW APU registers"));
-    else if (address == 0x4014)
+        m_s->MemW(address, value, m_cpu->GetElapsedCycles());
+    else if (address == 0x4014) // OAM DMA
         throw(Exception("MemW OAM DMA"));
     else if (address == 0x4015)
-        throw(Exception("MemW APU registers"));
+        m_s->MemW(address, value, m_cpu->GetElapsedCycles());
     else if (address < 0x4018)
-        throw(Exception("MemW Joystick"));
+        m_pad->MemW(address, value);
     else if (address < 0x4020)
         throw(Exception("MemW test registers"));
     else

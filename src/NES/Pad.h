@@ -30,25 +30,12 @@ namespace Nes {
         
         void SetButtonsStatePad1(bool buttonsState[6]);
         void SetButtonsStatePad2(bool buttonsState[6]);
-        void SetPauseState(bool state);
-        bool PauseInterrupt();
-        u8   GetData(u8 port);              //0xDC, 0xDD
-        void SetControl(u8 value);
-        void SetRegionData(u8 value);
-        void SetGGMode(bool value);
-        
-        void SetSDSCControl(u8 value);
-        void SetSDSCData(u8 value);
+        u8   MemR(u16 address);
+        void MemW(u16 address, u8 value);
         
     private:
         bool m_buttonsStatePad1[6];
         bool m_buttonsStatePad2[6];
-        bool m_pauseState;
-        bool m_interrupt;
-        bool m_enabled;
-        bool m_GameGear;
-        
-        u8  m_data1, m_data2;
     };
 }
 

@@ -168,11 +168,10 @@ void Sound::EndFrame(u32 cyclesElapsed) {
 	delete[] buf;
 }
 
-void Sound::WritePort(u8 port, u8 value, u32 cyclesElapsed) {
-    if (m_enabled) {
-        if (port == 0x06)
-            m_apu->write_ggstereo(cyclesElapsed, value);
-        else if ((port & 0xC0) == 0x40)
-            m_apu->write_data(cyclesElapsed, value);
-    }
+u8 Sound::MemR(u16 address) {
+	return 0;
+}
+
+void Sound::MemW(u16 address, u8 value, u32 cyclesElapsed) {
+    
 }

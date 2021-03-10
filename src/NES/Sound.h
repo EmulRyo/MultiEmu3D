@@ -53,7 +53,8 @@ namespace Nes {
         int Stop();
         bool GetEnabled();
         void SetEnabled(bool enabled);
-        void WritePort(u8 port, u8 value, u32 cyclesElapsed);
+        u8   MemR(u16 address);
+        void MemW(u16 address, u8 value, u32 cyclesElapsed);
         void EndFrame(u32 cyclesElapsed);
     };
 }

@@ -118,7 +118,6 @@ int NES::PadGetNumButtons() {
 void NES::PadSetButtons(bool *buttonsState) {
     m_pad->SetButtonsStatePad1(buttonsState);
     m_pad->SetButtonsStatePad2(&buttonsState[6]);
-    m_pad->SetPauseState(buttonsState[12]);
 }
 
 int NES::PadIdAcceptButton() {
