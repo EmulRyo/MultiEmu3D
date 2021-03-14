@@ -62,9 +62,11 @@ void Video::RefreshScreen()
 }
 
 void Video::Reset() {
+    m_x = 0;
     m_line = 0;
     m_cycles = 0;
     m_cyclesLine = 0;
+    m_numFrames = 0;
     m_regs[ 0] = 0x00;
     m_regs[ 1] = 0x00;
     m_regs[ 2] = 0x00;
@@ -137,36 +139,89 @@ void Video::WriteReg(u16 address, u8 value) {
     }
 }
 
-void Video::Update(u8 cycles) {
-    m_cycles += cycles;
+bool Video::Update(u8 cpuCycles) {
+    bool NMI = false;
+    m_cycles += cpuCycles *3;
     
-    if (m_cycles > NES_FRAME_CYCLES) {
-        m_cycles -= NES_FRAME_CYCLES;
-        m_cyclesLine = 0;
-        m_line = 0;
-        m_regs[PPUSTATUS & 0x07] &= 0x7F; // Al inicio de cada frame se borra el bit de V-Blank
-    }
+    if (m_cycles > NES_FRAME_PPU_CYCLES)
+        OnEndFrame();
     
-    m_cyclesLine += cycles;
-    if (m_cyclesLine > NES_SCANLINE_CYCLES) {
-        m_cyclesLine -= NES_SCANLINE_CYCLES;
-        if (m_line < NES_SCREEN_H) {
-            UpdateLine(m_line);
-        }
-        else if (m_line == (NES_SCREEN_H+1)) {
+    m_cyclesLine += cpuCycles *3;
+    u8 scanLineCycles = NES_SCANLINE_PPU_CYCLES;
+    if (m_line == 261 && (m_numFrames % 2 == 1))
+        scanLineCycles -= 1;
+
+    if (m_cyclesLine > scanLineCycles) {
+        m_x = 0;
+        m_cyclesLine -= scanLineCycles;
+        if (m_line == (NES_SCREEN_H-1))
             RefreshScreen();
-        }
-        else if (m_line == (NES_SCREEN_H + 2)) {
+        else if (m_line == (NES_SCREEN_H)) {
+            // Set VBlank Flag
             u8 regID = PPUSTATUS & 0x07;
             m_regs[regID] |= 0x80;
+
+            u8 ppuCtrlData = m_regs[PPUCTRL & 0x07];
+            if ((ppuCtrlData & 0x80) > 0)
+                NMI = true; // Si el bit 7 de PPUCTRL está activo, generar una Non-Maskable Interrupt
         }
         
         m_line++;
     }
+
+    UpdatePixels();
+
+    return NMI;
 }
 
-void Video::UpdateLine(u8 line) {
-    
+void Video::OnEndFrame() {
+    m_cycles -= NES_FRAME_PPU_CYCLES;
+    m_cyclesLine = 0;
+    m_line = 0;
+    m_regs[PPUSTATUS & 0x07] &= 0x7F; // Al inicio de cada frame se borra el bit de V-Blank
+    m_numFrames++;
+}
+
+void Video::UpdatePixels() {
+    if (m_line >= NES_SCREEN_H)
+        return;
+
+    u8 ppuCtrl = m_regs[PPUCTRL & 0x07];
+    bool spriteSize16 = (ppuCtrl & 0x20) > 0 ? true : false;
+    u16 BgPatternTableAddress = (ppuCtrl & 0x10) > 0 ? 0x1000 : 0x0000;
+    u16 SpritePatternTableAddress = (ppuCtrl & 0x08) > 0 ? 0x1000 : 0x0000;
+    u16 nameTableAddress = ((ppuCtrl & 0x03) * 0x400) + 0x2000;
+    u16 attrTableAddress = nameTableAddress + 0x03C0;
+
+    u16 maxX = m_cyclesLine - 1;
+    if (maxX > NES_SCREEN_W)
+        maxX = NES_SCREEN_W;
+
+    for (u16 x = m_x; x < maxX; x++) {
+        u8 tileCol = x / 8;
+        u8 tileRow = m_line / 8;
+        u16 nameTableOffset = tileRow * 32 + tileCol;
+        u8 tileID = MemR(nameTableAddress + nameTableOffset);
+
+        u8 attrCol = x / 32;
+        u8 attrRow = m_line / 32;
+        u8 attrOffset = attrRow * 8 + attrCol;
+        u8 attrData = MemR(attrTableAddress + attrOffset);
+
+        u16 tilePatternAddress = BgPatternTableAddress + (tileID * 16);
+
+        // Cada linea se representa con 2 bytes (dos bit planes)
+        u8 bitPlane0 = MemR(tilePatternAddress + m_line);
+        u8 bitPlane1 = MemR(tilePatternAddress + m_line + 8);
+
+        int pixX = ABS(x - 7);
+        u8 mask = (0x01 << pixX);
+        u8 indexColor = (((bitPlane1 & mask) << 1) | (bitPlane0 & mask)) >> pixX;
+
+        m_screen->OnDrawPixel(indexColor*85, indexColor * 85, indexColor * 85, x, m_line);
+    }
+
+    m_x = maxX;
 }
 
 u8 Video::MemR(u16 address) {

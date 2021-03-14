@@ -55,8 +55,11 @@ namespace Nes {
         void WriteReg(u16 address, u8 value);
         u8   ReadReg(u16 address, bool debug=false);
         void GetTile(u8 *buffer, int widthSize, int tile);
+
+        u8   MemR(u16 address);
+        void MemW(u16 address, u8 value);
         
-        void Update(u8 cycles);
+        bool Update(u8 cycles);
         
         u16  GetLine();
         u8   GetCyclesLine();
@@ -70,9 +73,11 @@ namespace Nes {
         u16 m_addressLatch;
         u8  m_addressNumWrite;
         Cartridge* m_cartridge;
+        u16 m_x;
         u16 m_line;
         float m_cycles;
-        float m_cyclesLine;
+        u16 m_cyclesLine;
+        s32 m_numFrames;
         IScreenDrawable *m_screen;
         VideoPixel *m_pixel;
         
@@ -82,9 +87,8 @@ namespace Nes {
         s8   m_pixelAux[NES_SCREEN_W][NES_SCREEN_H];
         u8   m_genLatch;
 
-        void UpdateLine(u8 line);
-        u8   MemR(u16 address);
-        void MemW(u16 address, u8 value);
+        void OnEndFrame();
+        void UpdatePixels();
     };
 }
 
