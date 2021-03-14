@@ -122,6 +122,11 @@ DebuggerNESDialog::DebuggerNESDialog(wxWindow *parent, VideoGameDevice *device)
     validator->SetCharIncludes(wxT("0123456789ABCDEFabcdef"));
     
     wxStaticText *memText = new wxStaticText(this, -1, wxT("Memory:"));
+
+    wxString choices[2];
+    choices[0] = "6502";
+    choices[1] = "PPU";
+    m_memSelRBox = new wxRadioBox(this, ID_DEBUG_MEMSELECT, wxT(""), wxDefaultPosition, wxDefaultSize, 2, choices, 1, wxRA_SPECIFY_ROWS);
     
     m_addressMemCtrl = new wxTextCtrl(this, ID_DEBUG_MEMADDRESS, wxEmptyString, wxDefaultPosition, FromDIP(wxSize(40, 20)), 0, *validator);
     m_addressMemCtrl->SetFont(*m_font);
@@ -148,6 +153,8 @@ DebuggerNESDialog::DebuggerNESDialog(wxWindow *parent, VideoGameDevice *device)
     
     wxSizer *addressAndChoiceSizer = new wxBoxSizer(wxHORIZONTAL);
     addressAndChoiceSizer->Add(m_addressMemCtrl, 0, wxUP, 10 * factor);
+    addressAndChoiceSizer->AddSpacer(80);
+    addressAndChoiceSizer->Add(m_memSelRBox, 0, wxRIGHT, 5);
     
     wxSizer *memSizer = new wxBoxSizer(wxVERTICAL);
     memSizer->Add(memText);
@@ -285,7 +292,8 @@ void DebuggerNESDialog::UpdateUI() {
 }
 
 void DebuggerNESDialog::UpdateMemory() {
-    int maxMem = 0x10000;
+    int memSelect = m_memSelRBox->GetSelection();
+    int maxMem = (memSelect == 0) ? 0x10000 : 0x4000;
     wxString address = m_addressMemCtrl->GetValue();
     long value;
     if(address.ToLong(&value, 16)) {
@@ -295,7 +303,10 @@ void DebuggerNESDialog::UpdateMemory() {
         if (value > maxStart)
             value = maxStart;
         string mem = "      00 01 02 03 04 05 06 07 08 09 0A 0B 0C 0D 0E 0F\n";
-        mem += m_debugger->GetMem(value, (value + (0x10*numLines)-1));
+        if (memSelect == 0)
+            mem += m_debugger->GetMem(value, (value + (0x10 * numLines) - 1));
+        else
+            mem += m_debugger->GetVMem(value, (value + (0x10 * numLines) - 1));
         m_memCtrl->SetValue(mem);
     }
 }

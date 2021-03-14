@@ -48,6 +48,7 @@ namespace Nes {
         
         std::string GetMem(u16 address);
         std::string GetMem(u16 start, u16 end);
+        std::string GetVMem(u16 start, u16 end);
         
         std::string Disassemble(u16 start, int numInstructions);
         std::string Disassemble(int numInstructions);
