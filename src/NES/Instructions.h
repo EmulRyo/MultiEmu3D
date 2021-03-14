@@ -82,6 +82,8 @@ namespace Nes {
         void PLP();
         void PLA();
 
+        void ROL();
+        void ROL(u16 address, u8 length);
         void ROR();
         void ROR(u16 address, u8 length);
         void RTS();

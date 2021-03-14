@@ -435,6 +435,26 @@ void Instructions::LSR(u16 address, u8 length) {
 	m_reg->AddPC(length);
 }
 
+void Instructions::ROL() {
+	u8 bit7  = (m_reg->GetA() & 0x80) >> 7;
+	u8 value = (m_reg->GetA() << 1) | (m_reg->GetFlagC());
+	m_reg->SetA(value);
+	m_reg->SetFlagC(bit7);
+	m_reg->SetFlagZ(value == 0 ? 1 : 0);
+	m_reg->SetFlagN(BIT7(value) >> 7);
+	m_reg->AddPC(1);
+}
+
+void Instructions::ROL(u16 address, u8 length) {
+	u8 bit7  = (m_mem->MemR(address) & 0x80) >> 7;
+	u8 value = (m_mem->MemR(address) << 1) | (m_reg->GetFlagC());
+	m_mem->MemW(address, value);
+	m_reg->SetFlagC(bit7);
+	m_reg->SetFlagZ(value == 0 ? 1 : 0);
+	m_reg->SetFlagN(BIT7(value) >> 7);
+	m_reg->AddPC(length);
+}
+
 void Instructions::ROR() {
 	u8 bit0 = m_reg->GetA() & 0x01;
 	u8 value = (m_reg->GetFlagC() << 7) | (m_reg->GetA() >> 1);
