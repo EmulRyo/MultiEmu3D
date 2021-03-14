@@ -175,6 +175,20 @@ void Instructions::JSR() {
 	m_reg->SetPC(Get16BitsInmValue());
 }
 
+void Instructions::NMI() {
+	u8 pch = m_reg->GetPC() >> 8;
+	u8 pcl = m_reg->GetPC() & 0xFF;
+
+	u16 stackAddress = 0x100 | m_reg->GetS();
+	m_mem->MemW(stackAddress, pch);
+	m_mem->MemW(stackAddress - 1, pcl);
+	m_reg->SetS(m_reg->GetS() - 2);
+
+	u16 newAddress = (m_mem->MemR(0xFFFB) << 8) | m_mem->MemR(0xFFFA);
+
+	m_reg->SetPC(newAddress);
+}
+
 void Instructions::AND(u8 value, u8 length) {
 	u8 result = m_reg->GetA() & value;
 	m_reg->SetA(result);
