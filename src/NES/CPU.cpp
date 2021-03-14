@@ -67,6 +67,7 @@ void CPU::Reset() {
 		m_s->Stop();
 		m_s->Start();
 	}
+	OAMDMAPending = false;
 }
 
 int CPU::ExecuteOneFrame() {
@@ -92,9 +93,12 @@ int CPU::Execute(int cyclesToExecute)
 		opcode = MemR(GetPC());
 		
 		u8 cycles = ExecuteOpcode(opcode, inst);
-        
+		
+		if (OAMDMAPending)
+			OAMDMA();
+
         bool NMI = m_v->Update(cycles);
-        
+
         Interrupts(NMI, inst);
         
         m_cycles += cycles;
@@ -106,6 +110,20 @@ int CPU::Execute(int cyclesToExecute)
 
 int  CPU::GetElapsedCycles() {
     return m_cycles;
+}
+
+void CPU::OAMDMARequest(u8 value) {
+	OAMDMAPending = true;
+	OAMDMAAddress = value;
+}
+
+void CPU::OAMDMA() {
+	u16 address = OAMDMAAddress << 8;
+	for (int i = 0; i < 256; i++) {
+		m_v->WriteReg(0x2004, MemR(address + i));
+	}
+	m_cycles += 514;
+	OAMDMAPending = false;
 }
 
 void CPU::Interrupts(bool NMI, Instructions &inst) {

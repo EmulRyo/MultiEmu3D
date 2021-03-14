@@ -132,6 +132,14 @@ void Video::WriteReg(u16 address, u8 value) {
         u8 increment = (m_regs[PPUCTRL & 0x07] & 0x04) == 0 ? 1 : 32;
         m_addressLatch += increment;
     }
+    else if (address == OAMADDR) {
+        m_OAMAddress = value;
+        m_regs[OAMDATA & 0x07] = m_OAM[m_OAMAddress];
+    }
+    else if (address == OAMDATA) {
+        m_OAM[m_OAMAddress] = value;
+        m_OAMAddress++;
+    }
     
     if (address != PPUSTATUS) {
         u8 regID = address & 0x07;

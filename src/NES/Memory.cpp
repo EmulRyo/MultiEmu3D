@@ -16,6 +16,7 @@
  */
 
 #include <string.h>
+#include <assert.h>
 #include "Cartridge.h"
 #include "Sound.h"
 #include "Pad.h"
@@ -68,14 +69,14 @@ void Memory::MemW(u16 address, u8 value)
         m_video->WriteReg(address, value);
     else if (address < 0x4014)
         m_s->MemW(address, value, m_cpu->GetElapsedCycles());
-    else if (address == 0x4014) // OAM DMA
-        throw(Exception("MemW OAM DMA"));
+    else if (address == 0x4014)
+        m_cpu->OAMDMARequest(value);
     else if (address == 0x4015)
         m_s->MemW(address, value, m_cpu->GetElapsedCycles());
     else if (address < 0x4018)
         m_pad->MemW(address, value);
     else if (address < 0x4020)
-        throw(Exception("MemW test registers"));
+        assert(false && "MemW test registers");
     else
         m_c->WritePRG(address, value);
 }

@@ -72,6 +72,8 @@ namespace Nes {
         u8 m_palette[0x20];
         u16 m_addressLatch;
         u8  m_addressNumWrite;
+        u8  m_OAM[256];
+        u8  m_OAMAddress;
         Cartridge* m_cartridge;
         u16 m_x;
         u16 m_line;

@@ -37,6 +37,8 @@ namespace Nes {
         int m_cyclesFrame;
         Video *m_v;
         Pad *m_p;
+        bool OAMDMAPending;
+        u8   OAMDMAAddress;
 
     public:
         CPU(Video *v, Pad *p, Sound *s);
@@ -47,6 +49,7 @@ namespace Nes {
         int  ExecuteOneFrame();
         void Reset();
         int  GetElapsedCycles();
+        void OAMDMARequest(u8 value);
         void LoadStateFromRAM(std::istream *stream);
         void SaveStateToRAM(std::ostream *stream);
         void SaveState(std::string saveDirectory, int numSlot);
@@ -56,6 +59,7 @@ namespace Nes {
         void Init(Video *v, Pad *p);
         void ResetGlobalVariables();
         void Interrupts(bool NMI, Instructions &inst);
+        void OAMDMA();
         
         u8 ExecuteOpcode(u8 opcode, Instructions &inst);
         
