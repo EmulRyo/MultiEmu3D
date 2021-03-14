@@ -98,16 +98,21 @@ u8 CPU::ExecuteOpcode(u8 opcode, Instructions &inst) {
     {
         case (0x01): inst.ORA(GetIndexedIndirect(), 2); break;
         case (0x05): inst.ORA(GetZeroPage(), 2); break;
+        case (0x06): inst.ASL(AddressZeroPage(), 2); break;
         case (0x08): inst.PHP(); break;
         case (0x09): inst.ORA(Get8BitsInmValue(), 2); break;
+        case (0x0A): inst.ASL(); break;
         case (0x0D): inst.ORA(Get16BitsInmValue(), 3); break;
+        case (0x0E): inst.ASL(Address16BitsInmValue(), 3); break;
 
         case (0x10): inst.BPL(); break;
         case (0x11): inst.ORA(GetIndirectIndexed(), 2); break;
         case (0x15): inst.ORA(GetZeroPageIndexed(GetX()), 2); break;
+        case (0x16): inst.ASL(AddressZeroPageIndexed(GetX()), 2); break;
         case (0x18): inst.CLC(); break;
         case (0x19): inst.ORA(GetAbsoluteIndexed(GetY()), 3); break;
         case (0x1D): inst.ORA(GetAbsoluteIndexed(GetX()), 3); break;
+        case (0x1E): inst.ASL(AddressAbsoluteIndexed(GetX()), 3); break;
 
         case (0x20): inst.JSR(); break;
         case (0x21): inst.AND(GetIndexedIndirect(), 2); break;

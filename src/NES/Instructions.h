@@ -34,6 +34,8 @@ namespace Nes {
 
         void ADC(u8 value, u8 length);
         void AND(u8 value, u8 length);
+        void ASL();
+        void ASL(u16 address, u8 length);
 
         void BMI();
         void BPL();
