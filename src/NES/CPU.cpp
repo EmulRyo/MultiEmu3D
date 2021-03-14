@@ -93,9 +93,9 @@ int CPU::Execute(int cyclesToExecute)
 		
 		u8 cycles = ExecuteOpcode(opcode, inst);
         
-        m_v->Update(cycles);
+        bool NMI = m_v->Update(cycles);
         
-        Interrupts(inst);
+        Interrupts(NMI, inst);
         
         m_cycles += cycles;
 		
@@ -108,8 +108,9 @@ int  CPU::GetElapsedCycles() {
     return m_cycles;
 }
 
-void CPU::Interrupts(Instructions &inst) {
-    
+void CPU::Interrupts(bool NMI, Instructions &inst) {
+	if (NMI)
+		inst.NMI();
 }
 
 void CPU::LoadStateFromRAM(istream *stream) {

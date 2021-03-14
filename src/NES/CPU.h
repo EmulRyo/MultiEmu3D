@@ -55,7 +55,7 @@ namespace Nes {
     private:
         void Init(Video *v, Pad *p);
         void ResetGlobalVariables();
-        void Interrupts(Instructions &inst);
+        void Interrupts(bool NMI, Instructions &inst);
         
         u8 ExecuteOpcode(u8 opcode, Instructions &inst);
         
