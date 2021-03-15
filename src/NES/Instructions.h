@@ -88,6 +88,7 @@ namespace Nes {
         void ROL(u16 address, u8 length);
         void ROR();
         void ROR(u16 address, u8 length);
+        void RTI();
         void RTS();
 
         void SEC();

@@ -182,11 +182,23 @@ void Instructions::NMI() {
 	u16 stackAddress = 0x100 | m_reg->GetS();
 	m_mem->MemW(stackAddress, pch);
 	m_mem->MemW(stackAddress - 1, pcl);
-	m_reg->SetS(m_reg->GetS() - 2);
+	m_mem->MemW(stackAddress - 2, m_reg->GetP());
+	m_reg->SetS(m_reg->GetS() - 3);
 
 	u16 newAddress = (m_mem->MemR(0xFFFB) << 8) | m_mem->MemR(0xFFFA);
 
 	m_reg->SetPC(newAddress);
+}
+
+void Instructions::RTI() {
+	u16 stackAddress = 0x100 | m_reg->GetS();
+	m_reg->SetP(m_mem->MemR(stackAddress + 1));
+	u8 pcl = m_mem->MemR(stackAddress + 2);
+	u8 pch = m_mem->MemR(stackAddress + 3);
+	m_reg->SetS(m_reg->GetS() + 3);
+
+	u16 address = pch << 8 | pcl;
+	m_reg->SetPC(address);
 }
 
 void Instructions::AND(u8 value, u8 length) {

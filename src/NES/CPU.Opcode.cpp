@@ -133,6 +133,7 @@ u8 CPU::ExecuteOpcode(u8 opcode, Instructions &inst) {
         case (0x3D): inst.AND(GetAbsoluteIndexed(GetX()), 3); break;
         case (0x3E): inst.ROL(AddressAbsoluteIndexed(GetX()), 3); break;
 
+        case (0x40): inst.RTI(); break;
         case (0x41): inst.EOR(GetIndexedIndirect(), 2); break;
         case (0x45): inst.EOR(GetZeroPage(), 2); break;
         case (0x46): inst.LSR(AddressZeroPage(), 2); break;
