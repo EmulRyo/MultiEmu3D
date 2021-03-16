@@ -218,13 +218,15 @@ void Video::UpdatePixels() {
 
         u16 tilePatternAddress = BgPatternTableAddress + (tileID * 16);
 
+        u8 tileY = m_line - (tileRow * 8);
         // Cada linea se representa con 2 bytes (dos bit planes)
-        u8 bitPlane0 = MemR(tilePatternAddress + m_line);
-        u8 bitPlane1 = MemR(tilePatternAddress + m_line + 8);
+        u8 bitPlane0 = MemR(tilePatternAddress + tileY);
+        u8 bitPlane1 = MemR(tilePatternAddress + tileY + 8);
 
-        int pixX = ABS(x - 7);
-        u8 mask = (0x01 << pixX);
-        u8 indexColor = (((bitPlane1 & mask) << 1) | (bitPlane0 & mask)) >> pixX;
+        u8 tileX = x - (tileCol * 8);
+        tileX = ABS(tileX - 7);
+        u8 mask = (0x01 << tileX);
+        u8 indexColor = (((bitPlane1 & mask) << 1) | (bitPlane0 & mask)) >> tileX;
 
         m_screen->OnDrawPixel(indexColor*85, indexColor * 85, indexColor * 85, x, m_line);
     }
