@@ -91,6 +91,7 @@ namespace Nes {
         void RTI();
         void RTS();
 
+        void SBC(u8 value, u8 length);
         void SEC();
         void SED();
         void SEI();

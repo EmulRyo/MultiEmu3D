@@ -53,6 +53,17 @@ void Instructions::ADC(u8 value, u8 length) {
 	m_reg->AddPC(length);
 }
 
+void Instructions::SBC(u8 value, u8 length) {
+	u8 result = m_reg->GetA() - value - (1-m_reg->GetFlagC());
+
+	m_reg->SetFlagC(result > m_reg->GetA() ? 1 : 0);
+	m_reg->SetFlagV(BIT7(result) != BIT7(m_reg->GetA() ? 1 : 0));
+	m_reg->SetFlagN(BIT7(result) >> 7);
+	m_reg->SetFlagZ(result == 0 ? 1 : 0);
+	m_reg->SetA(result);
+	m_reg->AddPC(length);
+}
+
 void Instructions::BMI() {
 	if (m_reg->GetFlagN() == 1) {
 		s8 rel = (s8)Get8BitsInmValue();

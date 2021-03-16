@@ -240,15 +240,23 @@ u8 CPU::ExecuteOpcode(u8 opcode, Instructions &inst) {
         case (0xDE): inst.DEC(AddressAbsoluteIndexed(GetX()), 3); break;
 
         case (0xE0): inst.CPX(Get8BitsInmValue(), 2); break;
+        case (0xE1): inst.SBC(GetIndexedIndirect(), 2); break;
         case (0xE4): inst.CPX(GetZeroPage(), 2); break;
+        case (0xE5): inst.SBC(GetZeroPage(), 2); break;
         case (0xE6): inst.INC(AddressZeroPage(), 2); break;
         case (0xE8): inst.INX(); break;
+        case (0xE9): inst.SBC(Get8BitsInmValue(), 2); break;
         case (0xEC): inst.CPX(Get16BitsInmValue(), 3); break;
+        case (0xED): inst.SBC(Get16BitsInmValue(), 3); break;
         case (0xEE): inst.INC(Address16BitsInmValue(), 3); break;
 
         case (0xF0): inst.BEQ(); break;
+        case (0xF1): inst.SBC(GetIndirectIndexed(), 2); break;
+        case (0xF5): inst.SBC(GetZeroPageIndexed(GetX()), 2); break;
         case (0xF6): inst.INC(AddressZeroPageIndexed(GetX()), 2); break;
         case (0xF8): inst.SED(); break;
+        case (0xF9): inst.SBC(GetAbsoluteIndexed(GetY()), 3); break;
+        case (0xFD): inst.SBC(GetAbsoluteIndexed(GetX()), 3); break;
         case (0xFE): inst.INC(AddressAbsoluteIndexed(GetX()), 3); break;
         
         default:
