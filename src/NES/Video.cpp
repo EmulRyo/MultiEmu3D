@@ -155,7 +155,7 @@ bool Video::Update(u8 cpuCycles) {
         OnEndFrame();
     
     m_cyclesLine += cpuCycles *3;
-    u8 scanLineCycles = NES_SCANLINE_PPU_CYCLES;
+    u16 scanLineCycles = NES_SCANLINE_PPU_CYCLES;
     if (m_line == 261 && (m_numFrames % 2 == 1))
         scanLineCycles -= 1;
 
