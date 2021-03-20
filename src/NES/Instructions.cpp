@@ -517,3 +517,11 @@ void Instructions::ASL(u16 address, u8 length) {
 	m_reg->SetFlagN(BIT7(value) >> 7);
 	m_reg->AddPC(length);
 }
+
+void Instructions::BIT(u8 value, u8 length) {
+	u8 result = m_reg->GetA() & value;
+	m_reg->SetFlagZ(result == 0 ? 1 : 0);
+	m_reg->SetFlagV(BIT6(value) >> 6);
+	m_reg->SetFlagN(BIT7(value) >> 7);
+	m_reg->AddPC(length);
+}

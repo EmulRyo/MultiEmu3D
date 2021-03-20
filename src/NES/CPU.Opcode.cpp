@@ -116,11 +116,13 @@ u8 CPU::ExecuteOpcode(u8 opcode, Instructions &inst) {
 
         case (0x20): inst.JSR(); break;
         case (0x21): inst.AND(GetIndexedIndirect(), 2); break;
+        case (0x24): inst.BIT(GetZeroPage(), 2); break;
         case (0x25): inst.AND(GetZeroPage(), 2); break;
         case (0x26): inst.ROL(AddressZeroPage(), 2); break;
         case (0x28): inst.PLP(); break;
         case (0x29): inst.AND(Get8BitsInmValue(), 2); break;
         case (0x2A): inst.ROL(); break;
+        case (0x2C): inst.BIT(Get16BitsInmValue(), 3); break;
         case (0x2D): inst.AND(Get16BitsInmValue(), 3); break;
         case (0x2E): inst.ROL(Address16BitsInmValue(), 3); break;
 

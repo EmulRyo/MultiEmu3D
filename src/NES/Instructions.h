@@ -37,6 +37,7 @@ namespace Nes {
         void ASL();
         void ASL(u16 address, u8 length);
 
+        void BIT(u8 value, u8 length);
         void BMI();
         void BPL();
         void BCC();
