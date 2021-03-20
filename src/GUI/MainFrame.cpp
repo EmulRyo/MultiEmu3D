@@ -642,7 +642,7 @@ void MainFrame::OnResize(wxSizeEvent &event)
 }
 
 void MainFrame::OnMaximize(wxMaximizeEvent &event) {
-    static int width=160, height=190;
+    static int width=256, height=190;
     static bool maximized = false;
     static int posX=0, posY=0;
     

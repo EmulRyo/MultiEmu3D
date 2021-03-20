@@ -91,8 +91,10 @@ void Video::Reset() {
 
 void Video::ClearScreen()
 {
-    if (m_screen)
+    if (m_screen) {
+        m_screen->OnSizeChanged(0, 0, NES_SCREEN_W, NES_SCREEN_H);
         m_screen->OnClear();
+    }
 }
 
 u8 Video::ReadReg(u16 address, bool debug) {

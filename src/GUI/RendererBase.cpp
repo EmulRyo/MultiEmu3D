@@ -67,7 +67,7 @@ wxWindow *RendererBase::GetWinRenderer()
 void RendererBase::SetWinRenderer(wxWindow *parent, wxWindow *renderer)
 {
     m_parent = parent;
-    renderer->SetMinSize(wxSize(160, 144));
+    renderer->SetMinSize(wxSize(256, 240));
 	m_winRenderer = renderer;
 	renderer->SetDropTarget(new DnDFile(parent));
     //renderer->SetCursor( wxCursor( wxCURSOR_BLANK ) ); 
