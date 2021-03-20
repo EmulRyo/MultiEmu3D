@@ -70,13 +70,14 @@ namespace Nes {
         void JMPIndirect();
         void JSR();
 
-        void NMI();
-
         void LDA(u8 value, u8 length);
         void LDX(u8 value, u8 length);
         void LDY(u8 value, u8 length);
         void LSR();
         void LSR(u16 address, u8 length);
+
+        void NMI();
+        void NOP(u8 length);
 
         void ORA(u8 value, u8 length);
 

@@ -248,6 +248,7 @@ u8 CPU::ExecuteOpcode(u8 opcode, Instructions &inst) {
         case (0xE6): inst.INC(AddressZeroPage(), 2); break;
         case (0xE8): inst.INX(); break;
         case (0xE9): inst.SBC(Get8BitsInmValue(), 2); break;
+        case (0xEA): inst.NOP(1); break;
         case (0xEC): inst.CPX(Get16BitsInmValue(), 3); break;
         case (0xED): inst.SBC(Get16BitsInmValue(), 3); break;
         case (0xEE): inst.INC(Address16BitsInmValue(), 3); break;
