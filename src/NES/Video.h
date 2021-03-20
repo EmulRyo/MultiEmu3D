@@ -22,8 +22,6 @@
 #include <iostream>
 #include "Def.h"
 
-#define VDP_MEM 0x4000
-
 class IScreenDrawable;
 
 namespace Nes {

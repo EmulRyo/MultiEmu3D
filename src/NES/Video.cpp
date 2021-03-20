@@ -35,6 +35,14 @@
 using namespace std;
 using namespace Nes;
 
+u8 PALETTE_2C02_NESTOPIA[] = {
+/*        R0,  G0,  B0,   R1,  G1,  B1,   R2,  G2,  B2,   R3,  G3,  B3,   R4,  G4,  B4,   R5,  G5,  B5,   R6,  G6,  B6,   R7,  G7,  B7,   R8,  G8,  B8,   R9,  G9,  B9,   RA,  GA,  BA,   RB,  GB,  BB,   RC,  GC,  BC,   RD,  GD,  BD,   RE,  GE,  BE,   RF,  GF,  BF,  */
+/* 00 */  84,  84,  84,    0,  30, 116,    8,  16, 144,   48,   0, 136,   68,   0, 100,   92,   0,  48,   84,   4,   0,   60,  24,   0,   32,  42,   0,    8,  58,   0,    0,  64,   0,    0,  60,   0,    0,  50,  60,    0,   0,   0,    0,   0,   0,    0,   0,   0,
+/* 10 */ 152, 150, 152,    8,  76, 196,   48,  50, 236,   92,  30, 228,  136,  20, 176,  160,  20, 100,  152,  34,  32,  120,  60,   0,   84,  90,   0,   40, 114,   0,    8, 124,   0,    0, 118,  40,    0, 102, 120,    0,   0,   0,    0,   0,   0,    0,   0,   0,
+/* 20 */ 236, 238, 236,   76, 154, 236,  120, 124, 236,  176,  98, 236,  228,  84, 236,  236,  88, 180,  236, 106, 100,  212, 136,  32,  160, 170,   0,  116, 196,   0,   76, 208,  32,   56, 204, 108,   56, 180, 204,   60,  60,  60,    0,   0,   0,    0,   0,   0,
+/* 30 */ 236, 238, 236,  168, 204, 236,  188, 188, 236,  212, 178, 236,  236, 174, 236,  236, 174, 212,  236, 180, 176,  228, 196, 144,  204, 210, 120,  180, 222, 120,  168, 226, 144,  152, 226, 180,  160, 214, 228,  160, 162, 160,    0,   0,   0,    0,   0,   0
+};
+
 Video::Video(IScreenDrawable *screen)
 {
     m_pixel = new VideoPixel();
@@ -211,10 +219,18 @@ void Video::UpdatePixels() {
         u16 nameTableOffset = tileRow * 32 + tileCol;
         u8 tileID = MemR(nameTableAddress + nameTableOffset);
 
+        // Attribute Table
         u8 attrCol = x / 32;
         u8 attrRow = m_line / 32;
         u8 attrOffset = attrRow * 8 + attrCol;
         u8 attrData = MemR(attrTableAddress + attrOffset);
+        bool attrRight = ((x / 16) % 2) == 1;
+        bool attrBottom = ((m_line / 16) % 2) == 1;
+        u8 attrMaskShift = 0;
+        if (attrRight)  attrMaskShift += 2;
+        if (attrBottom) attrMaskShift += 4;
+        u8 numPalette = (attrData & (0x03 << attrMaskShift)) >> attrMaskShift;
+        u16 paletteAddress = 0x3F01 + (numPalette * 4);
 
         u16 tilePatternAddress = BgPatternTableAddress + (tileID * 16);
 
@@ -228,7 +244,13 @@ void Video::UpdatePixels() {
         u8 mask = (0x01 << tileX);
         u8 indexColor = (((bitPlane1 & mask) << 1) | (bitPlane0 & mask)) >> tileX;
 
-        m_screen->OnDrawPixel(indexColor*85, indexColor * 85, indexColor * 85, x, m_line);
+        u16 colorAddress = (indexColor == 0) ? 0x3F00 : (paletteAddress + (indexColor-1));
+        u8  colorData = MemR(colorAddress) & 0x3F;
+        u8 r = PALETTE_2C02_NESTOPIA[colorData * 3 + 0];
+        u8 g = PALETTE_2C02_NESTOPIA[colorData * 3 + 1];
+        u8 b = PALETTE_2C02_NESTOPIA[colorData * 3 + 2];
+
+        m_screen->OnDrawPixel(r, g, b, x, m_line);
     }
 
     m_x = maxX;
