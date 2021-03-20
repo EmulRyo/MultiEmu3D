@@ -265,8 +265,12 @@ u8 Video::MemR(u16 address) {
         return m_VRAM[address - 0x2000];
     else if (address < 0x3F00) // Mirror
         return m_VRAM[address - 0x3000];
-    else if (address < 0x3F20) // Palette
+    else if (address < 0x3F20) { // Palette
+        // Estas direcciones son mirrors
+        if ((address == 0x3F10) || (address == 0x3F14) || (address == 0x3F18) || (address == 0x3F1C))
+            address -= 0x10;
         return m_palette[address - 0x3F00];
+    }
     else if (address < 0x3FFF) // Mirror
         return m_palette[(address - 0x3F20) % 0x0020];
     else
@@ -280,8 +284,11 @@ void Video::MemW(u16 address, u8 value) {
         m_VRAM[address - 0x2000] = value;
     else if (address < 0x3F00) // Mirror
         m_VRAM[address - 0x3000] = value;
-    else if (address < 0x3F20) // Palette
+    else if (address < 0x3F20) { // Palette
+        if ((address == 0x3F10) || (address == 0x3F14) || (address == 0x3F18) || (address == 0x3F1C))
+            address -= 0x10;
         m_palette[address - 0x3F00] = value;
+    }
     else if (address < 0x3FFF) // Mirror
         m_palette[(address - 0x3F20) % 0x0020] = value;
     else
