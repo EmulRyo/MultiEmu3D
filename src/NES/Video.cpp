@@ -185,6 +185,7 @@ bool Video::Update(u8 cpuCycles) {
         }
         
         m_line++;
+        SpriteEvaluation(m_line);
     }
 
     UpdatePixels();
@@ -198,6 +199,17 @@ void Video::OnEndFrame() {
     m_line = 0;
     m_regs[PPUSTATUS & 0x07] &= 0x7F; // Al inicio de cada frame se borra el bit de V-Blank
     m_numFrames++;
+}
+
+void Video::SpriteEvaluation(u16 line) {
+    m_secondaryOAMLength = 0;
+    for (u8 i = 0; i < 64; i++) {
+        u8 y = m_OAM[i * 4];
+        if ((y >= line) && (y < line + 8)) {
+            m_secondaryOAM[m_secondaryOAMLength] = i;
+            m_secondaryOAMLength++;
+        }
+    }
 }
 
 void Video::UpdatePixels() {
@@ -220,20 +232,6 @@ void Video::UpdatePixels() {
         u8 tileRow = m_line / 8;
         u16 nameTableOffset = tileRow * 32 + tileCol;
         u8 tileID = MemR(nameTableAddress + nameTableOffset);
-
-        // Attribute Table
-        u8 attrCol = x / 32;
-        u8 attrRow = m_line / 32;
-        u8 attrOffset = attrRow * 8 + attrCol;
-        u8 attrData = MemR(attrTableAddress + attrOffset);
-        bool attrRight = ((x / 16) % 2) == 1;
-        bool attrBottom = ((m_line / 16) % 2) == 1;
-        u8 attrMaskShift = 0;
-        if (attrRight)  attrMaskShift += 2;
-        if (attrBottom) attrMaskShift += 4;
-        u8 numPalette = (attrData & (0x03 << attrMaskShift)) >> attrMaskShift;
-        u16 paletteAddress = 0x3F01 + (numPalette * 4);
-
         u16 tilePatternAddress = BgPatternTableAddress + (tileID * 16);
 
         u8 tileY = m_line - (tileRow * 8);
@@ -246,6 +244,7 @@ void Video::UpdatePixels() {
         u8 mask = (0x01 << tileX);
         u8 indexColor = (((bitPlane1 & mask) << 1) | (bitPlane0 & mask)) >> tileX;
 
+        u16 paletteAddress = GetBGPaletteAddress(x, m_line, attrTableAddress);
         u16 colorAddress = (indexColor == 0) ? 0x3F00 : (paletteAddress + (indexColor-1));
         u8  colorData = MemR(colorAddress) & 0x3F;
         u8 r = PALETTE_2C02_NESTOPIA[colorData * 3 + 0];
@@ -256,6 +255,23 @@ void Video::UpdatePixels() {
     }
 
     m_x = maxX;
+}
+
+u16  Video::GetBGPaletteAddress(u16 x, u16 y, u16 attrTableAddress) {
+    // Attribute Table
+    u8 attrCol = x / 32;
+    u8 attrRow = y / 32;
+    u8 attrOffset = attrRow * 8 + attrCol;
+    u8 attrData = MemR(attrTableAddress + attrOffset);
+    bool attrRight  = ((x / 16) % 2) == 1;
+    bool attrBottom = ((y / 16) % 2) == 1;
+    u8 attrMaskShift = 0;
+    if (attrRight)  attrMaskShift += 2;
+    if (attrBottom) attrMaskShift += 4;
+    u8 numPalette = (attrData & (0x03 << attrMaskShift)) >> attrMaskShift;
+    u16 paletteAddress = 0x3F01 + (numPalette * 4);
+
+    return paletteAddress;
 }
 
 u8 Video::MemR(u16 address) {

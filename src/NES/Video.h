@@ -72,6 +72,8 @@ namespace Nes {
         u8  m_addressNumWrite;
         u8  m_OAM[256];
         u8  m_OAMAddress;
+        u8  m_secondaryOAM[64];
+        u8  m_secondaryOAMLength;
         Cartridge* m_cartridge;
         u16 m_x;
         u16 m_line;
@@ -88,6 +90,8 @@ namespace Nes {
         u8   m_genLatch;
 
         void OnEndFrame();
+        u16  GetBGPaletteAddress(u16 x, u16 y, u16 attrTableAddress);
+        void SpriteEvaluation(u16 line);
         void UpdatePixels();
     };
 }
