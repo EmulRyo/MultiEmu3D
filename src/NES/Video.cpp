@@ -45,14 +45,13 @@ u8 PALETTE_2C02_NESTOPIA[] = {
 
 Video::Video(IScreenDrawable *screen)
 {
-    m_pixel = new VideoPixel();
     Reset();
 	SetScreen(screen);
 }
 
 Video::~Video(void)
 {
-	delete m_pixel;
+	
 }
 
 void Video::SetScreen(IScreenDrawable *screen)
@@ -191,7 +190,7 @@ bool Video::Update(u8 cpuCycles) {
         SpriteEvaluation(m_line);
     }
 
-    UpdatePixels();
+    DrawPixels();
 
     return NMI;
 }
@@ -218,13 +217,13 @@ void Video::SpriteEvaluation(u16 line) {
     }
 }
 
-void Video::UpdatePixels() {
+void Video::DrawPixels() {
     if (m_line >= NES_SCREEN_H)
         return;
 
     u8 ppuCtrl = m_regs[PPUCTRL & 0x07];
     bool spriteSize16 = (ppuCtrl & 0x20) > 0 ? true : false;
-    u16 BgPatternTableAddress = (ppuCtrl & 0x10) > 0 ? 0x1000 : 0x0000;
+    u16 bgPatternTableAddress = (ppuCtrl & 0x10) > 0 ? 0x1000 : 0x0000;
     u16 spritePatternTableAddress = (ppuCtrl & 0x08) > 0 ? 0x1000 : 0x0000;
     u16 nameTableAddress = ((ppuCtrl & 0x03) * 0x400) + 0x2000;
     u16 attrTableAddress = nameTableAddress + 0x03C0;
@@ -234,62 +233,70 @@ void Video::UpdatePixels() {
         maxX = NES_SCREEN_W;
 
     for (u16 x = m_x; x < maxX; x++) {
-        u8 tileCol = x / 8;
-        u8 tileRow = m_line / 8;
-        u16 nameTableOffset = tileRow * 32 + tileCol;
-        u8 tileID = MemR(nameTableAddress + nameTableOffset);
-        u16 tilePatternAddress = BgPatternTableAddress + (tileID * 16);
-
-        u8 tileY = m_line - (tileRow * 8);
-        // Cada linea se representa con 2 bytes (dos bit planes)
-        u8 bitPlane0 = MemR(tilePatternAddress + tileY);
-        u8 bitPlane1 = MemR(tilePatternAddress + tileY + 8);
-
-        u8 tileX = x - (tileCol * 8);
-        tileX = ABS(tileX - 7);
-        u8 mask = (0x01 << tileX);
-        u8 indexColor = (((bitPlane1 & mask) << 1) | (bitPlane0 & mask)) >> tileX;
-
-        u16 bgPaletteAddress = GetBGPaletteAddress(x, m_line, attrTableAddress);
-        u16 colorAddress = (indexColor == 0) ? 0x3F00 : (bgPaletteAddress + (indexColor-1));
-        u8  colorData = MemR(colorAddress) & 0x3F;
-        u8 r = PALETTE_2C02_NESTOPIA[colorData * 3 + 0];
-        u8 g = PALETTE_2C02_NESTOPIA[colorData * 3 + 1];
-        u8 b = PALETTE_2C02_NESTOPIA[colorData * 3 + 2];
-
-        for (u8 s = 0; s < m_secondaryOAMLength; s++) {
-            u8 spriteID = m_secondaryOAM[s];
-            u8 spriteX = m_OAM[spriteID * 4 + 3];
-            if ((spriteX > x - 8) && (spriteX <= x)) {
-                u8 spriteY      = m_OAM[spriteID * 4 + 0]+1; // Los sprites se pintan en y+1
-                u8 spriteTileID = m_OAM[spriteID * 4 + 1];
-                u8 spriteAttr   = m_OAM[spriteID * 4 + 2];
-                u8 fineY = m_line - spriteY;
-                u8 fineX = x - spriteX;
-                u16 spriteTilePatternAddress = spritePatternTableAddress + (spriteTileID * 16);
-                u8 spriteBitPlane0 = MemR(spriteTilePatternAddress + fineY);
-                u8 spriteBitPlane1 = MemR(spriteTilePatternAddress + fineY + 8);
-                if ((spriteAttr & 0x40) == 0)
-                    fineX = ABS(fineX - 7);
-                u8 spriteMask = (0x01 << fineX);
-                u8 spriteIndexColor = (((spriteBitPlane1 & spriteMask) << 1) | (spriteBitPlane0 & spriteMask)) >> fineX;
-                if (spriteIndexColor > 0) {
-                    u8 numPalette = spriteAttr & 0x03;
-                    u16 paletteAddress = 0x3F11 + (numPalette * 4);
-                    u16 colorAddress = paletteAddress + (spriteIndexColor - 1);
-                    u8  colorData = MemR(colorAddress) & 0x3F;
-                    r = PALETTE_2C02_NESTOPIA[colorData * 3 + 0];
-                    g = PALETTE_2C02_NESTOPIA[colorData * 3 + 1];
-                    b = PALETTE_2C02_NESTOPIA[colorData * 3 + 2];
-                }
-                break;
-            }
-        }
+        u8 r, g, b;
+        DrawPixelBG(x, nameTableAddress, bgPatternTableAddress, attrTableAddress, r, g, b);
+        DrawPixelSprite(x, spritePatternTableAddress, r, g, b);
 
         m_screen->OnDrawPixel(r, g, b, x, m_line);
     }
 
     m_x = maxX;
+}
+
+void Video::DrawPixelBG(u16 x, u16 nameTableAddress, u16 BgPatternTableAddress, u16 attrTableAddress, u8& outR, u8& outG, u8& outB) {
+    u8 tileCol = x / 8;
+    u8 tileRow = m_line / 8;
+    u16 nameTableOffset = tileRow * 32 + tileCol;
+    u8 tileID = MemR(nameTableAddress + nameTableOffset);
+    u16 tilePatternAddress = BgPatternTableAddress + (tileID * 16);
+
+    u8 tileY = m_line - (tileRow * 8);
+    // Cada linea se representa con 2 bytes (dos bit planes)
+    u8 bitPlane0 = MemR(tilePatternAddress + tileY);
+    u8 bitPlane1 = MemR(tilePatternAddress + tileY + 8);
+
+    u8 tileX = x - (tileCol * 8);
+    tileX = ABS(tileX - 7);
+    u8 mask = (0x01 << tileX);
+    u8 indexColor = (((bitPlane1 & mask) << 1) | (bitPlane0 & mask)) >> tileX;
+
+    u16 bgPaletteAddress = GetBGPaletteAddress(x, m_line, attrTableAddress);
+    u16 colorAddress = (indexColor == 0) ? 0x3F00 : (bgPaletteAddress + (indexColor - 1));
+    u8  colorData = MemR(colorAddress) & 0x3F;
+    outR = PALETTE_2C02_NESTOPIA[colorData * 3 + 0];
+    outG = PALETTE_2C02_NESTOPIA[colorData * 3 + 1];
+    outB = PALETTE_2C02_NESTOPIA[colorData * 3 + 2];
+}
+
+void Video::DrawPixelSprite(u16 x, u16 spritePatternTableAddress, u8& outR, u8& outG, u8& outB) {
+    for (u8 s = 0; s < m_secondaryOAMLength; s++) {
+        u8 spriteID = m_secondaryOAM[s];
+        u8 spriteX = m_OAM[spriteID * 4 + 3];
+        if ((spriteX > x - 8) && (spriteX <= x)) {
+            u8 spriteY = m_OAM[spriteID * 4 + 0] + 1; // Los sprites se pintan en y+1
+            u8 spriteTileID = m_OAM[spriteID * 4 + 1];
+            u8 spriteAttr = m_OAM[spriteID * 4 + 2];
+            u8 fineY = m_line - spriteY;
+            u8 fineX = x - spriteX;
+            u16 spriteTilePatternAddress = spritePatternTableAddress + (spriteTileID * 16);
+            u8 spriteBitPlane0 = MemR(spriteTilePatternAddress + fineY);
+            u8 spriteBitPlane1 = MemR(spriteTilePatternAddress + fineY + 8);
+            if ((spriteAttr & 0x40) == 0)
+                fineX = ABS(fineX - 7);
+            u8 spriteMask = (0x01 << fineX);
+            u8 spriteIndexColor = (((spriteBitPlane1 & spriteMask) << 1) | (spriteBitPlane0 & spriteMask)) >> fineX;
+            if (spriteIndexColor > 0) {
+                u8 numPalette = spriteAttr & 0x03;
+                u16 paletteAddress = 0x3F11 + (numPalette * 4);
+                u16 colorAddress = paletteAddress + (spriteIndexColor - 1);
+                u8  colorData = MemR(colorAddress) & 0x3F;
+                outR = PALETTE_2C02_NESTOPIA[colorData * 3 + 0];
+                outG = PALETTE_2C02_NESTOPIA[colorData * 3 + 1];
+                outB = PALETTE_2C02_NESTOPIA[colorData * 3 + 2];
+            }
+            break;
+        }
+    }
 }
 
 u16  Video::GetBGPaletteAddress(u16 x, u16 y, u16 attrTableAddress) {

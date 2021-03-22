@@ -27,17 +27,6 @@ class IScreenDrawable;
 namespace Nes {
     class Cartridge;
 
-    struct VideoPixel
-    {
-        int x, y;
-        int rowMap;
-        int color, indexColor, xScrolled;
-        int palette[4];
-        int mapIni;
-        u8 yTile;
-        u8 r, g, b;
-    };
-
     class Video
     {
     public:
@@ -81,7 +70,6 @@ namespace Nes {
         u16 m_cyclesLine;
         s32 m_numFrames;
         IScreenDrawable *m_screen;
-        VideoPixel *m_pixel;
         
         // Contendrá -1 en los píxeles en los que el BG tiene prioridad, 0 en los que se
         // pinta BG pero no sprite, 1 cuando se pinta un sprite, 2 cuando se pintan 2
@@ -92,7 +80,9 @@ namespace Nes {
         void OnEndFrame();
         u16  GetBGPaletteAddress(u16 x, u16 y, u16 attrTableAddress);
         void SpriteEvaluation(u16 line);
-        void UpdatePixels();
+        void DrawPixels();
+        void DrawPixelBG(u16 x, u16 nameTableAddress, u16 BgPatternTableAddress, u16 attrTableAddress, u8& outR, u8& outG, u8& outB);
+        void DrawPixelSprite(u16 x, u16 spritePatternTableAddress, u8& outR, u8& outG, u8& outB);
     };
 }
 
