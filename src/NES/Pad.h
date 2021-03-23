@@ -22,20 +22,21 @@
 
 namespace Nes {
 
-    enum e_smspad { UP, DOWN, LEFT, RIGHT, B1, B2 };
+    enum class PadButtons { UP, DOWN, LEFT, RIGHT, A, B, SELECT, START };
 
     class Pad {
     public:
         Pad();
         
-        void SetButtonsStatePad1(bool buttonsState[6]);
-        void SetButtonsStatePad2(bool buttonsState[6]);
+        void SetButtonsStatePad1(bool buttonsState[8]);
+        void SetButtonsStatePad2(bool buttonsState[8]);
         u8   MemR(u16 address);
         void MemW(u16 address, u8 value);
         
     private:
-        bool m_buttonsStatePad1[6];
-        bool m_buttonsStatePad2[6];
+        bool m_buttonsStatePad[2][8];
+        u8   m_parallelControl;
+        u8   m_serialNumber[2];
     };
 }
 

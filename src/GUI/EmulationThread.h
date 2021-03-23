@@ -56,7 +56,7 @@ private:
     Joystick *joystick;
     wxMutex *mutex;
     wxStopWatch swFrame;
-    wxKeyCode keysUsed[13];
+    wxKeyCode keysUsed[16];
     bool m_finished;
     EmuSpeed m_speed;
     bool m_soundEnabled;

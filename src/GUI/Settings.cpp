@@ -60,6 +60,24 @@ Settings::Settings()
     gbKeys[5]	= 'S';		// B
     gbKeys[6]	= WXK_SHIFT;  // Select
     gbKeys[7]	= WXK_RETURN; // Start
+
+    nesKeys[ 0] = WXK_UP;	// Up
+    nesKeys[ 1] = WXK_DOWN; // Down
+    nesKeys[ 2] = WXK_LEFT; // Left
+    nesKeys[ 3] = WXK_RIGHT;// Right
+    nesKeys[ 4] = 'A';		// A
+    nesKeys[ 5] = 'S';		// B
+    nesKeys[ 6] = WXK_SHIFT;  // Select
+    nesKeys[ 7] = WXK_RETURN; // Start
+    
+    nesKeys[ 8] = 'I'; // Up
+    nesKeys[ 9] = 'K'; // Down
+    nesKeys[10] = 'J'; // Left
+    nesKeys[11] = 'L'; // Right
+    nesKeys[12] = 'G'; // A
+    nesKeys[13] = 'H'; // B
+    nesKeys[14] = 'O'; // Select
+    nesKeys[15] = 'P'; // Start
 }
 
 Settings SettingsGetCopy() {

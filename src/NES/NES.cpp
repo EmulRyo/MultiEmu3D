@@ -112,28 +112,28 @@ void NES::SaveStateToRAM(std::ostream *stream) {
 }
 
 int NES::PadGetNumButtons() {
-    return 13;
+    return 16;
 }
 
 void NES::PadSetButtons(bool *buttonsState) {
     m_pad->SetButtonsStatePad1(buttonsState);
-    m_pad->SetButtonsStatePad2(&buttonsState[6]);
+    m_pad->SetButtonsStatePad2(&buttonsState[8]);
 }
 
 int NES::PadIdAcceptButton() {
-    return B1;
+    return (int)PadButtons::A;
 }
 
 int NES::PadIdCancelButton() {
-    return B2;
+    return (int)PadButtons::B;
 }
 
 int NES::PadIdLeftButton() {
-    return LEFT;
+    return (int)PadButtons::LEFT;
 }
 
 int NES::PadIdRightButton() {
-    return RIGHT;
+    return (int)PadButtons::RIGHT;
 }
 
 void NES::SetScreen(IScreenDrawable *screen) {
