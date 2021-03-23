@@ -245,7 +245,8 @@ void Instructions::PHA() {
 
 void Instructions::PHP() {
 	u16 address = 0x100 | m_reg->GetS();
-	m_mem->MemW(address, m_reg->GetP());
+	u8 value = (m_reg->GetP() & 0xCF) | 0x30; // Al guardarlo en el stack los bits 4 y 5 se ponen a 11
+	m_mem->MemW(address, value);
 	m_reg->SetS(m_reg->GetS() - 1);
 	m_reg->AddPC(1);
 }
