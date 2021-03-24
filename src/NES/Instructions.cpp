@@ -250,8 +250,11 @@ void Instructions::PHP() {
 
 void Instructions::PLA() {
 	u16 address = 0x100 | m_reg->GetS() + 1;
-	m_reg->SetA(m_mem->MemR(address));
+	u8 value = m_mem->MemR(address);
+	m_reg->SetA(value);
 	m_reg->SetS(address & 0xFF);
+	m_reg->SetFlagZ(value == 0 ? 1 : 0);
+	m_reg->SetFlagN(BIT7(value) >> 7);
 	m_reg->AddPC(1);
 }
 
