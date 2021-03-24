@@ -44,9 +44,13 @@ u16 Instructions::Get16BitsInmValue() {
 
 void Instructions::ADC(u8 value, u8 length) {
 	u8 result = m_reg->GetA() + value + m_reg->GetFlagC();
+	u16 result16 = (u16)m_reg->GetA() + value + m_reg->GetFlagC();
 
-	m_reg->SetFlagC(result < m_reg->GetA() ? 1 : 0);
-	m_reg->SetFlagV(BIT7(result) != BIT7(m_reg->GetA() ? 1 : 0));
+	u8 c6 = ((m_reg->GetA() & 0x7F) + (value & 0x7F) + m_reg->GetFlagC()) >> 7;
+	u8 c7 = result16 >> 8;
+
+	m_reg->SetFlagC(result16 > 0xFF ? 1 : 0);
+	m_reg->SetFlagV((c6 != c7) ? 1 : 0);
 	m_reg->SetFlagN(BIT7(result) >> 7);
 	m_reg->SetFlagZ(result == 0 ? 1 : 0);
 	m_reg->SetA(result);
@@ -54,14 +58,7 @@ void Instructions::ADC(u8 value, u8 length) {
 }
 
 void Instructions::SBC(u8 value, u8 length) {
-	u8 result = m_reg->GetA() - value - (1-m_reg->GetFlagC());
-
-	m_reg->SetFlagC(result > m_reg->GetA() ? 1 : 0);
-	m_reg->SetFlagV(BIT7(result) != BIT7(m_reg->GetA() ? 1 : 0));
-	m_reg->SetFlagN(BIT7(result) >> 7);
-	m_reg->SetFlagZ(result == 0 ? 1 : 0);
-	m_reg->SetA(result);
-	m_reg->AddPC(length);
+	ADC(~value, length); // ~value = -value - 1
 }
 
 void Instructions::BMI() {
