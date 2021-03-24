@@ -96,6 +96,7 @@ u8 CPU::ExecuteOpcode(u8 opcode, Instructions &inst) {
     
     switch(opcode)
     {
+        case (0x00): inst.BRK(); break;
         case (0x01): inst.ORA(GetIndexedIndirect(), 2); break;
         case (0x05): inst.ORA(GetZeroPage(), 2); break;
         case (0x06): inst.ASL(AddressZeroPage(), 2); break;

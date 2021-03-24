@@ -44,6 +44,7 @@ namespace Nes {
         void BCS();
         void BEQ();
         void BNE();
+        void BRK();
         void BVS();
         void BVC();
 

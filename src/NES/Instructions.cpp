@@ -165,7 +165,12 @@ void Instructions::JMP() {
 void Instructions::JMPIndirect() {
 	u16 indirectAddress = Get16BitsInmValue();
 	u8 iaL = m_mem->MemR(indirectAddress);
-	u8 iaH = m_mem->MemR(indirectAddress+1);
+	// La dirección del salto no puede estar en diferentes páginas
+	if ((indirectAddress & 0xFF) == 0xFF)
+		indirectAddress &= 0xFF00;
+	else
+		indirectAddress += 1;
+	u8 iaH = m_mem->MemR(indirectAddress);
 	u16 address = (iaH << 8) | iaL;
 	m_reg->SetPC(address);
 }
@@ -187,13 +192,35 @@ void Instructions::NMI() {
 	u8 pch = m_reg->GetPC() >> 8;
 	u8 pcl = m_reg->GetPC() & 0xFF;
 
+	u8 regP = (m_reg->GetP() & 0xCF) | 0x20; // Al guardarlo en el stack los bits 4 y 5 se ponen a 10
+
 	u16 stackAddress = 0x100 | m_reg->GetS();
 	m_mem->MemW(stackAddress, pch);
 	m_mem->MemW(stackAddress - 1, pcl);
-	m_mem->MemW(stackAddress - 2, m_reg->GetP());
+	m_mem->MemW(stackAddress - 2, regP);
 	m_reg->SetS(m_reg->GetS() - 3);
+	m_reg->SetFlagI(1);
 
 	u16 newAddress = (m_mem->MemR(0xFFFB) << 8) | m_mem->MemR(0xFFFA);
+
+	m_reg->SetPC(newAddress);
+}
+
+void Instructions::BRK() {
+	u16 address = m_reg->GetPC() + 2;
+	u8 pch = address >> 8;
+	u8 pcl = address & 0xFF;
+	
+	u8 regP = (m_reg->GetP() & 0xCF) | 0x30; // Al guardarlo en el stack los bits 4 y 5 se ponen a 11
+
+	u16 stackAddress = 0x100 | m_reg->GetS();
+	m_mem->MemW(stackAddress, pch);
+	m_mem->MemW(stackAddress - 1, pcl);
+	m_mem->MemW(stackAddress - 2, regP);
+	m_reg->SetS(m_reg->GetS() - 3);
+	m_reg->SetFlagI(1);
+
+	u16 newAddress = (m_mem->MemR(0xFFFF) << 8) | m_mem->MemR(0xFFFE);
 
 	m_reg->SetPC(newAddress);
 }
