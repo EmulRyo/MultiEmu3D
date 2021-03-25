@@ -91,9 +91,9 @@ namespace MasterSystem {
         u16 m_address;
         u8  m_numWrite;
         u8  m_partialAddress;
-        u16 m_line;
+        u8  m_line;
         u32 m_cycles;
-        u16 m_cyclesLine;
+        u8 m_cyclesLine;
         u8  m_status;
         s16 m_lineIrqCounter;
         bool m_vramAddress;

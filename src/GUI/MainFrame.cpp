@@ -271,7 +271,13 @@ void MainFrame::OnFileOpen(wxCommandEvent &) {
     m_emulation->SetState(EmuState::Paused);
 	
 	wxFileDialog* openDialog = new wxFileDialog(this, _("Choose a rom to open"), wxEmptyString, wxEmptyString,
-												wxT("All roms (*.gb; *.gbc; *.nes; *.sms; *.gg; *.zip)|**.gb;*.gbc;*.nes;.sms;*.gg;*.zip"),
+												wxT("\
+All roms (*.gb; *.gbc; *.nes; *.sms; *.gg; *.zip)|*.gb;*.gbc;*.nes;*.sms;*.gg;*.zip|\
+GameBoy (*.gb)|*.gb|\
+GameBoy Color (*.gbc)|*.gbc|\
+Game Gear (*.gg)|*.gg|\
+Master System (*.sms)|*.sms|\
+NES (*.nes)|*.nes"),
 												wxFD_OPEN, wxDefaultPosition);
 
 	
@@ -514,7 +520,7 @@ void MainFrame::OnFullScreen(wxCommandEvent &)
 
 void MainFrame::OnAbout(wxCommandEvent &)
 {
-	AboutDialog(this);
+	AboutDialog about(this);
 }
 
 void MainFrame::OnPlay(wxCommandEvent &)

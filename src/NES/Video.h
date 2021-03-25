@@ -48,8 +48,6 @@ namespace Nes {
         
         bool Update(u8 cycles);
         
-        u16  GetLine();
-        u8   GetCyclesLine();
         void SaveState(std::ostream *file);
         void LoadState(std::istream *file);
         

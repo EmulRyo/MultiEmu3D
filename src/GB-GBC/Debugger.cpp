@@ -97,11 +97,12 @@ std::string Debugger::GetMem(u16 address) {
 std::string Debugger::GetMem(u16 start, u16 end)
 {
     start &= 0xFFF0;
-    end = (end & 0xFFF0)+0x000F;
+    u16 end1 = end & 0xFFF0;
+    u16 end2 = end1 + 0x000F;
     
     stringstream ss;
     unsigned int row = start;
-    while (row <= end)
+    while (row <= end2)
     {
         AppendHex(ss, row, 4, '0');
         ss << ": ";
@@ -114,7 +115,7 @@ std::string Debugger::GetMem(u16 start, u16 end)
         
         u8 value = m_cpu->MemR(row+0xF);
         AppendHex(ss, value, 2, '0');
-        if (row < (end & 0xFFF0))
+        if (row < end1)
             ss << '\n';
         row += 0x10;
     }

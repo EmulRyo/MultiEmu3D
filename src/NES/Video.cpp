@@ -371,14 +371,6 @@ void Video::MemW(u16 address, u8 value) {
         return;
 }
 
-u16 Video::GetLine() {
-    return m_line;
-}
-
-u8 Video::GetCyclesLine() {
-    return m_cyclesLine;
-}
-
 void Video::GetTile(u8* buffer, int widthSize, int tile) {
     int addressTile = tile * 16;
 
