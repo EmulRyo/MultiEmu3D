@@ -185,6 +185,9 @@ bool Video::Update(u8 cpuCycles) {
             if ((ppuCtrlData & 0x80) > 0)
                 NMI = true; // Si el bit 7 de PPUCTRL está activo, generar una Non-Maskable Interrupt
         }
+        else if (m_line == 261) { // Pre-render line
+            m_regs[PPUSTATUS & 0x07] = (m_regs[PPUSTATUS & 0x07] & 0xBF); // Clear Sprite 0 Hit
+        }
         
         m_line++;
         SpriteEvaluation(m_line);
@@ -222,6 +225,7 @@ void Video::DrawPixels() {
         return;
 
     u8 ppuCtrl = m_regs[PPUCTRL & 0x07];
+    u8 ppuMask = m_regs[PPUMASK & 0x07];
     bool spriteSize16 = (ppuCtrl & 0x20) > 0 ? true : false;
     u16 bgPatternTableAddress = (ppuCtrl & 0x10) > 0 ? 0x1000 : 0x0000;
     u16 spritePatternTableAddress = (ppuCtrl & 0x08) > 0 ? 0x1000 : 0x0000;
@@ -233,17 +237,27 @@ void Video::DrawPixels() {
         maxX = NES_SCREEN_W;
 
     for (u16 x = m_x; x < maxX; x++) {
-        u8 r, g, b;
-        DrawPixelBG(x, nameTableAddress, bgPatternTableAddress, attrTableAddress, r, g, b);
-        DrawPixelSprite(x, spritePatternTableAddress, r, g, b);
+        u8 r, g, b, bgIdColor, spriteIdColor;
+        r = g = b = bgIdColor = spriteIdColor = 0;
 
+        if (BIT3(ppuMask))
+            DrawPixelBG(x, nameTableAddress, bgPatternTableAddress, attrTableAddress, bgIdColor, r, g, b);
+
+        if (BIT4(ppuMask))
+            DrawPixelSprite(x, spritePatternTableAddress, spriteIdColor, r, g, b);
+
+        // Sprite 0 hit
+        if ((bgIdColor > 0) && (spriteIdColor > 0)) {
+            m_regs[PPUSTATUS & 0x07] = (m_regs[PPUSTATUS & 0x07] & 0xBF) | 0x40;
+        }
+            
         m_screen->OnDrawPixel(r, g, b, x, m_line);
     }
 
     m_x = maxX;
 }
 
-void Video::DrawPixelBG(u16 x, u16 nameTableAddress, u16 BgPatternTableAddress, u16 attrTableAddress, u8& outR, u8& outG, u8& outB) {
+void Video::DrawPixelBG(u16 x, u16 nameTableAddress, u16 BgPatternTableAddress, u16 attrTableAddress, u8& outIdColor, u8& outR, u8& outG, u8& outB) {
     u8 tileCol = x / 8;
     u8 tileRow = m_line / 8;
     u16 nameTableOffset = tileRow * 32 + tileCol;
@@ -263,12 +277,13 @@ void Video::DrawPixelBG(u16 x, u16 nameTableAddress, u16 BgPatternTableAddress, 
     u16 bgPaletteAddress = GetBGPaletteAddress(x, m_line, attrTableAddress);
     u16 colorAddress = (indexColor == 0) ? 0x3F00 : (bgPaletteAddress + (indexColor - 1));
     u8  colorData = MemR(colorAddress) & 0x3F;
+    outIdColor = indexColor;
     outR = PALETTE_2C02_NESTOPIA[colorData * 3 + 0];
     outG = PALETTE_2C02_NESTOPIA[colorData * 3 + 1];
     outB = PALETTE_2C02_NESTOPIA[colorData * 3 + 2];
 }
 
-void Video::DrawPixelSprite(u16 x, u16 spritePatternTableAddress, u8& outR, u8& outG, u8& outB) {
+void Video::DrawPixelSprite(u16 x, u16 spritePatternTableAddress, u8& outIdColor, u8& outR, u8& outG, u8& outB) {
     for (u8 s = 0; s < m_secondaryOAMLength; s++) {
         u8 spriteID = m_secondaryOAM[s];
         u8 spriteX = m_OAM[spriteID * 4 + 3];
@@ -293,6 +308,9 @@ void Video::DrawPixelSprite(u16 x, u16 spritePatternTableAddress, u8& outR, u8& 
                 outR = PALETTE_2C02_NESTOPIA[colorData * 3 + 0];
                 outG = PALETTE_2C02_NESTOPIA[colorData * 3 + 1];
                 outB = PALETTE_2C02_NESTOPIA[colorData * 3 + 2];
+
+                if (spriteID == 0)
+                    outIdColor = spriteIndexColor;
             }
             break;
         }

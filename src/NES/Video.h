@@ -81,8 +81,8 @@ namespace Nes {
         u16  GetBGPaletteAddress(u16 x, u16 y, u16 attrTableAddress);
         void SpriteEvaluation(u16 line);
         void DrawPixels();
-        void DrawPixelBG(u16 x, u16 nameTableAddress, u16 BgPatternTableAddress, u16 attrTableAddress, u8& outR, u8& outG, u8& outB);
-        void DrawPixelSprite(u16 x, u16 spritePatternTableAddress, u8& outR, u8& outG, u8& outB);
+        void DrawPixelBG(u16 x, u16 nameTableAddress, u16 BgPatternTableAddress, u16 attrTableAddress, u8& outIdColor, u8& outR, u8& outG, u8& outB);
+        void DrawPixelSprite(u16 x, u16 spritePatternTableAddress, u8& outIdColor, u8& outR, u8& outG, u8& outB);
     };
 }
 
