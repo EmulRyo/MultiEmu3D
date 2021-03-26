@@ -284,7 +284,8 @@ void Video::DrawPixelBG(u16 x, u16 nameTableAddress, u16 BgPatternTableAddress, 
 }
 
 void Video::DrawPixelSprite(u16 x, u16 spritePatternTableAddress, u8& outIdColor, u8& outR, u8& outG, u8& outB) {
-    for (u8 s = 0; s < m_secondaryOAMLength; s++) {
+    s8 s = m_secondaryOAMLength - 1;
+    while (s >= 0) {
         u8 spriteID = m_secondaryOAM[s];
         u8 spriteX = m_OAM[spriteID * 4 + 3];
         if ((spriteX > x - 8) && (spriteX <= x)) {
@@ -312,8 +313,8 @@ void Video::DrawPixelSprite(u16 x, u16 spritePatternTableAddress, u8& outIdColor
                 if (spriteID == 0)
                     outIdColor = spriteIndexColor;
             }
-            break;
         }
+        s--;
     }
 }
 
