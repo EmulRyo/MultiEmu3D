@@ -52,6 +52,7 @@ public:
     u16  GetBreakpoint(int i);
     
     std::string ToHex(int value, int width, char fill);
+    std::string ToInt(int value, int width, char fill);
     void AppendHex(std::stringstream &ss, int value, int width, char fill);
     
 protected:

@@ -91,6 +91,22 @@ bool Debugger::GetFlag(int i) {
     return ((m_cpu->GetP() & (1 << i)) >> i) == 1 ? true : false;
 }
 
+std::string Debugger::GetVideoX() {
+    return ToInt(m_video->GetX(), 3, '0');
+}
+
+std::string Debugger::GetVideoY() {
+    return ToInt(m_video->GetY(), 3, '0');
+}
+
+std::string Debugger::GetVideoScrollX() {
+    return ToInt(m_video->GetScrollX(), 3, '0');
+}
+
+std::string Debugger::GetVideoScrollY() {
+    return ToInt(m_video->GetScrollY(), 3, '0');
+}
+
 std::string Debugger::GetMem(u16 address) {
     stringstream ss;
     
@@ -228,6 +244,16 @@ bool Debugger::ExecuteOneFrame() {
     return true;
 }
 
+bool Debugger::ExecuteUntilNextLine() {
+    u16 currentLine = m_video->GetY();
+    while (m_video->GetY() == currentLine) {
+        m_cpu->Execute(1);
+        if (GetBreakpointNode(m_cpu->GetPC()))
+            return false;
+    }
+    return true;
+}
+
 void Debugger::GetTiles(u8* buffer, int width, int height)
 {
     int x, y, tile;
@@ -255,5 +281,5 @@ void Debugger::GetTiles(u8* buffer, int width, int height)
 }
 
 void Debugger::UpdatePad1(bool* buttonsState) {
-    //m_pad->SetButtonsStatePad1(buttonsState);
+    m_pad->SetButtonsStatePad1(buttonsState);
 }

@@ -53,7 +53,7 @@ private:
     wxListView *m_othersView;
     wxListView *m_disassemblerView;
     wxRadioBox* m_memSelRBox;
-    wxCheckBox *m_input[6];
+    wxCheckBox *m_input[8];
     wxCheckBox *m_flags[8];
     wxFont* m_font;
     u16 m_disassemblerFirst;
@@ -73,6 +73,7 @@ private:
     void UpdateFlags();
     void OnReset(wxCommandEvent &);
     void OnStepInto(wxCommandEvent &);
+    void OnUntilNextLine(wxCommandEvent&);
     void OnOneFrame(wxCommandEvent &);
     void OnOneSecond(wxCommandEvent &);
     void OnBreakpoints(wxCommandEvent &);

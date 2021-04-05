@@ -49,6 +49,11 @@ namespace Nes {
         std::string GetMem(u16 address);
         std::string GetMem(u16 start, u16 end);
         std::string GetVMem(u16 start, u16 end);
+
+        std::string GetVideoX();
+        std::string GetVideoY();
+        std::string GetVideoScrollX();
+        std::string GetVideoScrollY();
         
         std::string Disassemble(u16 start, int numInstructions);
         std::string Disassemble(int numInstructions);
@@ -57,6 +62,7 @@ namespace Nes {
         
         void Reset();
         void StepInto();
+        bool ExecuteUntilNextLine();
         bool ExecuteOneFrame();
         void GetTiles(u8* buffer, int width, int height);
         void UpdatePad1(bool* buttonsState);

@@ -35,6 +35,7 @@ using namespace Nes;
 BEGIN_EVENT_TABLE(DebuggerNESDialog, wxDialog)
 EVT_BUTTON(ID_DEBUG_RESET, DebuggerNESDialog::OnReset)
 EVT_BUTTON(ID_DEBUG_STEPINTO, DebuggerNESDialog::OnStepInto)
+EVT_BUTTON(ID_DEBUG_UNTILNEXTLINE, DebuggerNESDialog::OnUntilNextLine)
 EVT_BUTTON(ID_DEBUG_ONEFRAME, DebuggerNESDialog::OnOneFrame)
 EVT_BUTTON(ID_DEBUG_ONESECOND, DebuggerNESDialog::OnOneSecond)
 EVT_BUTTON(ID_DEBUG_BREAKPOINTS, DebuggerNESDialog::OnBreakpoints)
@@ -199,6 +200,7 @@ DebuggerNESDialog::~DebuggerNESDialog()
 wxSizer * DebuggerNESDialog::CreateButtons() {
     wxButton *resetButton = new wxButton(this, ID_DEBUG_RESET, wxT("Reset"));
     wxButton *stepIntoButton = new wxButton(this, ID_DEBUG_STEPINTO, wxT("Step Into"));
+    wxButton *untilNextLineButton = new wxButton(this, ID_DEBUG_UNTILNEXTLINE, wxT("Run until next line"));
     wxButton *oneFrameButton = new wxButton(this, ID_DEBUG_ONEFRAME, wxT("Run one frame"));
     wxButton *oneSecondButton = new wxButton(this, ID_DEBUG_ONESECOND, wxT("Run one second"));
     wxButton *breakpointsButton = new wxButton(this, ID_DEBUG_BREAKPOINTS, wxT("Breakpoints"));
@@ -231,6 +233,7 @@ wxSizer * DebuggerNESDialog::CreateButtons() {
     buttonsSizer->Add(resetButton);
     buttonsSizer->AddSpacer(5);
     buttonsSizer->Add(stepIntoButton, 0, wxLEFT, 2);
+    buttonsSizer->Add(untilNextLineButton, 0, wxLEFT, 2);
     buttonsSizer->Add(oneFrameButton, 0, wxLEFT, 2);
     buttonsSizer->Add(oneSecondButton, 0, wxLEFT, 2);
     buttonsSizer->AddSpacer(5);
@@ -257,8 +260,10 @@ wxSizer * DebuggerNESDialog::CreateFlagsAndInputControls() {
     m_input[1] = new wxCheckBox(this, wxID_ANY, "D");
     m_input[2] = new wxCheckBox(this, wxID_ANY, "L");
     m_input[3] = new wxCheckBox(this, wxID_ANY, "R");
-    m_input[4] = new wxCheckBox(this, wxID_ANY, "1");
-    m_input[5] = new wxCheckBox(this, wxID_ANY, "2");
+    m_input[4] = new wxCheckBox(this, wxID_ANY, "A");
+    m_input[5] = new wxCheckBox(this, wxID_ANY, "B");
+    m_input[6] = new wxCheckBox(this, wxID_ANY, "SE");
+    m_input[7] = new wxCheckBox(this, wxID_ANY, "ST");
     
     wxFlexGridSizer *grid = new wxFlexGridSizer(9, 2, 12);
     grid->SetFlexibleDirection(wxHORIZONTAL);
@@ -268,7 +273,7 @@ wxSizer * DebuggerNESDialog::CreateFlagsAndInputControls() {
         grid->Add(m_flags[i]);
     }
     grid->Add(inputText);
-    for (int i=0; i<6; i++)
+    for (int i=0; i<8; i++)
         grid->Add(m_input[i]);
     
     return grid;
@@ -331,25 +336,21 @@ void DebuggerNESDialog::UpdateRegisters() {
 }
 
 void DebuggerNESDialog::UpdateVideoRegs() {
-    /*
-    const char *names[] = { "Status", "IE0", "IE1", "IPeriod", "Line", "Address" };
+    const char *names[] = { "X", "Y", "ScrollX", "ScrollY" };
     int pos = 0;
     
     m_videoView->DeleteAllItems();
     
-    for (int i=0; i<6; i++) {
+    for (int i=0; i<4; i++) {
         m_videoView->InsertItem(pos, "");
         m_videoView->SetItem(pos, 0, names[pos]);
         m_videoView->SetItemFont(pos, *m_font);
         pos++;
     }
-    m_videoView->SetItem(0, 1, m_debugger->ToHex(m_debugger->GetVDPStatus(), 2, '0'));
-    m_videoView->SetItem(1, 1, m_debugger->GetIE0() ? "1" : "0");
-    m_videoView->SetItem(2, 1, m_debugger->GetIE1() ? "1" : "0");
-    m_videoView->SetItem(3, 1, IntToString(m_debugger->GetIPeriod(), 1));
-    m_videoView->SetItem(4, 1, IntToString(m_debugger->GetLine(), 1));
-    m_videoView->SetItem(5, 1, m_debugger->ToHex(m_debugger->GetVideoAddress(), 4, '0'));
-    */
+    m_videoView->SetItem(0, 1, m_debugger->GetVideoX());
+    m_videoView->SetItem(1, 1, m_debugger->GetVideoY());
+    m_videoView->SetItem(2, 1, m_debugger->GetVideoScrollX());
+    m_videoView->SetItem(3, 1, m_debugger->GetVideoScrollY());
 }
 
 void DebuggerNESDialog::UpdateOtherRegs() {
@@ -438,8 +439,8 @@ void DebuggerNESDialog::UpdateFlags() {
 }
 
 void DebuggerNESDialog::UpdatePad() {
-    bool buttonsState[6];
-    for (int i=0; i<6; i++)
+    bool buttonsState[8];
+    for (int i=0; i<8; i++)
         buttonsState[i] = m_input[i]->IsChecked();
     m_debugger->UpdatePad1(buttonsState);
 }
@@ -453,6 +454,12 @@ void DebuggerNESDialog::OnReset(wxCommandEvent &event) {
 void DebuggerNESDialog::OnStepInto(wxCommandEvent &event) {
     UpdatePad();
     m_debugger->StepInto();
+    UpdateUI();
+}
+
+void DebuggerNESDialog::OnUntilNextLine(wxCommandEvent& event) {
+    UpdatePad();
+    m_debugger->ExecuteUntilNextLine();
     UpdateUI();
 }
 

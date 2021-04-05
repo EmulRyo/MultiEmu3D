@@ -38,6 +38,13 @@ std::string Debuggable::ToHex(int value, int width, char fill)
     return ss.str();
 }
 
+std::string Debuggable::ToInt(int value, int width, char fill)
+{
+    stringstream ss;
+    ss << setfill(fill) << setw(width) << value;
+    return ss.str();
+}
+
 void Debuggable::AppendHex(stringstream &ss, int value, int width, char fill)
 {
     ss << setfill(fill) << setw(width) << uppercase << hex << (int)value;
