@@ -119,10 +119,10 @@ void Cartridge::ReadHeader() {
     size_t sizePrgRom = m_prgBanks * 16384ULL;
     size_t sizeChrRom = m_chrBanks * 8192ULL;
 
-    u8   mirroring = m_buffer[6] & 0x01;
-    bool battery = ((m_buffer[6] & 0x02) > 0) ? true : false;
-    u8   trainer = ((m_buffer[6] & 0x04) > 0) ? 1 : 0;
-    bool fourScreenMode = ((m_buffer[6] & 0x08) > 0) ? true : false;
+    m_nametableMirroring = BIT0(m_buffer[6]) ? NametableMirroring::VERTICAL : NametableMirroring::HORIZONTAL;
+    bool battery = (BIT1(m_buffer[6]) > 0) ? true : false;
+    u8   trainer = (BIT2(m_buffer[6]) > 0) ? 1 : 0;
+    bool fourScreenMode = (BIT3(m_buffer[6]) > 0) ? true : false;
 
     bool VSUnisystem = ((m_buffer[7] & 0x01) > 0) ? true : false;
     bool playChoice10 = ((m_buffer[7] & 0x02) > 0) ? true : false;
@@ -154,6 +154,10 @@ string Cartridge::GetName()
 bool Cartridge::IsLoaded()
 {
 	return m_isLoaded;
+}
+
+NametableMirroring Cartridge::GetNametableMirroring() {
+    return m_nametableMirroring;
 }
 
 void Cartridge::SaveStateMBC(ostream *stream)

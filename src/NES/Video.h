@@ -21,11 +21,11 @@
 #include <map>
 #include <iostream>
 #include "Def.h"
+#include "Cartridge.h"
 
 class IScreenDrawable;
 
 namespace Nes {
-    class Cartridge;
 
     class Video
     {
@@ -47,6 +47,11 @@ namespace Nes {
         void MemW(u16 address, u8 value);
         
         bool Update(u8 cycles);
+
+        u16 GetX();
+        u16 GetY();
+        u8  GetScrollX();
+        u8  GetScrollY();
         
         void SaveState(std::ostream *file);
         void LoadState(std::istream *file);
@@ -57,6 +62,7 @@ namespace Nes {
             u16 nameTableAddress;
             u16 patternTableAddress;
             u16 attrTableAddress;
+            NametableMirroring mirroring;
         };
         struct BGOutput {
             bool valid;
@@ -80,7 +86,7 @@ namespace Nes {
         u8 m_VRAM[0x1000];
         u8 m_palette[0x20];
         u16 m_addressLatch;
-        u8  m_addressNumWrite;
+        u8  m_writeToggle;
         u8  m_OAM[256];
         u8  m_OAMAddress;
         u8  m_secondaryOAM[64];
@@ -91,6 +97,10 @@ namespace Nes {
         float m_cycles;
         u16 m_cyclesLine;
         s32 m_numFrames;
+        u8  m_scrollX;
+        u8  m_scrollY;
+        u8  m_scrollXRequest;
+        u8  m_scrollYRequest;
         IScreenDrawable *m_screen;
         
         // Contendrá -1 en los píxeles en los que el BG tiene prioridad, 0 en los que se

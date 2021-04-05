@@ -23,16 +23,10 @@
 
 namespace Nes {
     
+    enum class NametableMirroring { HORIZONTAL, VERTICAL, SINGLE_SCREEN, FOUR_SCREEN };
+
     class Cartridge
-    {
-        struct Ram
-        {
-            u8   mem[0x8000];
-            bool enabled;
-            u8   numBank;
-            u8  *page;
-        };
-        
+    {   
     public:
         Cartridge(std::string fileName, std::string batteriesPath="", u8 *cartridgeBuffer=NULL, unsigned long size=0);
         ~Cartridge();
@@ -43,6 +37,8 @@ namespace Nes {
         unsigned int GetSize();
         std::string GetName();
         bool IsLoaded();
+
+        NametableMirroring GetNametableMirroring();
 
         u8   ReadPRG(u16 address);
         void WritePRG(u16 address, u8 value);
@@ -63,6 +59,7 @@ namespace Nes {
         u8*  m_chrData;
         u8   m_prgBanks;
         u8   m_chrBanks;
+        NametableMirroring m_nametableMirroring;
 
         void LoadFile(std::string fileName, std::string batteriesPath);
         void ReadHeader();
