@@ -199,7 +199,7 @@ bool Video::Update(u8 cpuCycles) {
         }
         else if (m_line == 261) { // Pre-render line
             m_regs[PPUSTATUS & 0x07] = (m_regs[PPUSTATUS & 0x07] & 0xBF); // Clear Sprite 0 Hit
-            //m_scrollY = m_scrollYRequest;
+            m_scrollY = m_scrollYRequest;
         }
         
         SpriteEvaluation(m_line);
@@ -282,18 +282,26 @@ void Video::PixelBG(BGInput in, BGOutput& out) {
     u16 nameTableAddress = in.nameTableAddress;
     u16 attrTableAddress = in.attrTableAddress;
     u16 x = in.x + m_scrollX;
-    if (x > 255) {
+    if (x > 255) { // Si se sale de su nametable cambiar x y direccion
         x -= 256;
-        nameTableAddress += 0x400;
-        attrTableAddress += 0x400;
+        // Sumar 0x400 y si se sale del nametable 0x2400 volver al 0x2000
+        nameTableAddress = (((nameTableAddress - 0x2000) + 0x400) % 0x800) + 0x2000;
     }
+    u16 y = m_line + m_scrollY;
+    if (y > 239) {
+        y -= 240;
+        // Sumar 0x800 y si se sale del nametable 0x2800 volver al 0x2000
+        nameTableAddress = (((nameTableAddress - 0x2000) + 0x800) % 0x1000) + 0x2000;
+    }
+    attrTableAddress = nameTableAddress + 0x03C0;
+
     u8 tileCol = x / 8;
-    u8 tileRow = m_line / 8;
+    u8 tileRow = y / 8;
     u16 nameTableOffset = tileRow * 32 + tileCol;
     u8 tileID = MemR(nameTableAddress + nameTableOffset);
     u16 tilePatternAddress = in.patternTableAddress + (tileID * 16);
 
-    u8 tileY = m_line - (tileRow * 8);
+    u8 tileY = y - (tileRow * 8);
     // Cada linea se representa con 2 bytes (dos bit planes)
     u8 bitPlane0 = MemR(tilePatternAddress + tileY);
     u8 bitPlane1 = MemR(tilePatternAddress + tileY + 8);
@@ -303,7 +311,7 @@ void Video::PixelBG(BGInput in, BGOutput& out) {
     u8 mask = (0x01 << tileX);
     u8 colorId = (((bitPlane1 & mask) << 1) | (bitPlane0 & mask)) >> tileX;
 
-    u16 paletteAddress = GetBGPaletteAddress(x, m_line, attrTableAddress);
+    u16 paletteAddress = GetBGPaletteAddress(x, y, attrTableAddress);
     u16 colorAddress = (colorId == 0) ? 0x3F00 : (paletteAddress + (colorId - 1));
     u8  colorData = MemR(colorAddress) & 0x3F;
 
