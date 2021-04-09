@@ -43,7 +43,7 @@ namespace Nes {
         u8   ReadReg(u16 address, bool debug=false);
         void GetTile(u8 *buffer, int widthSize, int tile);
 
-        u8   MemR(u16 address);
+        u8   MemR(u16 address, bool skipBuffer=true);
         void MemW(u16 address, u8 value);
         
         bool Update(u8 cycles);
@@ -86,6 +86,7 @@ namespace Nes {
 
         u8 m_regs[8];
         u8 m_VRAM[0x1000];
+        u8 m_readBuffer;
         u8 m_palette[0x20];
         u16 m_addressLatch;
         u8  m_writeToggle;

@@ -123,7 +123,7 @@ u8 Video::ReadReg(u16 address, bool debug) {
         return m_regs[regID];
     }
     else if (address == PPUDATA) {
-        u8 value = MemR(m_addressLatch);
+        u8 value = MemR(m_addressLatch, false);
         u8 increment = (m_regs[PPUCTRL & 0x07] & 0x04) == 0 ? 1 : 32;
         m_addressLatch += increment;
 
@@ -200,7 +200,8 @@ bool Video::Update(u8 cpuCycles) {
                 NMI = true; // Si el bit 7 de PPUCTRL está activo, generar una Non-Maskable Interrupt
         }
         else if (m_line == 261) { // Pre-render line
-            m_regs[PPUSTATUS & 0x07] = (m_regs[PPUSTATUS & 0x07] & 0xBF); // Clear Sprite 0 Hit
+            // Clear Sprite Overflow, Sprite 0 Hit and VBlank
+            m_regs[PPUSTATUS & 0x07] = (m_regs[PPUSTATUS & 0x07] & 0x1F);
             m_scrollY = m_scrollYRequest;
         }
         
@@ -216,7 +217,6 @@ void Video::OnEndFrame() {
     m_cycles -= NES_FRAME_PPU_CYCLES;
     m_cyclesLine = 0;
     m_line = 0;
-    m_regs[PPUSTATUS & 0x07] &= 0x7F; // Al inicio de cada frame se borra el bit de V-Blank
     m_numFrames++;
 }
 
@@ -232,6 +232,8 @@ void Video::SpriteEvaluation(u16 line) {
             m_secondaryOAMLength++;
         }
     }
+    if (m_secondaryOAMLength > 8)
+        m_regs[PPUSTATUS & 0x07] = m_regs[PPUSTATUS & 0x07] | 0x20;
 }
 
 void Video::DrawPixels() {
@@ -267,7 +269,7 @@ void Video::DrawPixels() {
 
         // Sprite 0 hit
         if ((bgOut.valid) && (bgOut.colorId > 0) && (sprOut.valid) && (sprOut.id == 0))
-            m_regs[PPUSTATUS & 0x07] = (m_regs[PPUSTATUS & 0x07] & 0xBF) | 0x40;
+            m_regs[PPUSTATUS & 0x07] |= 0x40;
 
         if ((sprOut.valid) && ((sprOut.priorityBg == 0) || (!bgOut.valid) || ((sprOut.priorityBg > 0) && (bgOut.colorId == 0))))
             m_screen->OnDrawPixel(sprOut.r, sprOut.g, sprOut.b, x, m_line);
@@ -380,27 +382,36 @@ u16  Video::GetBGPaletteAddress(u16 x, u16 y, u16 attrTableAddress) {
     return paletteAddress;
 }
 
-u8 Video::MemR(u16 address) {
-    if (address < 0x2000) // Pattern table 0 y 1
-        return m_cartridge->ReadCHR(address);
-    else if (address < 0x3000) {// internal VRAM: Nametable 0, 1, 2, 3
-        if (m_cartridge->GetNametableMirroring() == NametableMirroring::VERTICAL)
-            return m_VRAM[(address - 0x2000) % 0x800];
-        if (m_cartridge->GetNametableMirroring() == NametableMirroring::HORIZONTAL) {
-            if (address < 0x2400)
-                return m_VRAM[address - 0x2000];
-            else if (address < 0x2800)
-                return m_VRAM[address - 0x2400];
-            else if (address < 0x2C00)
-                return m_VRAM[address - 0x2000];
-            else
-                return m_VRAM[address - 0x2400];
+u8 Video::MemR(u16 address, bool skipBuffer) {
+    if (address < 0x3000) { // PPUDATA read buffer (post-fetch)
+        u8 value = m_readBuffer;
+        if (address < 0x2000) { // Pattern table 0 y 1
+            value = m_cartridge->ReadCHR(address);
         }
-        else
-            return m_VRAM[address - 0x2000];
+        else if (address < 0x3000) {// internal VRAM: Nametable 0, 1, 2, 3
+            if (m_cartridge->GetNametableMirroring() == NametableMirroring::VERTICAL) {
+                value = m_VRAM[(address - 0x2000) % 0x800];
+            }
+            else if (m_cartridge->GetNametableMirroring() == NametableMirroring::HORIZONTAL) {
+                if (address < 0x2400)
+                    value = m_VRAM[address - 0x2000];
+                else if (address < 0x2800)
+                    value = m_VRAM[address - 0x2400];
+                else if (address < 0x2C00)
+                    value = m_VRAM[address - 0x2000];
+                else
+                    value = m_VRAM[address - 0x2400];
+            }
+            else
+                value = m_VRAM[address - 0x2000];
+        }
+
+        u8 retValue = skipBuffer ? value : m_readBuffer;
+        m_readBuffer = value;
+        return retValue;
     }
     else if (address < 0x3F00) // Mirror
-        return MemR(address - 0x3000);
+        return MemR(address - 0x3000, skipBuffer);
     else if (address < 0x3F20) { // Palette
         // Estas direcciones son mirrors
         if ((address == 0x3F10) || (address == 0x3F14) || (address == 0x3F18) || (address == 0x3F1C))
@@ -411,6 +422,8 @@ u8 Video::MemR(u16 address) {
         return m_palette[(address - 0x3F20) % 0x0020];
     else
         return 0;
+
+
 }
 
 void Video::MemW(u16 address, u8 value) {
