@@ -90,6 +90,8 @@ void Video::Reset() {
     memset(m_OAM, 0xFF, 256);
     m_secondaryOAMLength = 0;
 
+    memset(m_VRAM, 0, 0x1000);
+
     m_scrollX = m_scrollY = 0;
     m_scrollXRequest = m_scrollYRequest = 0;
 }
@@ -454,6 +456,10 @@ void Video::GetTile(u8* buffer, int widthSize, int tile) {
     }
 }
 
+u32 Video::GetNumFrames() {
+    return m_numFrames;
+}
+
 u16 Video::GetX() {
     return m_cyclesLine;
 }
@@ -468,6 +474,10 @@ u8 Video::GetScrollX() {
 
 u8 Video::GetScrollY() {
     return m_scrollY;
+}
+
+u16 Video::GetAddress() {
+    return m_addressLatch;
 }
 
 void Video::SaveState(ostream *stream) {

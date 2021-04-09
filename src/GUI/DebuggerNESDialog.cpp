@@ -336,21 +336,23 @@ void DebuggerNESDialog::UpdateRegisters() {
 }
 
 void DebuggerNESDialog::UpdateVideoRegs() {
-    const char *names[] = { "X", "Y", "ScrollX", "ScrollY" };
+    const char *names[] = { "Frames", "X", "Y", "ScrollX", "ScrollY", "Address" };
     int pos = 0;
     
     m_videoView->DeleteAllItems();
     
-    for (int i=0; i<4; i++) {
+    for (int i=0; i<6; i++) {
         m_videoView->InsertItem(pos, "");
         m_videoView->SetItem(pos, 0, names[pos]);
         m_videoView->SetItemFont(pos, *m_font);
         pos++;
     }
-    m_videoView->SetItem(0, 1, m_debugger->GetVideoX());
-    m_videoView->SetItem(1, 1, m_debugger->GetVideoY());
-    m_videoView->SetItem(2, 1, m_debugger->GetVideoScrollX());
-    m_videoView->SetItem(3, 1, m_debugger->GetVideoScrollY());
+    m_videoView->SetItem(0, 1, m_debugger->GetVideoNumFrames());
+    m_videoView->SetItem(1, 1, m_debugger->GetVideoX());
+    m_videoView->SetItem(2, 1, m_debugger->GetVideoY());
+    m_videoView->SetItem(3, 1, m_debugger->GetVideoScrollX());
+    m_videoView->SetItem(4, 1, m_debugger->GetVideoScrollY());
+    m_videoView->SetItem(5, 1, m_debugger->GetVideoAddress());
 }
 
 void DebuggerNESDialog::UpdateOtherRegs() {
@@ -406,7 +408,7 @@ void DebuggerNESDialog::UpdateDisassembler() {
     
     m_disassemblerView->DeleteAllItems();
     for (int i=0; i<lines; i++) {
-        address = m_debugger->ToHex(currentAddress, 4, '0');
+        address = m_debugger->HexToString(currentAddress, 4, '0');
         
         if (i == 1)
             second = currentAddress;

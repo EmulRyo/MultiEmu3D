@@ -50,10 +50,12 @@ namespace Nes {
         std::string GetMem(u16 start, u16 end);
         std::string GetVMem(u16 start, u16 end);
 
+        std::string GetVideoNumFrames();
         std::string GetVideoX();
         std::string GetVideoY();
         std::string GetVideoScrollX();
         std::string GetVideoScrollY();
+        std::string GetVideoAddress();
         
         std::string Disassemble(u16 start, int numInstructions);
         std::string Disassemble(int numInstructions);

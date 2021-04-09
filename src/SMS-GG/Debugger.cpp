@@ -46,42 +46,42 @@ Debugger::~Debugger()
 
 std::string Debugger::GetRegAF()
 {
-    return ToHex(m_cpu->GetAF(), 4, '0');
+    return HexToString(m_cpu->GetAF(), 4, '0');
 }
 
 std::string Debugger::GetRegBC()
 {
-    return ToHex(m_cpu->GetBC(), 4, '0');
+    return HexToString(m_cpu->GetBC(), 4, '0');
 }
 
 std::string Debugger::GetRegDE()
 {
-    return ToHex(m_cpu->GetDE(), 4, '0');
+    return HexToString(m_cpu->GetDE(), 4, '0');
 }
 
 std::string Debugger::GetRegHL()
 {
-    return ToHex(m_cpu->GetHL(), 4, '0');
+    return HexToString(m_cpu->GetHL(), 4, '0');
 }
 
 std::string Debugger::GetRegSP()
 {
-    return ToHex(m_cpu->GetSP(), 4, '0');
+    return HexToString(m_cpu->GetSP(), 4, '0');
 }
 
 std::string Debugger::GetRegPC()
 {
-    return ToHex(m_cpu->GetPC(), 4, '0');
+    return HexToString(m_cpu->GetPC(), 4, '0');
 }
 
 std::string Debugger::GetRegIX()
 {
-    return ToHex(m_cpu->GetIX(), 4, '0');
+    return HexToString(m_cpu->GetIX(), 4, '0');
 }
 
 std::string Debugger::GetRegIY()
 {
-    return ToHex(m_cpu->GetIY(), 4, '0');
+    return HexToString(m_cpu->GetIY(), 4, '0');
 }
 
 std::string Debugger::GetRegs()
@@ -106,11 +106,11 @@ bool Debugger::GetFlag(int i) {
 }
 
 std::string Debugger::GetVReg(u8 reg) {
-    return ToHex(m_video->RegR(reg), 2, '0');
+    return HexToString(m_video->RegR(reg), 2, '0');
 }
 
 std::string Debugger::GetPal(u8 pal) {
-    return ToHex(m_video->PalR(pal), 2, '0');
+    return HexToString(m_video->PalR(pal), 2, '0');
 }
 
 std::string Debugger::GetMem(u16 address) {

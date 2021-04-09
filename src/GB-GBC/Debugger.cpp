@@ -45,32 +45,32 @@ Debugger::~Debugger()
 
 std::string Debugger::GetRegAF()
 {
-    return ToHex(m_cpu->GetAF(), 4, '0');
+    return HexToString(m_cpu->GetAF(), 4, '0');
 }
 
 std::string Debugger::GetRegBC()
 {
-    return ToHex(m_cpu->GetBC(), 4, '0');
+    return HexToString(m_cpu->GetBC(), 4, '0');
 }
 
 std::string Debugger::GetRegDE()
 {
-    return ToHex(m_cpu->GetDE(), 4, '0');
+    return HexToString(m_cpu->GetDE(), 4, '0');
 }
 
 std::string Debugger::GetRegHL()
 {
-    return ToHex(m_cpu->GetHL(), 4, '0');
+    return HexToString(m_cpu->GetHL(), 4, '0');
 }
 
 std::string Debugger::GetRegSP()
 {
-    return ToHex(m_cpu->GetSP(), 4, '0');
+    return HexToString(m_cpu->GetSP(), 4, '0');
 }
 
 std::string Debugger::GetRegPC()
 {
-    return ToHex(m_cpu->GetPC(), 4, '0');
+    return HexToString(m_cpu->GetPC(), 4, '0');
 }
 
 std::string Debugger::GetRegs()

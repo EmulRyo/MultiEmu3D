@@ -48,10 +48,12 @@ namespace Nes {
         
         bool Update(u8 cycles);
 
+        u32 GetNumFrames();
         u16 GetX();
         u16 GetY();
         u8  GetScrollX();
         u8  GetScrollY();
+        u16 GetAddress();
         
         void SaveState(std::ostream *file);
         void LoadState(std::istream *file);
@@ -96,17 +98,12 @@ namespace Nes {
         u16 m_line;
         float m_cycles;
         u16 m_cyclesLine;
-        s32 m_numFrames;
+        u32 m_numFrames;
         u8  m_scrollX;
         u8  m_scrollY;
         u8  m_scrollXRequest;
         u8  m_scrollYRequest;
         IScreenDrawable *m_screen;
-        
-        // Contendrá -1 en los píxeles en los que el BG tiene prioridad, 0 en los que se
-        // pinta BG pero no sprite, 1 cuando se pinta un sprite, 2 cuando se pintan 2
-        // sprites, etc.
-        s8   m_pixelAux[NES_SCREEN_W][NES_SCREEN_H];
         u8   m_genLatch;
 
         void OnEndFrame();

@@ -265,7 +265,7 @@ void DebuggerGBDialog::UpdateVideoRegs() {
     for (int i=0; i<16; i++) {
         m_videoView->InsertItem(i, "");
         m_videoView->SetItem(i, 0, names[i]);
-        m_videoView->SetItem(i, 1, m_debugger->ToHex(addresses[i], 4, '0'));
+        m_videoView->SetItem(i, 1, m_debugger->HexToString(addresses[i], 4, '0'));
         m_videoView->SetItem(i, 2, m_debugger->GetMem(addresses[i]));
         m_videoView->SetItemFont(i, *m_font);
     }
@@ -280,7 +280,7 @@ void DebuggerGBDialog::UpdateOtherRegs() {
     for (int i=0; i<17; i++) {
         m_othersView->InsertItem(i, "");
         m_othersView->SetItem(i, 0, names[i]);
-        m_othersView->SetItem(i, 1, m_debugger->ToHex(addresses[i], 4, '0'));
+        m_othersView->SetItem(i, 1, m_debugger->HexToString(addresses[i], 4, '0'));
         m_othersView->SetItem(i, 2, m_debugger->GetMem(addresses[i]));
         m_othersView->SetItemFont(i, *m_font);
     }
@@ -294,7 +294,7 @@ void DebuggerGBDialog::UpdateDissassembler() {
     
     m_disassemblerView->DeleteAllItems();
     for (int i=0; i<6; i++) {
-        address = m_debugger->ToHex(currentAddress, 4, '0');
+        address = m_debugger->HexToString(currentAddress, 4, '0');
         
         m_disassemblerView->InsertItem(i, "");
         if (i == 0) {

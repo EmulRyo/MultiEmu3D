@@ -272,14 +272,6 @@ wxSizer *DebuggerSMSDialog::CreateFlagsAndInputControls() {
     return grid;
 }
 
-std::string DebuggerSMSDialog::IntToString(int value, int width)
-{
-    std::stringstream ss;
-    ss << setfill('0') << setw(width) << value;
-    return ss.str();
-}
-
-
 void DebuggerSMSDialog::UpdateUI() {
     UpdateRegisters();
     UpdateMemory();
@@ -342,16 +334,16 @@ void DebuggerSMSDialog::UpdateVideoRegs() {
         m_videoView->SetItemFont(pos, *m_font);
         pos++;
     }
-    m_videoView->SetItem(0, 1, m_debugger->ToHex(m_debugger->GetVDPStatus(), 2, '0'));
+    m_videoView->SetItem(0, 1, m_debugger->HexToString(m_debugger->GetVDPStatus(), 2, '0'));
     m_videoView->SetItem(1, 1, m_debugger->GetIE0() ? "1" : "0");
     m_videoView->SetItem(2, 1, m_debugger->GetIE1() ? "1" : "0");
-    m_videoView->SetItem(3, 1, IntToString(m_debugger->GetIPeriod(), 1));
-    m_videoView->SetItem(4, 1, IntToString(m_debugger->GetLine(), 1));
-    m_videoView->SetItem(5, 1, m_debugger->ToHex(m_debugger->GetVideoAddress(), 4, '0'));
+    m_videoView->SetItem(3, 1, m_debugger->IntToString(m_debugger->GetIPeriod(), 1, '0'));
+    m_videoView->SetItem(4, 1, m_debugger->IntToString(m_debugger->GetLine(), 1, '0'));
+    m_videoView->SetItem(5, 1, m_debugger->HexToString(m_debugger->GetVideoAddress(), 4, '0'));
     
     for (int i=0; i<11; i++) {
         m_videoView->InsertItem(pos, "");
-        m_videoView->SetItem(pos, 0, "Reg "+IntToString(i, 2));
+        m_videoView->SetItem(pos, 0, "Reg "+m_debugger->IntToString(i, 2, '0'));
         m_videoView->SetItem(pos, 1, m_debugger->GetVReg(i));
         m_videoView->SetItemFont(pos, *m_font);
         pos++;
@@ -359,7 +351,7 @@ void DebuggerSMSDialog::UpdateVideoRegs() {
     
     for (int i=0; i<0x20; i++) {
         m_videoView->InsertItem(pos, "");
-        m_videoView->SetItem(pos, 0, "Pal "+IntToString(i, 2));
+        m_videoView->SetItem(pos, 0, "Pal "+m_debugger->IntToString(i, 2, '0'));
         m_videoView->SetItem(pos, 1, m_debugger->GetPal(i));
         m_videoView->SetItemFont(pos, *m_font);
         pos++;
@@ -378,11 +370,11 @@ void DebuggerSMSDialog::UpdateOtherRegs() {
     }
     
     m_othersView->SetItem(0, 1, m_debugger->GetIE() ? "1" : "0");
-    m_othersView->SetItem(1, 1, IntToString(m_debugger->GetNumBank(0), 1));
-    m_othersView->SetItem(2, 1, IntToString(m_debugger->GetNumBank(1), 1));
-    m_othersView->SetItem(3, 1, IntToString(m_debugger->GetNumBank(2), 1));
+    m_othersView->SetItem(1, 1, m_debugger->IntToString(m_debugger->GetNumBank(0), 1, '0'));
+    m_othersView->SetItem(2, 1, m_debugger->IntToString(m_debugger->GetNumBank(1), 1, '0'));
+    m_othersView->SetItem(3, 1, m_debugger->IntToString(m_debugger->GetNumBank(2), 1, '0'));
     m_othersView->SetItem(4, 1, m_debugger->GetRAMEnabled() ? "1" : "0");
-    m_othersView->SetItem(5, 1, IntToString(m_debugger->GetRAMNumBank(), 1));
+    m_othersView->SetItem(5, 1, m_debugger->IntToString(m_debugger->GetRAMNumBank(), 1, '0'));
 }
 
 void DebuggerSMSDialog::UpdateDisassemblerIcon(int numItem, u16 currentAddress, u16 pc) {
@@ -417,7 +409,7 @@ void DebuggerSMSDialog::UpdateDisassembler() {
     
     m_disassemblerView->DeleteAllItems();
     for (int i=0; i<lines; i++) {
-        address = m_debugger->ToHex(currentAddress, 4, '0');
+        address = m_debugger->HexToString(currentAddress, 4, '0');
         
         if (i == 1)
             second = currentAddress;

@@ -46,32 +46,32 @@ Debugger::~Debugger()
 
 std::string Debugger::GetRegA()
 {
-    return ToHex(m_cpu->GetA(), 2, '0');
+    return HexToString(m_cpu->GetA(), 2, '0');
 }
 
 std::string Debugger::GetRegX()
 {
-    return ToHex(m_cpu->GetX(), 2, '0');
+    return HexToString(m_cpu->GetX(), 2, '0');
 }
 
 std::string Debugger::GetRegY()
 {
-    return ToHex(m_cpu->GetY(), 2, '0');
+    return HexToString(m_cpu->GetY(), 2, '0');
 }
 
 std::string Debugger::GetRegS()
 {
-    return ToHex(m_cpu->GetS(), 2, '0');
+    return HexToString(m_cpu->GetS(), 2, '0');
 }
 
 std::string Debugger::GetRegP()
 {
-    return ToHex(m_cpu->GetP(), 2, '0');
+    return HexToString(m_cpu->GetP(), 2, '0');
 }
 
 std::string Debugger::GetRegPC()
 {
-    return ToHex(m_cpu->GetPC(), 4, '0');
+    return HexToString(m_cpu->GetPC(), 4, '0');
 }
 
 std::string Debugger::GetRegs()
@@ -91,20 +91,28 @@ bool Debugger::GetFlag(int i) {
     return ((m_cpu->GetP() & (1 << i)) >> i) == 1 ? true : false;
 }
 
+std::string Debugger::GetVideoNumFrames() {
+    return IntToString(m_video->GetNumFrames(), 3, '0');
+}
+
 std::string Debugger::GetVideoX() {
-    return ToInt(m_video->GetX(), 3, '0');
+    return IntToString(m_video->GetX(), 3, '0');
 }
 
 std::string Debugger::GetVideoY() {
-    return ToInt(m_video->GetY(), 3, '0');
+    return IntToString(m_video->GetY(), 3, '0');
 }
 
 std::string Debugger::GetVideoScrollX() {
-    return ToInt(m_video->GetScrollX(), 3, '0');
+    return IntToString(m_video->GetScrollX(), 3, '0');
 }
 
 std::string Debugger::GetVideoScrollY() {
-    return ToInt(m_video->GetScrollY(), 3, '0');
+    return IntToString(m_video->GetScrollY(), 3, '0');
+}
+
+std::string Debugger::GetVideoAddress() {
+    return HexToString(m_video->GetAddress(), 4, '0');
 }
 
 std::string Debugger::GetMem(u16 address) {
