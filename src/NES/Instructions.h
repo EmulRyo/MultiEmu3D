@@ -29,6 +29,9 @@ namespace Nes {
         Instructions(Registers *reg, Memory *mem);
         ~Instructions(void);
 
+        u8   GetCyclesExtra();
+        void ResetCyclesExtra();
+
         u8  Get8BitsInmValue();
         u16 Get16BitsInmValue();
 
@@ -112,6 +115,7 @@ namespace Nes {
     private:
         Registers   *m_reg;
         Memory      *m_mem;
+        u8           m_cyclesExtra;
     };
 }
 

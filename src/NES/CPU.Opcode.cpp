@@ -73,7 +73,10 @@ u8 CPU::GetIndexedIndirect() {
 
 // (d),y
 u16 CPU::AddressIndirectIndexed() {
-    return MemR(Get8BitsInmValue()) + MemR((Get8BitsInmValue() + 1) % 256) * 256 + GetY();
+    u16 address1 = MemR(Get8BitsInmValue()) + MemR((Get8BitsInmValue() + 1) % 256) * 256;
+    u16 address2 = address1 + GetY();
+    PageCrossed(address1, address2);
+    return address2;
 }
 
 // (d),y
@@ -83,7 +86,10 @@ u8 CPU::GetIndirectIndexed() {
 
 // a,x | a,y
 u16 CPU::AddressAbsoluteIndexed(u8 regValue) {
-    return Address16BitsInmValue() + regValue;
+    u16 address1 = Address16BitsInmValue();
+    u16 address2 = address1 + regValue;
+    PageCrossed(address1, address2);
+    return address2;
 }
 
 // a,x | a,y
@@ -91,9 +97,11 @@ u8 CPU::GetAbsoluteIndexed(u8 regValue) {
     return MemR(AddressAbsoluteIndexed(regValue));
 }
 
-
 u8 CPU::ExecuteOpcode(u8 opcode, Instructions &inst) {
-    
+
+    SetPageCrossed(false);
+    inst.ResetCyclesExtra();
+
     switch(opcode)
     {
         case (0x00): inst.BRK(); break;
@@ -274,6 +282,6 @@ u8 CPU::ExecuteOpcode(u8 opcode, Instructions &inst) {
             
     } // end switch
     
-    return GetInstructionCycles(opcode);
+    return GetInstructionCycles(opcode) + inst.GetCyclesExtra();
 }
 

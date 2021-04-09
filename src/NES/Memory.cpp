@@ -44,6 +44,18 @@ Memory::~Memory()
 
 Memory *Memory::GetPtrMemory() { return this; }
 
+bool Memory::GetPageCrossed() {
+    return m_pageCrossed;
+}
+
+void Memory::SetPageCrossed(bool value) {
+    m_pageCrossed = value;
+}
+
+void Memory::PageCrossed(u16 address1, u16 address2) {
+    m_pageCrossed = (address1 & 0xFF00) != (address2 & 0xFF00);
+}
+
 void Memory::SetCartridge(Cartridge *c)
 {
 	m_c = c;

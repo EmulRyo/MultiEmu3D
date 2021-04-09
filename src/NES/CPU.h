@@ -62,7 +62,7 @@ namespace Nes {
         void OAMDMA();
         
         u8 ExecuteOpcode(u8 opcode, Instructions &inst);
-        
+
         inline u16 AddressZeroPageIndexed(u8 regValue);
         inline u16 AddressZeroPage();
         inline u16 AddressIndexedIndirect();

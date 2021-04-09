@@ -38,6 +38,9 @@ namespace Nes {
         Memory(CPU* cpu, Video* v, Pad* pad, Sound* s);
         ~Memory();
         Memory* GetPtrMemory();
+        bool GetPageCrossed();
+        void SetPageCrossed(bool value);
+        void PageCrossed(u16 address1, u16 address2);
         void ResetMem();
         void SetCartridge(Cartridge* c);
         void MemW(u16 direction, u8 value);
@@ -76,10 +79,10 @@ namespace Nes {
         CPU *m_cpu;
         Video *m_video;
         Pad *m_pad;
-        bool m_GameGear;
         
     private:
         u8 memory[SIZE_MEM];
+        bool m_pageCrossed;
     };
 }
 
