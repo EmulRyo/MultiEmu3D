@@ -23,12 +23,14 @@
 #include <assert.h>
 #include "Cartridge.h"
 #include "../Common/Bit.h"
+#include "Mappers/Mapper.h"
 
 using namespace std;
 using namespace Nes;
 
 Cartridge::Cartridge(string fileName, string batteriesPath, u8 *cartridgeBuffer, unsigned long size)
 {
+    m_mapper = nullptr;
     m_prgBanks = 0;
     m_romSize = size;
     m_buffer = cartridgeBuffer;
@@ -46,6 +48,9 @@ Cartridge::~Cartridge(void)
 {
 	if (m_buffer)
 		delete [] m_buffer;
+
+    if (m_mapper)
+        delete m_mapper;
     
     m_buffer = NULL;
 	m_prgData = NULL;
@@ -102,9 +107,6 @@ void Cartridge::LoadFile(string fileName, string batteriesPath) {
 	}
 }
 
-#define SIZE_PRG_ROM 4
-#define SIZE_CHR_ROM 5
-
 void Cartridge::ReadHeader() {
     bool iNESFormat = false;
     if (m_buffer[0] == 'N' && m_buffer[1] == 'E' && m_buffer[2] == 'S' && m_buffer[3] == 0x1A)
@@ -114,26 +116,12 @@ void Cartridge::ReadHeader() {
     if (iNESFormat == true && (m_buffer[7] & 0x0C) == 0x08)
         nes20Format = true;
 
-    m_prgBanks = m_buffer[SIZE_PRG_ROM];
-    m_chrBanks = m_buffer[SIZE_CHR_ROM];
-    size_t sizePrgRom = m_prgBanks * 16384ULL;
-    size_t sizeChrRom = m_chrBanks * 8192ULL;
-
-    m_nametableMirroring = BIT0(m_buffer[6]) ? NametableMirroring::VERTICAL : NametableMirroring::HORIZONTAL;
-    bool battery = (BIT1(m_buffer[6]) > 0) ? true : false;
-    u8   trainer = (BIT2(m_buffer[6]) > 0) ? 1 : 0;
-    bool fourScreenMode = (BIT3(m_buffer[6]) > 0) ? true : false;
-
-    bool VSUnisystem = ((m_buffer[7] & 0x01) > 0) ? true : false;
-    bool playChoice10 = ((m_buffer[7] & 0x02) > 0) ? true : false;
-    u16 mapper = (m_buffer[7] & 0xF0) | ((m_buffer[6] & 0xF0) >> 4);
+    u16 mapperId = (m_buffer[7] & 0xF0) | ((m_buffer[6] & 0xF0) >> 4);
     if (nes20Format)
-        mapper = ((m_buffer[8] & 0x0F) << 8) | mapper;
+        mapperId = ((m_buffer[8] & 0x0F) << 8) | mapperId;
 
-    size_t headerSize = 16;
-    size_t trainerSize = 512;
-    m_prgData = m_buffer + headerSize + trainer * trainerSize;
-    m_chrData = m_prgData + sizePrgRom;
+    m_mapper = Mapper::Create(mapperId, m_buffer);
+    assert((m_mapper != nullptr) && "Mapper not implemented");
 }
 
 u8 *Cartridge::GetData()
@@ -160,41 +148,33 @@ NametableMirroring Cartridge::GetNametableMirroring() {
     return m_nametableMirroring;
 }
 
-void Cartridge::SaveStateMBC(ostream *stream)
+void Cartridge::SaveState(ostream *stream)
 {
-	
+    m_mapper->SaveState(stream);
 }
 
-void Cartridge::LoadStateMBC(istream *stream)
+void Cartridge::LoadState(istream *stream)
 {
-	
+    m_mapper->LoadState(stream);
 }
 
 void Cartridge::Extract() {
-    
+    m_mapper->Extract();
 }
 
 u8 Cartridge::ReadPRG(u16 address) {
-    if (address < 0x8000)
-        return m_prgData[address-0x8000];
-    else if (address < 0xC000)
-        return m_prgData[address - 0x8000];
-    else {
-        if (m_prgBanks == 2)
-            return m_prgData[address - 0x8000];
-        else
-            return m_prgData[address - 0xC000];
-    }
+    return m_mapper->ReadPRG(address);
 };
 
 void Cartridge::WritePRG(u16 address, u8 value) {
-    
+    m_mapper->WritePRG(address, value);
 };
 
 u8 Cartridge::ReadCHR(u16 address) {
-    return m_chrData[address];
+    return m_mapper->ReadCHR(address);
 };
 
 void Cartridge::WriteCHR(u16 address, u8 value) {
-
+    m_mapper->WriteCHR(address, value);
 };
+

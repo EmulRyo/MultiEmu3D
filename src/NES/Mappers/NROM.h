@@ -15,30 +15,23 @@
  along with MultiEmu3D.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef __NES_CARTRIDGE_H__
-#define __NES_CARTRIDGE_H__
+#ifndef __NES_NROM_H__
+#define __NES_NROM_H__
 
 #include <string>
-#include "../Common/Types.h"
+#include "../../Common/Types.h"
+#include "Mapper.h"
 
 namespace Nes {
     
-    enum class NametableMirroring { HORIZONTAL, VERTICAL, SINGLE_SCREEN, FOUR_SCREEN };
-
-    class Mapper;
-
-    class Cartridge
+    class NROM: public Mapper
     {   
     public:
-        Cartridge(std::string fileName, std::string batteriesPath="", u8 *cartridgeBuffer=NULL, unsigned long size=0);
-        ~Cartridge();
+        
+        NROM(u8* buffer);
+        ~NROM();
         
         void Reset();
-        
-        u8 *GetData();
-        unsigned int GetSize();
-        std::string GetName();
-        bool IsLoaded();
 
         NametableMirroring GetNametableMirroring();
 
@@ -53,22 +46,7 @@ namespace Nes {
         void Extract();
 
     private:
-        unsigned long m_romSize;
-        std::string m_name;
-        bool m_isLoaded;
-        u8*  m_buffer;
-        u8*  m_prgData;
-        u8*  m_chrData;
-        u8   m_prgBanks;
-        u8   m_chrBanks;
-        NametableMirroring m_nametableMirroring;
-        Mapper* m_mapper;
-
-        void LoadFile(std::string fileName, std::string batteriesPath);
-        void ReadHeader();
-        std::string GetShortName(std::string fileName);
-        u32 RoundUpPowerOf2(u32 v);
-        bool MapperInit(u16 mapper);
+        
     };
 }
 

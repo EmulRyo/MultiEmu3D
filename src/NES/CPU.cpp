@@ -135,14 +135,14 @@ void CPU::LoadStateFromRAM(istream *stream) {
     LoadRegs(stream);
     LoadMemory(stream);
     m_v->LoadState(stream);
-    m_c->LoadStateMBC(stream);
+    m_c->LoadState(stream);
 }
 
 void CPU::SaveStateToRAM(ostream *stream) {
     SaveRegs(stream);
     SaveMemory(stream);
     m_v->SaveState(stream);
-    m_c->SaveStateMBC(stream);
+    m_c->SaveState(stream);
 }
 
 void CPU::SaveState(string saveDirectory, int numSlot)
@@ -166,7 +166,7 @@ void CPU::SaveState(string saveDirectory, int numSlot)
 		SaveRegs(file);
 		SaveMemory(file);
         m_v->SaveState(file);
-		m_c->SaveStateMBC(file);
+		m_c->SaveState(file);
 		
 		file->close();
 	}
@@ -202,7 +202,7 @@ void CPU::LoadState(string loadDirectory, int numSlot)
 		LoadRegs(file);
 		LoadMemory(file);
         m_v->LoadState(file);
-		m_c->LoadStateMBC(file);
+		m_c->LoadState(file);
 		
 		file->close();
 		
