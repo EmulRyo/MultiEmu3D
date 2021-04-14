@@ -291,7 +291,8 @@ void Video::PixelBG(BGInput in, BGOutput& out) {
         // Sumar 0x400 y si se sale del nametable 0x2400 volver al 0x2000
         nameTableAddress = (((nameTableAddress - 0x2000) + 0x400) % 0x800) + 0x2000;
     }
-    u16 y = m_line + m_scrollY;
+    u8 scrollY = (m_scrollY > 239) ? 0 : m_scrollY;
+    u16 y = m_line + scrollY;
     if (y > 239) {
         y -= 240;
         // Sumar 0x800 y si se sale del nametable 0x2800 volver al 0x2000
