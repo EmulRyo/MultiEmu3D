@@ -16,6 +16,7 @@
  */
 
 #include <iostream>
+#include <assert.h>
 #include "Cartridge.h"
 #include "Video.h"
 #include "../Common/Bit.h"
@@ -221,13 +222,15 @@ void Video::OnEndFrame() {
 }
 
 void Video::SpriteEvaluation(u16 line) {
+    u8 ppuCtrl = m_regs[PPUCTRL & 0x07];
+    u8 size = (ppuCtrl & 0x20) > 0 ? 16 : 8;
     m_secondaryOAMLength = 0;
     for (u8 i = 0; i < 64; i++) {
         u8 y = m_OAM[i * 4];
         // Los sprites se pintan en y+1
         if (y < 255)
             y++;
-        if ((y < 240) && (line >= y) && (line < (y+8))) {
+        if ((y < 240) && (line >= y) && (line < (y+size))) {
             m_secondaryOAM[m_secondaryOAMLength] = i;
             m_secondaryOAMLength++;
         }
@@ -338,12 +341,35 @@ void Video::PixelSprite(SpriteInput in, SpriteOutput& out) {
             u8 yStart = m_OAM[id * 4 + 0] + 1; // Los sprites se pintan en y+1
             u8 tileID = m_OAM[id * 4 + 1];
             u8 attr = m_OAM[id * 4 + 2];
+            u8 flipX = BIT6(attr);
+            u8 flipY = BIT7(attr);
             u8 fineY = m_line - yStart;
             u8 fineX = in.xScreen - xStart;
-            u16 tilePatternAddress = in.patternTableAddress + (tileID * 16);
+            u16 patternTableAddress = in.patternTableAddress;
+            if (in.size16) {
+                patternTableAddress = BIT0(m_OAM[id * 4 + 1]) * 0x1000;
+                u8 tileIDUp = tileID & 0xFE;
+                u8 tileIDDown = tileIDUp + 1;
+                if (flipY) {
+                    tileIDUp = tileIDDown;
+                    tileIDDown = tileID & 0xFE;
+                }
+
+                if (fineY > 7) {
+                    fineY -= 8;
+                    tileID = tileIDDown;
+                }
+                else
+                    tileID = tileIDUp;
+            }
+
+            if (flipY)
+                fineY = ABS(fineY - 7);
+                
+            u16 tilePatternAddress = patternTableAddress + (tileID * 16);
             u8 bitPlane0 = MemR(tilePatternAddress + fineY);
             u8 bitPlane1 = MemR(tilePatternAddress + fineY + 8);
-            if ((attr & 0x40) == 0)
+            if (flipX == 0)
                 fineX = ABS(fineX - 7);
             u8 mask = (0x01 << fineX);
             u8 colorId = (((bitPlane1 & mask) << 1) | (bitPlane0 & mask)) >> fineX;
