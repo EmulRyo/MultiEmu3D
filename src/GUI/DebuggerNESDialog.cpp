@@ -279,13 +279,6 @@ wxSizer * DebuggerNESDialog::CreateFlagsAndInputControls() {
     return grid;
 }
 
-std::string DebuggerNESDialog::IntToString(int value, int width)
-{
-    std::stringstream ss;
-    ss << setfill('0') << setw(width) << value;
-    return ss.str();
-}
-
 
 void DebuggerNESDialog::UpdateUI() {
     UpdateRegisters();
@@ -356,24 +349,24 @@ void DebuggerNESDialog::UpdateVideoRegs() {
 }
 
 void DebuggerNESDialog::UpdateOtherRegs() {
-    /*
-    const char *names[] = { "IE", "Bank 0", "Bank 1", "Bank 2", "Ram Enab", "Ram Bank" };
+    const char *names[] = { "Mapper ID", "Map. Name", "PRG Banks", "PRG 0", "PRG 1", "CHR Banks", "CHR 0", "CHR 1" };
     
     m_othersView->DeleteAllItems();
     
-    for (int i=0; i<6; i++) {
+    for (int i=0; i<8; i++) {
         m_othersView->InsertItem(i, "");
         m_othersView->SetItem(i, 0, names[i]);
         m_othersView->SetItemFont(i, *m_font);
     }
     
-    m_othersView->SetItem(0, 1, m_debugger->GetIE() ? "1" : "0");
-    m_othersView->SetItem(1, 1, IntToString(m_debugger->GetNumBank(0), 1));
-    m_othersView->SetItem(2, 1, IntToString(m_debugger->GetNumBank(1), 1));
-    m_othersView->SetItem(3, 1, IntToString(m_debugger->GetNumBank(2), 1));
-    m_othersView->SetItem(4, 1, m_debugger->GetRAMEnabled() ? "1" : "0");
-    m_othersView->SetItem(5, 1, IntToString(m_debugger->GetRAMNumBank(), 1));
-    */
+    m_othersView->SetItem(0, 1, m_debugger->GetMapperID());
+    m_othersView->SetItem(1, 1, m_debugger->GetMapperName());
+    m_othersView->SetItem(2, 1, m_debugger->GetCartridgePRGBanks());
+    m_othersView->SetItem(3, 1, m_debugger->GetCartridgePRGBank0());
+    m_othersView->SetItem(4, 1, m_debugger->GetCartridgePRGBank1());
+    m_othersView->SetItem(5, 1, m_debugger->GetCartridgeCHRBanks());
+    m_othersView->SetItem(6, 1, m_debugger->GetCartridgeCHRBank0());
+    m_othersView->SetItem(7, 1, m_debugger->GetCartridgeCHRBank1());
 }
 
 void DebuggerNESDialog::UpdateDisassemblerIcon(int numItem, u16 currentAddress, u16 pc) {

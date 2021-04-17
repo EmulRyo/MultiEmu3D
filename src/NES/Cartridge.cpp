@@ -31,7 +31,6 @@ using namespace Nes;
 Cartridge::Cartridge(string fileName, string batteriesPath, u8 *cartridgeBuffer, unsigned long size)
 {
     m_mapper = nullptr;
-    m_prgBanks = 0;
     m_romSize = size;
     m_buffer = cartridgeBuffer;
     m_name = GetShortName(fileName);
@@ -53,8 +52,6 @@ Cartridge::~Cartridge(void)
         delete m_mapper;
     
     m_buffer = NULL;
-	m_prgData = NULL;
-    m_chrData = NULL;
 }
 
 u32 Cartridge::RoundUpPowerOf2(u32 v) {
@@ -162,6 +159,14 @@ void Cartridge::Extract() {
     m_mapper->Extract();
 }
 
+u8 Cartridge::GetMapperNum() {
+    return m_mapper->GetMapperNum();
+}
+
+const char* Cartridge::GetMapperName() {
+    return m_mapper->GetMapperName();
+}
+
 u8 Cartridge::ReadPRG(u16 address) {
     return m_mapper->ReadPRG(address);
 };
@@ -177,4 +182,28 @@ u8 Cartridge::ReadCHR(u16 address) {
 void Cartridge::WriteCHR(u16 address, u8 value) {
     m_mapper->WriteCHR(address, value);
 };
+
+u8 Cartridge::GetPRGBanks() {
+    return m_mapper->GetPRGBanks();
+}
+
+u8 Cartridge::GetPRGBank0() {
+    return m_mapper->GetPRGBank0();
+}
+
+u8 Cartridge::GetPRGBank1() {
+    return m_mapper->GetPRGBank1();
+}
+
+u8 Cartridge::GetCHRBanks() {
+    return m_mapper->GetCHRBanks();
+}
+
+u8 Cartridge::GetCHRBank0() {
+    return m_mapper->GetCHRBank0();
+}
+
+u8 Cartridge::GetCHRBank1() {
+    return m_mapper->GetCHRBank1();
+}
 

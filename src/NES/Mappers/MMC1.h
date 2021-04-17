@@ -45,6 +45,17 @@ namespace Nes {
         
         void Extract();
 
+        u8 GetMapperNum();
+        const char* GetMapperName();
+
+        u8 GetPRGBanks();
+        u8 GetPRGBank0();
+        u8 GetPRGBank1();
+
+        u8 GetCHRBanks();
+        u8 GetCHRBank0();
+        u8 GetCHRBank1();
+
     private:
         u8 m_shiftRegister;
         u8 m_numWrites;

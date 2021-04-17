@@ -60,6 +60,38 @@ void NROM::WriteCHR(u16 address, u8 value) {
 
 }
 
+u8 NROM::GetMapperNum() {
+    return 0;
+}
+
+const char* NROM::GetMapperName() {
+    return "NROM";
+}
+
+u8 NROM::GetPRGBanks() {
+    return m_prgBanks;
+}
+
+u8 NROM::GetPRGBank0() {
+    return 0;
+}
+
+u8 NROM::GetPRGBank1() {
+    return (m_prgBanks == 2) ? 1 : 0;
+}
+
+u8 NROM::GetCHRBanks() {
+    return 2;
+}
+
+u8 NROM::GetCHRBank0() {
+    return 0;
+}
+
+u8 NROM::GetCHRBank1() {
+    return 1;
+}
+
 void NROM::SaveState(std::ostream* stream) {}
 void NROM::LoadState(std::istream* stream) {}
 

@@ -52,15 +52,22 @@ namespace Nes {
         
         void Extract();
 
+        u8 GetMapperNum();
+        const char* GetMapperName();
+
+        u8 GetPRGBanks();
+        u8 GetPRGBank0();
+        u8 GetPRGBank1();
+
+        u8 GetCHRBanks();
+        u8 GetCHRBank0();
+        u8 GetCHRBank1();
+
     private:
         unsigned long m_romSize;
         std::string m_name;
         bool m_isLoaded;
         u8*  m_buffer;
-        u8*  m_prgData;
-        u8*  m_chrData;
-        u8   m_prgBanks;
-        u8   m_chrBanks;
         NametableMirroring m_nametableMirroring;
         Mapper* m_mapper;
 

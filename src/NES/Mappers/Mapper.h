@@ -42,6 +42,17 @@ namespace Nes {
         
         virtual void Extract() = 0;
 
+        virtual u8 GetMapperNum() = 0;
+        virtual const char *GetMapperName() = 0;
+
+        virtual u8 GetPRGBanks() = 0;
+        virtual u8 GetPRGBank0() = 0;
+        virtual u8 GetPRGBank1() = 0;
+
+        virtual u8 GetCHRBanks() = 0;
+        virtual u8 GetCHRBank0() = 0;
+        virtual u8 GetCHRBank1() = 0;
+
         static Mapper* Create(u16 mapperId, u8* buffer);
 
     protected:

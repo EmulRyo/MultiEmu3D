@@ -56,6 +56,15 @@ namespace Nes {
         std::string GetVideoScrollX();
         std::string GetVideoScrollY();
         std::string GetVideoAddress();
+
+        std::string GetMapperID();
+        std::string GetMapperName();
+        std::string GetCartridgePRGBanks();
+        std::string GetCartridgePRGBank0();
+        std::string GetCartridgePRGBank1();
+        std::string GetCartridgeCHRBanks();
+        std::string GetCartridgeCHRBank0();
+        std::string GetCartridgeCHRBank1();
         
         std::string Disassemble(u16 start, int numInstructions);
         std::string Disassemble(int numInstructions);

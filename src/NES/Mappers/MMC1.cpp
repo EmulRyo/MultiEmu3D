@@ -35,6 +35,10 @@ using namespace Nes;
 MMC1::MMC1(u8* buffer)
     :Mapper(buffer){
 
+    Reset();
+}
+
+void MMC1::Reset() {
     m_shiftRegister = 0;
     m_numWrites = 0;
     m_regs[REG_CONTROL]  = 0x0C;
@@ -42,8 +46,6 @@ MMC1::MMC1(u8* buffer)
     m_regs[REG_CHRBANK1] = 0x00;
     m_regs[REG_PRGBANK]  = 0x00;
 }
-
-void MMC1::Reset() {}
 
 NametableMirroring MMC1::GetNametableMirroring() {
     if (m_nametableMirroring == NametableMirroring::HORIZONTAL) {
@@ -63,31 +65,27 @@ u8 MMC1::ReadPRG(u16 address) {
     if (address < 0x8000) {
         return m_prgRam[address - 0x6000];
     }
-    else if (address < 0xC000) {
-        u8 mode = (m_regs[REG_CONTROL] >> 2) & 0x03;
-        u8 bank = m_regs[REG_PRGBANK] & 0x0F;
-        u16 size = 0x4000;
-        if (mode < 2) {
-            bank = bank & 0x01;
-            size = 0x8000;
-        }
-        else if (mode == 2)
-            bank = 0;
-        
-        return m_prgData[(bank * size) + address - 0x8000];
-    }
     else {
         u8 mode = (m_regs[REG_CONTROL] >> 2) & 0x03;
         u8 bank = m_regs[REG_PRGBANK] & 0x0F;
-        u16 size = 0x4000;
-        if (mode < 2) {
-            bank = bank & 0x01;
-            size = 0x8000;
+        if (mode < 2) { // Modo 32 KB
+            bank = bank & 0x0E;
+            return m_prgData[(bank * 0x8000) + address - 0x8000];
         }
-        else if (mode == 3)
-            bank = m_prgBanks - 1;
+        else { // Modo 16 KB
+            if (address < 0xC000) {
+                if (mode == 2)
+                    bank = 0;
 
-        return m_prgData[(bank * size) + address - (0x10000-size)];
+                return m_prgData[(bank * 0x4000) + address - 0x8000];
+            }
+            else {
+                if (mode == 3)
+                    bank = m_prgBanks - 1;
+
+                return m_prgData[(bank * 0x4000) + address - 0xC000];
+            }
+        }
     }
 }
 
@@ -113,43 +111,87 @@ void MMC1::WritePRG(u16 address, u8 value) {
 
 u8 MMC1::ReadCHR(u16 address) {
     u8 mode = m_regs[REG_CONTROL] >> 4;
-    if (address < 0x1000) {
-        u8 bank = m_regs[REG_CHRBANK0];
-        if (mode == 0) // 8K mode
-            bank &= 0x01;
-        if (m_chrBanks == 0)
-            return m_chrRam[(bank * 4096) + address];
-        else
-            return m_chrData[(bank * 4096) + address];
+    u8 bank = m_regs[REG_CHRBANK0] & 0x1F;
+    u8* buffer = (m_chrBanks == 0) ? m_chrRam : m_chrData;
+    if (mode == 0) {// 8KB mode
+        bank &= 0x1E;
+        return buffer[(bank * 0x2000) + address];
     }
-    else {
-        u8 bank = m_regs[REG_CHRBANK1];
-        if (mode == 0) // 8K mode
-            bank = m_regs[REG_CHRBANK0] & 0x01;
-        if (m_chrBanks == 0)
-            return m_chrRam[(bank * 4096) + address];
-        else
-            return m_chrData[(bank * 4096) + address];
+    else { // 4KB mode
+        if (address < 0x1000)
+            return buffer[(bank * 0x1000) + address];
+        else {
+            u8 bank = m_regs[REG_CHRBANK1] & 0x1F;
+            return buffer[(bank * 0x1000) + (address-0x1000)];
+        }
     }
 }
 
 void MMC1::WriteCHR(u16 address, u8 value) {
 
     u8 mode = m_regs[REG_CONTROL] >> 4;
-    if (address < 0x1000) {
-        u8 bank = m_regs[REG_CHRBANK0];
-        if (mode == 0) // 8K mode
-            bank &= 0x01;
-        
-        m_chrRam[(bank * 4096) + address] = value;
+    u8 bank = m_regs[REG_CHRBANK0] & 0x1F;
+    u8* buffer = m_chrRam;
+    if (mode == 0) {// 8KB mode
+        bank &= 0x1E;
+        buffer[(bank * 0x2000) + address] = value;
     }
-    else {
-        u8 bank = m_regs[REG_CHRBANK1];
-        if (mode == 0) // 8K mode
-            bank = m_regs[REG_CHRBANK0] & 0x01;
-        
-        m_chrRam[(bank * 4096) + address] = value;
+    else { // 4KB mode
+        if (address < 0x1000)
+            buffer[(bank * 0x1000) + address] = value;
+        else {
+            u8 bank = m_regs[REG_CHRBANK1] & 0x1F;
+            buffer[(bank * 0x1000) + (address-0x1000)] = value;
+        }
     }
+}
+
+u8 MMC1::GetMapperNum() {
+    return 1;
+}
+
+const char* MMC1::GetMapperName() {
+    return "MMC1";
+}
+
+u8 MMC1::GetPRGBanks() {
+    return m_prgBanks;
+}
+
+u8 MMC1::GetPRGBank0() {
+    u8 mode = (m_regs[REG_CONTROL] >> 2) & 0x03;
+    if (mode < 2) // Modo 32 KB
+        return m_regs[REG_PRGBANK] & 0x0E;
+    else // Modo 16 KB
+        return (mode == 2) ? 0 : m_regs[REG_PRGBANK] & 0x0F;
+}
+
+u8 MMC1::GetPRGBank1() {
+    u8 mode = (m_regs[REG_CONTROL] >> 2) & 0x03;
+    if (mode < 2) // Modo 32 KB
+        return (m_regs[REG_PRGBANK] & 0x0E) + 1;
+    else // Modo 16 KB
+        return (mode == 3) ? m_prgBanks - 1 : m_regs[REG_PRGBANK] & 0x0F;
+}
+
+u8 MMC1::GetCHRBanks() {
+    return m_chrBanks;
+}
+
+u8 MMC1::GetCHRBank0() {
+    u8 mode = m_regs[REG_CONTROL] >> 4;
+    if (mode == 0)// 8KB mode
+        return m_regs[REG_CHRBANK0] & 0x1E;
+    else // 4KB mode
+        return m_regs[REG_CHRBANK0] & 0x1F;
+}
+
+u8 MMC1::GetCHRBank1() {
+    u8 mode = m_regs[REG_CONTROL] >> 4;
+    if (mode == 0) // 8KB mode
+        return (m_regs[REG_CHRBANK0] & 0x1E) + 1;
+    else // 4KB mode
+        return (m_regs[REG_CHRBANK1] & 0x1F);
 }
 
 void MMC1::SaveState(std::ostream* stream) {}

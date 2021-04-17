@@ -115,6 +115,42 @@ std::string Debugger::GetVideoAddress() {
     return HexToString(m_video->GetAddress(), 4, '0');
 }
 
+std::string Debugger::GetMapperID() {
+    return IntToString(m_cartridge->GetMapperNum(), 1, ' ');
+}
+
+std::string Debugger::GetMapperName() {
+    return m_cartridge->GetMapperName();
+}
+
+std::string Debugger::GetCartridgePRGBanks() {
+    return IntToString(m_cartridge->GetPRGBanks(), 1, '0');
+}
+
+std::string Debugger::GetCartridgePRGBank0() {
+    return HexToString(m_cartridge->GetPRGBank0(), 2, '0');
+}
+
+std::string Debugger::GetCartridgePRGBank1() {
+    return HexToString(m_cartridge->GetPRGBank1(), 2, '0');
+}
+
+std::string Debugger::GetCartridgeCHRBanks() {
+    if (m_cartridge->GetCHRBanks() == 0)
+        return "RAM";
+    else
+        return IntToString(m_cartridge->GetCHRBanks(), 1, '0');
+}
+
+std::string Debugger::GetCartridgeCHRBank0() {
+    return HexToString(m_cartridge->GetCHRBank0(), 2, '0');
+}
+
+std::string Debugger::GetCartridgeCHRBank1() {
+    return HexToString(m_cartridge->GetCHRBank1(), 2, '0');
+}
+
+
 std::string Debugger::GetMem(u16 address) {
     stringstream ss;
     
