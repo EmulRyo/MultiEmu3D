@@ -25,6 +25,7 @@
 #include "../NES/NES.h"
 #include "../Common/VideoGameDevice.h"
 #include "../Common/Exception.h"
+#include "../Common/Utils.h"
 #include "Settings.h"
 #include "EmulationThread.h"
 #include "Joystick.h"
@@ -46,6 +47,9 @@ EmulationThread::EmulationThread()
     joystick = new Joystick();
     m_finished = false;
     m_speed = EmuSpeed::Normal;
+    for (int i = 0; i < 16; i++)
+        keysUsed[i] = wxKeyCode::WXK_NONE;
+    m_soundEnabled = false;
 }
 
 EmulationThread::~EmulationThread() {
@@ -94,12 +98,15 @@ EmuState EmulationThread::GetState()
 
 wxThread::ExitCode EmulationThread::Entry()
 {
+    const wxLongLong desired = 10000/60;  // Microsegundos deseados por frame
+    wxLongLong accumulated = 0;
+    int frames = 0;
+    wxStopWatch fpsStopWatch;
+    fpsStopWatch.Start();
+    long lastFPS = 0;
     try {
         while (!TestDestroy())
         {
-            long desired = 15;  // Milisegundos deseados por frame
-            // Deberia ser 16 pero con ese valor en linux el sonido se entrecorta
-
             swFrame.Start();
             {
                 wxMutexLocker lock(*mutex);
@@ -108,15 +115,26 @@ wxThread::ExitCode EmulationThread::Entry()
                     if (!m_rewind->IsEnabled()) {
                         m_device->ExecuteOneFrame();
                         m_rewind->AddFrame();
+                        frames++;
                     }
                 }
             } // Desbloquear el mutex
 
             if (m_speed == EmuSpeed::Normal) {
-                long time = swFrame.Time();
-                if (time < desired)
-                    this->Sleep(desired - time);
+                while ((swFrame.TimeInMicro() - accumulated) < desired) {
+                    this->Sleep(1);
+                }
+                accumulated = swFrame.TimeInMicro() - accumulated - desired;
+                //PrintfOutput("Time: %ld\n", accumulated);
             }
+            
+            long elapsed = fpsStopWatch.Time() - lastFPS;
+            if (elapsed > 1000) {
+                PrintfVisualStudioOutput("FPS: %f\n", (float)frames * 1000 / elapsed);
+                lastFPS = fpsStopWatch.Time();
+                frames = 0;
+            }
+             
         }
     }
     catch (Exception& exc) {
