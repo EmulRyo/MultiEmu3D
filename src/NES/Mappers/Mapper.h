@@ -60,7 +60,8 @@ namespace Nes {
         u8*  m_chrData;
         u8   m_prgBanks;
         u8   m_chrBanks;
-        NametableMirroring m_nametableMirroring;
+        NametableMirroring m_hardWireMirroring;
+        NametableMirroring m_mapperMirroring;
     };
 }
 

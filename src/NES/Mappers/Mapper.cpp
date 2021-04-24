@@ -47,9 +47,9 @@ Mapper::Mapper(u8* buffer) {
     size_t sizePrgRom = m_prgBanks * 16384ULL;
     size_t sizeChrRom = m_chrBanks * 8192ULL;
 
-    m_nametableMirroring = BIT0(buffer[6]) ? NametableMirroring::VERTICAL : NametableMirroring::HORIZONTAL;
+    m_hardWireMirroring = BIT0(buffer[6]) ? NametableMirroring::VERTICAL : NametableMirroring::HORIZONTAL;
     if (BIT3(buffer[6]) > 0)
-        m_nametableMirroring = NametableMirroring::FOUR_SCREEN;
+        m_hardWireMirroring = NametableMirroring::FOUR_SCREEN;
 
     bool battery = (BIT1(buffer[6]) > 0) ? true : false;
     u8   trainer = (BIT2(buffer[6]) > 0) ? 1 : 0;

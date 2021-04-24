@@ -62,6 +62,8 @@ namespace Nes {
         u8 m_regs[4];
         u8 m_prgRam[0x2000];
         u8 m_chrRam[0x2000];
+
+        void UpdateMirroring();
     };
 }
 

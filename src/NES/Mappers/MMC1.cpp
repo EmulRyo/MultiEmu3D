@@ -45,20 +45,11 @@ void MMC1::Reset() {
     m_regs[REG_CHRBANK0] = 0x00;
     m_regs[REG_CHRBANK1] = 0x00;
     m_regs[REG_PRGBANK]  = 0x00;
+    m_mapperMirroring = m_hardWireMirroring;
 }
 
 NametableMirroring MMC1::GetNametableMirroring() {
-    if (m_nametableMirroring == NametableMirroring::HORIZONTAL) {
-        u8 mirrorID = m_regs[REG_CONTROL] & 0x03;
-        if (mirrorID < 2)
-            return NametableMirroring::SINGLE_SCREEN;
-        else if (mirrorID == 2)
-            return NametableMirroring::VERTICAL;
-        else
-            return NametableMirroring::HORIZONTAL;
-    }
-    else
-        return m_nametableMirroring;
+    return m_mapperMirroring;
 }
 
 u8 MMC1::ReadPRG(u16 address) {
@@ -99,6 +90,8 @@ void MMC1::WritePRG(u16 address, u8 value) {
                 u8 regId = (address >> 13) & 0x3;
                 m_regs[regId] = m_shiftRegister;
                 m_shiftRegister = 0;
+                if (regId == 0)
+                    UpdateMirroring();
             }
         }
         else {
@@ -198,3 +191,17 @@ void MMC1::SaveState(std::ostream* stream) {}
 void MMC1::LoadState(std::istream* stream) {}
 
 void MMC1::Extract() {}
+
+void MMC1::UpdateMirroring() {
+    if (m_hardWireMirroring == NametableMirroring::HORIZONTAL) {
+        u8 mirrorID = m_regs[REG_CONTROL] & 0x03;
+        if (mirrorID < 2)
+            m_mapperMirroring = NametableMirroring::SINGLE_SCREEN;
+        else if (mirrorID == 2)
+            m_mapperMirroring = NametableMirroring::VERTICAL;
+        else
+            m_mapperMirroring = NametableMirroring::HORIZONTAL;
+    }
+    else
+        m_mapperMirroring = m_hardWireMirroring;
+}
