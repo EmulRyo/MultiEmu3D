@@ -142,7 +142,7 @@ bool Cartridge::IsLoaded()
 }
 
 NametableMirroring Cartridge::GetNametableMirroring() {
-    return m_nametableMirroring;
+    return m_mapper->GetNametableMirroring();
 }
 
 void Cartridge::SaveState(ostream *stream)

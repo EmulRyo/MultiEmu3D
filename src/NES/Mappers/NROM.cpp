@@ -33,7 +33,7 @@ NROM::NROM(u8* buffer)
 
 void NROM::Reset() {}
 
-NametableMirroring NROM::GetNametableMirroring() { return NametableMirroring::HORIZONTAL; }
+NametableMirroring NROM::GetNametableMirroring() { return m_nametableMirroring; }
 
 u8 NROM::ReadPRG(u16 address) {
     if (address < 0x8000)
