@@ -25,6 +25,7 @@
 #include "Mapper.h"
 #include "NROM.h"
 #include "MMC1.h"
+#include "UxROM.h"
 
 using namespace std;
 using namespace Nes;
@@ -37,6 +38,7 @@ Mapper* Nes::Mapper::Create(u16 mapperId, u8* buffer)
 	switch (mapperId) {
 		case 0: return new NROM(buffer);
         case 1: return new MMC1(buffer);
+        case 2: return new UxROM(buffer);
 		default: return nullptr;
 	}
 }
@@ -50,6 +52,7 @@ Mapper::Mapper(u8* buffer) {
     m_hardWireMirroring = BIT0(buffer[6]) ? NametableMirroring::VERTICAL : NametableMirroring::HORIZONTAL;
     if (BIT3(buffer[6]) > 0)
         m_hardWireMirroring = NametableMirroring::FOUR_SCREEN;
+    m_mapperMirroring = m_hardWireMirroring;
 
     bool battery = (BIT1(buffer[6]) > 0) ? true : false;
     u8   trainer = (BIT2(buffer[6]) > 0) ? 1 : 0;
