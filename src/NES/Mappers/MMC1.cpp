@@ -45,7 +45,10 @@ void MMC1::Reset() {
     m_regs[REG_CHRBANK0] = 0x00;
     m_regs[REG_CHRBANK1] = 0x00;
     m_regs[REG_PRGBANK]  = 0x00;
-    m_mapperMirroring = m_hardWireMirroring;
+    m_chrBuffer = (m_chrBanks == 0) ? m_chrRam : m_chrData;
+    UpdateMirroring();
+    UpdatePRGBanks();
+    UpdateCHRBanks();
 }
 
 NametableMirroring MMC1::GetNametableMirroring() {
@@ -53,35 +56,19 @@ NametableMirroring MMC1::GetNametableMirroring() {
 }
 
 u8 MMC1::ReadPRG(u16 address) {
-    if (address < 0x8000) {
+    if (address < 0x8000)
         return m_prgRam[address - 0x6000];
-    }
-    else {
-        u8 mode = (m_regs[REG_CONTROL] >> 2) & 0x03;
-        u8 bank = m_regs[REG_PRGBANK] & 0x0F;
-        if (mode < 2) { // Modo 32 KB
-            bank = bank & 0x0E;
-            return m_prgData[(bank * 0x8000) + address - 0x8000];
-        }
-        else { // Modo 16 KB
-            if (address < 0xC000) {
-                if (mode == 2)
-                    bank = 0;
-
-                return m_prgData[(bank * 0x4000) + address - 0x8000];
-            }
-            else {
-                if (mode == 3)
-                    bank = m_prgBanks - 1;
-
-                return m_prgData[(bank * 0x4000) + address - 0xC000];
-            }
-        }
-    }
+    else if (address < 0xC000)
+        return m_prgData[(GetPRGBank0() * 0x4000) + address - 0x8000];
+    else
+        return m_prgData[(GetPRGBank1() * 0x4000) + address - 0xC000];
 }
 
 void MMC1::WritePRG(u16 address, u8 value) {
-    if ((address >= 0x8000) && (address <= 0xFFFF)) {
+    if (address < 0x8000) {
+        m_prgRam[address - 0x6000] = value;
+    }
+    else if ((address >= 0x8000) && (address <= 0xFFFF)) {
         m_numWrites = (m_numWrites + 1) % 5;
         if (BIT7(value) == 0) {
             m_shiftRegister = m_shiftRegister >> 1;
@@ -90,53 +77,37 @@ void MMC1::WritePRG(u16 address, u8 value) {
                 u8 regId = (address >> 13) & 0x3;
                 m_regs[regId] = m_shiftRegister;
                 m_shiftRegister = 0;
-                if (regId == 0)
-                    UpdateMirroring();
+
+                UpdateMirroring();
+                UpdatePRGBanks();
+                UpdateCHRBanks();
             }
         }
         else {
             m_shiftRegister = 0;
             m_numWrites = 0;
             m_regs[REG_CONTROL] |= 0x0C;
+
+            UpdateMirroring();
+            UpdatePRGBanks();
+            UpdateCHRBanks();
         }
     }
 }
 
 u8 MMC1::ReadCHR(u16 address) {
-    u8 mode = m_regs[REG_CONTROL] >> 4;
-    u8 bank = m_regs[REG_CHRBANK0] & 0x1F;
-    u8* buffer = (m_chrBanks == 0) ? m_chrRam : m_chrData;
-    if (mode == 0) {// 8KB mode
-        bank &= 0x1E;
-        return buffer[(bank * 0x2000) + address];
-    }
-    else { // 4KB mode
-        if (address < 0x1000)
-            return buffer[(bank * 0x1000) + address];
-        else {
-            u8 bank = m_regs[REG_CHRBANK1] & 0x1F;
-            return buffer[(bank * 0x1000) + (address-0x1000)];
-        }
-    }
+    if (address < 0x1000)
+        return m_chrBuffer[(GetCHRBank0() * 0x1000) + address];
+    else
+        return m_chrBuffer[(GetCHRBank1() * 0x1000) + (address - 0x1000)];
 }
 
 void MMC1::WriteCHR(u16 address, u8 value) {
 
-    u8 mode = m_regs[REG_CONTROL] >> 4;
-    u8 bank = m_regs[REG_CHRBANK0] & 0x1F;
-    u8* buffer = m_chrRam;
-    if (mode == 0) {// 8KB mode
-        bank &= 0x1E;
-        buffer[(bank * 0x2000) + address] = value;
-    }
-    else { // 4KB mode
-        if (address < 0x1000)
-            buffer[(bank * 0x1000) + address] = value;
-        else {
-            u8 bank = m_regs[REG_CHRBANK1] & 0x1F;
-            buffer[(bank * 0x1000) + (address-0x1000)] = value;
-        }
-    }
+    if (address < 0x1000)
+        m_chrBuffer[(GetCHRBank0() * 0x1000) + address] = value;
+    else
+        m_chrBuffer[(GetCHRBank1() * 0x1000) + (address - 0x1000)] = value;
 }
 
 u8 MMC1::GetMapperNum() {
@@ -152,19 +123,11 @@ u8 MMC1::GetPRGBanks() {
 }
 
 u8 MMC1::GetPRGBank0() {
-    u8 mode = (m_regs[REG_CONTROL] >> 2) & 0x03;
-    if (mode < 2) // Modo 32 KB
-        return m_regs[REG_PRGBANK] & 0x0E;
-    else // Modo 16 KB
-        return (mode == 2) ? 0 : m_regs[REG_PRGBANK] & 0x0F;
+    return m_prgBank0;
 }
 
 u8 MMC1::GetPRGBank1() {
-    u8 mode = (m_regs[REG_CONTROL] >> 2) & 0x03;
-    if (mode < 2) // Modo 32 KB
-        return (m_regs[REG_PRGBANK] & 0x0E) + 1;
-    else // Modo 16 KB
-        return (mode == 3) ? m_prgBanks - 1 : m_regs[REG_PRGBANK] & 0x0F;
+    return m_prgBank1;
 }
 
 u8 MMC1::GetCHRBanks() {
@@ -172,19 +135,11 @@ u8 MMC1::GetCHRBanks() {
 }
 
 u8 MMC1::GetCHRBank0() {
-    u8 mode = m_regs[REG_CONTROL] >> 4;
-    if (mode == 0)// 8KB mode
-        return m_regs[REG_CHRBANK0] & 0x1E;
-    else // 4KB mode
-        return m_regs[REG_CHRBANK0] & 0x1F;
+    return m_chrBank0;
 }
 
 u8 MMC1::GetCHRBank1() {
-    u8 mode = m_regs[REG_CONTROL] >> 4;
-    if (mode == 0) // 8KB mode
-        return (m_regs[REG_CHRBANK0] & 0x1E) + 1;
-    else // 4KB mode
-        return (m_regs[REG_CHRBANK1] & 0x1F);
+    return m_chrBank1;
 }
 
 void MMC1::SaveState(std::ostream* stream) {}
@@ -204,4 +159,32 @@ void MMC1::UpdateMirroring() {
     }
     else
         m_mapperMirroring = m_hardWireMirroring;
+}
+
+void MMC1::UpdatePRGBanks() {
+    u8 mode = (m_regs[REG_CONTROL] >> 2) & 0x03;
+    u8 bank = m_regs[REG_PRGBANK] & 0x0F;
+    if (mode < 2) { // Modo 32 KB
+        m_prgBank0 = bank & 0x0E;
+        m_prgBank1 = m_prgBank0 + 1;
+    }
+    else if (mode == 2) {
+        m_prgBank0 = 0;
+        m_prgBank1 = bank;
+    }
+    else {
+        m_prgBank0 = bank;
+        m_prgBank1 = m_prgBanks - 1;
+    }
+}
+
+void MMC1::UpdateCHRBanks() {
+    u8 mode = m_regs[REG_CONTROL] >> 4;
+    m_chrBank0 = m_regs[REG_CHRBANK0] & 0x1F;
+    m_chrBank1 = m_regs[REG_CHRBANK1] & 0x1F;
+    u8* buffer = m_chrRam;
+    if (mode == 0) { // 8KB mode
+        m_chrBank0 &= 0x1E;
+        m_chrBank1 = m_chrBank0+1;
+    }
 }

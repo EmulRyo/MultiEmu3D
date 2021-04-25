@@ -63,7 +63,15 @@ namespace Nes {
         u8 m_prgRam[0x2000];
         u8 m_chrRam[0x2000];
 
+        u8* m_chrBuffer;
+        u8 m_prgBank0;
+        u8 m_prgBank1;
+        u8 m_chrBank0;
+        u8 m_chrBank1;
+
         void UpdateMirroring();
+        void UpdatePRGBanks();
+        void UpdateCHRBanks();
     };
 }
 
