@@ -26,6 +26,7 @@
 #include "NROM.h"
 #include "MMC1.h"
 #include "UxROM.h"
+#include "CNROM.h"
 
 using namespace std;
 using namespace Nes;
@@ -39,6 +40,7 @@ Mapper* Nes::Mapper::Create(u16 mapperId, u8* buffer)
 		case 0: return new NROM(buffer);
         case 1: return new MMC1(buffer);
         case 2: return new UxROM(buffer);
+        case 3: return new CNROM(buffer);
 		default: return nullptr;
 	}
 }
