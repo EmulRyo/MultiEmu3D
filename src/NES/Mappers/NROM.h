@@ -57,7 +57,8 @@ namespace Nes {
         u8 GetCHRBank1();
 
     private:
-        
+        u8 m_chrRam[0x2000];
+        u8* m_chrBuffer;
     };
 }
 

@@ -29,6 +29,7 @@ using namespace Nes;
 NROM::NROM(u8* buffer)
     :Mapper(buffer){
 
+    m_chrBuffer = (m_chrBanks == 0) ? m_chrRam : m_chrData;
 }
 
 void NROM::Reset() {}
@@ -53,11 +54,11 @@ void NROM::WritePRG(u16 address, u8 value) {
 }
 
 u8 NROM::ReadCHR(u16 address) {
-	return m_chrData[address];
+	return m_chrBuffer[address];
 }
 
 void NROM::WriteCHR(u16 address, u8 value) {
-
+    m_chrBuffer[address] = value;
 }
 
 u8 NROM::GetMapperNum() {
