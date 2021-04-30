@@ -148,17 +148,13 @@ void MMC1::LoadState(std::istream* stream) {}
 void MMC1::Extract() {}
 
 void MMC1::UpdateMirroring() {
-    if (m_hardWireMirroring == NametableMirroring::HORIZONTAL) {
-        u8 mirrorID = m_regs[REG_CONTROL] & 0x03;
-        if (mirrorID < 2)
-            m_mapperMirroring = NametableMirroring::SINGLE_SCREEN;
-        else if (mirrorID == 2)
-            m_mapperMirroring = NametableMirroring::VERTICAL;
-        else
-            m_mapperMirroring = NametableMirroring::HORIZONTAL;
-    }
+    u8 mirrorID = m_regs[REG_CONTROL] & 0x03;
+    if (mirrorID < 2)
+        m_mapperMirroring = NametableMirroring::SINGLE_SCREEN;
+    else if (mirrorID == 2)
+        m_mapperMirroring = NametableMirroring::VERTICAL;
     else
-        m_mapperMirroring = m_hardWireMirroring;
+        m_mapperMirroring = NametableMirroring::HORIZONTAL;
 }
 
 void MMC1::UpdatePRGBanks() {
