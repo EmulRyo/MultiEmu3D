@@ -69,6 +69,7 @@ namespace Nes {
         void INC(u16 address, u8 length);
         void INX();
         void INY();
+        void IRQ(u16 addressToStore, u8 stackBits45, u16 indAddressToJump);
 
         void JMP();
         void JMPIndirect();

@@ -226,11 +226,11 @@ void Instructions::JSR() {
 	m_reg->SetPC(Get16BitsInmValue());
 }
 
-void Instructions::NMI() {
-	u8 pch = m_reg->GetPC() >> 8;
-	u8 pcl = m_reg->GetPC() & 0xFF;
+void Instructions::IRQ(u16 addressToStore, u8 stackBits45, u16 indAddressToJump) {
+	u8 pch = addressToStore >> 8;
+	u8 pcl = addressToStore & 0xFF;
 
-	u8 regP = (m_reg->GetP() & 0xCF) | 0x20; // Al guardarlo en el stack los bits 4 y 5 se ponen a 10
+	u8 regP = (m_reg->GetP() & 0xCF) | stackBits45; // Al guardarlo en el stack los bits 4 y 5 se fijan a un valor concreto
 
 	u16 stackAddress = 0x100 | m_reg->GetS();
 	m_mem->MemW(stackAddress, pch);
@@ -239,28 +239,17 @@ void Instructions::NMI() {
 	m_reg->SetS(m_reg->GetS() - 3);
 	m_reg->SetFlagI(1);
 
-	u16 newAddress = (m_mem->MemR(0xFFFB) << 8) | m_mem->MemR(0xFFFA);
+	u16 newAddress = (m_mem->MemR(indAddressToJump +1) << 8) | m_mem->MemR(indAddressToJump);
 
 	m_reg->SetPC(newAddress);
 }
 
+void Instructions::NMI() {
+	IRQ(m_reg->GetPC(), 0x20, 0xFFFA);
+}
+
 void Instructions::BRK() {
-	u16 address = m_reg->GetPC() + 2;
-	u8 pch = address >> 8;
-	u8 pcl = address & 0xFF;
-	
-	u8 regP = (m_reg->GetP() & 0xCF) | 0x30; // Al guardarlo en el stack los bits 4 y 5 se ponen a 11
-
-	u16 stackAddress = 0x100 | m_reg->GetS();
-	m_mem->MemW(stackAddress, pch);
-	m_mem->MemW(stackAddress - 1, pcl);
-	m_mem->MemW(stackAddress - 2, regP);
-	m_reg->SetS(m_reg->GetS() - 3);
-	m_reg->SetFlagI(1);
-
-	u16 newAddress = (m_mem->MemR(0xFFFF) << 8) | m_mem->MemR(0xFFFE);
-
-	m_reg->SetPC(newAddress);
+	IRQ(m_reg->GetPC()+2, 0x30, 0xFFFE);
 }
 
 void Instructions::RTI() {
