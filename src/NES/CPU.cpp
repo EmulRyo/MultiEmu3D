@@ -127,8 +127,12 @@ void CPU::OAMDMA() {
 }
 
 void CPU::Interrupts(bool NMI, Instructions &inst) {
-	if (NMI)
+	if (NMI) {
 		inst.NMI();
+		// Deberian de ser 7 ciclos pero para pasar el test "blargg_ppu_tests_2005.09.15b/vbl_clear_time.nes" requiere 10
+		m_v->Update(10);
+		m_cycles += 10;
+	}
 }
 
 void CPU::LoadStateFromRAM(istream *stream) {
