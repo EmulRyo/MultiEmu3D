@@ -292,7 +292,7 @@ void Video::PixelBG(BGInput in, BGOutput& out) {
     if (x > 255) { // Si se sale de su nametable cambiar x y direccion
         x -= 256;
         // Sumar 0x400 y si se sale del nametable 0x2400 volver al 0x2000
-        if ((in.mirroring == NametableMirroring::HORIZONTAL) || (in.mirroring == NametableMirroring::FOUR_SCREEN))
+        if ((in.mirroring == NametableMirroring::VERTICAL) || (in.mirroring == NametableMirroring::FOUR_SCREEN))
             nameTableAddress = (((nameTableAddress - 0x2000) + 0x400) % 0x800) + 0x2000;
     }
     u8 scrollY = (m_scrollY > 239) ? 0 : m_scrollY;
@@ -300,7 +300,7 @@ void Video::PixelBG(BGInput in, BGOutput& out) {
     if (y > 239) {
         y -= 240;
         // Sumar 0x800 y si se sale del nametable 0x2800 volver al 0x2000
-        if ((in.mirroring == NametableMirroring::VERTICAL) || (in.mirroring == NametableMirroring::FOUR_SCREEN))
+        if ((in.mirroring == NametableMirroring::HORIZONTAL) || (in.mirroring == NametableMirroring::FOUR_SCREEN))
             nameTableAddress = (((nameTableAddress - 0x2000) + 0x800) % 0x1000) + 0x2000;
     }
     attrTableAddress = nameTableAddress + 0x03C0;
@@ -458,8 +458,23 @@ u8 Video::MemR(u16 address, bool skipBuffer) {
 void Video::MemW(u16 address, u8 value) {
     if (address < 0x2000) // Pattern table 0 y 1
         m_cartridge->WriteCHR(address, value);
-    else if (address < 0x3000) // internal VRAM: Nametable 0, 1, 2, 3
-        m_VRAM[address - 0x2000] = value;
+    else if (address < 0x3000) { // internal VRAM: Nametable 0, 1, 2, 3
+        if (m_cartridge->GetNametableMirroring() == NametableMirroring::VERTICAL) {
+            m_VRAM[(address - 0x2000) % 0x800] = value;
+        }
+        else if (m_cartridge->GetNametableMirroring() == NametableMirroring::HORIZONTAL) {
+            if (address < 0x2400)
+                m_VRAM[address - 0x2000] = value;
+            else if (address < 0x2800)
+                m_VRAM[address - 0x2400] = value;
+            else if (address < 0x2C00)
+                m_VRAM[address - 0x2000] = value;
+            else
+                m_VRAM[address - 0x2400] = value;
+        }
+        else
+            m_VRAM[address - 0x2000] = value;
+    }
     else if (address < 0x3F00) // Mirror
         m_VRAM[address - 0x3000] = value;
     else if (address < 0x3F20) { // Palette
