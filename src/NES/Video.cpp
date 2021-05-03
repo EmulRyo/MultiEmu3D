@@ -442,13 +442,16 @@ u8 Video::MemR(u16 address, bool skipBuffer) {
     else if (address < 0x3F00) // Mirror
         return MemR(address - 0x3000, skipBuffer);
     else if (address < 0x3F20) { // Palette
+        m_readBuffer = MemR(address - 0x1000, true); // El buffer se rellena con el mirror del nametable si no existiera la paleta
         // Estas direcciones son mirrors
         if ((address == 0x3F10) || (address == 0x3F14) || (address == 0x3F18) || (address == 0x3F1C))
             address -= 0x10;
         return m_palette[address - 0x3F00];
     }
-    else if (address < 0x3FFF) // Mirror
+    else if (address < 0x3FFF) { // Mirror
+        m_readBuffer = MemR(address - 0x1000, true);  // El buffer se rellena con el mirror del nametable si no existiera la paleta
         return m_palette[(address - 0x3F20) % 0x0020];
+    }
     else
         return 0;
 
