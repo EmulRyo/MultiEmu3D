@@ -64,6 +64,7 @@ namespace Nes {
             u16 nameTableAddress;
             u16 patternTableAddress;
             u16 attrTableAddress;
+            bool show8Left;
             NametableMirroring mirroring;
         };
         struct BGOutput {
@@ -75,6 +76,7 @@ namespace Nes {
             u16 xScreen;
             u16 patternTableAddress;
             bool size16;
+            bool show8Left;
         };
         struct SpriteOutput {
             bool valid;

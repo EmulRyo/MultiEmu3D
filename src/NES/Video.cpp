@@ -252,8 +252,10 @@ void Video::DrawPixels() {
     bgIn.patternTableAddress = (ppuCtrl & 0x10) > 0 ? 0x1000 : 0x0000;
     bgIn.nameTableAddress = ((ppuCtrl & 0x03) * 0x400) + 0x2000;
     bgIn.attrTableAddress = bgIn.nameTableAddress + 0x03C0;
+    bgIn.show8Left = BIT1(ppuMask) ? true : false;
     bgIn.mirroring = m_cartridge->GetNametableMirroring();
     sprIn.patternTableAddress = (ppuCtrl & 0x08) > 0 ? 0x1000 : 0x0000;
+    sprIn.show8Left = BIT2(ppuMask) ? true : false;
     sprIn.size16 = (ppuCtrl & 0x20) > 0 ? true : false;
 
     u16 maxX = m_cyclesLine - 1;
@@ -286,6 +288,9 @@ void Video::DrawPixels() {
 }
 
 void Video::PixelBG(BGInput in, BGOutput& out) {
+    if ((in.x < 8) && (!in.show8Left))
+        return;
+
     u16 nameTableAddress = in.nameTableAddress;
     u16 attrTableAddress = in.attrTableAddress;
     u16 x = in.x + m_scrollX;
@@ -334,6 +339,9 @@ void Video::PixelBG(BGInput in, BGOutput& out) {
 
 void Video::PixelSprite(SpriteInput in, SpriteOutput& out) {
     out.valid = false;
+
+    if ((in.xScreen < 8) && (!in.show8Left))
+        return;
 
     s8 s = m_secondaryOAMLength - 1;
     while (s >= 0) {
