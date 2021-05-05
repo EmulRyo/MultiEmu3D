@@ -89,10 +89,10 @@ int CPU::Execute(int cyclesToExecute)
 		lastOpcode = opcode;
 		opcode = MemR(GetPC());
 		
-		u8 cycles = ExecuteOpcode(opcode, inst);
+		u16 cycles = ExecuteOpcode(opcode, inst);
 		
 		if (OAMDMAPending)
-			OAMDMA();
+			cycles += OAMDMA();
 
         bool NMI = m_v->Update(cycles);
 
@@ -114,13 +114,15 @@ void CPU::OAMDMARequest(u8 value) {
 	OAMDMAAddress = value;
 }
 
-void CPU::OAMDMA() {
+u16 CPU::OAMDMA() {
 	u16 address = OAMDMAAddress << 8;
 	for (int i = 0; i < 256; i++) {
 		m_v->WriteReg(0x2004, MemR(address + i));
 	}
-	m_cycles += 514;
+	
 	OAMDMAPending = false;
+
+	return 514;
 }
 
 void CPU::Interrupts(bool NMI, Instructions &inst) {

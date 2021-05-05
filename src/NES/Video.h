@@ -46,7 +46,7 @@ namespace Nes {
         u8   MemR(u16 address, bool skipBuffer=true);
         void MemW(u16 address, u8 value);
         
-        bool Update(u8 cycles);
+        bool Update(u16 cycles);
 
         u32 GetNumFrames();
         u16 GetX();

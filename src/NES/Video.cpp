@@ -172,7 +172,7 @@ void Video::WriteReg(u16 address, u8 value) {
     }
 }
 
-bool Video::Update(u8 cpuCycles) {
+bool Video::Update(u16 cpuCycles) {
     bool NMI = false;
     m_cycles += cpuCycles *3;
     
@@ -273,7 +273,7 @@ void Video::DrawPixels() {
             PixelSprite(sprIn, sprOut);
 
         // Sprite 0 hit
-        if ((bgOut.valid) && (bgOut.colorId > 0) && (sprOut.valid) && (sprOut.id == 0))
+        if ((bgOut.valid) && (bgOut.colorId > 0) && (sprOut.valid) && (sprOut.id == 0) && (x < 255))
             m_regs[PPUSTATUS & 0x07] |= 0x40;
 
         if ((sprOut.valid) && ((sprOut.priorityBg == 0) || (!bgOut.valid) || ((sprOut.priorityBg > 0) && (bgOut.colorId == 0))))

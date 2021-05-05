@@ -58,7 +58,7 @@ namespace Nes {
         void Init(Video *v, Pad *p);
         void ResetGlobalVariables();
         void Interrupts(bool NMI, Instructions &inst);
-        void OAMDMA();
+        u16  OAMDMA();
         
         u8 ExecuteOpcode(u8 opcode, Instructions &inst);
 
