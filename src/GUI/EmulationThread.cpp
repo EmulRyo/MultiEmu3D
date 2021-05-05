@@ -98,7 +98,7 @@ EmuState EmulationThread::GetState()
 
 wxThread::ExitCode EmulationThread::Entry()
 {
-    const wxLongLong desired = 10000/60;  // Microsegundos deseados por frame
+    const wxLongLong desired = 1000000/60;  // Microsegundos deseados por frame
     wxLongLong accumulated = 0;
     int frames = 0;
     wxStopWatch fpsStopWatch;
@@ -121,11 +121,10 @@ wxThread::ExitCode EmulationThread::Entry()
             } // Desbloquear el mutex
 
             if (m_speed == EmuSpeed::Normal) {
-                while ((swFrame.TimeInMicro() - accumulated) < desired) {
+                while ((swFrame.TimeInMicro() + accumulated) < desired) {
                     this->Sleep(1);
                 }
-                accumulated = swFrame.TimeInMicro() - accumulated - desired;
-                //PrintfOutput("Time: %ld\n", accumulated);
+                accumulated = swFrame.TimeInMicro() + accumulated - desired;
             }
             
             long elapsed = fpsStopWatch.Time() - lastFPS;

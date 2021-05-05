@@ -34,7 +34,6 @@ namespace Nes {
         unsigned long m_numInstructions;
         u8 m_lastCycles;
         int m_cycles;
-        int m_cyclesFrame;
         Video *m_v;
         Pad *m_p;
         bool OAMDMAPending;
