@@ -230,7 +230,7 @@ void Video::SpriteEvaluation(u16 line) {
         // Los sprites se pintan en y+1
         if (y < 255)
             y++;
-        if ((y < 240) && (line >= y) && (line < (y+size))) {
+        if ((y < 241) && (line >= y) && (line < (y+size))) {
             // Si se ha llegado al limite de 8 sprites
             if (m_secondaryOAMLength == 8) {
                 if (BIT3(m_regs[PPUMASK & 0x07]) || BIT4(m_regs[PPUMASK & 0x07]))
