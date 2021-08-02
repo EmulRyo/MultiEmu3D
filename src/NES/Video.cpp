@@ -231,12 +231,16 @@ void Video::SpriteEvaluation(u16 line) {
         if (y < 255)
             y++;
         if ((y < 240) && (line >= y) && (line < (y+size))) {
+            // Si se ha llegado al limite de 8 sprites
+            if (m_secondaryOAMLength == 8) {
+                if (BIT3(m_regs[PPUMASK & 0x07]) || BIT4(m_regs[PPUMASK & 0x07]))
+                    m_regs[PPUSTATUS & 0x07] = m_regs[PPUSTATUS & 0x07] | 0x20;
+                break;
+            }
             m_secondaryOAM[m_secondaryOAMLength] = i;
             m_secondaryOAMLength++;
         }
     }
-    if (m_secondaryOAMLength > 8)
-        m_regs[PPUSTATUS & 0x07] = m_regs[PPUSTATUS & 0x07] | 0x20;
 }
 
 void Video::DrawPixels() {
