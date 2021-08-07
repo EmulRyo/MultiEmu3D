@@ -21,6 +21,7 @@
 #include "string"
 #include "../Common/Debuggable.h"
 #include "../Common/Types.h"
+#include "../Common/Exports.h"
 
 class Sound;
 class Video;
@@ -28,7 +29,7 @@ class CPU;
 class Cartridge;
 
 namespace GameBoy {
-    class Debugger: public Debuggable {
+    class DLL_EXPORT Debugger: public Debuggable {
     public:
         Debugger(Sound *sound, Video *video, CPU *cpu, Cartridge *cartridge);
         ~Debugger();

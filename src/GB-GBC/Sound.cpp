@@ -16,12 +16,8 @@
  */
 
 #include <iostream>
-// Definir la siguiente linea para que en Visual Studio no haya conflicto
-// entre SDL y GB_Snd_Emu al definir tipos basicos
-#define BLARGG_COMPILER_HAS_NAMESPACE 1
-#define BLARGG_USE_NAMESPACE 1
 #include "Basic_Gb_Apu.h"
-#ifdef __WXMSW__
+#ifdef _WINDOWS
 #include "../Common/SoundSDL.h"
 #else
 #include "../Common/SoundPortaudio.h"
@@ -63,7 +59,7 @@ Sound::Sound()
 	m_initialized = true;
 	m_sampleRate = 44100;//22050;
 
-#ifdef __WXMSW__
+#ifdef _WINDOWS
 	sound = new SoundSDL();
 #else
     sound = new SoundPortaudio();

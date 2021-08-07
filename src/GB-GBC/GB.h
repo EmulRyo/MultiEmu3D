@@ -19,6 +19,7 @@
 #define __GB_H__
 
 #include "../Common/VideoGameDevice.h"
+#include "../Common/Exports.h"
 
 class IScreenDrawable;
 class Debuggable;
@@ -31,7 +32,7 @@ namespace GameBoy{
     class CPU;
     class Debugger;
 
-    class GB: public VideoGameDevice {
+    class DLL_EXPORT GB: public VideoGameDevice {
     public:
         GB();
         ~GB();

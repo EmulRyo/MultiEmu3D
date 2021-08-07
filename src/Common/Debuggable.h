@@ -19,6 +19,7 @@
 #define __DEBUGGABLE_H__
 
 #include "../Common/Types.h"
+#include "../Common/Exports.h"
 
 struct BreakpointNode {
     u16 value;
@@ -26,7 +27,7 @@ struct BreakpointNode {
     BreakpointNode *next;
 };
 
-class Debuggable {
+class DLL_EXPORT Debuggable {
 public:
     Debuggable();
     virtual ~Debuggable();

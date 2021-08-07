@@ -18,12 +18,14 @@
 #ifndef __VIDEOGAMEDEVICE_H__
 #define __VIDEOGAMEDEVICE_H__
 
+#include "../Common/Exports.h"
+
 class IScreenDrawable;
 class Debuggable;
 
 enum class DeviceType { GAMEBOY, GAMEBOYCOLOR, MASTERSYSTEM, GAMEGEAR, NES };
     
-class VideoGameDevice {
+class DLL_EXPORT VideoGameDevice {
 public:
     virtual ~VideoGameDevice() { };
     

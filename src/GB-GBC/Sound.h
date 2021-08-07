@@ -21,7 +21,7 @@
 #include "../Common/Types.h"
 
 class Basic_Gb_Apu;
-#ifdef __WXMSW__
+#ifdef _WINDOWS
 class SoundSDL;
 #else
 class SoundPortaudio;
@@ -32,7 +32,7 @@ namespace GameBoy {
     class Sound {
     private:
         Basic_Gb_Apu * apu;
-#ifdef __WXMSW__
+#ifdef _WINDOWS
         SoundSDL * sound;
 #else
         SoundPortaudio * sound;

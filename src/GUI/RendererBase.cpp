@@ -47,6 +47,7 @@ RendererBase::RendererBase()
     m_height = NES_SCREEN_H;
     m_rewindValue = -1.0f;
     m_iconFrames = -1;
+    m_gbPalette = 0;
 	CreateScreen();
 }
 
