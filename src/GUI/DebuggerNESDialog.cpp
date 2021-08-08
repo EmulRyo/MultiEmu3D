@@ -58,12 +58,12 @@ DebuggerNESDialog::DebuggerNESDialog(wxWindow *parent, VideoGameDevice *device)
     wxStaticText *regsText = new wxStaticText(this, -1, wxT("Registers:"));
     
 #ifdef __WXMSW__
-	m_font = new wxFont(8, wxTELETYPE, wxNORMAL, wxNORMAL);
+	m_font = new wxFont(8, wxFONTFAMILY_TELETYPE, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_NORMAL);
     int height1 = 176;
     int height2 = 430;
 #endif
 #ifdef __WXGTK__
-	m_font = new wxFont(8, wxTELETYPE, wxNORMAL, wxNORMAL);
+	m_font = new wxFont(8, wxFONTFAMILY_TELETYPE, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_NORMAL);
     int height1 = 166;
     int height2 = 420;
 #endif

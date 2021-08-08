@@ -81,17 +81,17 @@ DebuggerGBDialog::DebuggerGBDialog(wxWindow *parent, VideoGameDevice *device)
     wxStaticText *regsText = new wxStaticText(this, -1, wxT("Registers:"));
     
 #ifdef __WXMSW__
-	m_font = new wxFont(8, wxTELETYPE, wxNORMAL, wxNORMAL);
+	m_font = new wxFont(8, wxFONTFAMILY_TELETYPE, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_NORMAL);
     int height1 = 152;
     int height2 = 360;
 #endif
 #ifdef __WXGTK__
-	m_font = new wxFont(8, wxTELETYPE, wxNORMAL, wxNORMAL);
+    m_font = new wxFont(8, wxFONTFAMILY_TELETYPE, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_NORMAL);
     int height1 = 166;
     int height2 = 420;
 #endif
 #ifdef __WXMAC__
-    m_font = new wxFont(12, wxTELETYPE, wxNORMAL, wxNORMAL);
+    m_font = new wxFont(12, wxFONTFAMILY_TELETYPE, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_NORMAL);
     int height1 = 132;
     int height2 = 340;
 #endif

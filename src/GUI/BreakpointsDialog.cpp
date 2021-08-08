@@ -47,9 +47,9 @@ BreakpointsDialog::BreakpointsDialog(wxWindow *parent, Debuggable *debugger)
     validator->SetCharIncludes(wxT("0123456789ABCDEFabcdef"));
     
 #ifdef __WXMSW__
-	m_font = new wxFont(8, wxTELETYPE, wxNORMAL, wxNORMAL);
+	m_font = new wxFont(8, wxFONTFAMILY_TELETYPE, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_NORMAL);
 #else
-    m_font = new wxFont(12, wxTELETYPE, wxNORMAL, wxNORMAL);
+    m_font = new wxFont(12, wxFONTFAMILY_TELETYPE, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_NORMAL);
 #endif
     
     wxStaticText *addressText = new wxStaticText(this, -1, wxT("Address:"));

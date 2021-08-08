@@ -76,7 +76,7 @@ AboutDialog::AboutDialog (wxWindow *parent)
     wxBoxSizer *totalpane = new wxBoxSizer (wxVERTICAL);
     totalpane->Add (0, 20);
     wxStaticText *appname = new wxStaticText (this, wxID_ANY, wxT(APP_NAME));
-    appname->SetFont (wxFont (24, wxDEFAULT, wxNORMAL, wxBOLD));
+    appname->SetFont (wxFont (24, wxFONTFAMILY_DEFAULT, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_BOLD));
     totalpane->Add (appname, 0, wxALIGN_CENTER);
     totalpane->Add (0, 10);
     totalpane->Add (aboutpane, 0, wxALIGN_CENTER | wxRIGHT | wxLEFT, 20);
