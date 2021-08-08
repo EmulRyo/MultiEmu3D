@@ -1,4 +1,49 @@
 -- premake5.lua
+
+local wxWidgetsVersion = "3.1.4"
+local wxWidgetsArchFolder = ""
+local wxWidgetsFileFilter = ""
+local sdlVersion = "2.0.14"
+local sdlArchFolder = ""
+
+function EmulationPlatform()
+   kind "SharedLib"
+
+   includedirs {
+      "../libraries/SDL2-"..sdlVersion.."/include",
+   }
+
+   defines {
+      "DLL_BUILD",
+      "HAVE_CONFIG_H"
+   }
+
+   filter "architecture:x86"
+      sdlArchFolder = "x86"
+
+   filter "architecture:x86_64"
+      sdlArchFolder = "x64"
+   
+   filter { }
+
+   libdirs {
+      "../libraries/SDL2-"..sdlVersion.."/lib/"..sdlArchFolder
+   }
+
+   links { "SDL2", "SDL2main" }
+
+   filter "configurations:Debug"
+      defines { "DEBUG" }
+      symbols "On"
+
+   filter "configurations:Release"
+      defines { "NDEBUG" }
+      optimize "On"
+
+   -- Reset the filter for other settings
+   filter { }
+end
+
 workspace "MultiEmu3D"
    -- We set the location of the files Premake will generate
    location "%{_ACTION}"
@@ -30,12 +75,11 @@ workspace "MultiEmu3D"
    targetdir "%{wks.location}/bin/%{cfg.buildcfg}"
 	objdir "%{wks.location}/obj/%{cfg.buildcfg}"
 
+
+--------
+-- GB --
+--------
 project "GB"
-   local sdlVersion = "2.0.14"
-   local sdlArchFolder = ""
-
-   kind "SharedLib"
-
    files {
       "../src/Common/**.h",
       "../src/Common/**.cpp",
@@ -52,59 +96,43 @@ project "GB"
    }
    
    includedirs {
-      "../libraries/SDL2-"..sdlVersion.."/include",
       "../libraries/Gb_Snd_Emu-0.1.4"
    }
 
-   defines {
-      "DLL_BUILD",
-      "HAVE_CONFIG_H"
+   EmulationPlatform()
+
+
+---------
+-- SMS --
+---------
+project "SMS"
+   files {
+      "../src/Common/**.h",
+      "../src/Common/**.cpp",
+      "../src/SMS-GG/**.h",
+      "../src/SMS-GG/**.cpp",
+      "../libraries/Sms_Snd_Emu-0.1.1/**.h",
+      "../libraries/Sms_Snd_Emu-0.1.1/**.cpp"
    }
 
-   filter "architecture:x86"
-      sdlArchFolder = "x86"
-
-   filter "architecture:x86_64"
-      sdlArchFolder = "x64"
+   removefiles {
+      "../src/Common/SoundPortaudio.*",
+      "../libraries/Sms_Snd_Emu-0.1.1/demo.cpp"
+   }
    
-   filter { }
-
-   libdirs {
-      "../libraries/SDL2-"..sdlVersion.."/lib/"..sdlArchFolder
+   includedirs {
+      "../libraries/Sms_Snd_Emu-0.1.1"
    }
 
-   links { "SDL2", "SDL2main" }
+   EmulationPlatform()
 
-   filter "configurations:Debug"
-      defines { "DEBUG" }
-      symbols "On"
 
-      -- copy dlls from the libraries directories to the target directory
-      postbuildcommands {
-         "{COPY} %{wks.location}\\..\\..\\libraries\\SDL2-"..sdlVersion.."\\lib\\"..sdlArchFolder.."\\SDL2.dll %{wks.location}\\bin\\%{cfg.buildcfg}",
-      }
-
-   filter "configurations:Release"
-      defines { "NDEBUG" }
-      optimize "On"
-
-      -- copy dlls from the libraries directories to the target directory
-      postbuildcommands {
-         "{COPY} %{wks.location}\\..\\..\\libraries\\SDL2-"..sdlVersion.."\\lib\\"..sdlArchFolder.."\\SDL2.dll %{wks.location}\\bin\\%{cfg.buildcfg}",
-      }
-
-   -- Reset the filter for other settings
-   filter { }
-
+----------------
+-- MultiEmu3D --
+----------------
 project "MultiEmu3D"
 
-   local wxWidgetsVersion = "3.1.4"
-   local wxWidgetsArchFolder = ""
-   local wxWidgetsFileFilter = ""
-   local sdlVersion = "2.0.14"
-   local sdlArchFolder = ""
-
-   dependson { "GB" }
+   dependson { "GB", "SMS" }
    
    kind "WindowedApp"
    -- Turn on DPI awareness (Default, None, High, HighPerMonitor)
@@ -118,25 +146,19 @@ project "MultiEmu3D"
       "../src/GUI/Windows/MultiEmu3D.rc",
       "../src/NES/**.cpp",
       "../src/NES/**.h",
-      "../src/SMS-GG/**.h",
-      "../src/SMS-GG/**.cpp",
-      "../libraries/Sms_Snd_Emu-0.1.1/**.h",
-      "../libraries/Sms_Snd_Emu-0.1.1/**.cpp",
       "../libraries/glew-1.10.0/src/glew.c",
     }
 
    removefiles {
       "../src/Common/SoundPortaudio.*",
-      "../src/Common/Debuggable.*",
-      "../libraries/Sms_Snd_Emu-0.1.1/demo.cpp",
+      "../src/Common/Debuggable.*"
     }
     
    includedirs {
       "../libraries/wxWidgets-"..wxWidgetsVersion.."/include/msvc",
       "../libraries/wxWidgets-"..wxWidgetsVersion.."/include",
       "../libraries/glew-1.10.0/include",
-      "../libraries/SDL2-"..sdlVersion.."/include",
-      "../libraries/Sms_Snd_Emu-0.1.1"
+      "../libraries/SDL2-"..sdlVersion.."/include"
    }
 
    defines {
@@ -163,7 +185,7 @@ project "MultiEmu3D"
       "%{wks.location}/bin/%{cfg.buildcfg}"
    }
 
-   links { "opengl32", "glu32", "SDL2", "SDL2main", "GB" }
+   links { "opengl32", "glu32", "SDL2", "SDL2main", "GB", "SMS" }
 
    filter "configurations:Debug"
       defines { "DEBUG" }

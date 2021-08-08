@@ -22,7 +22,7 @@
 #define BLARGG_USE_NAMESPACE 1
 #include "Sms_Apu.h"
 #include "Stereo_Buffer.h"
-#ifdef __WXMSW__
+#ifdef _WINDOWS
 #include "../Common/SoundSDL.h"
 #else
 #include "../Common/SoundPortaudio.h"
@@ -51,7 +51,7 @@ Sound::Sound()
 	m_initialized = true;
 	m_sampleRate = 44100;
 
-#ifdef __WXMSW__
+#ifdef _WINDOWS
 	m_sound = new SoundSDL();
 #else
     m_sound = new SoundPortaudio();

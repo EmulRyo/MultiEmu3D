@@ -21,6 +21,7 @@
 #include "string"
 #include "../Common/Debuggable.h"
 #include "../Common/Types.h"
+#include "../Common/Exports.h"
 
 namespace MasterSystem {
     
@@ -30,7 +31,7 @@ namespace MasterSystem {
     class Cartridge;
     class Pad;
 
-    class Debugger: public Debuggable {
+    class DLL_EXPORT Debugger: public Debuggable {
     public:
         Debugger(Sound *sound, Video *video, CPU *cpu, Cartridge *cartridge, Pad *pad);
         ~Debugger();

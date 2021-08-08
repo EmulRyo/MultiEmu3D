@@ -19,6 +19,7 @@
 #define __SMS_H__
 
 #include "../Common/VideoGameDevice.h"
+#include "../Common/Exports.h"
 
 class IScreenDrawable;
 class Debuggable;
@@ -32,7 +33,7 @@ namespace MasterSystem {
     class CPU;
     class Debugger;
 
-    class SMS: public VideoGameDevice {
+    class DLL_EXPORT SMS: public VideoGameDevice {
     public:
         SMS();
         ~SMS();

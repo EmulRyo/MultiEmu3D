@@ -22,7 +22,7 @@
 
 class Sms_Apu;
 class Stereo_Buffer;
-#ifdef __WXMSW__
+#ifdef _WINDOWS
 class SoundSDL;
 #else
 class SoundPortaudio;
@@ -34,7 +34,7 @@ namespace MasterSystem {
     private:
         Sms_Apu * m_apu;
         Stereo_Buffer *m_mixer;
-    #ifdef __WXMSW__
+    #ifdef _WINDOWS
         SoundSDL *m_sound;
     #else
         SoundPortaudio *m_sound;

@@ -16,13 +16,7 @@
  */
 
 #include <iostream>
-// Definir la siguiente linea para que en Visual Studio no haya conflicto
-// entre SDL y Sms_Snd_Emu al definir tipos basicos
-#define BLARGG_COMPILER_HAS_NAMESPACE 1
-#define BLARGG_USE_NAMESPACE 1
-#include "Sms_Apu.h"
-#include "Stereo_Buffer.h"
-#ifdef __WXMSW__
+#ifdef _WINDOWS
 #include "../Common/SoundSDL.h"
 #else
 #include "../Common/SoundPortaudio.h"
@@ -51,23 +45,17 @@ Sound::Sound()
 	m_initialized = true;
 	m_sampleRate = 44100;
 
-#ifdef __WXMSW__
+#ifdef _WINDOWS
 	m_sound = new SoundSDL();
 #else
     m_sound = new SoundPortaudio();
 #endif
-    
-    m_apu = new Sms_Apu();
-    m_mixer = new Stereo_Buffer();
 	
 	if (ChangeSampleRate(m_sampleRate) == ERROR)
 	{
 		m_initialized = false;
 		return;
 	}
-    
-    m_mixer->clock_rate(3579545);
-    m_apu->output(m_mixer->center(), m_mixer->left(), m_mixer->right());
 	
 	if (Start() == ERROR)
 	{
@@ -79,8 +67,6 @@ Sound::Sound()
 Sound::~Sound()
 {
     delete m_sound;
-    delete m_apu;
-    delete m_mixer;
 }
 
 int Sound::ChangeSampleRate(long newSampleRate)
@@ -93,10 +79,6 @@ int Sound::ChangeSampleRate(long newSampleRate)
 	
 	if (wasEnabled)
 		Stop();
-	
-	// Set sample rate and check for out of memory error
-	if (!m_mixer->sample_rate(m_sampleRate))
-		return ERROR;
 	
 	if (wasEnabled)
 	{
@@ -153,19 +135,6 @@ void Sound::EndFrame(u32 cyclesElapsed) {
     
 	if ((!m_initialized) || (!m_enabled))
 		return;
-	
-	m_apu->end_frame(cyclesElapsed);
-    m_mixer->end_frame(cyclesElapsed);
-	
-	const size_t bufSize = m_mixer->samples_avail();
-	blip_sample_t *buf = new blip_sample_t[bufSize];
-	
-    // Play whatever samples are available
-    size_t count = m_mixer->read_samples(buf, bufSize);
-    
-    m_sound->Write(buf, (int)count);
-
-	delete[] buf;
 }
 
 u8 Sound::MemR(u16 address) {
