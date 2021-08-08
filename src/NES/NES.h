@@ -19,6 +19,7 @@
 #define __NES_H__
 
 #include "../Common/VideoGameDevice.h"
+#include "../Common/Exports.h"
 
 class IScreenDrawable;
 class Debuggable;
@@ -32,7 +33,7 @@ namespace Nes {
     class CPU;
     class Debugger;
 
-    class NES: public VideoGameDevice {
+    class DLL_EXPORT NES: public VideoGameDevice {
     public:
         NES();
         ~NES();

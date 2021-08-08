@@ -126,13 +126,34 @@ project "SMS"
 
    EmulationPlatform()
 
+---------
+-- NES --
+---------
+project "NES"
+   files {
+      "../src/Common/**.h",
+      "../src/Common/**.cpp",
+      "../src/NES/**.h",
+      "../src/NES/**.cpp"
+   }
+
+   removefiles {
+      "../src/Common/SoundPortaudio.*"
+   }
+   
+   includedirs {
+      
+   }
+
+   EmulationPlatform()
+
 
 ----------------
 -- MultiEmu3D --
 ----------------
 project "MultiEmu3D"
 
-   dependson { "GB", "SMS" }
+   dependson { "GB", "SMS", "NES" }
    
    kind "WindowedApp"
    -- Turn on DPI awareness (Default, None, High, HighPerMonitor)
@@ -144,8 +165,6 @@ project "MultiEmu3D"
       "../src/GUI/**.h",
       "../src/GUI/**.cpp",
       "../src/GUI/Windows/MultiEmu3D.rc",
-      "../src/NES/**.cpp",
-      "../src/NES/**.h",
       "../libraries/glew-1.10.0/src/glew.c",
     }
 
@@ -185,7 +204,7 @@ project "MultiEmu3D"
       "%{wks.location}/bin/%{cfg.buildcfg}"
    }
 
-   links { "opengl32", "glu32", "SDL2", "SDL2main", "GB", "SMS" }
+   links { "opengl32", "glu32", "SDL2", "SDL2main", "GB", "SMS", "NES" }
 
    filter "configurations:Debug"
       defines { "DEBUG" }
