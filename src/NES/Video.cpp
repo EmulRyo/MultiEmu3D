@@ -147,8 +147,10 @@ void Video::WriteReg(u16 address, u8 value) {
         m_OAMAddress++;
     }
     else if (address == PPUSCROLL) {
-        if (m_writeToggle == 0) // X
+        if (m_writeToggle == 0) { // X
             m_scrollXRequest = value;
+            
+        }
         else
             m_scrollYRequest = value;
         m_writeToggle = (m_writeToggle + 1) % 2;
@@ -176,13 +178,14 @@ bool Video::Update(u16 cpuCycles) {
     bool NMI = false;
     m_cycles += cpuCycles *3;
     
+    u16 scanLineCycles = NES_SCANLINE_PPU_CYCLES;
+    if (m_line == 261 && (m_numFrames % 2 == 1))
+        scanLineCycles -= 1;
+
     if (m_cycles > NES_FRAME_PPU_CYCLES)
         OnEndFrame();
     
     m_cyclesLine += cpuCycles *3;
-    u16 scanLineCycles = NES_SCANLINE_PPU_CYCLES;
-    if (m_line == 261 && (m_numFrames % 2 == 1))
-        scanLineCycles -= 1;
 
     if (m_cyclesLine > scanLineCycles) {
         m_x = 0;
@@ -553,9 +556,49 @@ u16 Video::GetAddress() {
 }
 
 void Video::SaveState(ostream *stream) {
-    
+    stream->write((char*)&m_regs[0], sizeof(u8) * 8);
+    stream->write((char*)&m_readBuffer, sizeof(u8));
+    stream->write((char*)&m_palette[0], sizeof(u8) * 0x20);
+    stream->write((char*)&m_addressLatch, sizeof(u16));
+    stream->write((char*)&m_writeToggle, sizeof(u8));
+    stream->write((char*)&m_OAM[0], sizeof(u8) * 256);
+    stream->write((char*)&m_OAMAddress, sizeof(u8));
+    stream->write((char*)&m_secondaryOAM[0], sizeof(u8) * 64);
+    stream->write((char*)&m_secondaryOAMLength, sizeof(u8));
+    stream->write((char*)&m_x, sizeof(u16));
+    stream->write((char*)&m_line, sizeof(u16));
+    stream->write((char*)&m_cycles, sizeof(float));
+    stream->write((char*)&m_cyclesLine, sizeof(u16));
+    stream->write((char*)&m_numFrames, sizeof(u32));
+    stream->write((char*)&m_scrollX, sizeof(u8));
+    stream->write((char*)&m_scrollY, sizeof(u8));
+    stream->write((char*)&m_scrollXRequest, sizeof(u8));
+    stream->write((char*)&m_scrollYRequest, sizeof(u8));
+    stream->write((char*)&m_genLatch, sizeof(u8));
+
+    stream->write((char*)&m_VRAM[0], sizeof(u8) * 0x1000);
 }
 
 void Video::LoadState(istream *stream) {
-    
+    stream->read((char*)&m_regs[0], sizeof(u8) * 8);
+    stream->read((char*)&m_readBuffer, sizeof(u8));
+    stream->read((char*)&m_palette[0], sizeof(u8) * 0x20);
+    stream->read((char*)&m_addressLatch, sizeof(u16));
+    stream->read((char*)&m_writeToggle, sizeof(u8));
+    stream->read((char*)&m_OAM[0], sizeof(u8) * 256);
+    stream->read((char*)&m_OAMAddress, sizeof(u8));
+    stream->read((char*)&m_secondaryOAM[0], sizeof(u8) * 64);
+    stream->read((char*)&m_secondaryOAMLength, sizeof(u8));
+    stream->read((char*)&m_x, sizeof(u16));
+    stream->read((char*)&m_line, sizeof(u16));
+    stream->read((char*)&m_cycles, sizeof(float));
+    stream->read((char*)&m_cyclesLine, sizeof(u16));
+    stream->read((char*)&m_numFrames, sizeof(u32));
+    stream->read((char*)&m_scrollX, sizeof(u8));
+    stream->read((char*)&m_scrollY, sizeof(u8));
+    stream->read((char*)&m_scrollXRequest, sizeof(u8));
+    stream->read((char*)&m_scrollYRequest, sizeof(u8));
+    stream->read((char*)&m_genLatch, sizeof(u8));
+
+    stream->read((char*)&m_VRAM[0], sizeof(u8) * 0x1000);
 }

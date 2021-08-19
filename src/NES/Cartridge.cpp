@@ -54,16 +54,6 @@ Cartridge::~Cartridge(void)
     m_buffer = NULL;
 }
 
-u32 Cartridge::RoundUpPowerOf2(u32 v) {
-    v--;
-    v |= v >> 1;
-    v |= v >> 2;
-    v |= v >> 4;
-    v |= v >> 8;
-    v |= v >> 16;
-    return v++;
-}
-
 string Cartridge::GetShortName(string fileName) {
     size_t begin = fileName.find_last_of('/');
     if (begin == string::npos)
@@ -147,11 +137,13 @@ NametableMirroring Cartridge::GetNametableMirroring() {
 
 void Cartridge::SaveState(ostream *stream)
 {
+    stream->write((char*)&m_nametableMirroring, sizeof(NametableMirroring));
     m_mapper->SaveState(stream);
 }
 
 void Cartridge::LoadState(istream *stream)
 {
+    stream->read((char*)&m_nametableMirroring, sizeof(NametableMirroring));
     m_mapper->LoadState(stream);
 }
 

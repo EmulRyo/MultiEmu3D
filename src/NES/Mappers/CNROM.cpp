@@ -95,7 +95,12 @@ u8 CNROM::GetCHRBank1() {
     return m_chrBank;
 }
 
-void CNROM::SaveState(std::ostream* stream) {}
-void CNROM::LoadState(std::istream* stream) {}
+void CNROM::SaveState(std::ostream* stream) {
+    stream->write((char*)&m_chrBank, sizeof(u8));
+}
+
+void CNROM::LoadState(std::istream* stream) {
+    stream->read((char*)&m_chrBank, sizeof(u8));
+}
 
 void CNROM::Extract() {}

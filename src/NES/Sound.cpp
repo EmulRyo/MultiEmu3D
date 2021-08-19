@@ -91,6 +91,8 @@ int Sound::ChangeSampleRate(long newSampleRate)
 
 int Sound::Start()
 {
+	return NO_ERROR;
+
 	if (!m_initialized)
 		return NO_ERROR;
 	

@@ -74,8 +74,6 @@ namespace Nes {
         void LoadFile(std::string fileName, std::string batteriesPath);
         void ReadHeader();
         std::string GetShortName(std::string fileName);
-        u32 RoundUpPowerOf2(u32 v);
-        bool MapperInit(u16 mapper);
     };
 }
 
