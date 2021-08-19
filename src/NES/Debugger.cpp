@@ -115,6 +115,81 @@ std::string Debugger::GetVideoAddress() {
     return HexToString(m_video->GetAddress(), 4, '0');
 }
 
+std::string Debugger::GetVideoReg(u8 regID) {
+    return HexToString(m_video->ReadReg(0x2000+regID, true), 2, '0');
+}
+
+std::string Debugger::GetVideoBaseNameTableAddress() {
+    u8 value = (m_video->ReadReg(0x2000, true) & 0x03);
+    u16 address = 0x2000 + (value * 0x400);
+    return HexToString(address, 4, '0');
+}
+
+std::string Debugger::GetVideoVRAMAddressIncrement() {
+    u8 value = (m_video->ReadReg(0x2000, true) & 0x04);
+    return (value == 0) ? "+1" : "+32";
+}
+
+std::string Debugger::GetVideoSpritePatternTableAddress() {
+    u8 value = (m_video->ReadReg(0x2000, true) & 0x08);
+    return (value == 0) ? "$0000" : "$1000";
+}
+
+std::string Debugger::GetVideoBGPatternTableAddress() {
+    u8 value = (m_video->ReadReg(0x2000, true) & 0x10);
+    return (value == 0) ? "$0000" : "$1000";
+}
+
+std::string Debugger::GetVideoSpriteSize() {
+    u8 value = (m_video->ReadReg(0x2000, true) & 0x20);
+    return (value == 0) ? "8x8" : "8x16";
+}
+
+std::string Debugger::GetVideoGenerateNMI() {
+    u8 value = (m_video->ReadReg(0x2000, true) & 0x80);
+    return (value == 0) ? "False" : "True";
+}
+
+std::string Debugger::GetVideoGrayscale() {
+    u8 value = (m_video->ReadReg(0x2001, true) & 0x01);
+    return (value == 0) ? "False" : "True";
+}
+
+std::string Debugger::GetVideoShowBGLeft8() {
+    u8 value = (m_video->ReadReg(0x2001, true) & 0x02);
+    return (value == 0) ? "False" : "True";
+}
+
+std::string Debugger::GetVideoShowSpritesLeft8() {
+    u8 value = (m_video->ReadReg(0x2001, true) & 0x04);
+    return (value == 0) ? "False" : "True";
+}
+
+std::string Debugger::GetVideoShowBG() {
+    u8 value = (m_video->ReadReg(0x2001, true) & 0x08);
+    return (value == 0) ? "False" : "True";
+}
+
+std::string Debugger::GetVideoShowSprites() {
+    u8 value = (m_video->ReadReg(0x2001, true) & 0x10);
+    return (value == 0) ? "False" : "True";
+}
+
+std::string Debugger::GetVideoSpriteOverflow() {
+    u8 value = (m_video->ReadReg(0x2002, true) & 0x20);
+    return (value == 0) ? "False" : "True";
+}
+
+std::string Debugger::GetVideoSprite0Hit() {
+    u8 value = (m_video->ReadReg(0x2002, true) & 0x40);
+    return (value == 0) ? "False" : "True";
+}
+
+std::string Debugger::GetVideoVBlank() {
+    u8 value = (m_video->ReadReg(0x2002, true) & 0x80);
+    return (value == 0) ? "False" : "True";
+}
+
 std::string Debugger::GetMapperID() {
     return IntToString(m_cartridge->GetMapperNum(), 1, ' ');
 }

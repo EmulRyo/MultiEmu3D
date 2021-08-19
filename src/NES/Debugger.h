@@ -57,6 +57,21 @@ namespace Nes {
         std::string GetVideoScrollX();
         std::string GetVideoScrollY();
         std::string GetVideoAddress();
+        std::string GetVideoReg(u8 regID);
+        std::string GetVideoBaseNameTableAddress();
+        std::string GetVideoVRAMAddressIncrement();
+        std::string GetVideoSpritePatternTableAddress();
+        std::string GetVideoBGPatternTableAddress();
+        std::string GetVideoSpriteSize();
+        std::string GetVideoGenerateNMI();
+        std::string GetVideoGrayscale();
+        std::string GetVideoShowBGLeft8();
+        std::string GetVideoShowSpritesLeft8();
+        std::string GetVideoShowBG();
+        std::string GetVideoShowSprites();
+        std::string GetVideoSpriteOverflow();
+        std::string GetVideoSprite0Hit();
+        std::string GetVideoVBlank();
 
         std::string GetMapperID();
         std::string GetMapperName();

@@ -59,25 +59,25 @@ DebuggerNESDialog::DebuggerNESDialog(wxWindow *parent, VideoGameDevice *device)
     
 #ifdef __WXMSW__
 	m_font = new wxFont(8, wxFONTFAMILY_TELETYPE, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_NORMAL);
-    int height1 = 176;
-    int height2 = 430;
+    int height1 = 216;
+    int height2 = 470;
 #endif
 #ifdef __WXGTK__
 	m_font = new wxFont(8, wxFONTFAMILY_TELETYPE, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_NORMAL);
-    int height1 = 166;
-    int height2 = 420;
+    int height1 = 206;
+    int height2 = 460;
 #endif
 #ifdef __WXMAC__
-    m_font = new wxFont(12, wxTELETYPE, wxNORMAL, wxNORMAL);
-    int height1 = 170 * factor;
-    int height2 = 426 * factor;
+    m_font = new wxFont(12, wxFONTFAMILY_TELETYPE, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_NORMAL);
+    int height1 = 210 * factor;
+    int height2 = 466 * factor;
 #endif
     
-    m_regsView = new wxListView(this, wxID_ANY, wxDefaultPosition, FromDIP(wxSize(88, height1)), wxLC_REPORT);
+    m_regsView = new wxListView(this, wxID_ANY, wxDefaultPosition, FromDIP(wxSize(98, height1)), wxLC_REPORT);
     m_regsView->InsertColumn (0, "Name");
     m_regsView->SetColumnWidth (0, 45 * factor);
-    m_regsView->InsertColumn (1, "Value");
-    m_regsView->SetColumnWidth (1, 43 * factor);
+    m_regsView->InsertColumn (1, "Value", wxLIST_FORMAT_RIGHT);
+    m_regsView->SetColumnWidth (1, 50 * factor);
     
     // --- Dissassembler ---
     wxStaticText *disassemblerText = new wxStaticText(this, -1, wxT("Disassembler:"));
@@ -106,18 +106,18 @@ DebuggerNESDialog::DebuggerNESDialog(wxWindow *parent, VideoGameDevice *device)
     m_disassemblerLast  = 0;
     
     wxStaticText *videoText = new wxStaticText(this, -1, wxT("Video registers:"));
-    m_videoView = new wxListView(this, wxID_ANY, wxDefaultPosition, FromDIP(wxSize(110, height2)), wxLC_REPORT);
+    m_videoView = new wxListView(this, wxID_ANY, wxDefaultPosition, FromDIP(wxSize(168, height2)), wxLC_REPORT);
     m_videoView->InsertColumn (0, "Name");
-    m_videoView->SetColumnWidth (0, 60 * factor);
-    m_videoView->InsertColumn (1, "Value");
-    m_videoView->SetColumnWidth (1, 38 * factor);
+    m_videoView->SetColumnWidth (0, 116 * factor);
+    m_videoView->InsertColumn (1, "Value", wxLIST_FORMAT_RIGHT);
+    m_videoView->SetColumnWidth (1, 50 * factor);
     
     wxStaticText *othersText = new wxStaticText(this, -1, wxT("Other registers:"));
-    m_othersView = new wxListView(this, wxID_ANY, wxDefaultPosition, FromDIP(wxSize(110, height2)), wxLC_REPORT);
+    m_othersView = new wxListView(this, wxID_ANY, wxDefaultPosition, FromDIP(wxSize(116, height2)), wxLC_REPORT);
     m_othersView->InsertColumn (0, "Name");
-    m_othersView->SetColumnWidth (0, 72 * factor);
-    m_othersView->InsertColumn (1, "Value");
-    m_othersView->SetColumnWidth (1, 38 * factor);
+    m_othersView->SetColumnWidth (0, 74 * factor);
+    m_othersView->InsertColumn (1, "Value", wxLIST_FORMAT_RIGHT);
+    m_othersView->SetColumnWidth (1, 42 * factor);
     
     wxTextValidator *validator = new wxTextValidator(wxFILTER_INCLUDE_CHAR_LIST);
     validator->SetCharIncludes(wxT("0123456789ABCDEFabcdef"));
@@ -312,9 +312,14 @@ void DebuggerNESDialog::UpdateMemory() {
 void DebuggerNESDialog::UpdateRegisters() {
     const char *names[] = { "A", "X", "Y", "P", "PC", "S" };
     
+    wxArrayString oldValues;
+    int numElements = sizeof(names) / sizeof(const char*);
+    for (int i = 0; i < m_regsView->GetItemCount(); i++)
+        oldValues.Add(m_regsView->GetItemText(i, 1));
+
     m_regsView->DeleteAllItems();
     
-    for (int i=0; i<6; i++) {
+    for (int i=0; i<numElements; i++) {
         m_regsView->InsertItem(i, "");
         m_regsView->SetItem(i, 0, names[i]);
         m_regsView->SetItemFont(i, *m_font);
@@ -326,47 +331,96 @@ void DebuggerNESDialog::UpdateRegisters() {
     m_regsView->SetItem(3, 1, m_debugger->GetRegP());
     m_regsView->SetItem(4, 1, m_debugger->GetRegPC());
     m_regsView->SetItem(5, 1, m_debugger->GetRegS());
+
+    SetTextColorOnChanged(oldValues, m_regsView);
 }
 
 void DebuggerNESDialog::UpdateVideoRegs() {
-    const char *names[] = { "Frames", "X", "Y", "ScrollX", "ScrollY", "Address" };
-    int pos = 0;
+    const char *names[] = {
+        "Frames", "X", "Y", "ScrollX", "ScrollY", "Address",
+        "$2000 (PPUCTRL)", "BaseNameTable", "Address incr.", "Sprite pattern", "BG pattern", "Sprite size", "Generate NMI",
+        "$2001 (PPUMASK)", "Grayscale", "Show BG left8", "Show spr. left8", "Show BG", "Show sprites",
+        "$2002 (PPUSTAT)", "Spr. overflow", "Spr. 0 hit", "VBlank"
+    };
     
+    wxArrayString oldValues;
+    int numElements = sizeof(names) / sizeof(const char*);
+    for (int i = 0; i < m_videoView->GetItemCount(); i++)
+        oldValues.Add(m_videoView->GetItemText(i, 1));
+
     m_videoView->DeleteAllItems();
     
-    for (int i=0; i<6; i++) {
-        m_videoView->InsertItem(pos, "");
-        m_videoView->SetItem(pos, 0, names[pos]);
-        m_videoView->SetItemFont(pos, *m_font);
-        pos++;
+    for (int i=0; i<numElements; i++) {
+        m_videoView->InsertItem(i, "");
+        m_videoView->SetItem(i, 0, names[i]);
+        m_videoView->SetItemFont(i, *m_font);
     }
-    m_videoView->SetItem(0, 1, m_debugger->GetVideoNumFrames());
-    m_videoView->SetItem(1, 1, m_debugger->GetVideoX());
-    m_videoView->SetItem(2, 1, m_debugger->GetVideoY());
-    m_videoView->SetItem(3, 1, m_debugger->GetVideoScrollX());
-    m_videoView->SetItem(4, 1, m_debugger->GetVideoScrollY());
-    m_videoView->SetItem(5, 1, m_debugger->GetVideoAddress());
+
+    int pos = 0;
+    m_videoView->SetItem(pos++, 1, m_debugger->GetVideoNumFrames());
+    m_videoView->SetItem(pos++, 1, m_debugger->GetVideoX());
+    m_videoView->SetItem(pos++, 1, m_debugger->GetVideoY());
+    m_videoView->SetItem(pos++, 1, m_debugger->GetVideoScrollX());
+    m_videoView->SetItem(pos++, 1, m_debugger->GetVideoScrollY());
+    m_videoView->SetItem(pos++, 1, m_debugger->GetVideoAddress());
+    m_videoView->SetItem(pos++, 1, m_debugger->GetVideoReg(0));
+    m_videoView->SetItem(pos++, 1, m_debugger->GetVideoBaseNameTableAddress());
+    m_videoView->SetItem(pos++, 1, m_debugger->GetVideoVRAMAddressIncrement());
+    m_videoView->SetItem(pos++, 1, m_debugger->GetVideoSpritePatternTableAddress());
+    m_videoView->SetItem(pos++, 1, m_debugger->GetVideoBGPatternTableAddress());
+    m_videoView->SetItem(pos++, 1, m_debugger->GetVideoSpriteSize());
+    m_videoView->SetItem(pos++, 1, m_debugger->GetVideoGenerateNMI());
+    m_videoView->SetItem(pos++, 1, m_debugger->GetVideoReg(1));
+    m_videoView->SetItem(pos++, 1, m_debugger->GetVideoGrayscale());
+    m_videoView->SetItem(pos++, 1, m_debugger->GetVideoShowBGLeft8());
+    m_videoView->SetItem(pos++, 1, m_debugger->GetVideoShowSpritesLeft8());
+    m_videoView->SetItem(pos++, 1, m_debugger->GetVideoShowBG());
+    m_videoView->SetItem(pos++, 1, m_debugger->GetVideoShowSprites());
+    m_videoView->SetItem(pos++, 1, m_debugger->GetVideoReg(2));
+    m_videoView->SetItem(pos++, 1, m_debugger->GetVideoSpriteOverflow());
+    m_videoView->SetItem(pos++, 1, m_debugger->GetVideoSprite0Hit());
+    m_videoView->SetItem(pos++, 1, m_debugger->GetVideoVBlank());
+
+    SetTextColorOnChanged(oldValues, m_videoView);
+}
+
+void DebuggerNESDialog::SetTextColorOnChanged(const wxArrayString &oldValues, wxListView *listView) {
+    for (int i = 0; i < listView->GetItemCount(); i++) {
+        wxColour color = wxColour("black");
+        if ((oldValues.GetCount() > 0) && (oldValues[i].compare(listView->GetItemText(i, 1)) != 0))
+            color = wxColour("red");
+
+        listView->SetItemTextColour(i, color);
+    }
 }
 
 void DebuggerNESDialog::UpdateOtherRegs() {
     const char *names[] = { "Mapper ID", "Map. Name", "PRG Banks", "PRG 0", "PRG 1", "CHR Banks", "CHR 0", "CHR 1" };
     
+    wxArrayString oldValues;
+    int numElements = sizeof(names) / sizeof(const char*);
+    for (int i = 0; i < m_othersView->GetItemCount(); i++)
+        oldValues.Add(m_othersView->GetItemText(i, 1));
+
     m_othersView->DeleteAllItems();
     
-    for (int i=0; i<8; i++) {
+    for (int i=0; i<numElements; i++) {
         m_othersView->InsertItem(i, "");
         m_othersView->SetItem(i, 0, names[i]);
         m_othersView->SetItemFont(i, *m_font);
     }
     
-    m_othersView->SetItem(0, 1, m_debugger->GetMapperID());
-    m_othersView->SetItem(1, 1, m_debugger->GetMapperName());
-    m_othersView->SetItem(2, 1, m_debugger->GetCartridgePRGBanks());
-    m_othersView->SetItem(3, 1, m_debugger->GetCartridgePRGBank0());
-    m_othersView->SetItem(4, 1, m_debugger->GetCartridgePRGBank1());
-    m_othersView->SetItem(5, 1, m_debugger->GetCartridgeCHRBanks());
-    m_othersView->SetItem(6, 1, m_debugger->GetCartridgeCHRBank0());
-    m_othersView->SetItem(7, 1, m_debugger->GetCartridgeCHRBank1());
+    int pos = 0;
+    m_othersView->SetItem(pos++, 1, m_debugger->GetMapperID());
+    m_othersView->SetItem(pos++, 1, m_debugger->GetMapperName());
+    m_othersView->SetItem(pos++, 1, m_debugger->GetCartridgePRGBanks());
+    m_othersView->SetItem(pos++, 1, m_debugger->GetCartridgePRGBank0());
+    m_othersView->SetItem(pos++, 1, m_debugger->GetCartridgePRGBank1());
+    m_othersView->SetItem(pos++, 1, m_debugger->GetCartridgeCHRBanks());
+    m_othersView->SetItem(pos++, 1, m_debugger->GetCartridgeCHRBank0());
+    m_othersView->SetItem(pos++, 1, m_debugger->GetCartridgeCHRBank1());
+
+    SetTextColorOnChanged(oldValues, m_othersView);
 }
 
 void DebuggerNESDialog::UpdateDisassemblerIcon(int numItem, u16 currentAddress, u16 pc) {
@@ -395,7 +449,7 @@ void DebuggerNESDialog::InitDisassemblerVars(u16 &currentAddress, u16 &nextAddre
 void DebuggerNESDialog::UpdateDisassembler() {
     u16 currentAddress, nextAddress, pc, second;
     string address, name, data;
-    const int lines = 8;
+    const int lines = 10;
     
     InitDisassemblerVars(currentAddress, nextAddress, name, data, pc);
     

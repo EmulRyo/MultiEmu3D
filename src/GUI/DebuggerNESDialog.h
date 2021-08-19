@@ -29,7 +29,7 @@ namespace Nes {
 }
 
 /*******************************************************************************
- // DebuggerDialog Class
+ // DebuggerNESDialog Class
  *******************************************************************************/
 
 class DebuggerNESDialog : public wxDialog {
@@ -82,7 +82,7 @@ private:
     void OnSaveTiles(wxCommandEvent &);
     void OnActivated(wxListEvent &);
     
-    std::string IntToString(int value, int width);
+    void SetTextColorOnChanged(const wxArrayString& oldValues, wxListView* listView);
 };
 
 #endif

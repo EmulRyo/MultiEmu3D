@@ -34,7 +34,7 @@ Debuggable::~Debuggable() {
 std::string Debuggable::HexToString(int value, int width, char fill)
 {
     stringstream ss;
-    ss << setfill(fill) << setw(width) << uppercase << hex << value;
+    ss << "$" << setfill(fill) << setw(width) << uppercase << hex << value;
     return ss.str();
 }
 
