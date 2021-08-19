@@ -135,7 +135,7 @@ DebuggerNESDialog::DebuggerNESDialog(wxWindow *parent, VideoGameDevice *device)
     m_addressMemCtrl->SetValue(wxT("0000"));
     m_addressMemCtrl->SetMaxLength(4);
     
-    m_memCtrl = new wxTextCtrl(this, -1, wxEmptyString, wxDefaultPosition, FromDIP(wxSize(411, 146)), wxTE_MULTILINE | wxTE_READONLY);
+    m_memCtrl = new wxTextCtrl(this, -1, wxEmptyString, wxDefaultPosition, FromDIP(wxSize(411, 146)), wxTE_MULTILINE | wxTE_READONLY | wxTE_RICH2);
     m_memCtrl->SetFont(*m_font);
     
     wxSizer *buttonsSizer = CreateButtons();
@@ -283,14 +283,14 @@ wxSizer * DebuggerNESDialog::CreateFlagsAndInputControls() {
 
 void DebuggerNESDialog::UpdateUI() {
     UpdateRegisters();
-    UpdateMemory();
+    UpdateMemory(true);
     UpdateDisassembler();
     UpdateVideoRegs();
     UpdateOtherRegs();
     UpdateFlags();
 }
 
-void DebuggerNESDialog::UpdateMemory() {
+void DebuggerNESDialog::UpdateMemory(bool highlightChanges) {
     int memSelect = m_memSelRBox->GetSelection();
     int maxMem = 0;
     switch (memSelect) {
@@ -301,6 +301,7 @@ void DebuggerNESDialog::UpdateMemory() {
     }
     wxString address = m_addressMemCtrl->GetValue();
     long value;
+    wxString oldString = m_memCtrl->GetValue();
     if(address.ToLong(&value, 16)) {
         value = value & 0xFFF0;
         int numLines = 9;
@@ -315,6 +316,31 @@ void DebuggerNESDialog::UpdateMemory() {
         else
             mem += m_debugger->GetOAMData(value, (value + (0x10 * numLines) - 1));
         m_memCtrl->SetValue(mem);
+
+        if (highlightChanges)
+            SetTextColorMemory(oldString, m_memCtrl);
+    }
+}
+
+void DebuggerNESDialog::SetTextColorMemory(const wxString& oldString, wxTextCtrl* textCtrl) {
+    long start = 0;
+    long end = 0;
+    bool changed = false;
+    wxString newString = textCtrl->GetValue();
+
+    for (int i = 0; i < oldString.Length(); i++) {
+        if ((newString[i] == ' ') || (newString[i] == '\n')) {
+            if (changed)
+                textCtrl->SetStyle(start, end, wxTextAttr(*wxRED));
+            start = end = i + 1;
+            changed = false;
+        }
+        else {
+            if (oldString[i] != newString[i])
+                changed = true;
+
+            end++;
+        }
     }
 }
 
@@ -551,7 +577,7 @@ void DebuggerNESDialog::OnMemAddressChange(wxCommandEvent &event) {
     wxString address = m_addressMemCtrl->GetValue().Upper();
     m_addressMemCtrl->ChangeValue(address);
     m_addressMemCtrl->SetInsertionPoint(insertionPoint);
-    UpdateMemory();
+    UpdateMemory(false);
 }
 
 void DebuggerNESDialog::OnActivated(wxListEvent &event) {
@@ -570,7 +596,7 @@ void DebuggerNESDialog::OnActivated(wxListEvent &event) {
 }
 
 void DebuggerNESDialog::OnMemSelectChange(wxCommandEvent &event) {
-    UpdateMemory();
+    UpdateMemory(false);
 }
 
 void DebuggerNESDialog::OnSaveTiles(wxCommandEvent &event) {

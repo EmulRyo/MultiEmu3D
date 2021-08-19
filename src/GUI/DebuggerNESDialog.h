@@ -63,7 +63,7 @@ private:
     wxSizer *CreateFlagsAndInputControls();
     void UpdateUI();
     void UpdateRegisters();
-    void UpdateMemory();
+    void UpdateMemory(bool highlightChanges);
     void UpdateDisassembler();
     void InitDisassemblerVars(u16 &currentAddress, u16 &nextAddress, std::string &name, std::string &data, u16 &pc);
     void UpdateDisassemblerIcon(int numItem, u16 currentAddress, u16 pc);
@@ -83,6 +83,7 @@ private:
     void OnActivated(wxListEvent &);
     
     void SetTextColorOnChanged(const wxArrayString& oldValues, wxListView* listView);
+    void SetTextColorMemory(const wxString& oldString, wxTextCtrl* textCtrl);
 };
 
 #endif
