@@ -292,6 +292,35 @@ std::string Debugger::GetVMem(u16 start, u16 end)
     return ss.str();
 }
 
+std::string Debugger::GetOAMData(u16 start, u16 end)
+{
+    start &= 0xFFF0;
+    u16 end1 = end & 0xFFF0;
+    u16 end2 = end1 + 0x000F;
+
+    stringstream ss;
+    unsigned int row = start;
+    while (row <= end2)
+    {
+        AppendHex(ss, row, 4, '0');
+        ss << ": ";
+        for (int i = 0x0; i < 0xF; i++)
+        {
+            u8 value = m_video->OAMR(row + i);
+            AppendHex(ss, value, 2, '0');
+            ss << ' ';
+        }
+
+        u8 value = m_video->MemR(row + 0xF);
+        AppendHex(ss, value, 2, '0');
+        if (row < end1)
+            ss << '\n';
+        row += 0x10;
+    }
+
+    return ss.str();
+}
+
 std::string Debugger::Disassemble(u16 start, int numInstructions) {
     stringstream ss;
     

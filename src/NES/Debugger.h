@@ -50,6 +50,7 @@ namespace Nes {
         std::string GetMem(u16 address);
         std::string GetMem(u16 start, u16 end);
         std::string GetVMem(u16 start, u16 end);
+        std::string GetOAMData(u16 start, u16 end);
 
         std::string GetVideoNumFrames();
         std::string GetVideoX();

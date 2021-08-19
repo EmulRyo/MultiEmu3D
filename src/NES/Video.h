@@ -45,6 +45,8 @@ namespace Nes {
 
         u8   MemR(u16 address, bool skipBuffer=true);
         void MemW(u16 address, u8 value);
+
+        u8   OAMR(u16 address);
         
         bool Update(u16 cycles);
 

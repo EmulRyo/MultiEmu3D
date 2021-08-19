@@ -124,10 +124,11 @@ DebuggerNESDialog::DebuggerNESDialog(wxWindow *parent, VideoGameDevice *device)
     
     wxStaticText *memText = new wxStaticText(this, -1, wxT("Memory:"));
 
-    wxString choices[2];
+    wxString choices[3];
     choices[0] = "6502";
     choices[1] = "PPU";
-    m_memSelRBox = new wxRadioBox(this, ID_DEBUG_MEMSELECT, wxT(""), wxDefaultPosition, wxDefaultSize, 2, choices, 1, wxRA_SPECIFY_ROWS);
+    choices[2] = "OAM";
+    m_memSelRBox = new wxRadioBox(this, ID_DEBUG_MEMSELECT, wxT(""), wxDefaultPosition, wxDefaultSize, 3, choices, 1, wxRA_SPECIFY_ROWS);
     
     m_addressMemCtrl = new wxTextCtrl(this, ID_DEBUG_MEMADDRESS, wxEmptyString, wxDefaultPosition, FromDIP(wxSize(40, 20)), 0, *validator);
     m_addressMemCtrl->SetFont(*m_font);
@@ -291,7 +292,13 @@ void DebuggerNESDialog::UpdateUI() {
 
 void DebuggerNESDialog::UpdateMemory() {
     int memSelect = m_memSelRBox->GetSelection();
-    int maxMem = (memSelect == 0) ? 0x10000 : 0x4000;
+    int maxMem = 0;
+    switch (memSelect) {
+        case 0: maxMem = 0x10000; break;
+        case 1: maxMem = 0x4000; break;
+        case 2: maxMem = 0x100; break;
+        default: maxMem = 0x10000;
+    }
     wxString address = m_addressMemCtrl->GetValue();
     long value;
     if(address.ToLong(&value, 16)) {
@@ -303,8 +310,10 @@ void DebuggerNESDialog::UpdateMemory() {
         string mem = "      00 01 02 03 04 05 06 07 08 09 0A 0B 0C 0D 0E 0F\n";
         if (memSelect == 0)
             mem += m_debugger->GetMem(value, (value + (0x10 * numLines) - 1));
-        else
+        else if (memSelect == 1)
             mem += m_debugger->GetVMem(value, (value + (0x10 * numLines) - 1));
+        else
+            mem += m_debugger->GetOAMData(value, (value + (0x10 * numLines) - 1));
         m_memCtrl->SetValue(mem);
     }
 }
@@ -548,6 +557,7 @@ void DebuggerNESDialog::OnMemAddressChange(wxCommandEvent &event) {
 void DebuggerNESDialog::OnActivated(wxListEvent &event) {
     long index = event.GetIndex();
     wxString address = m_disassemblerView->GetItemText(index, 1);
+    address = address.SubString(1, 5);
     long value;
     if(address.ToLong(&value, 16)) {
         value = value & 0xFFFF;

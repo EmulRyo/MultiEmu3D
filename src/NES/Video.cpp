@@ -602,3 +602,7 @@ void Video::LoadState(istream *stream) {
 
     stream->read((char*)&m_VRAM[0], sizeof(u8) * 0x1000);
 }
+
+u8 Video::OAMR(u16 address) {
+    return (address < 0x100) ? m_OAM[address] : 0;
+}
