@@ -372,7 +372,7 @@ void DebuggerNESDialog::UpdateRegisters() {
 
 void DebuggerNESDialog::UpdateVideoRegs() {
     const char *names[] = {
-        "Frames", "X", "Y", "ScrollX", "ScrollY", "Address",
+        "Frames", "Cycles", "Scanline", "ScrollX", "ScrollY", "Address",
         "$2000 (PPUCTRL)", "BaseNameTable", "Address incr.", "Sprite pattern", "BG pattern", "Sprite size", "Generate NMI",
         "$2001 (PPUMASK)", "Grayscale", "Show BG left8", "Show spr. left8", "Show BG", "Show sprites",
         "$2002 (PPUSTAT)", "Spr. overflow", "Spr. 0 hit", "VBlank"

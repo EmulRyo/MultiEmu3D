@@ -109,7 +109,8 @@ namespace Nes {
         u8  m_scrollXRequest;
         u8  m_scrollYRequest;
         IScreenDrawable *m_screen;
-        u8   m_genLatch;
+        u8  m_genLatch;
+        u16 m_nameTableAddress;
 
         void OnEndFrame();
         u16  GetBGPaletteAddress(u16 x, u16 y, u16 attrTableAddress);

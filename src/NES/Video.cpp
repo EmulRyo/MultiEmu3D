@@ -149,7 +149,6 @@ void Video::WriteReg(u16 address, u8 value) {
     else if (address == PPUSCROLL) {
         if (m_writeToggle == 0) { // X
             m_scrollXRequest = value;
-            
         }
         else
             m_scrollYRequest = value;
@@ -192,6 +191,7 @@ bool Video::Update(u16 cpuCycles) {
         m_line++;
         m_cyclesLine -= scanLineCycles;
         m_scrollX = m_scrollXRequest;
+        m_nameTableAddress = ((m_regs[PPUCTRL & 0x07] & 0x03) * 0x400) + 0x2000;
         if (m_line == NES_SCREEN_H)
             RefreshScreen();
         else if (m_line == 241) {
@@ -257,7 +257,7 @@ void Video::DrawPixels() {
     u8 ppuCtrl = m_regs[PPUCTRL & 0x07];
     u8 ppuMask = m_regs[PPUMASK & 0x07];
     bgIn.patternTableAddress = (ppuCtrl & 0x10) > 0 ? 0x1000 : 0x0000;
-    bgIn.nameTableAddress = ((ppuCtrl & 0x03) * 0x400) + 0x2000;
+    bgIn.nameTableAddress = m_nameTableAddress;
     bgIn.attrTableAddress = bgIn.nameTableAddress + 0x03C0;
     bgIn.show8Left = BIT1(ppuMask) ? true : false;
     bgIn.mirroring = m_cartridge->GetNametableMirroring();
