@@ -87,7 +87,8 @@ void BreakpointsDialog::UpdateUI() {
     int numBreakpoints = m_debugger->GetNumBreakpoints();
     for (int i=0; i<numBreakpoints; i++) {
         u16 address = m_debugger->GetBreakpoint(i);
-        string value = m_debugger->HexToString(address, 4, '0');
+        string value = m_debugger->HexToString(address, 4, '0', "");
+        if (value[0])
         m_breakpointsView->InsertItem(i, "");
         m_breakpointsView->SetItem(i, 0, value);
         m_breakpointsView->SetItemFont(i, *m_font);

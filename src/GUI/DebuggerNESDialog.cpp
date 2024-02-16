@@ -106,7 +106,7 @@ DebuggerNESDialog::DebuggerNESDialog(wxWindow *parent, VideoGameDevice *device)
     m_disassemblerLast  = 0;
     
     wxStaticText *videoText = new wxStaticText(this, -1, wxT("Video registers:"));
-    m_videoView = new wxListView(this, wxID_ANY, wxDefaultPosition, FromDIP(wxSize(168, height2)), wxLC_REPORT);
+    m_videoView = new wxListView(this, wxID_ANY, wxDefaultPosition, FromDIP(wxSize(188, height2)), wxLC_REPORT);
     m_videoView->InsertColumn (0, "Name");
     m_videoView->SetColumnWidth (0, 116 * factor);
     m_videoView->InsertColumn (1, "Value", wxLIST_FORMAT_RIGHT);
@@ -372,7 +372,8 @@ void DebuggerNESDialog::UpdateRegisters() {
 
 void DebuggerNESDialog::UpdateVideoRegs() {
     const char *names[] = {
-        "Frames", "Cycles", "Scanline", "ScrollX", "ScrollY", "Address",
+        "Frames", "Cycles", "Scanline", "ScrollX", "ScrollY", "Curr. address", "CoarseX", "CoarseY", "NameTableSelect", "Fine Y Scroll",
+        "Temp. address", "Fine X scroll", "Write toggle",
         "$2000 (PPUCTRL)", "BaseNameTable", "Address incr.", "Sprite pattern", "BG pattern", "Sprite size", "Generate NMI",
         "$2001 (PPUMASK)", "Grayscale", "Show BG left8", "Show spr. left8", "Show BG", "Show sprites",
         "$2002 (PPUSTAT)", "Spr. overflow", "Spr. 0 hit", "VBlank"
@@ -397,7 +398,14 @@ void DebuggerNESDialog::UpdateVideoRegs() {
     m_videoView->SetItem(pos++, 1, m_debugger->GetVideoY());
     m_videoView->SetItem(pos++, 1, m_debugger->GetVideoScrollX());
     m_videoView->SetItem(pos++, 1, m_debugger->GetVideoScrollY());
-    m_videoView->SetItem(pos++, 1, m_debugger->GetVideoAddress());
+    m_videoView->SetItem(pos++, 1, m_debugger->GetVideoCurrentAddress());
+    m_videoView->SetItem(pos++, 1, m_debugger->GetVideoCoarseX());
+    m_videoView->SetItem(pos++, 1, m_debugger->GetVideoCoarseY());
+    m_videoView->SetItem(pos++, 1, m_debugger->GetVideoNameTable());
+    m_videoView->SetItem(pos++, 1, m_debugger->GetVideoFineY());
+    m_videoView->SetItem(pos++, 1, m_debugger->GetVideoTempAddress());
+    m_videoView->SetItem(pos++, 1, m_debugger->GetVideoFineXScroll());
+    m_videoView->SetItem(pos++, 1, m_debugger->GetVideoWriteToggle());
     m_videoView->SetItem(pos++, 1, m_debugger->GetVideoReg(0));
     m_videoView->SetItem(pos++, 1, m_debugger->GetVideoBaseNameTableAddress());
     m_videoView->SetItem(pos++, 1, m_debugger->GetVideoVRAMAddressIncrement());

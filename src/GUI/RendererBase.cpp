@@ -101,8 +101,7 @@ void RendererBase::PageFlip()
     m_backBuffer = aux;
 }
 
-//Cuando se actualiza la pantalla de la master system
-void RendererBase::OnRefreshFalseScreen()
+void RendererBase::OnRefreshEmulatedScreen()
 {
 	PageFlip();
 }

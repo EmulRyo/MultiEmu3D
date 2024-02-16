@@ -111,8 +111,36 @@ std::string Debugger::GetVideoScrollY() {
     return IntToString(m_video->GetScrollY(), 3, '0');
 }
 
-std::string Debugger::GetVideoAddress() {
-    return HexToString(m_video->GetAddress(), 4, '0');
+std::string Debugger::GetVideoCurrentAddress() {
+    return HexToString(m_video->GetCurrentAddress(), 4, '0');
+}
+
+std::string Debugger::GetVideoCoarseX() {
+    return IntToString(m_video->GetCurrentAddress() & 0x1F, 2, '0');
+}
+
+std::string Debugger::GetVideoCoarseY() {
+    return IntToString((m_video->GetCurrentAddress() >> 5) & 0x1F, 2, '0');
+}
+
+std::string Debugger::GetVideoFineY() {
+    return IntToString((m_video->GetCurrentAddress() >> 12) & 0x07, 1, '0');
+}
+
+std::string Debugger::GetVideoNameTable() {
+    return IntToString((m_video->GetCurrentAddress() >> 10) & 0x03, 1, '0');
+}
+
+
+std::string Debugger::GetVideoTempAddress() {
+    return HexToString(m_video->GetTempAddress(), 4, '0');
+}
+
+std::string Debugger::GetVideoFineXScroll() {
+    return IntToString(m_video->GetFineXScroll(), 1, '0');
+}
+std::string Debugger::GetVideoWriteToggle() {
+    return IntToString(m_video->GetWriteToggle(), 1, '0');
 }
 
 std::string Debugger::GetVideoReg(u8 regID) {

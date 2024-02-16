@@ -65,7 +65,7 @@ void Video::UpdateLine(u8 y)
 void Video::RefreshScreen()
 {
     if (m_screen)
-        m_screen->OnRefreshFalseScreen();
+        m_screen->OnRefreshEmulatedScreen();
 }
 
 void Video::ClearScreen()

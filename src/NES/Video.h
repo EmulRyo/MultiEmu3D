@@ -55,7 +55,10 @@ namespace Nes {
         u16 GetY();
         u8  GetScrollX();
         u8  GetScrollY();
-        u16 GetAddress();
+        u16 GetCurrentAddress();
+        u16 GetTempAddress();
+        u8  GetFineXScroll();
+        u8  GetWriteToggle();
         
         void SaveState(std::ostream *file);
         void LoadState(std::istream *file);
@@ -111,6 +114,19 @@ namespace Nes {
         IScreenDrawable *m_screen;
         u8  m_genLatch;
         u16 m_nameTableAddress;
+
+        // PPU internal registers
+        // https://wiki.nesdev.com/w/index.php?title=PPU_scrolling
+        // yyy NN YYYYY XXXXX
+        // ||| || ||||| +++++-- coarse X scroll
+        // ||| || +++++-------- coarse Y scroll
+        // ||| ++-------------- nametable select
+        // +++----------------- fine Y scroll
+        // ----------------------
+        // u16 m_v;
+        // u16 m_t;
+        // u8  m_x;
+        // u8  m_w;
 
         void OnEndFrame();
         u16  GetBGPaletteAddress(u16 x, u16 y, u16 attrTableAddress);

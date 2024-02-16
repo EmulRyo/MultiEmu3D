@@ -26,7 +26,7 @@ public:
     virtual void OnDrawPixel(int idColor, int x, int y) = 0;
     virtual void OnDrawPixel(u8 r, u8 g, u8 b, int x, int y) = 0;
     virtual void OnSizeChanged(int x, int y, int width, int height) = 0;
-    virtual void OnRefreshFalseScreen() = 0;
+    virtual void OnRefreshEmulatedScreen() = 0;
     virtual void OnClear() = 0;
 };
 

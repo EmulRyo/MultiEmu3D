@@ -52,7 +52,7 @@ public:
     int  GetNumBreakpoints();
     u16  GetBreakpoint(int i);
     
-    std::string HexToString(int value, int width, char fill);
+    std::string HexToString(int value, int width, char fill, const std::string& prefix = "$");
     std::string IntToString(int value, int width, char fill);
     void AppendHex(std::stringstream &ss, int value, int width, char fill);
     

@@ -38,7 +38,6 @@ public:
     wxWindow * GetWinRenderer();
 	void SetWinRenderer(wxWindow *parent, wxWindow *renderer);
 	void CreateScreen();
-	void ChangePalette(bool original);
     int  GetMinimunWidth();
     int  GetMinimunHeight();
     void SetRewindValue(float value);
@@ -46,7 +45,7 @@ public:
     void SetGBPalette(bool original);
 	
 	void OnClear();
-	void OnRefreshFalseScreen();
+	void OnRefreshEmulatedScreen();
     void OnRefreshRealScreen();
     void OnDrawPixel(int idColor, int x, int y);
     void OnDrawPixel(u8 r, u8 g, u8 b, int x, int y);

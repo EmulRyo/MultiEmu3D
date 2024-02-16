@@ -66,7 +66,7 @@ void Video::SetCartridge(Cartridge* c) {
 
 void Video::RefreshScreen()
 {
-    m_screen->OnRefreshFalseScreen();
+    m_screen->OnRefreshEmulatedScreen();
 }
 
 void Video::Reset() {
@@ -551,8 +551,20 @@ u8 Video::GetScrollY() {
     return m_scrollY;
 }
 
-u16 Video::GetAddress() {
-    return m_addressLatch;
+u16 Video::GetCurrentAddress() {
+    return m_addressLatch; // m_v;
+}
+
+u16 Video::GetTempAddress() {
+    return 0; // m_t;
+}
+
+u8 Video::GetFineXScroll() {
+    return 0; // m_x;
+}
+
+u8 Video::GetWriteToggle() {
+    return 0; // m_w;
 }
 
 void Video::SaveState(ostream *stream) {

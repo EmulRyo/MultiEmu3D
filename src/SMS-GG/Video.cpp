@@ -73,7 +73,7 @@ void Video::SetScreen(IScreenDrawable *screen)
 
 void Video::RefreshScreen()
 {
-    m_screen->OnRefreshFalseScreen();
+    m_screen->OnRefreshEmulatedScreen();
 }
 
 void Video::Reset() {
