@@ -7,3 +7,4 @@ libraries/wxWidgets-3.1.4/
 libraries/SDL2-2.0.14/
 build/vs2019/
 build/premake5.exe
+build/vs2022/
