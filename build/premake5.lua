@@ -6,6 +6,28 @@ local wxWidgetsFileFilter = ""
 local sdlVersion = "2.0.14"
 local sdlArchFolder = ""
 
+function download_progress(total, current)
+   local ratio = current / total;
+   ratio = math.min(math.max(ratio, 0), 1);
+   local percent = math.floor(ratio * 100);
+   print("Download progress (" .. percent .. "%/100%)")
+end
+
+function check_raylib()
+   if(os.isdir("../libraries/raylib") == false and os.isdir("../libraries/raylib-master") == false) then
+       if(not os.isfile("../libraries/raylib-master.zip")) then
+           print("Raylib not found, downloading from github")
+           local result_str, response_code = http.download("https://github.com/raysan5/raylib/archive/refs/heads/master.zip", "../libraries/raylib-master.zip", {
+               progress = download_progress,
+               headers = { "From: Premake", "Referer: Premake" }
+           })
+       end
+       print("Unzipping to " ..  "../libraries/")
+       zip.extract("../libraries/raylib-master.zip", "../libraries/")
+       os.remove("../libraries/raylib-master.zip")
+   end
+end
+
 function EmulationPlatform()
    kind "SharedLib"
 
@@ -75,6 +97,8 @@ workspace "MultiEmu3D"
    targetdir "%{wks.location}/bin/%{cfg.buildcfg}"
 	objdir "%{wks.location}/obj/%{cfg.buildcfg}"
 
+check_raylib();
+include ("raylib_premake5.lua")
 
 --------
 -- GB --
@@ -148,10 +172,10 @@ project "NES"
    EmulationPlatform()
 
 
-----------------
--- MultiEmu3D --
-----------------
-project "MultiEmu3D"
+--------------------------
+-- MultiEmu3D wxWidgets --
+--------------------------
+project "MultiEmu3D_wx"
 
    dependson { "GB", "SMS", "NES" }
    
@@ -200,8 +224,7 @@ project "MultiEmu3D"
 
    libdirs {
       "../libraries/SDL2-"..sdlVersion.."/lib/"..sdlArchFolder,
-      "../libraries/wxWidgets-"..wxWidgetsVersion.."/lib/"..wxWidgetsArchFolder,
-      "%{wks.location}/bin/%{cfg.buildcfg}"
+      "../libraries/wxWidgets-"..wxWidgetsVersion.."/lib/"..wxWidgetsArchFolder
    }
 
    links { "opengl32", "glu32", "SDL2", "SDL2main", "GB", "SMS", "NES" }
@@ -227,6 +250,48 @@ project "MultiEmu3D"
          "{COPY} %{wks.location}\\..\\..\\libraries\\wxWidgets-"..wxWidgetsVersion.."\\lib\\"..wxWidgetsArchFolder.."\\"..wxWidgetsFileFilter.." %{wks.location}\\bin\\%{cfg.buildcfg}",
          "{COPY} %{wks.location}\\..\\..\\libraries\\SDL2-"..sdlVersion.."\\lib\\"..sdlArchFolder.."\\SDL2.dll %{wks.location}\\bin\\%{cfg.buildcfg}",
       }
+
+   -- Reset the filter for other settings
+   filter { }
+
+-----------------------
+-- MultiEmu3D raylib --
+-----------------------
+project "MultiEmu3D_raylib"
+
+   dependson { "GB", "SMS", "NES", "raylib" }
+   
+   kind "ConsoleApp"
+   -- Turn on DPI awareness (Default, None, High, HighPerMonitor)
+   -- dpiawareness "High"
+
+   files {
+      "../src/Common/**.h",
+      "../src/Common/**.cpp",
+      "../src/GUI_raylib/**.h",
+      "../src/GUI_raylib/**.cpp"
+   }
+
+   removefiles {
+      "../src/Common/SoundPortaudio.*",
+      "../src/Common/SoundSDL.*",
+      "../src/Common/Debuggable.*"
+   }
+
+   include_raylib()
+   
+   filter { }
+
+   links { "GB", "SMS", "NES" }
+   link_raylib()
+
+   filter "configurations:Debug"
+      defines { "DEBUG" }
+      symbols "On"
+
+   filter "configurations:Release"
+      defines { "NDEBUG" }
+      optimize "On"
 
    -- Reset the filter for other settings
    filter { }
