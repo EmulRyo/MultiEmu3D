@@ -23,7 +23,7 @@
 #include "../NES/NES.h"
 #include "../GB-GBC/GB.h"
 #include "RendererSW.h"
-//#include "EmulationThread.h"
+#include "EmulationThread.h"
 #include "AppDefs.h"
 #include "raylib.h"
 
@@ -32,7 +32,7 @@ MainFrame::MainFrame(const std::string& fileName)
 	// m_renderer = NULL;
 
     // create the emulation
-    //m_emulation = new EmulationThread();
+    m_emulation = new EmulationThread();
 
     //m_fullScreen = false;
     m_renderer = new RendererSW();
@@ -42,10 +42,9 @@ MainFrame::MainFrame(const std::string& fileName)
 
     std::string fixedFileName = "C:\\Users\\Pablo\\Documents\\Emulation\\NES ROMS\\0-NROM\\Balloon Fight (U) [!].nes";
     //std::string fixedFileName = "C:\\Users\\Pablo\\Documents\\Emulation\\GB ROMS\\Pokemon - Edicion Azul (S) [S][!].gb";
-    m_device = new Nes::NES();
-    //m_device = new GameBoy::GB();
-    m_device->SetScreen(m_renderer);
-    m_device->CartridgeLoad(fixedFileName);
+    m_emulation->SetScreen(m_renderer);
+    m_emulation->ChangeFile(fixedFileName);
+    m_emulation->SetState(EmuState::Playing);
 }
 
 MainFrame::~MainFrame()
@@ -55,7 +54,7 @@ MainFrame::~MainFrame()
 }
 
 void MainFrame::Update(float deltaTime) {
-    m_device->ExecuteOneFrame();
+    
 }
 
 void MainFrame::Draw() {

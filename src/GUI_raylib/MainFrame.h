@@ -21,6 +21,7 @@
 #include <string>
 class RendererBase;
 class VideoGameDevice;
+class EmulationThread;
 
 /*******************************************************************************
  // MainFrame Class
@@ -39,8 +40,8 @@ public:
     void Draw();
     
 private:
-    VideoGameDevice* m_device;
     RendererBase* m_renderer;
+    EmulationThread* m_emulation;
 };
 
 #endif

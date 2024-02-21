@@ -265,6 +265,8 @@ project "MultiEmu3D_raylib"
    -- Turn on DPI awareness (Default, None, High, HighPerMonitor)
    -- dpiawareness "High"
 
+   cppdialect "C++17"
+
    files {
       "../src/Common/**.h",
       "../src/Common/**.cpp",
