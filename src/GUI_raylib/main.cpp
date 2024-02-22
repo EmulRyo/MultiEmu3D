@@ -19,10 +19,15 @@
 #include <raylib.h>
 #include "MainFrame.h"
 
-int main() {
+int main(int argc, char **argv) {
+    
+    std::string fileName = "";
+    if (argc > 1)
+        fileName = std::string(argv[1]);
+
     InitWindow(256*3, (int)(256*3*240.0f/256.0f), "MultiEmu3D");
 
-    MainFrame mainFrame("");
+    MainFrame mainFrame(fileName);
 
     while (!WindowShouldClose()) {
         float dt = GetFrameTime();

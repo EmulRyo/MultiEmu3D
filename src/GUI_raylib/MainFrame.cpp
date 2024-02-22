@@ -37,20 +37,18 @@ MainFrame::MainFrame(const std::string& fileName)
     //m_fullScreen = false;
     m_renderer = new RendererSW();
     
-	//if (!fileName.empty())
-	//	ChangeFile(fileName);
-
-    std::string fixedFileName = "C:\\Users\\Pablo\\Documents\\Emulation\\NES ROMS\\0-NROM\\Balloon Fight (U) [!].nes";
-    //std::string fixedFileName = "C:\\Users\\Pablo\\Documents\\Emulation\\GB ROMS\\Pokemon - Edicion Azul (S) [S][!].gb";
     m_emulation->SetScreen(m_renderer);
-    m_emulation->ChangeFile(fixedFileName);
     m_emulation->SetState(EmuState::Playing);
+     
+	if (!fileName.empty())
+		ChangeFile(fileName);
 }
 
 MainFrame::~MainFrame()
 {
-	// No hacer nada aqui mejor hacerlo todo
-    // en el OnClose
+    m_emulation->Exit();
+    delete m_emulation;
+    delete m_renderer;
 }
 
 void MainFrame::Update(float deltaTime) {
@@ -59,4 +57,15 @@ void MainFrame::Update(float deltaTime) {
 
 void MainFrame::Draw() {
     m_renderer->Draw();
+}
+
+void MainFrame::ChangeFile(const std::string &fileName)
+{
+    if (m_emulation->ChangeFile(fileName))
+        UpdateRecentMenu(fileName);
+}
+
+void MainFrame::UpdateRecentMenu(const std::string &fileName)
+{
+
 }

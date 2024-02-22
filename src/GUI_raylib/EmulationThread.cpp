@@ -63,12 +63,10 @@ EmulationThread::~EmulationThread() {
 
 void EmulationThread::SetState(EmuState state)
 {
-    //wxMutexLocker lock(*mutex);
-    
     if (!m_device)
         return;
 
-    m_mutex.lock();
+    std::lock_guard<std::mutex> lg(m_mutex);
     
     this->emuState = state;
     
@@ -91,8 +89,6 @@ void EmulationThread::SetState(EmuState state)
     else if (state == EmuState::Paused) {
         ((RendererBase *)m_screen)->SetIcon(Renderer::Pause);
     }
-
-    m_mutex.unlock();
 }
 
 EmuState EmulationThread::GetState()
@@ -155,6 +151,11 @@ void EmulationThread::Entry()
     }
     
     m_finished = true;
+}
+
+void EmulationThread::Exit() {
+    m_threadShouldClose = true;
+    m_thread->join();
 }
 
 bool EmulationThread::ChangeFile(const std::string& fileName)

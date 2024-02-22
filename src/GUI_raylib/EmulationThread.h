@@ -49,6 +49,7 @@ public:
     
     EmuState GetState();
     void SetState(EmuState state);
+    void Exit();
     bool Finished();
     
 private:

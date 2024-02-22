@@ -42,6 +42,9 @@ public:
 private:
     RendererBase* m_renderer;
     EmulationThread* m_emulation;
+
+    void ChangeFile(const std::string& fileName);
+    void UpdateRecentMenu(const std::string& fileName);
 };
 
 #endif
