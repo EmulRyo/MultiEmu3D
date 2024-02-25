@@ -36,8 +36,6 @@ public:
 	EmulationThread();
     ~EmulationThread();
     
-    //virtual ExitCode Entry();
-    
     bool ChangeFile(const std::string &fileName);
     void LoadState(const std::string& fileName, int id);
     void SaveState(const std::string& fileName, int id);
@@ -47,11 +45,11 @@ public:
     VideoGameDevice *GetVideoGameDevice();
     void SetSpeed(EmuSpeed speed);
     
-    EmuState GetState();
-    float GetFPS();
+    EmuState GetState() const;
+    float GetFPS() const;
     void SetState(EmuState state);
     void Exit();
-    bool Finished();
+    bool Finished() const;
     
 private:
     VideoGameDevice *m_device;
@@ -59,7 +57,10 @@ private:
     std::thread* m_thread;
     std::mutex m_mutex;
     std::atomic<bool> m_threadShouldClose;
-    int keysUsed[16];
+    int m_keysUsed[16];
+    bool m_buttonsState[16];
+    bool m_buttonRewind;
+    bool m_buttonSpeed;
     bool m_finished;
     EmuSpeed m_speed;
     bool m_soundEnabled;

@@ -52,7 +52,7 @@ MainFrame::~MainFrame()
 }
 
 void MainFrame::Update(float deltaTime) {
-    
+    m_emulation->UpdatePad();
 }
 
 void MainFrame::Draw() {

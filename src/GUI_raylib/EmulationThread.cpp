@@ -26,7 +26,7 @@
 #include "../Common/VideoGameDevice.h"
 #include "../Common/Exception.h"
 #include "../Common/Utils.h"
-//#include "Settings.h"
+#include "Settings.h"
 #include "RendererBase.h"
 #include "EmulationThread.h"
 
@@ -51,8 +51,12 @@ EmulationThread::EmulationThread()
     //joystick = new Joystick();
     m_finished = false;
     m_speed = EmuSpeed::Normal;
-    for (int i = 0; i < 16; i++)
-        keysUsed[i] = 0;
+    for (int i = 0; i < 16; i++) {
+        m_keysUsed[i] = 0;
+        m_buttonsState[i] = false;
+    }
+    m_buttonRewind = false;
+    m_buttonSpeed = false;
     m_soundEnabled = false;
 
     m_thread = new std::thread(&EmulationThread::Entry, this);
@@ -77,7 +81,7 @@ void EmulationThread::SetState(EmuState state)
     m_emuState = state;
     
     if (state == EmuState::Playing) {
-        //m_device->SoundEnable(SettingsGetSoundEnabled());
+        m_device->SoundEnable(SettingsGetSoundEnabled());
         ((RendererBase *)m_screen)->SetIcon(Renderer::Play);
     }
     else
@@ -97,7 +101,7 @@ void EmulationThread::SetState(EmuState state)
     }
 }
 
-EmuState EmulationThread::GetState()
+EmuState EmulationThread::GetState() const
 {
     return m_emuState;
 }
@@ -126,9 +130,13 @@ void EmulationThread::Entry()
                 if (m_emuState == EmuState::Playing)
                 {
                     //if (!m_rewind->IsEnabled()) {
-                    m_device->ExecuteOneFrame();
-                    //m_rewind->AddFrame();
-                    frames++;
+                        /*if (!m_rewind->IsEnabled() && (!m_buttonRewind))*/ {
+                            m_device->PadSetButtons(m_buttonsState);
+                            SetSpeed(m_buttonSpeed ? EmuSpeed::Max : EmuSpeed::Normal);
+                        }
+                        m_device->ExecuteOneFrame();
+                        //m_rewind->AddFrame();
+                        frames++;
                     //}
                 }
             }   // Desbloquear el mutex
@@ -165,7 +173,7 @@ void EmulationThread::Exit() {
     m_thread->join();
 }
 
-float EmulationThread::GetFPS() {
+float EmulationThread::GetFPS() const {
     if (m_emuState == EmuState::Playing)
         return m_fps;
     else
@@ -233,7 +241,7 @@ bool EmulationThread::ChangeFile(const std::string& fileName)
             m_device = new Nes::NES();
 
         //m_rewind = new Rewind(m_device);
-        //ApplySettingsNoMutex();
+        ApplySettingsNoMutex();
         SetScreenNoMutex(m_screen);
 
         if (zip)
@@ -306,7 +314,7 @@ void EmulationThread::LoadCompressed(const std::string &filePath, u8 **buffer, u
     ClosePhysFS();
     
 	// Archivo no encontrado
-	printf("Not valid rom found in %s\n", zipPath.c_str());
+	printf("Not valid rom found in %s\n", filePath.c_str());
 }
 
 void EmulationThread::LoadState(const std::string &fileName, int id)
@@ -333,11 +341,9 @@ void EmulationThread::ApplySettings()
 void EmulationThread::ApplySettingsNoMutex()
 {
     if (m_device) {
-        /*
         PadSetKeys(SettingsGetInput(m_device->GetType()));
         m_device->SoundSetSampleRate(SettingsGetSoundSampleRate());
         m_device->SoundEnable(SettingsGetSoundEnabled());
-        */
     }
 }
 
@@ -360,24 +366,14 @@ void EmulationThread::SetScreenNoMutex(IScreenDrawable *screen) {
 void EmulationThread::UpdatePad()
 {
     if (m_emuState == EmuState::Playing) {
-        /*
         int numButtons = m_device->PadGetNumButtons();
-        bool *buttonsState = new bool[numButtons];
         for (int i=0; i<numButtons; i++)
-            buttonsState[i] = wxGetKeyState(keysUsed[i]);
-        joystick->UpdateButtonsState(buttonsState);
-        bool back = wxGetKeyState(WXK_BACK);
-        bool space = wxGetKeyState(WXK_SPACE);
-        m_rewind->UpdatePad(buttonsState, back);
+            m_buttonsState[i] = IsKeyDown(m_keysUsed[i]);
+        //joystick->UpdateButtonsState(buttonsState);
+        m_buttonRewind = IsKeyDown(KEY_BACKSPACE);
+        m_buttonSpeed = IsKeyDown(KEY_SPACE);
         
-        if (!m_rewind->IsEnabled() && (!back)) {
-            wxMutexLocker lock(*mutex);
-            m_device->PadSetButtons(buttonsState);
-            
-            SetSpeed(space ? EmuSpeed::Max : EmuSpeed::Normal);
-        }
-		delete[] buttonsState;
-        */
+        //m_rewind->UpdatePad(buttonsState, back);
     }
 }
 
@@ -386,13 +382,11 @@ VideoGameDevice *EmulationThread::GetVideoGameDevice() {
 }
 
 void EmulationThread::PadSetKeys(int* keys) {
-    /*
     for (int i=0; i<m_device->PadGetNumButtons(); i++)
-		keysUsed[i] = (wxKeyCode)keys[i];
-    */
+		m_keysUsed[i] = keys[i];
 }
 
-bool EmulationThread::Finished() {
+bool EmulationThread::Finished() const {
     return m_finished;
 }
 
