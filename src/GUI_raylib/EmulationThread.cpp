@@ -198,9 +198,9 @@ bool EmulationThread::ChangeFile(const std::string& fileName)
         bool zip, sms, gb, nes;
         zip = sms = gb = nes = false;
 
-        if (extension == "zip") {
+        if (extension == "zip" || extension == "7z") {
             zip = true;
-            LoadZip(fileName, &buffer, &size, extension);
+            LoadCompressed(fileName, &buffer, &size, extension);
             if ((buffer == nullptr) || (size == 0))
                 return false;
         }
@@ -251,7 +251,7 @@ bool EmulationThread::ChangeFile(const std::string& fileName)
  * Si existe mas de una rom solo carga la primera. Si se ha encontrado, la rom se devuelve en un buffer
  * junto con su tamaño, sino las variables se dejan intactas
  */
-void EmulationThread::LoadZip(const std::string &zipPath, u8 **buffer, unsigned long *size, std::string &extension)
+void EmulationThread::LoadCompressed(const std::string &zipPath, u8 **buffer, unsigned long *size, std::string &extension)
 {
     bool success = InitPhysFSEx(zipPath.c_str(), "content");
     if (!success)
