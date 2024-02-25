@@ -28,6 +28,10 @@
 //#include "Settings.h"
 #include "RendererBase.h"
 #include "EmulationThread.h"
+
+#include "raylib.h"
+#define RAYLIB_PHYSFS_IMPLEMENTATION
+#include "raylib-physfs.h"
 //#include "Joystick.h"
 //#include "RendererOGL.h"
 //#include "Rewind.h"
@@ -35,12 +39,13 @@
 
 EmulationThread::EmulationThread()
 {
-    m_threadShouldClose = false;
     m_screen = NULL;
     m_device = NULL;
+    m_fps = 0;
+    m_threadShouldClose = false;
     //m_rewind = NULL;
     
-    emuState = EmuState::NotStartedYet;
+    m_emuState = EmuState::NotStartedYet;
     
     //joystick = new Joystick();
     m_finished = false;
@@ -53,7 +58,7 @@ EmulationThread::EmulationThread()
 }
 
 EmulationThread::~EmulationThread() {
-    emuState = EmuState::Stopped;
+    m_emuState = EmuState::Stopped;
     //delete m_rewind;
     if (m_device)
         delete m_device;
@@ -68,7 +73,7 @@ void EmulationThread::SetState(EmuState state)
 
     std::lock_guard<std::mutex> lg(m_mutex);
     
-    this->emuState = state;
+    m_emuState = state;
     
     if (state == EmuState::Playing) {
         //m_device->SoundEnable(SettingsGetSoundEnabled());
@@ -93,7 +98,7 @@ void EmulationThread::SetState(EmuState state)
 
 EmuState EmulationThread::GetState()
 {
-    return this->emuState;
+    return m_emuState;
 }
 
 long long EmulationThread::ElapsedMicroSeconds(std::chrono::steady_clock::time_point begin, std::chrono::steady_clock::time_point end) {
@@ -117,7 +122,7 @@ void EmulationThread::Entry()
             auto frameBegin = std::chrono::steady_clock::now();
             {
                 std::lock_guard<std::mutex> lg(m_mutex);
-                if (emuState == EmuState::Playing)
+                if (m_emuState == EmuState::Playing)
                 {
                     //if (!m_rewind->IsEnabled()) {
                     m_device->ExecuteOneFrame();
@@ -139,7 +144,8 @@ void EmulationThread::Entry()
             fpsEnd = std::chrono::steady_clock::now();
             long long elapsed = ElapsedMilliSeconds(fpsBegin, fpsEnd);
             if (elapsed > 1000) {
-                PrintfVisualStudioOutput("FPS: %f\n", (float)frames * 1000 / elapsed);
+                m_fps = frames * 1000.0f / elapsed;
+                PrintfVisualStudioOutput("FPS: %f\n", m_fps);
                 fpsBegin = fpsEnd;
                 frames = 0;
             }
@@ -156,6 +162,13 @@ void EmulationThread::Entry()
 void EmulationThread::Exit() {
     m_threadShouldClose = true;
     m_thread->join();
+}
+
+float EmulationThread::GetFPS() {
+    if (m_emuState == EmuState::Playing)
+        return m_fps;
+    else
+        return 0;
 }
 
 bool EmulationThread::ChangeFile(const std::string& fileName)
@@ -238,43 +251,43 @@ bool EmulationThread::ChangeFile(const std::string& fileName)
  * Si existe mas de una rom solo carga la primera. Si se ha encontrado, la rom se devuelve en un buffer
  * junto con su tamaño, sino las variables se dejan intactas
  */
-void EmulationThread::LoadZip(const std::string &zipPath, u8 ** buffer, unsigned long *size, const std::string &extension)
+void EmulationThread::LoadZip(const std::string &zipPath, u8 **buffer, unsigned long *size, std::string &extension)
 {
-    /*
-	wxString fileInZip, fileLower;
-	wxZipEntry* entry;
-	wxFFileInputStream in(zipPath);
-	wxZipInputStream zip(in);
-	while ((entry = zip.GetNextEntry()))
-	{
-		fileInZip = entry->GetName();
-        
-        int dotPos = fileInZip.Find('.', true);
-        if (dotPos != wxNOT_FOUND) {
-            extension = fileInZip.AfterLast('.').Lower();
-            
-            bool sms = MasterSystem::SMS::IsValidExtension(extension.ToStdString());
-            bool gb  = GameBoy::GB::IsValidExtension(extension.ToStdString());
-            bool nes = Nes::NES::IsValidExtension(extension.ToStdString());
-            if (sms || gb || nes)
-            {
-                *size = zip.GetSize();
+    bool success = InitPhysFSEx(zipPath.c_str(), "content");
+    if (!success)
+        return;
+
+    FilePathList filePathList = LoadDirectoryFilesFromPhysFS("content");
+    for (unsigned int i = 0; i < filePathList.count; i++) {
+        extension = std::string(GetFileExtension(filePathList.paths[i]) + 1);
+        std::transform(extension.begin(), extension.end(), extension.begin(),
+            [](unsigned char c) { return std::tolower(c); });
+
+        bool sms = MasterSystem::SMS::IsValidExtension(extension);
+        bool gb = GameBoy::GB::IsValidExtension(extension);
+        bool nes = Nes::NES::IsValidExtension(extension);
+        if (sms || gb || nes)
+        {
+            int bytesRead = 0;
+            const char* fileName = TextFormat("content/%s", filePathList.paths[i]);
+            unsigned char* fileData = LoadFileDataFromPhysFS(fileName, &bytesRead);
+            if (bytesRead > 0) {
+                *size = (unsigned long)bytesRead;
                 *buffer = new u8[*size];
-                zip.Read(*buffer, *size);
-                delete entry;
+                memcpy(*buffer, fileData, (size_t)bytesRead);
+                UnloadFileData(fileData);
+                ClosePhysFS();
+                UnloadDirectoryFiles(filePathList);
                 return;
             }
         }
-		else
-		{
-			delete entry;
-			continue;
-		}
-	}
+    }
+
+    ClosePhysFS();
+    UnloadDirectoryFiles(filePathList);
     
 	// Archivo no encontrado
-	wxMessageBox(_("Not valid rom found in the file:\n")+zipPath, _("Error"));
-	*/
+	printf("Not valid rom found in %s\n", zipPath.c_str());
 }
 
 void EmulationThread::LoadState(const std::string &fileName, int id)
@@ -327,7 +340,7 @@ void EmulationThread::SetScreenNoMutex(IScreenDrawable *screen) {
 
 void EmulationThread::UpdatePad()
 {
-    if (emuState == EmuState::Playing) {
+    if (m_emuState == EmuState::Playing) {
         /*
         int numButtons = m_device->PadGetNumButtons();
         bool *buttonsState = new bool[numButtons];

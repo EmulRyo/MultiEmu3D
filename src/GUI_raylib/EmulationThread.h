@@ -48,6 +48,7 @@ public:
     void SetSpeed(EmuSpeed speed);
     
     EmuState GetState();
+    float GetFPS();
     void SetState(EmuState state);
     void Exit();
     bool Finished();
@@ -62,15 +63,16 @@ private:
     bool m_finished;
     EmuSpeed m_speed;
     bool m_soundEnabled;
+    float m_fps;
     IScreenDrawable *m_screen;
     //Rewind *m_rewind;
     
-	EmuState emuState;
+	EmuState m_emuState;
     
     void Entry();
     void ApplySettingsNoMutex();
     void SetScreenNoMutex(IScreenDrawable *screen);
-    void LoadZip(const std::string &zipPath, unsigned char **buffer, unsigned long *size, const std::string &extension);
+    void LoadZip(const std::string &zipPath, u8 **buffer, unsigned long *size, std::string &extension);
     void PadSetKeys(int* keys);
     void UpdateRewindScreen();
     void SetRewindPosition();
