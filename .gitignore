@@ -8,4 +8,4 @@ libraries/SDL2-2.0.14/
 build/vs2019/
 build/premake5.exe
 build/vs2022/
-libraries/raylib*
+libraries/raylib-master

@@ -271,13 +271,21 @@ project "MultiEmu3D_raylib"
       "../src/Common/**.h",
       "../src/Common/**.cpp",
       "../src/GUI_raylib/**.h",
-      "../src/GUI_raylib/**.cpp"
+      "../src/GUI_raylib/**.cpp",
+      "../libraries/physfs/src/**.h",
+      "../libraries/physfs/src/**.c",
    }
 
    removefiles {
       "../src/Common/SoundPortaudio.*",
       "../src/Common/SoundSDL.*",
       "../src/Common/Debuggable.*"
+   }
+
+   includedirs {
+      "../libraries/raygui",
+      "../libraries/physfs/src",
+      "../libraries/raylib-physfs"
    }
 
    include_raylib()
