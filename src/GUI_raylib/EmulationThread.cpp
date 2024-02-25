@@ -19,6 +19,7 @@
 #include <string>
 #include <chrono>
 #include <filesystem>
+#include <queue>
 #include "../SMS-GG/SMS.h"
 #include "../GB-GBC/GB.h"
 #include "../NES/NES.h"
@@ -247,44 +248,62 @@ bool EmulationThread::ChangeFile(const std::string& fileName)
 }
 
 /*
- * Carga un fichero comprimido con zip y busca una rom.
+ * Carga un fichero comprimido con zip o 7z y busca una rom.
  * Si existe mas de una rom solo carga la primera. Si se ha encontrado, la rom se devuelve en un buffer
  * junto con su tamaño, sino las variables se dejan intactas
  */
-void EmulationThread::LoadCompressed(const std::string &zipPath, u8 **buffer, unsigned long *size, std::string &extension)
+void EmulationThread::LoadCompressed(const std::string &filePath, u8 **buffer, unsigned long *size, std::string &extension)
 {
-    bool success = InitPhysFSEx(zipPath.c_str(), "content");
+    bool success = InitPhysFSEx(filePath.c_str(), "content");
     if (!success)
         return;
 
-    FilePathList filePathList = LoadDirectoryFilesFromPhysFS("content");
-    for (unsigned int i = 0; i < filePathList.count; i++) {
-        extension = std::string(GetFileExtension(filePathList.paths[i]) + 1);
-        std::transform(extension.begin(), extension.end(), extension.begin(),
-            [](unsigned char c) { return std::tolower(c); });
+    std::queue<std::string> dirs;
 
-        bool sms = MasterSystem::SMS::IsValidExtension(extension);
-        bool gb = GameBoy::GB::IsValidExtension(extension);
-        bool nes = Nes::NES::IsValidExtension(extension);
-        if (sms || gb || nes)
-        {
-            int bytesRead = 0;
-            const char* fileName = TextFormat("content/%s", filePathList.paths[i]);
-            unsigned char* fileData = LoadFileDataFromPhysFS(fileName, &bytesRead);
-            if (bytesRead > 0) {
-                *size = (unsigned long)bytesRead;
-                *buffer = new u8[*size];
-                memcpy(*buffer, fileData, (size_t)bytesRead);
-                UnloadFileData(fileData);
-                ClosePhysFS();
-                UnloadDirectoryFiles(filePathList);
-                return;
+    dirs.push("content");
+
+    while (!dirs.empty()) {
+        const std::string &dir = dirs.front();
+        FilePathList filePathList = LoadDirectoryFilesFromPhysFS(dir.c_str());
+        for (unsigned int i = 0; i < filePathList.count; i++) {
+            std::string fullPath = dir + "/" + filePathList.paths[i];
+            bool isDir = DirectoryExistsInPhysFS(fullPath.c_str());
+            if (isDir) {
+                dirs.push(fullPath);
+                continue;
+            }
+
+            const char* ptr_extension = GetFileExtension(filePathList.paths[i]); // Extension + ".". Ej: ".zip"
+            if (ptr_extension == nullptr)
+                continue;
+
+            extension = std::string(ptr_extension + 1);
+            std::transform(extension.begin(), extension.end(), extension.begin(),
+                [](unsigned char c) { return std::tolower(c); });
+
+            bool sms = MasterSystem::SMS::IsValidExtension(extension);
+            bool gb = GameBoy::GB::IsValidExtension(extension);
+            bool nes = Nes::NES::IsValidExtension(extension);
+            if (sms || gb || nes)
+            {
+                int bytesRead = 0;
+                unsigned char* fileData = LoadFileDataFromPhysFS(fullPath.c_str(), &bytesRead);
+                if (bytesRead > 0) {
+                    *size = (unsigned long)bytesRead;
+                    *buffer = new u8[*size];
+                    memcpy(*buffer, fileData, (size_t)bytesRead);
+                    UnloadFileData(fileData);
+                    UnloadDirectoryFiles(filePathList);
+                    ClosePhysFS();
+                    return;
+                }
             }
         }
+        dirs.pop();
+        UnloadDirectoryFiles(filePathList);
     }
 
     ClosePhysFS();
-    UnloadDirectoryFiles(filePathList);
     
 	// Archivo no encontrado
 	printf("Not valid rom found in %s\n", zipPath.c_str());

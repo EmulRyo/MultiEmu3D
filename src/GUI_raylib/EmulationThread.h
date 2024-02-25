@@ -72,7 +72,7 @@ private:
     void Entry();
     void ApplySettingsNoMutex();
     void SetScreenNoMutex(IScreenDrawable *screen);
-    void LoadCompressed(const std::string &zipPath, u8 **buffer, unsigned long *size, std::string &extension);
+    void LoadCompressed(const std::string &filePath, u8 **buffer, unsigned long *size, std::string &extension);
     void PadSetKeys(int* keys);
     void UpdateRewindScreen();
     void SetRewindPosition();
