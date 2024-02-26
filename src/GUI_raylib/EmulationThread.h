@@ -26,7 +26,7 @@ enum class EmuState { NotStartedYet, Stopped, Paused, Playing };
 enum class EmuSpeed { Normal, Max };
 
 //class Joystick;
-//class Rewind;
+class Rewind;
 class VideoGameDevice;
 class std::thread;
 
@@ -66,7 +66,7 @@ private:
     bool m_soundEnabled;
     float m_fps;
     IScreenDrawable *m_screen;
-    //Rewind *m_rewind;
+    Rewind *m_rewind;
     
 	EmuState m_emuState;
     

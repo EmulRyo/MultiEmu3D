@@ -26,16 +26,16 @@
 #include "../Common/VideoGameDevice.h"
 #include "../Common/Exception.h"
 #include "../Common/Utils.h"
-#include "Settings.h"
-#include "RendererBase.h"
 #include "EmulationThread.h"
+#include "RendererBase.h"
+#include "Rewind.h"
+#include "Settings.h"
 
 #include "raylib.h"
 #define RAYLIB_PHYSFS_IMPLEMENTATION
 #include "raylib-physfs.h"
 //#include "Joystick.h"
 //#include "RendererOGL.h"
-//#include "Rewind.h"
 
 
 EmulationThread::EmulationThread()
@@ -44,7 +44,7 @@ EmulationThread::EmulationThread()
     m_device = NULL;
     m_fps = 0;
     m_threadShouldClose = false;
-    //m_rewind = NULL;
+    m_rewind = NULL;
     
     m_emuState = EmuState::NotStartedYet;
     
@@ -64,7 +64,7 @@ EmulationThread::EmulationThread()
 
 EmulationThread::~EmulationThread() {
     m_emuState = EmuState::Stopped;
-    //delete m_rewind;
+    delete m_rewind;
     if (m_device)
         delete m_device;
     
@@ -91,7 +91,7 @@ void EmulationThread::SetState(EmuState state)
     {
         ((RendererBase *)m_screen)->SetIcon(Renderer::Stop);
         ((RendererBase *)m_screen)->SetRewindValue(-1);
-        //m_rewind->Disable();
+        m_rewind->Disable();
         
         m_device->CartridgeExtract();
         m_device->Reset();
@@ -129,15 +129,17 @@ void EmulationThread::Entry()
                 std::lock_guard<std::mutex> lg(m_mutex);
                 if (m_emuState == EmuState::Playing)
                 {
-                    //if (!m_rewind->IsEnabled()) {
-                        /*if (!m_rewind->IsEnabled() && (!m_buttonRewind))*/ {
+                    if (!m_rewind->IsEnabled()) {
+                        if (!m_buttonRewind) {
                             m_device->PadSetButtons(m_buttonsState);
                             SetSpeed(m_buttonSpeed ? EmuSpeed::Max : EmuSpeed::Normal);
                         }
                         m_device->ExecuteOneFrame();
-                        //m_rewind->AddFrame();
+                        m_rewind->AddFrame();
                         frames++;
-                    //}
+                    }
+                    
+                    m_rewind->UpdatePad(m_buttonsState, m_buttonRewind);
                 }
             }   // Desbloquear el mutex
 
@@ -240,7 +242,7 @@ bool EmulationThread::ChangeFile(const std::string& fileName)
         else if (nes)
             m_device = new Nes::NES();
 
-        //m_rewind = new Rewind(m_device);
+        m_rewind = new Rewind(m_device);
         ApplySettingsNoMutex();
         SetScreenNoMutex(m_screen);
 
@@ -357,10 +359,8 @@ void EmulationThread::SetScreenNoMutex(IScreenDrawable *screen) {
     m_screen = screen;
     if (m_device)
         m_device->SetScreen(screen);
-    /*
     if (m_rewind)
         m_rewind->SetRenderer((RendererBase *)screen);
-    */
 }
 
 void EmulationThread::UpdatePad()
@@ -372,8 +372,6 @@ void EmulationThread::UpdatePad()
         //joystick->UpdateButtonsState(buttonsState);
         m_buttonRewind = IsKeyDown(KEY_BACKSPACE);
         m_buttonSpeed = IsKeyDown(KEY_SPACE);
-        
-        //m_rewind->UpdatePad(buttonsState, back);
     }
 }
 

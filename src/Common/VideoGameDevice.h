@@ -18,6 +18,7 @@
 #ifndef __VIDEOGAMEDEVICE_H__
 #define __VIDEOGAMEDEVICE_H__
 
+#include <string>
 #include "../Common/Exports.h"
 
 class IScreenDrawable;
