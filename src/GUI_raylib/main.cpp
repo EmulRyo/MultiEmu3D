@@ -25,7 +25,16 @@ int main(int argc, char **argv) {
     if (argc > 1)
         fileName = std::string(argv[1]);
 
+    SetConfigFlags(
+        //FLAG_WINDOW_HIGHDPI |
+        FLAG_MSAA_4X_HINT |
+        FLAG_WINDOW_RESIZABLE |
+        //FLAG_WINDOW_UNDECORATED |
+        //FLAG_VSYNC_HINT |
+        0
+    );
     InitWindow(256*3, (int)(256*3*240.0f/256.0f), "MultiEmu3D");
+    //SetWindowIcon()
 
     MainFrame mainFrame(fileName);
 
@@ -35,8 +44,7 @@ int main(int argc, char **argv) {
 
         BeginDrawing();
         ClearBackground(BLACK);
-        mainFrame.Draw();
-        DrawFPS(10, 10);
+        mainFrame.Draw(Rectangle {0, 0, (float)GetScreenWidth(), (float)GetScreenHeight()});
         EndDrawing();
     }
 

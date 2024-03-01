@@ -59,8 +59,8 @@ RendererBase::~RendererBase()
 }
 
 void RendererBase::CreateScreen() {
-	m_imgBuf1 = new u8[NES_SCREEN_W*NES_SCREEN_H*3];
-    m_imgBuf2 = new u8[NES_SCREEN_W*NES_SCREEN_H*3];
+	m_imgBuf1 = new u8[m_width * m_height * 3];
+    m_imgBuf2 = new u8[m_width * m_height * 3];
     m_backBuffer = m_imgBuf1;
     m_frontBuffer = m_imgBuf2;
 	OnClear();
@@ -68,7 +68,7 @@ void RendererBase::CreateScreen() {
 
 void RendererBase::OnClear()
 {
-	int size = NES_SCREEN_W*NES_SCREEN_H*3;
+	int size = m_width * m_height * 3;
     memset(m_backBuffer, 0, size);
     memset(m_frontBuffer, 0, size);
 	PageFlip();
@@ -100,7 +100,7 @@ void RendererBase::OnDrawPixel(int idColor, int x, int y) {
 
 void RendererBase::OnDrawPixel(u8 r, u8 g, u8 b, int x, int y)
 {
-    int sizeLine = NES_SCREEN_W * 3;
+    int sizeLine = m_width * 3;
 	int offsetX = x * 3;
 	int offsetY = y * sizeLine;
 	int offsetBuf = offsetY + offsetX;

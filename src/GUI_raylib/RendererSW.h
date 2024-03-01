@@ -27,15 +27,18 @@
 
 class RendererSW : public RendererBase {
 
-private:
-	void Draw();
-    void OnChangeView(){};
-    
 public:
 	RendererSW();
     ~RendererSW();
 
+	void Draw(Rectangle dst);
+    void OnSizeChanged(int x, int y, int width, int height) override;
+    void OnChangeView() {};
+    
+private:
     Texture2D m_texture;
+
+    void UpdateTextureSize();
 };
 
 #endif

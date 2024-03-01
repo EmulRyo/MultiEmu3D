@@ -19,6 +19,7 @@
 #define __BASERENDERER_H__
 
 #include "../Common/IScreenDrawable.h"
+#include "raylib.h"
 
 /*******************************************************************************
  * RendererBase Class
@@ -47,9 +48,9 @@ public:
     void OnDrawPixel(int idColor, int x, int y);
     void OnDrawPixel(u8 r, u8 g, u8 b, int x, int y);
     u8*  GetBufferPtr();
-    void OnSizeChanged(int x, int y, int width, int height);
+    virtual void OnSizeChanged(int x, int y, int width, int height);
     virtual void OnChangeView() = 0;
-    virtual void Draw() = 0;
+    virtual void Draw(Rectangle dst) = 0;
     
 protected:
 	u8 *m_imgBuf1;

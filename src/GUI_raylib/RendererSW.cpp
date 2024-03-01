@@ -15,32 +15,40 @@
  along with MultiEmu3D.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "../NES/Def.h"
 #include "RendererSW.h"
-
+#include <stdio.h>
 
 RendererSW::RendererSW()
 {
-	Image image = GenImageColor(NES_SCREEN_W, NES_SCREEN_H, BLACK);
-	ImageFormat(&image, PIXELFORMAT_UNCOMPRESSED_R8G8B8);
-	m_texture = LoadTextureFromImage(image);
-	UnloadImage(image);
+    UpdateTextureSize();
 }
 
 RendererSW::~RendererSW() {
     
 }
 
-void RendererSW::Draw() {
+void RendererSW::OnSizeChanged(int x, int y, int width, int height) {
+    RendererBase::OnSizeChanged(x, y, width, height);
+
+    UpdateTextureSize();
+}
+
+void RendererSW::Draw(Rectangle dst) {
     
 	UpdateTexture(m_texture, m_frontBuffer);	
 	DrawTexture(m_texture, 0, 0, WHITE);
     DrawTexturePro(
         m_texture,
-        Rectangle{ 0, 0, NES_SCREEN_W, NES_SCREEN_H },
-        Rectangle{ 0, 0, (float)GetScreenWidth(), (float)GetScreenHeight() },
+        Rectangle{ 0, 0, (float)m_width, (float)m_height },
+        dst,
         Vector2{ 0, 0 },
         0,
         WHITE);
 }
 
+void RendererSW::UpdateTextureSize() {
+    Image image = GenImageColor(m_width, m_height, BLACK);
+    ImageFormat(&image, PIXELFORMAT_UNCOMPRESSED_R8G8B8);
+    m_texture = LoadTextureFromImage(image);
+    UnloadImage(image);
+}
