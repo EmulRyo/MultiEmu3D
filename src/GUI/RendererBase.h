@@ -38,8 +38,8 @@ public:
     wxWindow * GetWinRenderer();
 	void SetWinRenderer(wxWindow *parent, wxWindow *renderer);
 	void CreateScreen();
-    int  GetMinimunWidth();
-    int  GetMinimunHeight();
+    int  GetMinimunWidth() const;
+    int  GetMinimunHeight() const;
     void SetRewindValue(float value);
     void SetIcon(Renderer::Icon icon, int frames=120);
     void SetGBPalette(bool original);
@@ -49,7 +49,7 @@ public:
     void OnRefreshRealScreen();
     void OnDrawPixel(int idColor, int x, int y);
     void OnDrawPixel(u8 r, u8 g, u8 b, int x, int y);
-    u8*  GetBufferPtr();
+    u8*  GetBufferPtr() const;
     void OnSizeChanged(int x, int y, int width, int height);
     virtual void OnChangeView() = 0;
     

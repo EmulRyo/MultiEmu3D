@@ -78,8 +78,14 @@ private:
     void UpdateRewindScreen();
     void SetRewindPosition();
 
-    long long ElapsedMicroSeconds(std::chrono::steady_clock::time_point begin, std::chrono::steady_clock::time_point end);
-    long long ElapsedMilliSeconds(std::chrono::steady_clock::time_point begin, std::chrono::steady_clock::time_point end);
+    long long ElapsedMicroSeconds(
+        std::chrono::steady_clock::time_point begin,
+        std::chrono::steady_clock::time_point end
+    ) const;
+    long long ElapsedMilliSeconds(
+        std::chrono::steady_clock::time_point begin,
+        std::chrono::steady_clock::time_point end
+    ) const;
 };
 
 #endif

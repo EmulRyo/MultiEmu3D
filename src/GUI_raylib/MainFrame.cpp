@@ -129,7 +129,7 @@ void MainFrame::DrawMenuBar(Rectangle dst) {
     x = dst.x;
     
     for (int i = 0; i < arrayLen; i++) {
-        textSize = MeasureTextEx(m_font, menuTexts[i], m_fontSize, textSpacing);
+        textSize = MeasureTextEx(m_font, menuTexts[i], (float)m_fontSize, (float)textSpacing);
         width = textSize.x + 24;
         GuiListViewEx(Rectangle{ x, dst.y, width, dst.height }, &menuTexts[i], 1, nullptr, nullptr, nullptr);
         x += width;

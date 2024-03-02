@@ -106,11 +106,17 @@ EmuState EmulationThread::GetState() const
     return m_emuState;
 }
 
-long long EmulationThread::ElapsedMicroSeconds(std::chrono::steady_clock::time_point begin, std::chrono::steady_clock::time_point end) {
+long long EmulationThread::ElapsedMicroSeconds(
+    std::chrono::steady_clock::time_point begin,
+    std::chrono::steady_clock::time_point end
+) const {
     return std::chrono::duration_cast<std::chrono::microseconds>(end - begin).count();
 }
 
-long long EmulationThread::ElapsedMilliSeconds(std::chrono::steady_clock::time_point begin, std::chrono::steady_clock::time_point end) {
+long long EmulationThread::ElapsedMilliSeconds(
+    std::chrono::steady_clock::time_point begin,
+    std::chrono::steady_clock::time_point end
+) const {
     return std::chrono::duration_cast<std::chrono::milliseconds>(end - begin).count();
 }
 

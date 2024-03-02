@@ -76,7 +76,7 @@ void RendererBase::OnClear()
 	PageFlip();
 }
 
-u8* RendererBase::GetBufferPtr() {
+u8* RendererBase::GetBufferPtr() const {
     return m_frontBuffer;
 }
 
@@ -119,11 +119,11 @@ void RendererBase::OnSizeChanged(int x, int y, int width, int height) {
     m_height = height;
 }
 
-int RendererBase::GetMinimunWidth() {
+int RendererBase::GetMinimunWidth() const{
     return m_width;
 }
 
-int RendererBase::GetMinimunHeight() {
+int RendererBase::GetMinimunHeight() const{
     return m_height;
 }
 
