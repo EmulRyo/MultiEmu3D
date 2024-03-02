@@ -35,8 +35,8 @@ public:
 	RendererBase();
 	~RendererBase();
 	
-    int  GetMinimunWidth();
-    int  GetMinimunHeight();
+    int  GetMinimunWidth() const;
+    int  GetMinimunHeight() const;
     void SetRewindValue(float value);
     void SetIcon(Renderer::Icon icon, int frames=120);
     void SetGBPalette(bool original);
@@ -46,7 +46,7 @@ public:
     void OnRefreshRealScreen();
     void OnDrawPixel(int idColor, int x, int y);
     void OnDrawPixel(u8 r, u8 g, u8 b, int x, int y);
-    u8*  GetBufferPtr();
+    u8*  GetBufferPtr() const;
     virtual void OnSizeChanged(int x, int y, int width, int height);
     virtual void OnChangeView() = 0;
     virtual void Draw(Rectangle dst) = 0;

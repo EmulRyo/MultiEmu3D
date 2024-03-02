@@ -35,14 +35,26 @@ void RendererSW::OnSizeChanged(int x, int y, int width, int height) {
 }
 
 void RendererSW::Draw(Rectangle dst) {
-    
+    float deviceAspectRatio = (float)m_width / m_height;
+    float windowAspectRatio = dst.width / dst.height;
+    Rectangle d{ 0 };
+    if (windowAspectRatio > deviceAspectRatio) {
+        d.width = dst.height * deviceAspectRatio;
+        d.height = dst.height;
+    }
+    else {
+        d.width = dst.width;
+        d.height = dst.width / deviceAspectRatio;
+    }
+    d.x = dst.x + (dst.width-d.width) / 2.0f;
+    d.y = dst.y + (dst.height-d.height) / 2.0f;
+
     u8* ptr = m_frontBuffer + (m_x + m_y * m_width) * 3;
     UpdateTexture(m_texture, ptr);
-	DrawTexture(m_texture, 0, 0, WHITE);
     DrawTexturePro(
         m_texture,
         Rectangle{ 0, 0, (float)m_width, (float)m_height },
-        dst,
+        d,
         Vector2{ 0, 0 },
         0,
         WHITE);
