@@ -51,6 +51,11 @@ private:
     void DrawMenuBar(Rectangle dst);
     void DrawToolBar(Rectangle dst);
     void DrawStatusBar(Rectangle dst);
+
+    void OnOpenFileUI();
+    void OnPlayUI();
+    void OnPauseUI();
+    void OnStopUI();
 };
 
 #endif

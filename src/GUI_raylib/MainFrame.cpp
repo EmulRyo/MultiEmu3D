@@ -29,9 +29,14 @@
 
 #define RAYGUI_IMPLEMENTATION
 #include "raygui.h"
+
+#include "nfd.h"
+
 MainFrame::MainFrame(const std::string& fileName)
 {
 	// m_renderer = NULL;
+    NFD_Init();
+
     m_renderer = new RendererSW();
 
     // create the emulation
@@ -58,6 +63,8 @@ MainFrame::~MainFrame()
     m_emulation->Exit();
     delete m_emulation;
     delete m_renderer;
+
+    NFD_Quit();
 }
 
 void MainFrame::Update(float deltaTime) {
@@ -86,11 +93,14 @@ void MainFrame::DrawMenuBar(Rectangle dst) {
     GuiSetStyle(DEFAULT, BACKGROUND_COLOR, 0x1F1F1FFF);
     GuiSetStyle(DEFAULT, TEXT_COLOR_NORMAL, 0xFFFFFFFF);
     GuiSetStyle(DEFAULT, BASE_COLOR_NORMAL, 0x1F1F1FFF);
+    GuiSetStyle(DEFAULT, BASE_COLOR_PRESSED, 0x1F1F1FFF);
     GuiSetStyle(DEFAULT, BASE_COLOR_FOCUSED, 0x3D3D3DFF);
     GuiSetStyle(DEFAULT, TEXT_COLOR_FOCUSED, 0xFFFFFFFF);
+    GuiSetStyle(DEFAULT, TEXT_COLOR_PRESSED, 0xFFFFFFFF);
     GuiSetStyle(DEFAULT, BORDER_WIDTH, 1);
     GuiSetStyle(DEFAULT, BORDER_COLOR_NORMAL, 0x1F1F1FFF);
     GuiSetStyle(DEFAULT, BORDER_COLOR_FOCUSED, 0x707070FF);
+    GuiSetStyle(DEFAULT, BORDER_COLOR_PRESSED, 0x707070FF);
 
     GuiDrawRectangle(dst, 0, GetColor(GuiGetStyle(DEFAULT, LINE_COLOR)), GetColor(GuiGetStyle(DEFAULT, BACKGROUND_COLOR)));
 
@@ -164,29 +174,38 @@ void MainFrame::DrawToolBar(Rectangle dst) {
     float x = dst.x;
     GuiSetTooltip("Open");
     if (GuiButton(Rectangle{ x, dst.y, width, dst.height }, GuiIconText(ICON_FOLDER_FILE_OPEN, ""))) {
-        
+        OnOpenFileUI();
     }
 
     x += width;
     GuiSetTooltip("Recent");
-    GuiButton(Rectangle{ x, dst.y, width, dst.height }, GuiIconText(ICON_ARROW_DOWN, ""));
+    if (GuiButton(Rectangle{ x, dst.y, width, dst.height }, GuiIconText(ICON_ARROW_DOWN, ""))) {
+
+    }
 
     x += width*2;
     GuiSetTooltip("Play");
-    GuiButton(Rectangle{ x, dst.y, width, dst.height }, GuiIconText(ICON_PLAYER_PLAY, ""));
+    if (GuiButton(Rectangle{ x, dst.y, width, dst.height }, GuiIconText(ICON_PLAYER_PLAY, ""))) {
+        OnPlayUI();
+    }
 
     x += width;
     GuiSetTooltip("Pause");
-    GuiButton(Rectangle{ x, dst.y, width, dst.height }, GuiIconText(ICON_PLAYER_PAUSE, ""));
+    if (GuiButton(Rectangle{ x, dst.y, width, dst.height }, GuiIconText(ICON_PLAYER_PAUSE, ""))) {
+        OnPauseUI();
+    }
 
     x += width;
     GuiSetTooltip("Stop");
-    GuiButton(Rectangle{ x, dst.y, width, dst.height }, GuiIconText(ICON_PLAYER_STOP, ""));
+    if (GuiButton(Rectangle{ x, dst.y, width, dst.height }, GuiIconText(ICON_PLAYER_STOP, ""))) {
+        OnStopUI();
+    }
 
     x += width*2;
     GuiSetTooltip("Switch between 2D and 3D");
-    GuiButton(Rectangle{ x, dst.y, width, dst.height }, GuiIconText(ICON_MODE_3D, ""));
+    if (GuiButton(Rectangle{ x, dst.y, width, dst.height }, GuiIconText(ICON_MODE_3D, ""))) {
 
+    }
 }
 
 void MainFrame::DrawStatusBar(Rectangle dst) {
@@ -205,4 +224,42 @@ void MainFrame::DrawStatusBar(Rectangle dst) {
     w = (float)GetScreenWidth() * 0.5f;
     text = TextFormat("Emulation: %.1f fps", m_emulation->GetFPS());
     GuiStatusBar(Rectangle{ x, y, w, h }, text);
+}
+
+void MainFrame::OnOpenFileUI() {
+    EmuState copyState = m_emulation->GetState();
+    m_emulation->SetState(EmuState::Paused);
+
+    nfdchar_t* outPath;
+    nfdfilteritem_t filterItem[] = {
+        { "All roms(*.gb; *.gbc; *.nes; *.sms; *.gg; *.zip)", "gb,gbc,nes,sms,gg,zip,7z" },
+        { "GameBoy(*.gb)",          "gb"    },
+        { "GameBoy Color(*.gbc)",   "gbc"   },
+        { "Game Gear(*.gg)",        "gg"    },
+        { "Master System(*.sms)",   "sms"   },
+        { "NES(*.nes)",             "nes"   },
+    };
+    nfdresult_t result = NFD_OpenDialog(&outPath, filterItem, 6, NULL);
+    if (result == NFD_OKAY)
+    {
+        ChangeFile(std::string(outPath));
+        NFD_FreePath(outPath);
+    }
+    else
+        m_emulation->SetState(copyState);
+}
+
+void MainFrame::OnPlayUI() {
+    m_emulation->SetState(EmuState::Playing);
+}
+
+void MainFrame::OnPauseUI() {
+    if (m_emulation->GetState() == EmuState::Playing)
+        m_emulation->SetState(EmuState::Paused);
+    else if (m_emulation->GetState() == EmuState::Paused)
+        m_emulation->SetState(EmuState::Playing);
+}
+
+void MainFrame::OnStopUI() {
+    m_emulation->SetState(EmuState::Stopped);
 }

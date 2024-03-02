@@ -30,7 +30,7 @@ int main(int argc, char **argv) {
         FLAG_MSAA_4X_HINT |
         FLAG_WINDOW_RESIZABLE |
         //FLAG_WINDOW_UNDECORATED |
-        //FLAG_VSYNC_HINT |
+        FLAG_VSYNC_HINT |
         0
     );
     InitWindow(256*3, (int)(256*3*240.0f/256.0f), "MultiEmu3D");

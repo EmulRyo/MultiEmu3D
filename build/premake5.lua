@@ -171,6 +171,25 @@ project "NES"
 
    EmulationPlatform()
 
+-------------------------------
+-- Nativefiledialog-extended --
+-------------------------------
+project "nativefiledialog-extended"
+   kind "StaticLib"
+
+   includedirs {
+      "../libraries/nativefiledialog-extended/src/include"
+   }
+
+   filter "system:windows"
+      files {
+         "../libraries/nativefiledialog-extended/src/nfd_win.cpp"
+      }
+
+      defines { "nfd_PLATFORM=PLATFORM_WIN32" }
+
+      links { "ole32", "uuid", "shell32" }
+   filter { }
 
 --------------------------
 -- MultiEmu3D wxWidgets --
@@ -259,7 +278,7 @@ project "MultiEmu3D_wx"
 -----------------------
 project "MultiEmu3D_raylib"
 
-   dependson { "GB", "SMS", "NES", "raylib" }
+   dependson { "GB", "SMS", "NES", "raylib", "nativefiledialog-extended" }
    
    kind "ConsoleApp"
    -- Turn on DPI awareness (Default, None, High, HighPerMonitor)
@@ -285,14 +304,15 @@ project "MultiEmu3D_raylib"
    includedirs {
       "../libraries/raygui",
       "../libraries/physfs/src",
-      "../libraries/raylib-physfs"
+      "../libraries/raylib-physfs",
+      "../libraries/nativefiledialog-extended/src/include"
    }
 
    include_raylib()
    
    filter { }
 
-   links { "GB", "SMS", "NES" }
+   links { "GB", "SMS", "NES", "nativefiledialog-extended" }
    link_raylib()
 
    filter "configurations:Debug"
