@@ -35,7 +35,6 @@ public:
 	RendererBase();
 	~RendererBase();
 	
-	void CreateScreen();
     int  GetMinimunWidth();
     int  GetMinimunHeight();
     void SetRewindValue(float value);
@@ -57,14 +56,16 @@ protected:
     u8 *m_imgBuf2;
     u8 *m_frontBuffer;
     u8 *m_backBuffer;
+    int m_bufferWidth, m_bufferHeight; // Tamaño de los buffers. (Se crean al principio y no cambian)
+    int m_x, m_y, m_width, m_height;   // Posicion x, y, ancho y alto que usa el emulador dentro del buffer ya creado
     float m_rewindValue;
     int m_iconFrames;
     Renderer::Icon m_icon;
-    int m_x, m_y, m_width, m_height;
     
 private:
     int m_gbPalette;
     
+	void CreateBuffers();
     void PageFlip();
 };
 

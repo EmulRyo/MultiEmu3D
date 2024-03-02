@@ -40,13 +40,15 @@ RendererBase::RendererBase()
     m_imgBuf2 = nullptr;
     m_frontBuffer = nullptr;
     m_backBuffer = nullptr;
+    m_bufferWidth = 256;
+    m_bufferHeight = 256;
     m_x = m_y = 0;
-    m_width = 256;
-    m_height = 256;
+    m_width = m_bufferWidth;
+    m_height = m_bufferHeight;
     m_rewindValue = -1.0f;
     m_iconFrames = -1;
     m_gbPalette = 0;
-	CreateScreen();
+	CreateBuffers();
 }
 
 RendererBase::~RendererBase()
@@ -58,9 +60,9 @@ RendererBase::~RendererBase()
         delete[] m_imgBuf2;
 }
 
-void RendererBase::CreateScreen() {
-	m_imgBuf1 = new u8[m_width * m_height * 3];
-    m_imgBuf2 = new u8[m_width * m_height * 3];
+void RendererBase::CreateBuffers() {
+	m_imgBuf1 = new u8[m_bufferWidth * m_bufferHeight * 3];
+    m_imgBuf2 = new u8[m_bufferWidth * m_bufferHeight * 3];
     m_backBuffer = m_imgBuf1;
     m_frontBuffer = m_imgBuf2;
 	OnClear();
@@ -68,7 +70,7 @@ void RendererBase::CreateScreen() {
 
 void RendererBase::OnClear()
 {
-	int size = m_width * m_height * 3;
+	int size = m_bufferWidth * m_bufferHeight * 3;
     memset(m_backBuffer, 0, size);
     memset(m_frontBuffer, 0, size);
 	PageFlip();
