@@ -20,6 +20,7 @@
 
 RendererSW::RendererSW()
 {
+    m_texture.id = 0;
     UpdateTextureSize();
 }
 
@@ -35,7 +36,8 @@ void RendererSW::OnSizeChanged(int x, int y, int width, int height) {
 
 void RendererSW::Draw(Rectangle dst) {
     
-	UpdateTexture(m_texture, m_frontBuffer);	
+    u8* ptr = m_frontBuffer + (m_x + m_y * m_width) * 3;
+    UpdateTexture(m_texture, ptr);
 	DrawTexture(m_texture, 0, 0, WHITE);
     DrawTexturePro(
         m_texture,
@@ -47,6 +49,8 @@ void RendererSW::Draw(Rectangle dst) {
 }
 
 void RendererSW::UpdateTextureSize() {
+    if (m_texture.id > 0)
+        UnloadTexture(m_texture);
     Image image = GenImageColor(m_width, m_height, BLACK);
     ImageFormat(&image, PIXELFORMAT_UNCOMPRESSED_R8G8B8);
     m_texture = LoadTextureFromImage(image);

@@ -41,8 +41,8 @@ RendererBase::RendererBase()
     m_frontBuffer = nullptr;
     m_backBuffer = nullptr;
     m_x = m_y = 0;
-    m_width = NES_SCREEN_W;
-    m_height = NES_SCREEN_H;
+    m_width = 256;
+    m_height = 256;
     m_rewindValue = -1.0f;
     m_iconFrames = -1;
     m_gbPalette = 0;
