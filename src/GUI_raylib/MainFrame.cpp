@@ -69,6 +69,11 @@ MainFrame::~MainFrame()
 
 void MainFrame::Update(float deltaTime) {
     m_emulation->UpdatePad();
+    if (IsFileDropped()) {
+        FilePathList files = LoadDroppedFiles();
+        m_emulation->ChangeFile(files.paths[0]);
+        UnloadDroppedFiles(files);
+    }
 }
 
 void MainFrame::Draw(Rectangle r) {
