@@ -248,6 +248,9 @@ bool EmulationThread::ChangeFile(const std::string& fileName)
         else if (nes)
             m_device = new Nes::NES();
 
+        if (m_rewind)
+            delete m_rewind;
+
         m_rewind = new Rewind(m_device);
         ApplySettingsNoMutex();
         SetScreenNoMutex(m_screen);
