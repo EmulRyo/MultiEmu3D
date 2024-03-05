@@ -17,6 +17,7 @@
 
 #include <stdio.h>
 #include <raylib.h>
+#include "MultiEmu3DIcon.h"
 #include "MainFrame.h"
 
 int main(int argc, char **argv) {
@@ -33,8 +34,17 @@ int main(int argc, char **argv) {
         FLAG_VSYNC_HINT |
         0
     );
-    InitWindow(256*3, (int)(256*3*240.0f/256.0f), "MultiEmu3D");
-    //SetWindowIcon()
+    InitWindow(256*3, (int)(256*3*240.0f/256.0f + 24*3), "MultiEmu3D");
+    Image imageIcon = { 0 };
+    imageIcon.data = MULTIEMU3DICON_DATA;
+    imageIcon.width = MULTIEMU3DICON_WIDTH;
+    imageIcon.height = MULTIEMU3DICON_HEIGHT;
+    imageIcon.format = MULTIEMU3DICON_FORMAT;
+    imageIcon.mipmaps = 1;
+    
+    SetWindowIcon(imageIcon);
+    SetWindowMinSize(340, 370);
+    
 
     MainFrame mainFrame(fileName);
 

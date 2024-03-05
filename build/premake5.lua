@@ -291,6 +291,7 @@ project "MultiEmu3D_raylib"
       "../src/Common/**.cpp",
       "../src/GUI_raylib/**.h",
       "../src/GUI_raylib/**.cpp",
+      "../src/GUI_raylib/**.rc",
       "../libraries/physfs/src/**.h",
       "../libraries/physfs/src/**.c",
    }
