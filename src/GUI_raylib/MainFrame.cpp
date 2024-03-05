@@ -54,8 +54,6 @@ MainFrame::MainFrame(const std::string& fileName)
     m_font = LoadFontEx("C:\\Windows\\Fonts\\segoeui.ttf", m_fontSize, nullptr, 0);
     GuiSetFont(m_font);
     GuiSetStyle(DEFAULT, TEXT_SIZE, m_fontSize);
-
-    GuiEnableTooltip();
 }
 
 MainFrame::~MainFrame()
@@ -71,22 +69,33 @@ void MainFrame::Update(float deltaTime) {
     m_emulation->UpdatePad();
     if (IsFileDropped()) {
         FilePathList files = LoadDroppedFiles();
-        m_emulation->ChangeFile(files.paths[0]);
+        ChangeFile(files.paths[0]);
         UnloadDroppedFiles(files);
     }
 }
 
 void MainFrame::Draw(Rectangle r) {
+    if (!m_messageError.empty())
+        GuiDisable();
+
     m_renderer->Draw(Rectangle{ 0, 48, r.width, r.height - 72 });
     DrawToolBar(Rectangle {0, 24, r.width, 24});
     DrawMenuBar(Rectangle{ 0, 0, r.width, 24 });
     DrawStatusBar(Rectangle{ 0, r.height-24, r.width, 24 });
+
+    if (!m_messageError.empty()) {
+        ShowErrorMessageBox(r.width, r.height);
+    }
 }
 
 void MainFrame::ChangeFile(const std::string &fileName)
 {
     if (m_emulation->ChangeFile(fileName))
         UpdateRecentMenu(fileName);
+    else {
+        m_messageError = m_emulation->GetLastError();
+        m_emulation->SetState(EmuState::Paused);
+    }
 }
 
 void MainFrame::UpdateRecentMenu(const std::string &fileName)
@@ -96,16 +105,20 @@ void MainFrame::UpdateRecentMenu(const std::string &fileName)
 
 void MainFrame::DrawMenuBar(Rectangle dst) {
     GuiSetStyle(DEFAULT, BACKGROUND_COLOR, 0x1F1F1FFF);
-    GuiSetStyle(DEFAULT, TEXT_COLOR_NORMAL, 0xFFFFFFFF);
     GuiSetStyle(DEFAULT, BASE_COLOR_NORMAL, 0x1F1F1FFF);
     GuiSetStyle(DEFAULT, BASE_COLOR_PRESSED, 0x1F1F1FFF);
     GuiSetStyle(DEFAULT, BASE_COLOR_FOCUSED, 0x3D3D3DFF);
+    GuiSetStyle(DEFAULT, BASE_COLOR_DISABLED, 0x1F1F1FFF);
+    GuiSetStyle(DEFAULT, TEXT_COLOR_NORMAL, 0xFFFFFFFF);
     GuiSetStyle(DEFAULT, TEXT_COLOR_FOCUSED, 0xFFFFFFFF);
     GuiSetStyle(DEFAULT, TEXT_COLOR_PRESSED, 0xFFFFFFFF);
+    GuiSetStyle(DEFAULT, TEXT_COLOR_DISABLED, 0x5F5F5FFF);
     GuiSetStyle(DEFAULT, BORDER_WIDTH, 1);
     GuiSetStyle(DEFAULT, BORDER_COLOR_NORMAL, 0x1F1F1FFF);
     GuiSetStyle(DEFAULT, BORDER_COLOR_FOCUSED, 0x707070FF);
     GuiSetStyle(DEFAULT, BORDER_COLOR_PRESSED, 0x707070FF);
+    GuiSetStyle(DEFAULT, BORDER_COLOR_DISABLED, 0x1F1F1FFF);
+    GuiSetStyle(DEFAULT, LINE_COLOR, 0x1F1F1FFF);
 
     GuiDrawRectangle(dst, 0, GetColor(GuiGetStyle(DEFAULT, LINE_COLOR)), GetColor(GuiGetStyle(DEFAULT, BACKGROUND_COLOR)));
 
@@ -168,12 +181,12 @@ void MainFrame::DrawMenuBar(Rectangle dst) {
             "Fullscren"
         };
     */
-
-    //GuiMessageBox(Rectangle{ 100, 100, 200, 100 }, "Title", "Message", "Ok");
     
 }
 
 void MainFrame::DrawToolBar(Rectangle dst) {
+    GuiEnableTooltip();
+
     GuiDrawRectangle(dst, 0, GetColor(GuiGetStyle(DEFAULT, LINE_COLOR)), GetColor(GuiGetStyle(DEFAULT, BACKGROUND_COLOR)));
     float width = 24;
     float x = dst.x;
@@ -211,6 +224,7 @@ void MainFrame::DrawToolBar(Rectangle dst) {
     if (GuiButton(Rectangle{ x, dst.y, width, dst.height }, GuiIconText(ICON_MODE_3D, ""))) {
 
     }
+    GuiDisableTooltip();
 }
 
 void MainFrame::DrawStatusBar(Rectangle dst) {
@@ -267,4 +281,16 @@ void MainFrame::OnPauseUI() {
 
 void MainFrame::OnStopUI() {
     m_emulation->SetState(EmuState::Stopped);
+}
+
+void MainFrame::ShowErrorMessageBox(float winWidth, float winHeight) {
+    GuiEnable();
+    DrawRectangle(0, 24 * 2, winWidth, winHeight - 24 * 3, ColorAlpha(BLACK, 0.7f));
+    Vector2 fontSize = MeasureTextEx(m_font, m_messageError.c_str(), m_fontSize, 1);
+    float w = fontSize.x + 20;
+    float h = fontSize.y + 24 * 3;
+    int result = GuiMessageBox(Rectangle{ (winWidth - w) / 2.0f, (winHeight - h) / 2.0f, w, h }, "Error", m_messageError.c_str(), "OK");
+    if (result >= 0) {
+        m_messageError = "";
+    }
 }

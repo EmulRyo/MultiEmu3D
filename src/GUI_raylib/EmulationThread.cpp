@@ -196,13 +196,15 @@ bool EmulationThread::ChangeFile(const std::string& fileName)
         std::lock_guard<std::mutex> lg(m_mutex);
 
         if (!std::filesystem::exists(fileName)) {
-            printf("The file: %s doesn't exist", fileName.c_str());
+            //printf("The file: %s doesn't exist", fileName.c_str());
+            m_lastError = "The file: %s doesn't exist" + fileName;
             return false;
         }
 
         size_t dotPos = fileName.rfind('.');
         if (dotPos == std::string::npos) {
-            printf("File without extension");
+            //printf("File without extension");
+            m_lastError = "File without extension";
             return false;
         }
 
@@ -226,7 +228,8 @@ bool EmulationThread::ChangeFile(const std::string& fileName)
         gb = GameBoy::GB::IsValidExtension(extension);
         nes = Nes::NES::IsValidExtension(extension);
         if (!sms && !gb && !nes) {
-            printf("Not valid files found!");
+            //printf("Not valid files found!");
+            m_lastError = "Not valid files found!";
             return false;
         }
 
@@ -325,7 +328,8 @@ void EmulationThread::LoadCompressed(const std::string &filePath, u8 **buffer, u
     ClosePhysFS();
     
 	// Archivo no encontrado
-	printf("Not valid rom found in %s\n", filePath.c_str());
+	//printf("Not valid rom found in %s\n", filePath.c_str());
+    m_lastError = "Not valid rom found in " + filePath;
 }
 
 void EmulationThread::LoadState(const std::string &fileName, int id)
@@ -407,4 +411,8 @@ void EmulationThread::SetSpeed(EmuSpeed speed) {
             m_device->SoundEnable(m_soundEnabled);
         m_speed = speed;
     }
+}
+
+std::string EmulationThread::GetLastError() const {
+    return m_lastError;
 }

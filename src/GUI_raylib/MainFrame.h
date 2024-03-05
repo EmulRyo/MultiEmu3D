@@ -45,12 +45,14 @@ private:
     EmulationThread* m_emulation;
     Font m_font;
     int m_fontSize;
+    std::string m_messageError;
 
     void ChangeFile(const std::string& fileName);
     void UpdateRecentMenu(const std::string& fileName);
     void DrawMenuBar(Rectangle dst);
     void DrawToolBar(Rectangle dst);
     void DrawStatusBar(Rectangle dst);
+    void ShowErrorMessageBox(float winWidth, float winHeight);
 
     void OnOpenFileUI();
     void OnPlayUI();

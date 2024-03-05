@@ -50,6 +50,7 @@ public:
     void SetState(EmuState state);
     void Exit();
     bool Finished() const;
+    std::string GetLastError() const;
     
 private:
     VideoGameDevice *m_device;
@@ -67,6 +68,7 @@ private:
     float m_fps;
     IScreenDrawable *m_screen;
     Rewind *m_rewind;
+    std::string m_lastError;
     
 	EmuState m_emuState;
     
