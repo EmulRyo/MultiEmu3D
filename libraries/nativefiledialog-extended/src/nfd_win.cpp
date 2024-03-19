@@ -333,7 +333,8 @@ void NFD_FreePathN(nfdnchar_t* filePath) {
 nfdresult_t NFD_OpenDialogN(nfdnchar_t** outPath,
                             const nfdnfilteritem_t* filterList,
                             nfdfiltersize_t filterCount,
-                            const nfdnchar_t* defaultPath) {
+                            const nfdnchar_t* defaultPath,
+                            void* windowHandle) {
     ::IFileOpenDialog* fileOpenDialog;
 
     // Create dialog
@@ -372,7 +373,7 @@ nfdresult_t NFD_OpenDialogN(nfdnchar_t** outPath,
     }
 
     // Show the dialog.
-    result = fileOpenDialog->Show(nullptr);
+    result = fileOpenDialog->Show((HWND)windowHandle);
     if (SUCCEEDED(result)) {
         // Get the file name
         ::IShellItem* psiResult;
@@ -807,7 +808,8 @@ void NFD_FreePathU8(nfdu8char_t* outPath) {
 nfdresult_t NFD_OpenDialogU8(nfdu8char_t** outPath,
                              const nfdu8filteritem_t* filterList,
                              nfdfiltersize_t count,
-                             const nfdu8char_t* defaultPath) {
+                             const nfdu8char_t* defaultPath,
+                             void *windowHandle) {
     // populate the real nfdnfilteritem_t
     FilterItem_Guard filterItemsNGuard;
     if (!CopyFilterItem(filterList, count, filterItemsNGuard)) {
@@ -822,7 +824,7 @@ nfdresult_t NFD_OpenDialogU8(nfdu8char_t** outPath,
     // call the native function
     nfdnchar_t* outPathN;
     nfdresult_t res =
-        NFD_OpenDialogN(&outPathN, filterItemsNGuard.data, count, defaultPathNGuard.data);
+        NFD_OpenDialogN(&outPathN, filterItemsNGuard.data, count, defaultPathNGuard.data, windowHandle);
 
     if (res != NFD_OKAY) {
         return res;

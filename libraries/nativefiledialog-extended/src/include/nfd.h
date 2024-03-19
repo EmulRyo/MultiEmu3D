@@ -203,7 +203,8 @@ NFD_API void NFD_FreePathU8(nfdu8char_t* outPath);
 NFD_API nfdresult_t NFD_OpenDialogU8(nfdu8char_t** outPath,
                                      const nfdu8filteritem_t* filterList,
                                      nfdfiltersize_t count,
-                                     const nfdu8char_t* defaultPath);
+                                     const nfdu8char_t* defaultPath,
+                                     void* windowHandle=nullptr);
 
 /* multiple file open dialog */
 /* It is the caller's responsibility to free `outPaths` via NFD_PathSet_Free() if this function
