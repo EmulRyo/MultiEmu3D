@@ -17,6 +17,7 @@
 
 #include <iostream>
 #include <string>
+#include <filesystem>
 #include "MainFrame.h"
 #include "../Common/Exception.h"
 #include "../Common/VideoGameDevice.h"
@@ -29,6 +30,8 @@
 
 #define RAYGUI_IMPLEMENTATION
 #include "raygui.h"
+
+#include "MenuBar.h"
 
 #include "nfd.h"
 
@@ -46,14 +49,45 @@ MainFrame::MainFrame(const std::string& fileName)
     
     m_emulation->SetScreen(m_renderer);
     m_emulation->SetState(EmuState::Playing);
-     
-	if (!fileName.empty())
-		ChangeFile(fileName);
 
     m_fontSize = 20;
     m_font = LoadFontEx("C:\\Windows\\Fonts\\segoeui.ttf", m_fontSize, nullptr, 0);
     GuiSetFont(m_font);
-    GuiSetStyle(DEFAULT, TEXT_SIZE, m_fontSize);
+    SetStyle();
+
+    m_menuBar.SetFont(m_font);
+    SubMenu& fileMenu        = m_menuBar.NewSubMenu("File");
+    SubMenu& emulationMenu   = m_menuBar.NewSubMenu("Emulation");
+    SubMenu& languageMenu    = m_menuBar.NewSubMenu("Language");
+    SubMenu& helpMenu        = m_menuBar.NewSubMenu("Help");
+
+    fileMenu.NewItem("Open", std::bind(&MainFrame::OnOpenFileUI, this));
+    SubMenuItem& openRecent = fileMenu.NewItem("Open Recent   ");
+    SubMenuItem& loadState  = fileMenu.NewItem("Load State");
+    SubMenuItem& saveState  = fileMenu.NewItem("Save State");
+    fileMenu.NewItem("Exit", std::bind(&MainFrame::OnExitUI, this));
+
+    emulationMenu.NewItem("Settings",   std::bind(&MainFrame::OnSettingsUI, this));
+    emulationMenu.NewItem("Play",       std::bind(&MainFrame::OnPlayUI, this));
+    emulationMenu.NewItem("Pause",      std::bind(&MainFrame::OnPauseUI, this));
+    emulationMenu.NewItem("Stop",       std::bind(&MainFrame::OnStopUI, this));
+    emulationMenu.NewItem("Debug",      std::bind(&MainFrame::OnDebugUI, this));
+    emulationMenu.NewItem("Fullscreen", std::bind(&MainFrame::OnFullscreenUI, this));
+
+    SubMenu& loadStateMenu = loadState.GetSubMenu();
+    SubMenu& saveStateMenu = saveState.GetSubMenu();
+    for (int i = 0; i < 10; i++) {
+        loadStateMenu.NewItem("Slot "+std::to_string(i+1), std::bind(&MainFrame::OnLoadStateUI, this, std::placeholders::_1));
+        saveStateMenu.NewItem("Slot "+std::to_string(i+1), std::bind(&MainFrame::OnSaveStateUI, this, std::placeholders::_1));
+    }
+
+    helpMenu.NewItem("About");
+
+    m_recentMenuOpened = false;
+    m_numRecentFiles = 0;
+
+	if (!fileName.empty())
+		ChangeFile(fileName);
 }
 
 MainFrame::~MainFrame()
@@ -79,8 +113,16 @@ void MainFrame::Draw(Rectangle r) {
         GuiDisable();
 
     m_renderer->Draw(Rectangle{ 0, 48, r.width, r.height - 72 });
-    DrawToolBar(Rectangle {0, 24, r.width, 24});
-    DrawMenuBar(Rectangle{ 0, 0, r.width, 24 });
+    if (m_menuBar.IsOpened())
+        GuiLock();
+    DrawToolBar(Rectangle{ 0, 24, r.width, 24 });
+    if (m_menuBar.IsOpened())
+        GuiUnlock();
+    m_menuBar.Draw(Rectangle{ 0, 0, r.width, 24 });
+    if (m_recentMenuOpened) {
+        SubMenu& recentMenu = m_menuBar.GetSubMenu(0).GetItem(1).GetSubMenu();
+        recentMenu.Draw(24, 48);
+    }
     DrawStatusBar(Rectangle{ 0, r.height-24, r.width, 24 });
 
     if (!m_messageError.empty()) {
@@ -100,10 +142,67 @@ void MainFrame::ChangeFile(const std::string &fileName)
 
 void MainFrame::UpdateRecentMenu(const std::string &fileName)
 {
+    SubMenu& recentMenu = m_menuBar.GetSubMenu(0).GetItem(1).GetSubMenu();
 
+    wchar_t separator = std::filesystem::path::preferred_separator;
+    std::string shortName = fileName.substr(fileName.rfind(separator) + 1);
+    int previousIndex = -1;
+    for (int i = 0; i < m_numRecentFiles; i++)
+    {
+        if (m_recentFiles[i].fullName == fileName)
+        {
+            previousIndex = i;
+            break;
+        }
+    }
+
+    int startFrom;
+
+    // Si ya existia de antes y es el primero
+    if (previousIndex == 0)
+    {
+        return;
+    }
+    // Si ya existia de antes y no es el primero
+    else if (previousIndex > 0)
+    {
+        startFrom = previousIndex - 1;
+    }
+    // Si no existia pero no hemos llegado al limite
+    else if (m_numRecentFiles < MAX_RECENT_FILES)
+    {
+        startFrom = m_numRecentFiles - 1;
+        recentMenu.NewItem(" ", std::bind(&MainFrame::OnOpenRecentUI, this, std::placeholders::_1));
+        m_numRecentFiles++;
+    }
+    // Si no existia pero hemos llegado al limite
+    else
+    {
+        startFrom = MAX_RECENT_FILES - 2;
+    }
+
+    for (int i = startFrom; i >= 0; i--)
+    {
+        m_recentFiles[i + 1].shortName = m_recentFiles[i].shortName;
+        m_recentFiles[i + 1].fullName = m_recentFiles[i].fullName;
+    }
+    m_recentFiles[0].shortName = shortName;
+    m_recentFiles[0].fullName = fileName;
+
+    for (int i = 0; i < m_numRecentFiles; i++)
+    {
+        recentMenu.GetItem(i).SetText(m_recentFiles[i].shortName);
+    }
+
+    recentMenu.UpdateTexts();
+
+    //RecentRomsToSettings();
+    //m_settingsDialog->Reload();
+    //SettingsSaveToFile();
 }
 
-void MainFrame::DrawMenuBar(Rectangle dst) {
+void MainFrame::SetStyle() {
+    GuiSetStyle(DEFAULT, TEXT_SIZE, m_fontSize);
     GuiSetStyle(DEFAULT, BACKGROUND_COLOR, 0x1F1F1FFF);
     GuiSetStyle(DEFAULT, BASE_COLOR_NORMAL, 0x1F1F1FFF);
     GuiSetStyle(DEFAULT, BASE_COLOR_PRESSED, 0x1F1F1FFF);
@@ -118,76 +217,13 @@ void MainFrame::DrawMenuBar(Rectangle dst) {
     GuiSetStyle(DEFAULT, BORDER_COLOR_FOCUSED, 0x707070FF);
     GuiSetStyle(DEFAULT, BORDER_COLOR_PRESSED, 0x707070FF);
     GuiSetStyle(DEFAULT, BORDER_COLOR_DISABLED, 0x1F1F1FFF);
-    GuiSetStyle(DEFAULT, LINE_COLOR, 0x1F1F1FFF);
-
-    GuiDrawRectangle(dst, 0, GetColor(GuiGetStyle(DEFAULT, LINE_COLOR)), GetColor(GuiGetStyle(DEFAULT, BACKGROUND_COLOR)));
-
-    GuiSetStyle(LISTVIEW, TEXT_ALIGNMENT, TEXT_ALIGN_CENTER);
-    GuiSetStyle(LISTVIEW, LIST_ITEMS_HEIGHT, 24);
-    GuiSetStyle(LISTVIEW, LIST_ITEMS_SPACING, 0);
-    static int visible = -1;
-    Vector2 textSize;
-    float x, width;
-    static float listViewX;
-    
-    int textSpacing = GuiGetStyle(DEFAULT, TEXT_SPACING);
-
-    const char* menuTexts[] = {
-            "File",
-            "Emulation",
-            "Language",
-            "Help"
-    };
-
-    int arrayLen = (int)(sizeof(menuTexts) / sizeof(const char*));
-
-    static int fileActive = -1;
-    static int fileScrollIndex = 0;
-    static int fileFocus = -1;
-    x = dst.x;
-    
-    for (int i = 0; i < arrayLen; i++) {
-        textSize = MeasureTextEx(m_font, menuTexts[i], (float)m_fontSize, (float)textSpacing);
-        width = textSize.x + 24;
-        GuiListViewEx(Rectangle{ x, dst.y, width, dst.height }, &menuTexts[i], 1, nullptr, nullptr, nullptr);
-        x += width;
-    }
-
-    if (fileActive==0 || fileFocus==0) {
-        GuiSetStyle(LISTVIEW, TEXT_ALIGNMENT, TEXT_ALIGN_LEFT);
-        GuiSetStyle(LISTVIEW, TEXT_PADDING, 10);
-        int listViewItemsHeight = GuiGetStyle(LISTVIEW, LIST_ITEMS_HEIGHT);
-        int listViewItemSpacing = GuiGetStyle(LISTVIEW, LIST_ITEMS_SPACING);
-        const char* texts[] = {
-            "Open",
-            "Open Recent",
-            "Load State",
-            "Save State",
-            "Exit"
-        };
-        static int active = -1;
-        static int scrollIndex = 0;
-        static int focus = -1;
-        GuiListViewEx(Rectangle{ listViewX, dst.y + 24, 120, (listViewItemsHeight + listViewItemSpacing) * 5.0f + 2.0f }, &texts[0], 5, &scrollIndex, &active, &focus);
-    }
-    
-    /*
-    const char* texts[] = {
-            "Settings",
-            "Start",
-            "Pause",
-            "Stop",
-            "Debug",
-            "Fullscren"
-        };
-    */
-    
+    GuiSetStyle(DEFAULT, LINE_COLOR, 0x1F1F1FFF);        
 }
 
 void MainFrame::DrawToolBar(Rectangle dst) {
     GuiEnableTooltip();
 
-    GuiDrawRectangle(dst, 0, GetColor(GuiGetStyle(DEFAULT, LINE_COLOR)), GetColor(GuiGetStyle(DEFAULT, BACKGROUND_COLOR)));
+    DrawRectangle((int)dst.x, (int)dst.y, (int)dst.width, (int)dst.height, GetColor(GuiGetStyle(DEFAULT, BACKGROUND_COLOR)));
     float width = 24;
     float x = dst.x;
     GuiSetTooltip("Open");
@@ -195,11 +231,23 @@ void MainFrame::DrawToolBar(Rectangle dst) {
         OnOpenFileUI();
     }
 
+    if (m_recentMenuOpened)
+        GuiDisableTooltip();
+
     x += width;
     GuiSetTooltip("Recent");
     if (GuiButton(Rectangle{ x, dst.y, width, dst.height }, GuiIconText(ICON_ARROW_DOWN, ""))) {
-
+        OnRecentUI();
     }
+
+    // Cerrar menu de roms recientemente abiertas si se pulsa fuera del botón
+    if (m_recentMenuOpened &&
+        (IsMouseButtonReleased(MOUSE_BUTTON_LEFT) || IsMouseButtonReleased(MOUSE_BUTTON_RIGHT)) &&
+        !CheckCollisionPointRec(GetMousePosition(), Rectangle{ x, dst.y, width, dst.height })) {
+        m_recentMenuOpened = false;
+    }
+
+    GuiEnableTooltip();
 
     x += width*2;
     GuiSetTooltip("Play");
@@ -258,7 +306,7 @@ void MainFrame::OnOpenFileUI() {
         { "Master System(*.sms)",   "sms"   },
         { "NES(*.nes)",             "nes"   },
     };
-    nfdresult_t result = NFD_OpenDialog(&outPath, filterItem, 6, NULL);
+    nfdresult_t result = NFD_OpenDialog(&outPath, filterItem, 6, NULL, GetWindowHandle());
     if (result == NFD_OKAY)
     {
         ChangeFile(std::string(outPath));
@@ -266,6 +314,53 @@ void MainFrame::OnOpenFileUI() {
     }
     else
         m_emulation->SetState(copyState);
+
+    m_menuBar.Close();
+}
+
+void MainFrame::OnRecentUI() {
+    m_recentMenuOpened = !m_recentMenuOpened;
+}
+
+void MainFrame::OnOpenRecentUI(int id) {
+    ChangeFile(m_recentFiles[id].fullName);
+}
+
+void MainFrame::OnLoadStateUI(int id) {
+    printf("Load state %d\n", id);
+
+    std::filesystem::path savesDir = std::filesystem::absolute(std::filesystem::current_path());
+    savesDir += std::filesystem::path::preferred_separator;
+    savesDir = savesDir.append("SaveStates");
+    savesDir += std::filesystem::path::preferred_separator;
+
+    try
+    {
+        m_emulation->LoadState(savesDir.generic_u8string(), id);
+    }
+    catch (Exception e)
+    {
+        m_messageError = e.what();
+    }
+}
+
+void MainFrame::OnSaveStateUI(int id) {
+    std::filesystem::path savesDir = std::filesystem::absolute(std::filesystem::current_path());
+    savesDir += std::filesystem::path::preferred_separator;
+    savesDir = savesDir.append("SaveStates");
+    savesDir += std::filesystem::path::preferred_separator;
+
+    if (!std::filesystem::exists(savesDir))
+        std::filesystem::create_directory(savesDir);
+
+    try
+    {
+        m_emulation->SaveState(savesDir.generic_u8string(), id);
+    }
+    catch (Exception e)
+    {
+        m_messageError = e.what();
+    }
 }
 
 void MainFrame::OnPlayUI() {
@@ -283,10 +378,26 @@ void MainFrame::OnStopUI() {
     m_emulation->SetState(EmuState::Stopped);
 }
 
+void MainFrame::OnSettingsUI() {
+
+}
+
+void MainFrame::OnDebugUI() {
+
+}
+
+void MainFrame::OnFullscreenUI() {
+    ToggleBorderlessWindowed();
+}
+
+void MainFrame::OnExitUI() {
+    exit(0);
+}
+
 void MainFrame::ShowErrorMessageBox(float winWidth, float winHeight) {
     GuiEnable();
-    DrawRectangle(0, 24 * 2, winWidth, winHeight - 24 * 3, ColorAlpha(BLACK, 0.7f));
-    Vector2 fontSize = MeasureTextEx(m_font, m_messageError.c_str(), m_fontSize, 1);
+    DrawRectangle(0, 24 * 2, (int)winWidth, (int)(winHeight - 24 * 3), ColorAlpha(BLACK, 0.7f));
+    Vector2 fontSize = MeasureTextEx(m_font, m_messageError.c_str(), (float)m_fontSize, 1);
     float w = fontSize.x + 20;
     float h = fontSize.y + 24 * 3;
     int result = GuiMessageBox(Rectangle{ (winWidth - w) / 2.0f, (winHeight - h) / 2.0f, w, h }, "Error", m_messageError.c_str(), "OK");

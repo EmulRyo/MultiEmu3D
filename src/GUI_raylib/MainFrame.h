@@ -20,9 +20,19 @@
 
 #include <string>
 #include "raylib.h"
+#include "MenuBar.h"
+
+#define MAX_RECENT_FILES 10
+
 class RendererBase;
 class VideoGameDevice;
 class EmulationThread;
+
+struct RecentFile
+{
+    std::string shortName;
+    std::string fullName;
+};
 
 /*******************************************************************************
  // MainFrame Class
@@ -46,18 +56,32 @@ private:
     Font m_font;
     int m_fontSize;
     std::string m_messageError;
+    MenuBar m_menuBar;
+    int m_windowWidth;
+    int m_windowHeight;
+    bool m_recentMenuOpened;
+    RecentFile m_recentFiles[MAX_RECENT_FILES];
+    int m_numRecentFiles;
 
     void ChangeFile(const std::string& fileName);
     void UpdateRecentMenu(const std::string& fileName);
-    void DrawMenuBar(Rectangle dst);
     void DrawToolBar(Rectangle dst);
     void DrawStatusBar(Rectangle dst);
     void ShowErrorMessageBox(float winWidth, float winHeight);
+    void SetStyle();
 
     void OnOpenFileUI();
+    void OnRecentUI();
+    void OnOpenRecentUI(int id);
+    void OnLoadStateUI(int id);
+    void OnSaveStateUI(int id);
     void OnPlayUI();
     void OnPauseUI();
     void OnStopUI();
+    void OnSettingsUI();
+    void OnDebugUI();
+    void OnFullscreenUI();
+    void OnExitUI();
 };
 
 #endif

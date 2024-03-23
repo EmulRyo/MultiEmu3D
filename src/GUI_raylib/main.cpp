@@ -17,6 +17,7 @@
 
 #include <stdio.h>
 #include <raylib.h>
+
 #include "MultiEmu3DIcon.h"
 #include "MainFrame.h"
 
@@ -44,7 +45,7 @@ int main(int argc, char **argv) {
     
     SetWindowIcon(imageIcon);
     SetWindowMinSize(340, 370);
-    
+    SetExitKey(-1);
 
     MainFrame mainFrame(fileName);
 
