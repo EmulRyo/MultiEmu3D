@@ -334,23 +334,20 @@ void EmulationThread::LoadCompressed(const std::string &filePath, u8 **buffer, u
 
 void EmulationThread::LoadState(const std::string &fileName, int id)
 {
-    m_mutex.lock();
+    std::lock_guard<std::mutex> lg(m_mutex);
     m_device->LoadState(fileName, id);
-    m_mutex.unlock();
 }
 
 void EmulationThread::SaveState(const std::string &fileName, int id)
 {
-    m_mutex.lock();
+    std::lock_guard<std::mutex> lg(m_mutex);
     m_device->SaveState(fileName, id);
-    m_mutex.unlock();
 }
 
 void EmulationThread::ApplySettings()
 {
-    m_mutex.lock();
+    std::lock_guard<std::mutex> lg(m_mutex);
     ApplySettingsNoMutex();
-    m_mutex.unlock();
 }
 
 void EmulationThread::ApplySettingsNoMutex()
@@ -363,9 +360,8 @@ void EmulationThread::ApplySettingsNoMutex()
 }
 
 void EmulationThread::SetScreen(IScreenDrawable *screen) {
-    m_mutex.lock();
+    std::lock_guard<std::mutex> lg(m_mutex);
     SetScreenNoMutex(screen);
-    m_mutex.unlock();
 }
 
 void EmulationThread::SetScreenNoMutex(IScreenDrawable *screen) {
