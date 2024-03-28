@@ -24,45 +24,27 @@
 class Settings
 {
 public:
-    int  renderMethod;
-	bool greenScale;
-	int  windowZoom;
-	bool soundEnabled;
-	int  soundSampleRate;
-    long language;
-	
-	int  gbKeys[8];
-    int  smsKeys[13];
-	int  nesKeys[16];
-	std::string recentRoms[10];
-	
-public:
-	Settings();
+	static int  GetRenderMethod();
+	static bool GetGreenScale();
+	static int  GetWindowZoom();
+	static bool GetSoundEnabled();
+	static int  GetSoundSampleRate();
+	static long GetLanguage();
+	static int* GetInput(DeviceType type);
+	static std::string* GetRecentRoms();
+
+	static void SetRenderMethod(int renderMethod);
+	static void SetGreenScale(bool greenScale);
+	static void SetWindowZoom(int windowZoom);
+	static void SetSoundEnabled(bool enabled);
+	static void SetSoundSampleRate(int sampleRate);
+	static void SetLanguage(long language);
+	static void SetInput(DeviceType type, const int* padKeys);
+	static void SetRecentRoms(const std::string* recentRoms);
+
+	static void Load(const std::string& fileName);
+	static void Save(const std::string& fileName);
+
 };
-
-Settings SettingsGetCopy();
-
-int  SettingsGetRenderMethod();
-bool SettingsGetGreenScale();
-int  SettingsGetWindowZoom();
-bool SettingsGetSoundEnabled();
-int  SettingsGetSoundSampleRate();
-long SettingsGetLanguage();
-int* SettingsGetInput(DeviceType type);
-std::string* SettingsGetRecentRoms();
-
-void SettingsSetNewValues(Settings newSettings);
-
-void SettingsSetGreenScale(int renderMethod);
-void SettingsSetGreenScale(bool greenScale);
-void SettingsSetWindowZoom(int windowZoom);
-void SettingsSetSoundEnabled(bool enabled);
-void SettingsSetSoundSampleRate(int sampleRate);
-void SettingsSetLanguage(long language);
-void SettingsSetInput(DeviceType type, const int* padKeys);
-void SettingsSetRecentRoms(const std::string* recentRoms);
-
-void SettingsSaveToFile();
-Settings SettingsLoadFromFile();
 
 #endif

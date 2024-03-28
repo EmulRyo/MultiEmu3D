@@ -306,7 +306,8 @@ project "MultiEmu3D_raylib"
       "../libraries/raygui",
       "../libraries/physfs/src",
       "../libraries/raylib-physfs",
-      "../libraries/nativefiledialog-extended/src/include"
+      "../libraries/nativefiledialog-extended/src/include",
+      "../libraries/nlohmann_json"
    }
 
    include_raylib()

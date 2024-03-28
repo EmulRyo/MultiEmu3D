@@ -64,10 +64,12 @@ private:
     int m_numRecentFiles;
 
     void ChangeFile(const std::string& fileName);
+    void UpdateRecentMenu(const std::string* fileNames);
     void UpdateRecentMenu(const std::string& fileName);
     void DrawToolBar(Rectangle dst);
     void DrawStatusBar(Rectangle dst);
     void ShowErrorMessageBox(float winWidth, float winHeight);
+    void RecentRomsToSettings();
     void SetStyle();
 
     void OnOpenFileUI();

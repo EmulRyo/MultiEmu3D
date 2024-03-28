@@ -15,280 +15,183 @@
  along with MultiEmu3D.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include <fstream>
 #include "Settings.h"
 #include "AppDefs.h"
 #include "raylib.h"
+#include "json.hpp"
 
-Settings settings;
+static int  _renderMethod    = 1;
+static bool _greenScale      = false;
+static int  _windowZoom      = 1;
+static bool _soundEnabled    = true;
+static int  _soundSampleRate = 44100;
+static long _language        = 0;
+                               //    Up,     Down,     Left,     Right,     A,     B,          Select,     Start
+static int  _gbKeys[8]       = { KEY_UP, KEY_DOWN, KEY_LEFT, KEY_RIGHT, KEY_A, KEY_S, KEY_RIGHT_SHIFT, KEY_ENTER };
+                               //    Up,     Down,     Left,     Right,     1,     2,    Up,  Down,  Left, Right,     1,     2, Start/Pause
+static int  _smsKeys[13]     = { KEY_UP, KEY_DOWN, KEY_LEFT, KEY_RIGHT, KEY_A, KEY_S, KEY_I, KEY_J, KEY_K, KEY_L, KEY_G, KEY_H, KEY_ENTER };
+                               //    Up,     Down,     Left,     Right,     A,     B,          Select,     Start,    Up,  Down,  Left, Right,     A,     B,Select, Start
+static int  _nesKeys[16]     = { KEY_UP, KEY_DOWN, KEY_LEFT, KEY_RIGHT, KEY_A, KEY_S, KEY_RIGHT_SHIFT, KEY_ENTER, KEY_I, KEY_K, KEY_J, KEY_L, KEY_G, KEY_H, KEY_O, KEY_P };
+static std::string _recentRoms[10];
 
-Settings::Settings()
-{
-    renderMethod = 1;
-	greenScale	 = false;
-	windowZoom	 = 1;
-	soundEnabled	= true;
-	soundSampleRate = 44100;
-    language = 0;
-	
-	smsKeys[ 0]	= KEY_UP;	// Up
-	smsKeys[ 1]	= KEY_DOWN; // Down
-	smsKeys[ 2]	= KEY_LEFT; // Left
-	smsKeys[ 3]	= KEY_RIGHT;// Right
-	smsKeys[ 4]	= KEY_A;    // 1
-	smsKeys[ 5]	= KEY_S;	// 2
-    
-    smsKeys[ 6]	= KEY_I;    // Up
-    smsKeys[ 7]	= KEY_K;    // Down
-    smsKeys[ 8]	= KEY_J;    // Left
-    smsKeys[ 9]	= KEY_L;    // Right
-    smsKeys[10]	= KEY_G;    // 1
-    smsKeys[11]	= KEY_H;    // 2
-    
-	smsKeys[12] = KEY_ENTER; // Start / Pause
-    
-    gbKeys[0]	= KEY_UP;	    // Up
-    gbKeys[1]	= KEY_DOWN;     // Down
-    gbKeys[2]	= KEY_LEFT;     // Left
-    gbKeys[3]	= KEY_RIGHT;    // Right
-    gbKeys[4]	= KEY_A;        // A
-    gbKeys[5]	= KEY_S;	    // B
-    gbKeys[6]	= KEY_RIGHT_SHIFT;  // Select
-    gbKeys[7]	= KEY_ENTER;    // Start
 
-    nesKeys[ 0] = KEY_UP;	    // Up
-    nesKeys[ 1] = KEY_DOWN;     // Down
-    nesKeys[ 2] = KEY_LEFT;     // Left
-    nesKeys[ 3] = KEY_RIGHT;    // Right
-    nesKeys[ 4] = KEY_A;        // A
-    nesKeys[ 5] = KEY_S;	    // B
-    nesKeys[ 6] = KEY_RIGHT_SHIFT;  // Select
-    nesKeys[ 7] = KEY_ENTER;    // Start
-    
-    nesKeys[ 8] = KEY_I; // Up
-    nesKeys[ 9] = KEY_K; // Down
-    nesKeys[10] = KEY_J; // Left
-    nesKeys[11] = KEY_L; // Right
-    nesKeys[12] = KEY_G; // A
-    nesKeys[13] = KEY_H; // B
-    nesKeys[14] = KEY_O; // Select
-    nesKeys[15] = KEY_P; // Start
+int Settings::GetRenderMethod() {
+	return _renderMethod;
 }
 
-Settings SettingsGetCopy() {
-	return settings;
+void Settings::SetRenderMethod(int renderMethod) {
+	_renderMethod = renderMethod;
 }
 
-void SettingsSetNewValues(Settings newSettings) {
-	settings = newSettings;
+bool Settings::GetGreenScale() {
+	return _greenScale;
 }
 
-int SettingsGetRenderMethod() {
-	return settings.renderMethod;
+void Settings::SetGreenScale(bool greenScale) {
+	_greenScale = greenScale;
 }
 
-void SettingsSetGreenScale(int renderMethod) {
-	settings.renderMethod = renderMethod;
+int Settings::GetWindowZoom() {
+	return _windowZoom;
 }
 
-bool SettingsGetGreenScale() {
-	return settings.greenScale;
+void Settings::SetWindowZoom(int windowZoom) {
+	_windowZoom = windowZoom;
 }
 
-void SettingsSetGreenScale(bool greenScale) {
-	settings.greenScale = greenScale;
+bool Settings::GetSoundEnabled() {
+	return _soundEnabled;
 }
 
-int SettingsGetWindowZoom() {
-	return settings.windowZoom;
+void Settings::SetSoundEnabled(bool enabled) {
+	_soundEnabled = enabled;
 }
 
-void SettingsSetWindowZoom(int windowZoom) {
-	settings.windowZoom = windowZoom;
+int Settings::GetSoundSampleRate() {
+	return _soundSampleRate;
 }
 
-bool SettingsGetSoundEnabled() {
-	return settings.soundEnabled;
+void Settings::SetSoundSampleRate(int sampleRate) {
+	_soundSampleRate = sampleRate;
 }
 
-void SettingsSetSoundEnabled(bool enabled) {
-	settings.soundEnabled = enabled;
+long Settings::GetLanguage() {
+	return _language;
 }
 
-int SettingsGetSoundSampleRate() {
-	return settings.soundSampleRate;
+void Settings::SetLanguage(long language) {
+	_language = language;
 }
 
-void SettingsSetSoundSampleRate(int sampleRate) {
-	settings.soundSampleRate = sampleRate;
-}
-
-long SettingsGetLanguage() {
-	return settings.language;
-}
-
-void SettingsSetLanguage(long language) {
-	settings.language = language;
-}
-
-int* SettingsGetInput(DeviceType type) {
+int* Settings::GetInput(DeviceType type) {
     switch (type) {
         case DeviceType::MASTERSYSTEM:
         case DeviceType::GAMEGEAR:
-            return &settings.smsKeys[0];
+            return &_smsKeys[0];
         case DeviceType::GAMEBOY:
         case DeviceType::GAMEBOYCOLOR:
-            return &settings.gbKeys[0];
+            return &_gbKeys[0];
         case DeviceType::NES:
-            return &settings.nesKeys[0];
+            return &_nesKeys[0];
         default:
             return NULL;
     }
 }
 
-void SettingsSetInput(DeviceType type, const int* padKeys) {
+void Settings::SetInput(DeviceType type, const int* padKeys) {
     switch (type) {
         case DeviceType::MASTERSYSTEM:
         case DeviceType::GAMEGEAR:
             for (int i=0; i<13; i++)
-                settings.smsKeys[i] = padKeys[i];
+                _smsKeys[i] = padKeys[i];
             break;
         case DeviceType::GAMEBOY:
         case DeviceType::GAMEBOYCOLOR:
             for (int i=0; i<8; i++)
-                settings.gbKeys[i] = padKeys[i];
+                _gbKeys[i] = padKeys[i];
+            break;
+        case DeviceType::NES:
+            for (int i = 0; i < 16; i++)
+                _nesKeys[i] = padKeys[i];
             break;
     }
 }
 
-std::string* SettingsGetRecentRoms() {
-	return &settings.recentRoms[0];
+std::string* Settings::GetRecentRoms() {
+	return &_recentRoms[0];
 }
 
-void SettingsSetRecentRoms(const std::string* recentRoms) {
+void Settings::SetRecentRoms(const std::string* recentRoms) {
 	for (int i=0; i<10; i++)
-        settings.recentRoms[i] = recentRoms[i];
+        _recentRoms[i] = recentRoms[i];
 }
 
-void SettingsSaveToFile() {
-    /*
-    Settings settings = SettingsGetCopy();
+void Settings::Save(const std::string& fileName) {
+    nlohmann::json data;
     
-	wxString configDir = wxStandardPaths::Get().GetUserDataDir();
+    data["general"]["renderMethod"] = _renderMethod;
+    data["general"]["greenScale"]   = _greenScale;
+    data["general"]["windowZoom"]   = _windowZoom;
+    data["general"]["language"]     = _language;
     
-	if (!wxFileName::DirExists(configDir))
-		wxFileName::Mkdir(configDir, 0777, wxPATH_MKDIR_FULL);
-    
-	wxFileName configPath(configDir, wxT("config.ini"));
-    
-	// Guardar a disco
-	wxFileConfig fileConfig(wxT(APP_NAME), wxT("pablogasco"), configPath.GetFullPath());
-    
-    fileConfig.Write(wxT("General/renderMethod"), settings.renderMethod);
-	fileConfig.Write(wxT("General/greenScale"), settings.greenScale);
-	fileConfig.Write(wxT("General/windowZoom"), settings.windowZoom);
-    fileConfig.Write(wxT("General/language"), settings.language);
-	
-	fileConfig.Write(wxT("Sound/enabled"), settings.soundEnabled);
-	fileConfig.Write(wxT("Sound/sampleRate"), settings.soundSampleRate);
-	
-    fileConfig.Write(wxT("Input/GB/up"), settings.gbKeys[0]);
-    fileConfig.Write(wxT("Input/GB/down"), settings.gbKeys[1]);
-    fileConfig.Write(wxT("Input/GB/left"), settings.gbKeys[2]);
-    fileConfig.Write(wxT("Input/GB/right"), settings.gbKeys[3]);
-    fileConfig.Write(wxT("Input/GB/a"), settings.gbKeys[4]);
-    fileConfig.Write(wxT("Input/GB/b"), settings.gbKeys[5]);
-    fileConfig.Write(wxT("Input/GB/select"), settings.gbKeys[6]);
-    fileConfig.Write(wxT("Input/GB/start"), settings.gbKeys[7]);
-    
-	fileConfig.Write(wxT("Input/SMS/Pad1/up"), settings.smsKeys[0]);
-	fileConfig.Write(wxT("Input/SMS/Pad1/down"), settings.smsKeys[1]);
-	fileConfig.Write(wxT("Input/SMS/Pad1/left"), settings.smsKeys[2]);
-	fileConfig.Write(wxT("Input/SMS/Pad1/right"), settings.smsKeys[3]);
-	fileConfig.Write(wxT("Input/SMS/Pad1/1"), settings.smsKeys[4]);
-	fileConfig.Write(wxT("Input/SMS/Pad1/2"), settings.smsKeys[5]);
-    fileConfig.Write(wxT("Input/SMS/Pad2/up"), settings.smsKeys[6]);
-    fileConfig.Write(wxT("Input/SMS/Pad2/down"), settings.smsKeys[7]);
-    fileConfig.Write(wxT("Input/SMS/Pad2/left"), settings.smsKeys[8]);
-    fileConfig.Write(wxT("Input/SMS/Pad2/right"), settings.smsKeys[9]);
-    fileConfig.Write(wxT("Input/SMS/Pad2/1"), settings.smsKeys[10]);
-    fileConfig.Write(wxT("Input/SMS/Pad2/2"), settings.smsKeys[11]);
-	fileConfig.Write(wxT("Input/SMS/pauseStart"), settings.smsKeys[12]);
-	
-	wxString auxString[10];
-	for (int i=0; i<10; i++)
-	{
-		auxString[i] = wxString(settings.recentRoms[i].c_str(), wxConvUTF8);
-	}
-	
-	fileConfig.Write(wxT("RecentRoms/01"), auxString[0]);
-	fileConfig.Write(wxT("RecentRoms/02"), auxString[1]);
-	fileConfig.Write(wxT("RecentRoms/03"), auxString[2]);
-	fileConfig.Write(wxT("RecentRoms/04"), auxString[3]);
-	fileConfig.Write(wxT("RecentRoms/05"), auxString[4]);
-	fileConfig.Write(wxT("RecentRoms/06"), auxString[5]);
-	fileConfig.Write(wxT("RecentRoms/07"), auxString[6]);
-	fileConfig.Write(wxT("RecentRoms/08"), auxString[7]);
-	fileConfig.Write(wxT("RecentRoms/09"), auxString[8]);
-	fileConfig.Write(wxT("RecentRoms/10"), auxString[9]);
-    */
+    data["sound"]["enabled"]        = _soundEnabled;
+    data["sound"]["sampleRate"]     = _soundSampleRate;
+
+    data["input"]["gb"]             = _gbKeys;
+    data["input"]["sms"]            = _smsKeys;
+    data["input"]["nes"]            = _nesKeys;
+
+    data["recentRoms"]              = _recentRoms;
+
+    std::string s = data.dump(4, ' ', false);
+    std::ofstream f(fileName);
+    f << s;
 }
 
-Settings SettingsLoadFromFile()
+void Settings::Load(const std::string& fileName)
 {
-    Settings settings;
-    /*
-    
-	wxString configDir = wxStandardPaths::Get().GetUserDataDir();
-	wxFileName configPath(configDir, wxT("config.ini"));
-	// Cargar de disco
-	wxFileConfig fileConfig(wxT(APP_NAME), wxT("pablogasco"), configPath.GetFullPath());
-    
-    fileConfig.Read(wxT("General/renderMethod"), &settings.renderMethod);
-	fileConfig.Read(wxT("General/greenScale"), &settings.greenScale);
-	fileConfig.Read(wxT("General/windowZoom"), &settings.windowZoom);
-    fileConfig.Read(wxT("General/language"), &settings.language);
-	
-	fileConfig.Read(wxT("Sound/enabled"),	 &settings.soundEnabled);
-	fileConfig.Read(wxT("Sound/sampleRate"), &settings.soundSampleRate);
-    
-    fileConfig.Read(wxT("Input/GB/up"), &settings.gbKeys[0]);
-    fileConfig.Read(wxT("Input/GB/down"), &settings.gbKeys[1]);
-    fileConfig.Read(wxT("Input/GB/left"), &settings.gbKeys[2]);
-    fileConfig.Read(wxT("Input/GB/right"), &settings.gbKeys[3]);
-    fileConfig.Read(wxT("Input/GB/a"), &settings.gbKeys[4]);
-    fileConfig.Read(wxT("Input/GB/b"), &settings.gbKeys[5]);
-    fileConfig.Read(wxT("Input/GB/select"), &settings.gbKeys[6]);
-    fileConfig.Read(wxT("Input/GB/start"), &settings.gbKeys[7]);
-    
-    fileConfig.Read(wxT("Input/SMS/Pad1/up"), &settings.smsKeys[0]);
-    fileConfig.Read(wxT("Input/SMS/Pad1/down"), &settings.smsKeys[1]);
-    fileConfig.Read(wxT("Input/SMS/Pad1/left"), &settings.smsKeys[2]);
-    fileConfig.Read(wxT("Input/SMS/Pad1/right"), &settings.smsKeys[3]);
-    fileConfig.Read(wxT("Input/SMS/Pad1/1"), &settings.smsKeys[4]);
-    fileConfig.Read(wxT("Input/SMS/Pad1/2"), &settings.smsKeys[5]);
-    fileConfig.Read(wxT("Input/SMS/Pad2/up"), &settings.smsKeys[6]);
-    fileConfig.Read(wxT("Input/SMS/Pad2/down"), &settings.smsKeys[7]);
-    fileConfig.Read(wxT("Input/SMS/Pad2/left"), &settings.smsKeys[8]);
-    fileConfig.Read(wxT("Input/SMS/Pad2/right"), &settings.smsKeys[9]);
-    fileConfig.Read(wxT("Input/SMS/Pad2/1"), &settings.smsKeys[10]);
-    fileConfig.Read(wxT("Input/SMS/Pad2/2"), &settings.smsKeys[11]);
-    fileConfig.Read(wxT("Input/SMS/pauseStart"), &settings.smsKeys[12]);
-	
-	wxString auxString[10];
-	fileConfig.Read(wxT("RecentRoms/01"), &auxString[0]);
-	fileConfig.Read(wxT("RecentRoms/02"), &auxString[1]);
-	fileConfig.Read(wxT("RecentRoms/03"), &auxString[2]);
-	fileConfig.Read(wxT("RecentRoms/04"), &auxString[3]);
-	fileConfig.Read(wxT("RecentRoms/05"), &auxString[4]);
-	fileConfig.Read(wxT("RecentRoms/06"), &auxString[5]);
-	fileConfig.Read(wxT("RecentRoms/07"), &auxString[6]);
-	fileConfig.Read(wxT("RecentRoms/08"), &auxString[7]);
-	fileConfig.Read(wxT("RecentRoms/09"), &auxString[8]);
-	fileConfig.Read(wxT("RecentRoms/10"), &auxString[9]);
-	
-	for (int i=0; i<10; i++)
-		settings.recentRoms[i] = auxString[i].mb_str();
-    
-    */
-    return settings;
+    std::ifstream f(fileName);
+    nlohmann::json data = nlohmann::json::parse(f);
+
+    if (data.contains("general")) {
+        _renderMethod   = data["general"].value<int>("renderMethod", 1);
+        _greenScale     = data["general"].value<bool>("greenScale", true);
+        _windowZoom     = data["general"].value<int>("windowZoom", 1);
+        _language       = data["general"].value<int>("language", 0);
+    }
+
+    if (data.contains("sound")) {
+        _soundEnabled   = data["sound"].value<bool>("enabled", true);
+        _soundSampleRate = data["sound"].value<int>("sampleRate", 44100);
+    }
+
+    if (data.contains("input")) {
+        nlohmann::json& input = data["input"];
+        if (input.contains("gb")) {
+            nlohmann::json& gb = input["gb"];
+            int numElements = gb.size() > 8 ? 8 : gb.size();
+            for (int i=0; i<numElements; i++)
+                _gbKeys[i] = gb[i];
+        }
+        if (input.contains("sms")) {
+            nlohmann::json& sms = input["sms"];
+            int numElements = sms.size() > 13 ? 13 : sms.size();
+            for (int i = 0; i < numElements; i++)
+                _smsKeys[i] = sms[i];
+        }
+        if (input.contains("nes")) {
+            nlohmann::json& nes = input["nes"];
+            int numElements = nes.size() > 16 ? 16 : nes.size();
+            for (int i = 0; i < numElements; i++)
+                _nesKeys[i] = nes[i];
+        }
+    }
+
+    if (data.contains("recentRoms")) {
+        nlohmann::json& recentRoms = data["recentRoms"];
+        int numElements = recentRoms.size() > 10 ? 10 : recentRoms.size();
+        for (int i = 0; i < numElements; i++)
+            _recentRoms[i] = recentRoms[i];
+    }
 }

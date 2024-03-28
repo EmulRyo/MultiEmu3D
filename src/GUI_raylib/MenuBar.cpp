@@ -117,7 +117,7 @@ SubMenuItem& SubMenu::NewItem(const std::string& text, std::function<void(int)> 
     m_vectorChars.push_back(buffer);
     Font font = GuiGetFont();
     int textSpacing = GuiGetStyle(DEFAULT, TEXT_SPACING);
-    Vector2 size = MeasureTextEx(font, buffer, font.baseSize, textSpacing);
+    Vector2 size = MeasureTextEx(font, buffer, (float)font.baseSize, (float)textSpacing);
     m_width = fmaxf(size.x + 12.0f, m_width);
 
     return m_items.emplace_back(text, funCB);;
@@ -150,7 +150,7 @@ void SubMenu::UpdateTexts() {
     for (int i = 0; i < m_items.size(); i++) {
         char* buffer = m_vectorChars[i];
         snprintf(buffer, 64, "  %s", m_items[i].GetText().c_str());
-        Vector2 size = MeasureTextEx(font, buffer, font.baseSize, textSpacing);
+        Vector2 size = MeasureTextEx(font, buffer, (float)font.baseSize, (float)textSpacing);
         m_width = fmaxf(size.x+12.0f, m_width);
     }
 }
@@ -183,7 +183,7 @@ bool SubMenu::Draw(float x, float y) {
     for (int i = 0; i < m_items.size(); i++) {
         SubMenu& subMenu = m_items[i].GetSubMenu();
         if (subMenu.m_items.size() > 0)
-            GuiDrawIcon(ICON_ARROW_RIGHT_FILL, x + w - 18, y + (listViewItemsHeight + listViewItemSpacing) * i + 4.0f, 1, WHITE);
+            GuiDrawIcon(ICON_ARROW_RIGHT_FILL, (int)(x + w - 18), (int)(y + (listViewItemsHeight + listViewItemSpacing) * i + 4.0f), 1, WHITE);
     }
 
     if (focus >= 0) {

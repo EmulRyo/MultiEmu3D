@@ -27,6 +27,7 @@
 #include "EmulationThread.h"
 #include "AppDefs.h"
 #include "raylib.h"
+#include "Settings.h"
 
 #define RAYGUI_IMPLEMENTATION
 #include "raygui.h"
@@ -37,6 +38,7 @@
 
 MainFrame::MainFrame(const std::string& fileName)
 {
+    Settings::Load("config.json");
 	// m_renderer = NULL;
     NFD_Init();
 
@@ -85,6 +87,8 @@ MainFrame::MainFrame(const std::string& fileName)
 
     m_recentMenuOpened = false;
     m_numRecentFiles = 0;
+
+    UpdateRecentMenu(Settings::GetRecentRoms());
 
 	if (!fileName.empty())
 		ChangeFile(fileName);
@@ -140,16 +144,55 @@ void MainFrame::ChangeFile(const std::string &fileName)
     }
 }
 
+void MainFrame::UpdateRecentMenu(const std::string* fileNames) {
+    m_numRecentFiles = 0;
+    SubMenu& recentMenu = m_menuBar.GetSubMenu(0).GetItem(1).GetSubMenu();
+    wchar_t separator = std::filesystem::path::preferred_separator;
+    for (int i = 0; i < MAX_RECENT_FILES; i++)
+    {
+        if (fileNames[i] == "")
+            break;
+
+        m_recentFiles[i].fullName = fileNames[i];
+        m_recentFiles[i].shortName = fileNames[i].substr(fileNames[i].rfind(separator) + 1);
+
+        if (recentMenu.GetNumItems() <= i)
+            recentMenu.NewItem(" ", std::bind(&MainFrame::OnOpenRecentUI, this, std::placeholders::_1));
+        recentMenu.GetItem(i).SetText(m_recentFiles[i].shortName);
+
+        m_numRecentFiles++;
+    }
+    recentMenu.UpdateTexts();
+}
+
+void MainFrame::RecentRomsToSettings()
+{
+    std::string recentRomsSettings[10];
+
+    for (int i = 0; i < m_numRecentFiles; i++)
+    {
+        recentRomsSettings[i] = m_recentFiles[i].fullName;
+    }
+
+    for (int i = m_numRecentFiles; i < MAX_RECENT_FILES; i++)
+    {
+        recentRomsSettings[i] = "";
+    }
+
+    Settings::SetRecentRoms(recentRomsSettings);
+}
+
 void MainFrame::UpdateRecentMenu(const std::string &fileName)
 {
     SubMenu& recentMenu = m_menuBar.GetSubMenu(0).GetItem(1).GetSubMenu();
 
     wchar_t separator = std::filesystem::path::preferred_separator;
     std::string shortName = fileName.substr(fileName.rfind(separator) + 1);
+    std::string fullName = fileName;
     int previousIndex = -1;
     for (int i = 0; i < m_numRecentFiles; i++)
     {
-        if (m_recentFiles[i].fullName == fileName)
+        if (m_recentFiles[i].fullName == fullName)
         {
             previousIndex = i;
             break;
@@ -187,7 +230,7 @@ void MainFrame::UpdateRecentMenu(const std::string &fileName)
         m_recentFiles[i + 1].fullName = m_recentFiles[i].fullName;
     }
     m_recentFiles[0].shortName = shortName;
-    m_recentFiles[0].fullName = fileName;
+    m_recentFiles[0].fullName = fullName;
 
     for (int i = 0; i < m_numRecentFiles; i++)
     {
@@ -196,9 +239,8 @@ void MainFrame::UpdateRecentMenu(const std::string &fileName)
 
     recentMenu.UpdateTexts();
 
-    //RecentRomsToSettings();
-    //m_settingsDialog->Reload();
-    //SettingsSaveToFile();
+    RecentRomsToSettings();
+    Settings::Save("config.json");
 }
 
 void MainFrame::SetStyle() {

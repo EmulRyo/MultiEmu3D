@@ -81,7 +81,7 @@ void EmulationThread::SetState(EmuState state)
     m_emuState = state;
     
     if (state == EmuState::Playing) {
-        m_device->SoundEnable(SettingsGetSoundEnabled());
+        m_device->SoundEnable(Settings::GetSoundEnabled());
         ((RendererBase *)m_screen)->SetIcon(Renderer::Play);
     }
     else
@@ -353,9 +353,9 @@ void EmulationThread::ApplySettings()
 void EmulationThread::ApplySettingsNoMutex()
 {
     if (m_device) {
-        PadSetKeys(SettingsGetInput(m_device->GetType()));
-        m_device->SoundSetSampleRate(SettingsGetSoundSampleRate());
-        m_device->SoundEnable(SettingsGetSoundEnabled());
+        PadSetKeys(Settings::GetInput(m_device->GetType()));
+        m_device->SoundSetSampleRate(Settings::GetSoundSampleRate());
+        m_device->SoundEnable(Settings::GetSoundEnabled());
     }
 }
 
