@@ -29,7 +29,7 @@ public:
 	static int  GetWindowZoom();
 	static bool GetSoundEnabled();
 	static int  GetSoundSampleRate();
-	static long GetLanguage();
+	static std::string_view GetLanguage();
 	static int* GetInput(DeviceType type);
 	static std::string* GetRecentRoms();
 
@@ -38,7 +38,7 @@ public:
 	static void SetWindowZoom(int windowZoom);
 	static void SetSoundEnabled(bool enabled);
 	static void SetSoundSampleRate(int sampleRate);
-	static void SetLanguage(long language);
+	static void SetLanguage(std::string_view language);
 	static void SetInput(DeviceType type, const int* padKeys);
 	static void SetRecentRoms(const std::string* recentRoms);
 

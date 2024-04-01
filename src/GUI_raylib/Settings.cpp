@@ -26,7 +26,7 @@ static bool _greenScale      = false;
 static int  _windowZoom      = 1;
 static bool _soundEnabled    = true;
 static int  _soundSampleRate = 44100;
-static long _language        = 0;
+static std::string _language = "en";
                                //    Up,     Down,     Left,     Right,     A,     B,          Select,     Start
 static int  _gbKeys[8]       = { KEY_UP, KEY_DOWN, KEY_LEFT, KEY_RIGHT, KEY_A, KEY_S, KEY_RIGHT_SHIFT, KEY_ENTER };
                                //    Up,     Down,     Left,     Right,     1,     2,    Up,  Down,  Left, Right,     1,     2, Start/Pause
@@ -76,12 +76,12 @@ void Settings::SetSoundSampleRate(int sampleRate) {
 	_soundSampleRate = sampleRate;
 }
 
-long Settings::GetLanguage() {
+std::string_view Settings::GetLanguage() {
 	return _language;
 }
 
-void Settings::SetLanguage(long language) {
-	_language = language;
+void Settings::SetLanguage(std::string_view language) {
+	_language = std::string(language);
 }
 
 int* Settings::GetInput(DeviceType type) {
@@ -158,7 +158,7 @@ void Settings::Load(const std::string& fileName)
         _renderMethod   = data["general"].value<int>("renderMethod", 1);
         _greenScale     = data["general"].value<bool>("greenScale", true);
         _windowZoom     = data["general"].value<int>("windowZoom", 1);
-        _language       = data["general"].value<int>("language", 0);
+        _language       = data["general"].value<std::string>("language", "en");
     }
 
     if (data.contains("sound")) {

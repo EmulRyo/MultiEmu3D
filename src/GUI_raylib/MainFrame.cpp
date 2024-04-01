@@ -28,6 +28,7 @@
 #include "AppDefs.h"
 #include "raylib.h"
 #include "Settings.h"
+#include "Localization.h"
 
 #define RAYGUI_IMPLEMENTATION
 #include "raygui.h"
@@ -39,6 +40,7 @@
 MainFrame::MainFrame(const std::string& fileName)
 {
     Settings::Load("config.json");
+    Localization::SetLanguage(Settings::GetLanguage());
 	// m_renderer = NULL;
     NFD_Init();
 
@@ -53,42 +55,24 @@ MainFrame::MainFrame(const std::string& fileName)
     m_emulation->SetState(EmuState::Playing);
 
     m_fontSize = 20;
-    m_font = LoadFontEx("C:\\Windows\\Fonts\\segoeui.ttf", m_fontSize, nullptr, 0);
+    char* utf8Chars = 
+        "abcdefghijklmnopqrstuvwxyz"
+        "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+        "1234567890"
+        "?¿!¡ ()[]{};,.:-_'\"#+-*=%&<>@/\\^"
+        "áéíóúàèìòùêîöüçñ"
+        "ÁÉÍÓÚÀÈÌÒÙÊÎÖÜÇÑ"
+        "αβγδεζηθικλμνξοπρσςτυφχψω"
+        "ΑΒΓΔΕΖΗΘΙΚΛΜΝΞΟΠΡΣΤΥΦΧΨΩ"
+        "ΆΈάέήίόύώ"
+        ;
+    int numCodepoints = 0;
+    int* codePoints = LoadCodepoints(utf8Chars, &numCodepoints);
+    m_font = LoadFontEx("C:\\Windows\\Fonts\\segoeui.ttf", m_fontSize, codePoints, numCodepoints);
     GuiSetFont(m_font);
     SetStyle();
 
-    m_menuBar.SetFont(m_font);
-    SubMenu& fileMenu        = m_menuBar.NewSubMenu("File");
-    SubMenu& emulationMenu   = m_menuBar.NewSubMenu("Emulation");
-    SubMenu& languageMenu    = m_menuBar.NewSubMenu("Language");
-    SubMenu& helpMenu        = m_menuBar.NewSubMenu("Help");
-
-    fileMenu.NewItem("Open", std::bind(&MainFrame::OnOpenFileUI, this));
-    SubMenuItem& openRecent = fileMenu.NewItem("Open Recent   ");
-    SubMenuItem& loadState  = fileMenu.NewItem("Load State");
-    SubMenuItem& saveState  = fileMenu.NewItem("Save State");
-    fileMenu.NewItem("Exit", std::bind(&MainFrame::OnExitUI, this));
-
-    emulationMenu.NewItem("Settings",   std::bind(&MainFrame::OnSettingsUI, this));
-    emulationMenu.NewItem("Play",       std::bind(&MainFrame::OnPlayUI, this));
-    emulationMenu.NewItem("Pause",      std::bind(&MainFrame::OnPauseUI, this));
-    emulationMenu.NewItem("Stop",       std::bind(&MainFrame::OnStopUI, this));
-    emulationMenu.NewItem("Debug",      std::bind(&MainFrame::OnDebugUI, this));
-    emulationMenu.NewItem("Fullscreen", std::bind(&MainFrame::OnFullscreenUI, this));
-
-    SubMenu& loadStateMenu = loadState.GetSubMenu();
-    SubMenu& saveStateMenu = saveState.GetSubMenu();
-    for (int i = 0; i < 10; i++) {
-        loadStateMenu.NewItem("Slot "+std::to_string(i+1), std::bind(&MainFrame::OnLoadStateUI, this, std::placeholders::_1));
-        saveStateMenu.NewItem("Slot "+std::to_string(i+1), std::bind(&MainFrame::OnSaveStateUI, this, std::placeholders::_1));
-    }
-
-    helpMenu.NewItem("About");
-
-    m_recentMenuOpened = false;
-    m_numRecentFiles = 0;
-
-    UpdateRecentMenu(Settings::GetRecentRoms());
+    CreateMenuBar();
 
 	if (!fileName.empty())
 		ChangeFile(fileName);
@@ -132,6 +116,52 @@ void MainFrame::Draw(Rectangle r) {
     if (!m_messageError.empty()) {
         ShowErrorMessageBox(r.width, r.height);
     }
+}
+
+void MainFrame::CreateMenuBar() {
+    m_menuBar = MenuBar();
+
+    m_menuBar.SetFont(m_font);
+    SubMenu& fileMenu = m_menuBar.NewSubMenu(_("File"));
+    SubMenu& emulationMenu = m_menuBar.NewSubMenu(_("Emulation"));
+    SubMenu& languageMenu = m_menuBar.NewSubMenu(_("Language"));
+    SubMenu& helpMenu = m_menuBar.NewSubMenu(_("Help"));
+
+    fileMenu.NewItem(_("Open"), std::bind(&MainFrame::OnOpenFileUI, this));
+    SubMenuItem& openRecent = fileMenu.NewItem(_("Open Recent"));
+    SubMenuItem& loadState = fileMenu.NewItem(_("Load State"));
+    SubMenuItem& saveState = fileMenu.NewItem(_("Save State"));
+    fileMenu.NewItem(_("Exit"), std::bind(&MainFrame::OnExitUI, this));
+
+    emulationMenu.NewItem(_("Settings"), std::bind(&MainFrame::OnSettingsUI, this));
+    emulationMenu.NewItem(_("Play"), std::bind(&MainFrame::OnPlayUI, this));
+    emulationMenu.NewItem(_("Pause"), std::bind(&MainFrame::OnPauseUI, this));
+    emulationMenu.NewItem(_("Stop"), std::bind(&MainFrame::OnStopUI, this));
+    emulationMenu.NewItem(_("Debug"), std::bind(&MainFrame::OnDebugUI, this));
+    emulationMenu.NewItem(_("Fullscreen"), std::bind(&MainFrame::OnFullscreenUI, this));
+
+    languageMenu.NewItem("Deutsch", std::bind(&MainFrame::OnLanguageUI, this, std::placeholders::_1));
+    languageMenu.NewItem("English", std::bind(&MainFrame::OnLanguageUI, this, std::placeholders::_1));
+    languageMenu.NewItem("Ελληνικά", std::bind(&MainFrame::OnLanguageUI, this, std::placeholders::_1));
+    languageMenu.NewItem("Español", std::bind(&MainFrame::OnLanguageUI, this, std::placeholders::_1));
+    languageMenu.NewItem("Français", std::bind(&MainFrame::OnLanguageUI, this, std::placeholders::_1));
+    languageMenu.NewItem("Italiano", std::bind(&MainFrame::OnLanguageUI, this, std::placeholders::_1));
+
+    SubMenu& loadStateMenu = loadState.GetSubMenu();
+    SubMenu& saveStateMenu = saveState.GetSubMenu();
+    for (int i = 0; i < 10; i++) {
+        loadStateMenu.NewItem(_("Load slot ") + std::to_string(i + 1), std::bind(&MainFrame::OnLoadStateUI, this, std::placeholders::_1));
+        saveStateMenu.NewItem(_("Save slot ") + std::to_string(i + 1), std::bind(&MainFrame::OnSaveStateUI, this, std::placeholders::_1));
+    }
+
+    helpMenu.NewItem(_("About"));
+
+    m_recentMenuOpened = false;
+    m_numRecentFiles = 0;
+
+    UpdateRecentMenu(Settings::GetRecentRoms());
+
+    fileMenu.UpdateTexts(); // Se usa para actualizar el ancho del submenu
 }
 
 void MainFrame::ChangeFile(const std::string &fileName)
@@ -267,8 +297,8 @@ void MainFrame::DrawToolBar(Rectangle dst) {
 
     DrawRectangle((int)dst.x, (int)dst.y, (int)dst.width, (int)dst.height, GetColor(GuiGetStyle(DEFAULT, BACKGROUND_COLOR)));
     float width = 24;
-    float x = dst.x;
-    GuiSetTooltip("Open");
+    float x = dst.x+6;
+    GuiSetTooltip(_("Open"));
     if (GuiButton(Rectangle{ x, dst.y, width, dst.height }, GuiIconText(ICON_FOLDER_FILE_OPEN, ""))) {
         OnOpenFileUI();
     }
@@ -277,12 +307,12 @@ void MainFrame::DrawToolBar(Rectangle dst) {
         GuiDisableTooltip();
 
     x += width;
-    GuiSetTooltip("Recent");
+    GuiSetTooltip(_("Recent"));
     if (GuiButton(Rectangle{ x, dst.y, width, dst.height }, GuiIconText(ICON_ARROW_DOWN, ""))) {
         OnRecentUI();
     }
 
-    // Cerrar menu de roms recientemente abiertas si se pulsa fuera del bot�n
+    // Cerrar menu de roms recientemente abiertas si se pulsa fuera del botón
     if (m_recentMenuOpened &&
         (IsMouseButtonReleased(MOUSE_BUTTON_LEFT) || IsMouseButtonReleased(MOUSE_BUTTON_RIGHT)) &&
         !CheckCollisionPointRec(GetMousePosition(), Rectangle{ x, dst.y, width, dst.height })) {
@@ -292,25 +322,25 @@ void MainFrame::DrawToolBar(Rectangle dst) {
     GuiEnableTooltip();
 
     x += width*2;
-    GuiSetTooltip("Play");
+    GuiSetTooltip(_("Play"));
     if (GuiButton(Rectangle{ x, dst.y, width, dst.height }, GuiIconText(ICON_PLAYER_PLAY, ""))) {
         OnPlayUI();
     }
 
     x += width;
-    GuiSetTooltip("Pause");
+    GuiSetTooltip(_("Pause"));
     if (GuiButton(Rectangle{ x, dst.y, width, dst.height }, GuiIconText(ICON_PLAYER_PAUSE, ""))) {
         OnPauseUI();
     }
 
     x += width;
-    GuiSetTooltip("Stop");
+    GuiSetTooltip(_("Stop"));
     if (GuiButton(Rectangle{ x, dst.y, width, dst.height }, GuiIconText(ICON_PLAYER_STOP, ""))) {
         OnStopUI();
     }
 
     x += width*2;
-    GuiSetTooltip("Switch between 2D and 3D");
+    GuiSetTooltip(_("Switch between 2D and 3D"));
     if (GuiButton(Rectangle{ x, dst.y, width, dst.height }, GuiIconText(ICON_MODE_3D, ""))) {
 
     }
@@ -326,12 +356,12 @@ void MainFrame::DrawStatusBar(Rectangle dst) {
     y = dst.y;
     
     w = (float)GetScreenWidth() * 0.5f;
-    text = TextFormat("Refresh: %d fps", GetFPS());
+    text = TextFormat("%s: %d fps", _("Refresh"), GetFPS());
     GuiStatusBar(Rectangle{ x, y, w, h }, text);
     x += w;
 
     w = (float)GetScreenWidth() * 0.5f;
-    text = TextFormat("Emulation: %.1f fps", m_emulation->GetFPS());
+    text = TextFormat("%s: %.1f fps", _("Emulation"), m_emulation->GetFPS());
     GuiStatusBar(Rectangle{ x, y, w, h }, text);
 }
 
@@ -341,7 +371,7 @@ void MainFrame::OnOpenFileUI() {
 
     nfdchar_t* outPath;
     nfdfilteritem_t filterItem[] = {
-        { "All roms(*.gb; *.gbc; *.nes; *.sms; *.gg; *.zip)", "gb,gbc,nes,sms,gg,zip,7z" },
+        { "All roms(*.gb; *.gbc; *.nes; *.sms; *.gg; *.zip; *.7z)", "gb,gbc,nes,sms,gg,zip,7z" },
         { "GameBoy(*.gb)",          "gb"    },
         { "GameBoy Color(*.gbc)",   "gbc"   },
         { "Game Gear(*.gg)",        "gg"    },
@@ -369,8 +399,6 @@ void MainFrame::OnOpenRecentUI(int id) {
 }
 
 void MainFrame::OnLoadStateUI(int id) {
-    printf("Load state %d\n", id);
-
     std::filesystem::path savesDir = std::filesystem::absolute(std::filesystem::current_path());
     savesDir += std::filesystem::path::preferred_separator;
     savesDir = savesDir.append("SaveStates");
@@ -436,13 +464,31 @@ void MainFrame::OnExitUI() {
     exit(0);
 }
 
+void MainFrame::OnLanguageUI(int id) {
+    std::string language = "en";
+    switch (id) {
+    case 0: language = "de"; break;
+    case 1: language = "en"; break;
+    case 2: language = "el"; break;
+    case 3: language = "es"; break;
+    case 4: language = "fr"; break;
+    case 5: language = "it"; break;
+    default: break;
+    }
+
+    Localization::SetLanguage(language);
+    CreateMenuBar();
+    Settings::SetLanguage(language);
+    Settings::Save("config.json");
+}
+
 void MainFrame::ShowErrorMessageBox(float winWidth, float winHeight) {
     GuiEnable();
     DrawRectangle(0, 24 * 2, (int)winWidth, (int)(winHeight - 24 * 3), ColorAlpha(BLACK, 0.7f));
     Vector2 fontSize = MeasureTextEx(m_font, m_messageError.c_str(), (float)m_fontSize, 1);
     float w = fontSize.x + 20;
     float h = fontSize.y + 24 * 3;
-    int result = GuiMessageBox(Rectangle{ (winWidth - w) / 2.0f, (winHeight - h) / 2.0f, w, h }, "Error", m_messageError.c_str(), "OK");
+    int result = GuiMessageBox(Rectangle{ (winWidth - w) / 2.0f, (winHeight - h) / 2.0f, w, h }, _("Error"), m_messageError.c_str(), _("OK"));
     if (result >= 0) {
         m_messageError = "";
     }

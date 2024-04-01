@@ -63,6 +63,7 @@ private:
     RecentFile m_recentFiles[MAX_RECENT_FILES];
     int m_numRecentFiles;
 
+    void CreateMenuBar();
     void ChangeFile(const std::string& fileName);
     void UpdateRecentMenu(const std::string* fileNames);
     void UpdateRecentMenu(const std::string& fileName);
@@ -83,6 +84,7 @@ private:
     void OnSettingsUI();
     void OnDebugUI();
     void OnFullscreenUI();
+    void OnLanguageUI(int id);
     void OnExitUI();
 };
 

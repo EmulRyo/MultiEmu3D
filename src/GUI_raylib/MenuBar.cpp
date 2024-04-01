@@ -151,7 +151,10 @@ void SubMenu::UpdateTexts() {
         char* buffer = m_vectorChars[i];
         snprintf(buffer, 64, "  %s", m_items[i].GetText().c_str());
         Vector2 size = MeasureTextEx(font, buffer, (float)font.baseSize, (float)textSpacing);
-        m_width = fmaxf(size.x+12.0f, m_width);
+        float width = size.x + 12.0f;
+        if (m_items[i].GetSubMenu().GetNumItems() > 0)
+            width += 12.0f;
+        m_width = fmaxf(width, m_width);
     }
 }
 
