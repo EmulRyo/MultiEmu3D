@@ -16,6 +16,7 @@
  */
 
 #include <fstream>
+#include <exception>
 #include "Settings.h"
 #include "AppDefs.h"
 #include "raylib.h"
@@ -152,7 +153,14 @@ void Settings::Save(const std::string& fileName) {
 void Settings::Load(const std::string& fileName)
 {
     std::ifstream f(fileName);
-    nlohmann::json data = nlohmann::json::parse(f);
+    nlohmann::json data;
+    try {
+        data = nlohmann::json::parse(f);
+    }
+    catch (const nlohmann::json::exception& e) {
+        printf("%s\n", e.what());
+        return;
+    }
 
     if (data.contains("general")) {
         _renderMethod   = data["general"].value<int>("renderMethod", 1);
