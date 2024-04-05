@@ -53,25 +53,10 @@ MainFrame::MainFrame(const std::string& fileName)
     
     m_emulation->SetScreen(m_renderer);
     m_emulation->SetState(EmuState::Playing);
-
-    m_fontSize = 20;
-    char* utf8Chars = 
-        "abcdefghijklmnopqrstuvwxyz"
-        "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
-        "1234567890"
-        "?¿!¡ ()[]{};,.:-_'\"#+-*=%&<>@/\\^"
-        "áéíóúàèìòùêîöüçñ"
-        "ÁÉÍÓÚÀÈÌÒÙÊÎÖÜÇÑ"
-        "αβγδεζηθικλμνξοπρσςτυφχψω"
-        "ΑΒΓΔΕΖΗΘΙΚΛΜΝΞΟΠΡΣΤΥΦΧΨΩ"
-        "ΆΈάέήίόύώ"
-        ;
-    int numCodepoints = 0;
-    int* codePoints = LoadCodepoints(utf8Chars, &numCodepoints);
-    m_font = LoadFontEx("C:\\Windows\\Fonts\\segoeui.ttf", m_fontSize, codePoints, numCodepoints);
-    GuiSetFont(m_font);
+    
+    m_font = { 0 };
+    LoadFont(Settings::GetLanguage());
     SetStyle();
-
     CreateMenuBar();
 
 	if (!fileName.empty())
@@ -146,6 +131,10 @@ void MainFrame::CreateMenuBar() {
     languageMenu.NewItem("Español", std::bind(&MainFrame::OnLanguageUI, this, std::placeholders::_1));
     languageMenu.NewItem("Français", std::bind(&MainFrame::OnLanguageUI, this, std::placeholders::_1));
     languageMenu.NewItem("Italiano", std::bind(&MainFrame::OnLanguageUI, this, std::placeholders::_1));
+    languageMenu.NewItem("Chinese Simplified 汉语", std::bind(&MainFrame::OnLanguageUI, this, std::placeholders::_1));
+    languageMenu.NewItem("Chinese Traditional 漢語", std::bind(&MainFrame::OnLanguageUI, this, std::placeholders::_1));
+    languageMenu.NewItem("Japanese 日本語", std::bind(&MainFrame::OnLanguageUI, this, std::placeholders::_1));
+    languageMenu.NewItem("Korean 한국어", std::bind(&MainFrame::OnLanguageUI, this, std::placeholders::_1));
 
     SubMenu& loadStateMenu = loadState.GetSubMenu();
     SubMenu& saveStateMenu = saveState.GetSubMenu();
@@ -162,6 +151,58 @@ void MainFrame::CreateMenuBar() {
     UpdateRecentMenu(Settings::GetRecentRoms());
 
     fileMenu.UpdateTexts(); // Se usa para actualizar el ancho del submenu
+}
+
+void MainFrame::LoadFont(std::string_view language) {
+    if (m_font.texture.width > 0)
+        UnloadFont(m_font);
+
+    char* utf8Chars =
+        "abcdefghijklmnopqrstuvwxyz"
+        "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+        "1234567890"
+        "?¿!¡ ()[]{};,.:-_'\"#+-*=%&<>@/\\^"
+        "áéíóúàèìòùêîöüçñ"
+        "ÁÉÍÓÚÀÈÌÒÙÊÎÖÜÇÑ"
+        "αβγδεζηθικλμνξοπρσςτυφχψω"
+        "ΑΒΓΔΕΖΗΘΙΚΛΜΝΞΟΠΡΣΤΥΦΧΨΩ"
+        "ΆΈάέήίόύώ"
+        "文件模拟语言帮助打开最近载入保存退出"
+        "设置播放暂停止调试全屏关于刷新错误确"
+        "定状态插槽在和之间切换汉"
+        "漢語檔案模擬幫助開啟啟載入狀態儲載插"
+        "設暫調試螢幕關於間換錯誤確"
+        "ファイルエミュレーションヘプくいたを"
+        "読み込するスロットむ終了再生一時デバ"
+        "グクリ概要のとり替えラ日本"
+        "한국어파일에뮬레이션언도움말열기최근"
+        "상태불러오저장하슬롯종료설정재생시지"
+        "디버그전체화면보와환새로고침류확인"
+        ;
+    int numCodepoints = 0;
+    int* codePoints = LoadCodepoints(utf8Chars, &numCodepoints);
+
+    if (language == "zh_CN") {
+        m_fontSize = 24;
+        m_font = LoadFontEx("Fonts/NotoSansSC-Regular.ttf", m_fontSize, codePoints, numCodepoints);
+    }
+    else if (language == "zh_TW") {
+        m_fontSize = 24;
+        m_font = LoadFontEx("Fonts/NotoSansTC-Regular.ttf", m_fontSize, codePoints, numCodepoints);
+    }
+    else if (language == "ja") {
+        m_fontSize = 24;
+        m_font = LoadFontEx("Fonts/NotoSansJP-Regular.ttf", m_fontSize, codePoints, numCodepoints);
+    }
+    else if (language == "ko") {
+        m_fontSize = 24;
+        m_font = LoadFontEx("Fonts/NotoSansKR-Regular.ttf", m_fontSize, codePoints, numCodepoints);
+    }
+    else {
+        m_fontSize = 20;
+        m_font = LoadFontEx("C:\\Windows\\Fonts\\segoeui.ttf", m_fontSize, codePoints, numCodepoints);
+    }
+    GuiSetFont(m_font);
 }
 
 void MainFrame::ChangeFile(const std::string &fileName)
@@ -473,10 +514,16 @@ void MainFrame::OnLanguageUI(int id) {
     case 3: language = "es"; break;
     case 4: language = "fr"; break;
     case 5: language = "it"; break;
+    case 6: language = "zh_CN"; break;
+    case 7: language = "zh_TW"; break;
+    case 8: language = "ja"; break;
+    case 9: language = "ko"; break;
     default: break;
     }
 
     Localization::SetLanguage(language);
+    LoadFont(language);
+    SetStyle();
     CreateMenuBar();
     Settings::SetLanguage(language);
     Settings::Save("config.json");

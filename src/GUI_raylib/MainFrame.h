@@ -72,6 +72,7 @@ private:
     void ShowErrorMessageBox(float winWidth, float winHeight);
     void RecentRomsToSettings();
     void SetStyle();
+    void LoadFont(std::string_view language);
 
     void OnOpenFileUI();
     void OnRecentUI();

@@ -317,6 +317,12 @@ project "MultiEmu3D_raylib"
    links { "GB", "SMS", "NES", "nativefiledialog-extended" }
    link_raylib()
 
+   -- copy fonts to the target directory
+   postbuildcommands {
+      "{COPY} %{wks.location}\\..\\Fonts\\*.ttf %{wks.location}\\bin\\%{cfg.buildcfg}\\Fonts",
+      "{COPY} %{wks.location}\\..\\Fonts\\*.ttf %{wks.location}\\Fonts"
+   }
+
    filter "configurations:Debug"
       defines { "DEBUG" }
       symbols "On"
