@@ -25,6 +25,9 @@
 #include "../GB-GBC/GB.h"
 #include "RendererSW.h"
 #include "EmulationThread.h"
+#include "MessageBoxDialog.h"
+#include "DebuggerDialog.h"
+#include "DebuggerNESDialog.h"
 #include "AppDefs.h"
 #include "raylib.h"
 #include "Settings.h"
@@ -78,10 +81,12 @@ void MainFrame::Update(float deltaTime) {
 }
 
 void MainFrame::Draw(Rectangle r) {
-    if (!m_messageError.empty())
+    if (m_msgBoxDlg != nullptr && m_msgBoxDlg->IsEnabled() ||
+        m_debuggerDlg != nullptr && m_debuggerDlg->IsEnabled())
         GuiDisable();
 
     m_renderer->Draw(Rectangle{ 0, 48, r.width, r.height - 72 });
+
     if (m_menuBar.IsOpened())
         GuiLock();
     DrawToolBar(Rectangle{ 0, 24, r.width, 24 });
@@ -94,8 +99,13 @@ void MainFrame::Draw(Rectangle r) {
     }
     DrawStatusBar(Rectangle{ 0, r.height-24, r.width, 24 });
 
-    if (!m_messageError.empty()) {
-        ShowErrorMessageBox(r.width, r.height);
+    if (m_debuggerDlg != nullptr && m_debuggerDlg->IsEnabled()) {
+        GuiEnable();
+        m_debuggerDlg->Draw(r);
+    }
+    if (m_msgBoxDlg != nullptr && m_msgBoxDlg->IsEnabled()) {
+        GuiEnable();
+        m_msgBoxDlg->Draw(r);
     }
 }
 
@@ -203,10 +213,21 @@ void MainFrame::LoadFont(std::string_view language) {
 
 void MainFrame::ChangeFile(const std::string &fileName)
 {
-    if (m_emulation->ChangeFile(fileName))
+    if (m_emulation->ChangeFile(fileName)) {
         UpdateRecentMenu(fileName);
+
+        VideoGameDevice* device = m_emulation->GetVideoGameDevice();
+        if ((device->GetType() == DeviceType::MASTERSYSTEM) || (device->GetType() == DeviceType::GAMEGEAR))
+            return;//m_debuggerDlg = new DebuggerSMSDialog(device);
+        else if ((device->GetType() == DeviceType::GAMEBOY) || (device->GetType() == DeviceType::GAMEBOYCOLOR))
+            return;//m_debuggerDlg = new DebuggerGBDialog(device);
+        else if (device->GetType() == DeviceType::NES)
+            //m_debuggerDlg = new DebuggerNESDialog(device);
+            NewDialog<DebuggerNESDialog>((DebuggerNESDialog**)&m_debuggerDlg, m_font, m_fontSize, device);
+    }
     else {
-        m_messageError = m_emulation->GetLastError();
+        NewDialog<MessageBoxDialog>(&m_msgBoxDlg, m_font, m_fontSize, m_emulation->GetLastError());
+        m_msgBoxDlg->Show();
         m_emulation->SetState(EmuState::Paused);
     }
 }
@@ -455,7 +476,8 @@ void MainFrame::OnLoadStateUI(int id) {
     }
     catch (Exception e)
     {
-        m_messageError = e.what();
+        NewDialog<MessageBoxDialog>(&m_msgBoxDlg, m_font, m_fontSize, e.what());
+        m_msgBoxDlg->Show();
     }
 }
 
@@ -474,7 +496,8 @@ void MainFrame::OnSaveStateUI(int id) {
     }
     catch (Exception e)
     {
-        m_messageError = e.what();
+        NewDialog<MessageBoxDialog>(&m_msgBoxDlg, m_font, m_fontSize, e.what());
+        m_msgBoxDlg->Show();
     }
 }
 
@@ -498,7 +521,11 @@ void MainFrame::OnSettingsUI() {
 }
 
 void MainFrame::OnDebugUI() {
+    if (m_debuggerDlg == nullptr)
+        return;
 
+    m_emulation->SetState(EmuState::Paused);
+    m_debuggerDlg->Show();
 }
 
 void MainFrame::OnFullscreenUI() {
@@ -533,14 +560,12 @@ void MainFrame::OnLanguageUI(int id) {
     Settings::Save("config.json");
 }
 
-void MainFrame::ShowErrorMessageBox(float winWidth, float winHeight) {
-    GuiEnable();
-    DrawRectangle(0, 24 * 2, (int)winWidth, (int)(winHeight - 24 * 3), ColorAlpha(BLACK, 0.7f));
-    Vector2 fontSize = MeasureTextEx(m_font, m_messageError.c_str(), (float)m_fontSize, 1);
-    float w = fontSize.x + 20;
-    float h = fontSize.y + 24 * 3;
-    int result = GuiMessageBox(Rectangle{ (winWidth - w) / 2.0f, (winHeight - h) / 2.0f, w, h }, _("Error"), m_messageError.c_str(), _("OK"));
-    if (result >= 0) {
-        m_messageError = "";
-    }
+template <typename T, typename... Targs>
+void MainFrame::NewDialog(T** dialog, Targs... args) {
+    if (*dialog != nullptr)
+        delete *dialog;
+
+    static_assert(std::is_base_of<Dialog, T>::value, "T must derive from Dialog");
+
+    *dialog = new T(args...);
 }

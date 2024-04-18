@@ -27,6 +27,9 @@
 class RendererBase;
 class VideoGameDevice;
 class EmulationThread;
+class Dialog;
+class MessageBoxDialog;
+class DebuggerDialog;
 
 struct RecentFile
 {
@@ -51,11 +54,12 @@ public:
     void Draw(Rectangle dst);
     
 private:
-    RendererBase* m_renderer;
-    EmulationThread* m_emulation;
+    RendererBase*     m_renderer    = nullptr;
+    EmulationThread*  m_emulation   = nullptr;
+    MessageBoxDialog* m_msgBoxDlg   = nullptr;
+    DebuggerDialog*   m_debuggerDlg = nullptr;
     Font m_font;
     int m_fontSize;
-    std::string m_messageError;
     MenuBar m_menuBar;
     int m_windowWidth;
     int m_windowHeight;
@@ -69,7 +73,8 @@ private:
     void UpdateRecentMenu(const std::string& fileName);
     void DrawToolBar(Rectangle dst);
     void DrawStatusBar(Rectangle dst);
-    void ShowErrorMessageBox(float winWidth, float winHeight);
+    template <typename T, typename... Targs>
+    void NewDialog(T** dialog, Targs... args);
     void RecentRomsToSettings();
     void SetStyle();
     void LoadFont(std::string_view language);
