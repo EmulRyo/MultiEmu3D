@@ -41,18 +41,14 @@ MainFrame::MainFrame(const std::string& fileName)
 {
     Settings::Load("config.json");
     Localization::SetLanguage(Settings::GetLanguage());
-	// m_renderer = NULL;
     NFD_Init();
 
     m_renderer = new RendererSW();
 
     // create the emulation
     m_emulation = new EmulationThread();
-
-    //m_fullScreen = false;
     
     m_emulation->SetScreen(m_renderer);
-    m_emulation->SetState(EmuState::Playing);
     
     m_font = { 0 };
     LoadFont(Settings::GetLanguage());
@@ -334,6 +330,9 @@ void MainFrame::SetStyle() {
 }
 
 void MainFrame::DrawToolBar(Rectangle dst) {
+    EmuState state = m_emulation->GetState();
+    int guiState = GuiGetState();
+
     GuiEnableTooltip();
 
     DrawRectangle((int)dst.x, (int)dst.y, (int)dst.width, (int)dst.height, GetColor(GuiGetStyle(DEFAULT, BACKGROUND_COLOR)));
@@ -364,21 +363,26 @@ void MainFrame::DrawToolBar(Rectangle dst) {
 
     x += width*2;
     GuiSetTooltip(_("Play"));
+    (state == EmuState::Paused || state == EmuState::Stopped) ? GuiEnable() : GuiDisable();
     if (GuiButton(Rectangle{ x, dst.y, width, dst.height }, GuiIconText(ICON_PLAYER_PLAY, ""))) {
         OnPlayUI();
     }
 
     x += width;
     GuiSetTooltip(_("Pause"));
+    (state == EmuState::Playing) ? GuiEnable() : GuiDisable();
     if (GuiButton(Rectangle{ x, dst.y, width, dst.height }, GuiIconText(ICON_PLAYER_PAUSE, ""))) {
         OnPauseUI();
     }
 
     x += width;
     GuiSetTooltip(_("Stop"));
+    (state == EmuState::Playing || state == EmuState::Paused) ? GuiEnable() : GuiDisable();
     if (GuiButton(Rectangle{ x, dst.y, width, dst.height }, GuiIconText(ICON_PLAYER_STOP, ""))) {
         OnStopUI();
     }
+    
+    GuiSetState(guiState);
 
     x += width*2;
     GuiSetTooltip(_("Switch between 2D and 3D"));
