@@ -26,6 +26,7 @@ class DebuggerDialog: public Dialog {
 public:
     DebuggerDialog(Font font, float fontSize, VideoGameDevice* device);
     
+    void Show() override;
 };
 
 #endif

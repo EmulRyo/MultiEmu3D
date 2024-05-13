@@ -22,3 +22,7 @@ DebuggerDialog::DebuggerDialog(Font font, float fontSize, VideoGameDevice* devic
 {
 
 }
+
+void DebuggerDialog::Show() {
+	Dialog::Show();
+}

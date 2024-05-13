@@ -26,9 +26,9 @@ public:
     virtual void Update() = 0;
     virtual void Draw(Rectangle dst) = 0;
 
-    void Show() { m_enabled = true; }
-    void Close() { m_enabled = false; }
-    bool IsEnabled() const { return m_enabled; }
+    virtual void Show() { m_enabled = true; }
+    virtual void Close() { m_enabled = false; }
+    virtual bool IsEnabled() const { return m_enabled; }
 
 protected:
     Font m_font;

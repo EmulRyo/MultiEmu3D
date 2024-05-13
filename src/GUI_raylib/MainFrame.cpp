@@ -34,6 +34,8 @@
 #include "Localization.h"
 
 #define RAYGUI_IMPLEMENTATION
+#define RAYGUI_CUSTOM_ICONS
+#include "iconset.rgi.h"
 #include "raygui.h"
 
 #include "MenuBar.h"
@@ -81,8 +83,8 @@ void MainFrame::Update(float deltaTime) {
 }
 
 void MainFrame::Draw(Rectangle r) {
-    if (m_msgBoxDlg != nullptr && m_msgBoxDlg->IsEnabled() ||
-        m_debuggerDlg != nullptr && m_debuggerDlg->IsEnabled())
+    if ((m_msgBoxDlg != nullptr && m_msgBoxDlg->IsEnabled()) ||
+        (m_debuggerDlg != nullptr && m_debuggerDlg->IsEnabled()))
         GuiDisable();
 
     m_renderer->Draw(Rectangle{ 0, 48, r.width, r.height - 72 });
@@ -347,7 +349,7 @@ void MainFrame::SetStyle() {
     GuiSetStyle(DEFAULT, BORDER_COLOR_FOCUSED, 0x707070FF);
     GuiSetStyle(DEFAULT, BORDER_COLOR_PRESSED, 0x707070FF);
     GuiSetStyle(DEFAULT, BORDER_COLOR_DISABLED, 0x1F1F1FFF);
-    GuiSetStyle(DEFAULT, LINE_COLOR, 0x1F1F1FFF);        
+    GuiSetStyle(DEFAULT, LINE_COLOR, 0x1F1F1FFF);
 }
 
 void MainFrame::DrawToolBar(Rectangle dst) {
