@@ -56,6 +56,7 @@ private:
     void DrawOtherRegisters(Rectangle dst);
     void DrawMemory(Rectangle dst);
     void DrawBreakpoints(Rectangle dst);
+    void DrawTiles(Rectangle dst, int slot);
     void DrawKeyValue(float x, float& y, float w1, float w2, float h, const std::string& key, const std::string& value);
     void UpdatePrevValues();
 
@@ -78,6 +79,7 @@ private:
     int m_breakpointsListViewScrollIndex = -1;
     int m_breakpointsListViewFocus = -1;
     std::map<std::string, std::string> m_prevValues;
+    Texture2D m_tilesTexture;
 };
 
 #endif

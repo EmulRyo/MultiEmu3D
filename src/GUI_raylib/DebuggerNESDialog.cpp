@@ -37,10 +37,16 @@ DebuggerNESDialog::DebuggerNESDialog(Font font, float fontSize, VideoGameDevice*
 	m_otherRegsScroll = { 0 };
 	m_registersActive = 0;
 	m_memoryActive = 0;
+
+	Image img = GenImageColor(128, 256, WHITE);
+	ImageFormat(&img, PIXELFORMAT_UNCOMPRESSED_R8G8B8);
+	m_tilesTexture = LoadTextureFromImage(img);
+	UnloadImage(img);
 }
 
 DebuggerNESDialog::~DebuggerNESDialog() {
 	UnloadFont(m_monoFont);
+	UnloadTexture(m_tilesTexture);
 }
 
 void DebuggerNESDialog::Update() {
@@ -100,7 +106,7 @@ void DebuggerNESDialog::Draw(Rectangle dst) {
 	Rectangle dissassemblerRec = { registersRec.x + registersRec.width + 10, winRec.y + 80, 310, 300 };
 	DrawDisassembler(dissassemblerRec);
 
-	GuiComboBox({ dst.x+ m_dialogOffset.x+width-68-20, winRec.y + 57, 68, 24 }, ">;>;>", &m_registersActive);
+	GuiSpinner({ dst.x+ m_dialogOffset.x+width-72-20, winRec.y + 57, 72, 24 }, "", &m_registersActive, 0, 4, false);
 
 	// Video registers
 	Rectangle videoRegRec = { dissassemblerRec.x + dissassemblerRec.width + 10, dissassemblerRec.y, 258, dissassemblerRec.height };
@@ -109,8 +115,12 @@ void DebuggerNESDialog::Draw(Rectangle dst) {
 		DrawVideoRegisters(videoRegRec);
 	else if (m_registersActive == 1)
 		DrawOtherRegisters(videoRegRec);
-	else
+	else if (m_registersActive == 2)
 		DrawBreakpoints(videoRegRec);
+	else if(m_registersActive == 3)
+		DrawTiles(videoRegRec, 0);
+	else
+		DrawTiles(videoRegRec, 1);
 
 	Rectangle flagsRec = { winRec.x + 10, registersRec.y + registersRec.height + 20, 70, 360 };
 	DrawFlags(flagsRec);
@@ -169,7 +179,6 @@ void DebuggerNESDialog::SaveTiles() {
 	const int height = 256;
 	u8* buffer = new u8[width * height * 3];
 	m_debugger->GetTiles(buffer, width, height);
-	//wxImage* img = new wxImage(width, height, buffer);
 	Image img;
 	img.width = width;
 	img.height = height;
@@ -570,7 +579,7 @@ void DebuggerNESDialog::DrawBreakpoints(Rectangle dst) {
 
 	u16 value = HexTextTou16(m_breakpointsSelectedAddress);
 
-	Rectangle addRec = { dst.x + 10, tbRec.y + tbRec.height + 10, dst.width / 2.0 - 10 - 5, 24 };
+	Rectangle addRec = { dst.x + 10, tbRec.y + tbRec.height + 10, dst.width / 2.0f - 10 - 5, 24 };
 	if (GuiButton(addRec, "Add")) {
 		if (TextLength(m_breakpointsSelectedAddress) > 0) {
 			m_debugger->AddBreakpoint(value);
@@ -578,7 +587,7 @@ void DebuggerNESDialog::DrawBreakpoints(Rectangle dst) {
 		}
 	}
 
-	Rectangle delRec = { addRec.x + addRec.width + 10, addRec.y, dst.width / 2.0 - 10 - 5, addRec.height };
+	Rectangle delRec = { addRec.x + addRec.width + 10, addRec.y, dst.width / 2.0f - 10 - 5, addRec.height };
 	if (GuiButton(delRec, "Delete")) {
 		if (TextLength(m_breakpointsSelectedAddress) > 0) {
 			m_debugger->DelBreakpoint(value);
@@ -634,4 +643,18 @@ void DebuggerNESDialog::UpdatePrevValues() {
 	m_prevValues["CHR Banks"]	= m_debugger->GetCartridgeCHRBanks();
 	m_prevValues["CHR 0"]		= m_debugger->GetCartridgeCHRBank0();
 	m_prevValues["CHR 1"]		= m_debugger->GetCartridgeCHRBank1();
+}
+
+void DebuggerNESDialog::DrawTiles(Rectangle dst, int slot) {
+	const int width = 128;
+	const int height = 256;
+	static u8 buffer[width * height * 3];
+
+	GuiGroupBox(dst, slot == 0 ? "Tiles 1" : "Tiles 2");
+
+	m_debugger->GetTiles(buffer, width, height);
+
+	UpdateTexture(m_tilesTexture, buffer);
+
+	DrawTexturePro(m_tilesTexture, { 0.0f, slot*128.0f, 128.0f, 128.0f }, { dst.x+1, dst.y+24, 256, 256 }, { 0, 0 }, 0, WHITE);
 }
