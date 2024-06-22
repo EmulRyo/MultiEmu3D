@@ -64,26 +64,27 @@ namespace Nes {
         void LoadState(std::istream *file);
         
     private:
-        struct BGInput {
+        struct BGPixel {
+            // Input
             u16 x;
             u16 nameTableAddress;
             u16 patternTableAddress;
-            u16 attrTableAddress;
             bool show8Left;
             NametableMirroring mirroring;
-        };
-        struct BGOutput {
+
+            // Output
             bool valid;
             u8 colorId;
             u8 r, g, b;
         };
-        struct SpriteInput {
+        struct SpritePixel {
+            // Input
             u16 xScreen;
             u16 patternTableAddress;
             bool size16;
             bool show8Left;
-        };
-        struct SpriteOutput {
+
+            // Output
             bool valid;
             u8 id;
             u8 priorityBg;
@@ -103,9 +104,7 @@ namespace Nes {
         u8  m_secondaryOAMLength;
         Cartridge* m_cartridge;
         u16 m_x;
-        u16 m_line;
-        float m_cycles;
-        u16 m_cyclesLine;
+        u32 m_cycles;
         u32 m_numFrames;
         u8  m_scrollX;
         u8  m_scrollY;
@@ -132,8 +131,8 @@ namespace Nes {
         u16  GetBGPaletteAddress(u16 x, u16 y, u16 attrTableAddress);
         void SpriteEvaluation(u16 line);
         void DrawPixels();
-        void PixelBG(BGInput input, BGOutput& output);
-        void PixelSprite(SpriteInput input, SpriteOutput& output);
+        void PixelBG(BGPixel& bgPix);
+        void PixelSprite(SpritePixel& sprPix);
     };
 }
 
