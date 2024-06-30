@@ -139,6 +139,8 @@ void EmulationThread::Entry()
                         if (!m_buttonRewind) {
                             m_device->PadSetButtons(m_buttonsState);
                             SetSpeed(m_buttonSpeed ? EmuSpeed::Max : EmuSpeed::Normal);
+                            if (m_buttonSpeed)
+                                ((RendererBase*)m_screen)->SetIcon(Renderer::MaxSpeed);
                         }
                         m_device->ExecuteOneFrame();
                         m_rewind->AddFrame();

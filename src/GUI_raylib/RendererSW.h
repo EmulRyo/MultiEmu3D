@@ -37,8 +37,22 @@ public:
     
 private:
     Texture2D m_texture;
-
+    Color m_black {   0,   0,   0, 255 };
+    Color m_white { 255, 255, 255, 200 };
+    Color m_blue  {   0, 162, 255, 230 };
+    
     void UpdateTextureSize();
+    void DrawOverlay(Rectangle dst);
+    void DrawIcon(Rectangle dst);
+    void DrawRewind(Rectangle dst);
+
+    void DrawIconRewindL(Rectangle dst);
+    void DrawIconRewindR(Rectangle dst);
+    void DrawIconPlay(Rectangle dst);
+    void DrawIconPause(Rectangle dst);
+    void DrawIconStop(Rectangle dst);
+    void DrawIconSpeed(Rectangle dst);
+    void DrawIconArrow(Rectangle dst);
 };
 
 #endif

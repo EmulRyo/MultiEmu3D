@@ -26,7 +26,7 @@
  *******************************************************************************/
 
 namespace Renderer {
-    enum Icon { Play, Pause, Stop, RewindL, RewindR };
+    enum Icon { Play, Pause, Stop, RewindL, RewindR, MaxSpeed };
 };
 
 class RendererBase: public IScreenDrawable {
