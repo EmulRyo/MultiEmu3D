@@ -42,8 +42,9 @@ public:
 	static void SetInput(DeviceType type, const int* padKeys);
 	static void SetRecentRoms(const std::string* recentRoms);
 
-	static void Load(const std::string& fileName);
-	static void Save(const std::string& fileName);
+	static void SetFile(const std::string& fileName);
+	static void Load(const std::string& fileName = "");
+	static void Save(const std::string& fileName = "");
 
 };
 

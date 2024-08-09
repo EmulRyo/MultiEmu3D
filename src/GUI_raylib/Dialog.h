@@ -22,7 +22,6 @@
 
 class Dialog {
 public:
-    Dialog(Font font, float fontSize) : m_font(font), m_fontSize(fontSize) {}
     virtual void Update() = 0;
     virtual void Draw(Rectangle dst) = 0;
 
@@ -31,8 +30,6 @@ public:
     virtual bool IsEnabled() const { return m_enabled; }
 
 protected:
-    Font m_font;
-    float m_fontSize;
     bool m_enabled = false;
 };
 

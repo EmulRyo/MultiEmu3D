@@ -28,6 +28,7 @@
 #include "MessageBoxDialog.h"
 #include "DebuggerDialog.h"
 #include "DebuggerNESDialog.h"
+#include "SettingsDialog.h"
 #include "AppDefs.h"
 #include "raylib.h"
 #include "Settings.h"
@@ -44,7 +45,8 @@
 
 MainFrame::MainFrame(const std::string& fileName)
 {
-    Settings::Load("config.json");
+    Settings::SetFile("config.json");
+    Settings::Load();
     Localization::SetLanguage(Settings::GetLanguage());
     NFD_Init();
 
@@ -54,9 +56,12 @@ MainFrame::MainFrame(const std::string& fileName)
     m_emulation = new EmulationThread();
     
     m_emulation->SetScreen(m_renderer);
-    
+    m_prevState = m_emulation->GetState();
+
     m_font = { 0 };
     LoadFont(Settings::GetLanguage());
+    m_settingsDlg = new SettingsDialog();
+    m_settingsDlg->OnClosed(std::bind(&MainFrame::OnSettingsClosed, this));
     SetStyle();
     CreateMenuBar();
 
@@ -84,7 +89,8 @@ void MainFrame::Update(float deltaTime) {
 
 void MainFrame::Draw(Rectangle r) {
     if ((m_msgBoxDlg != nullptr && m_msgBoxDlg->IsEnabled()) ||
-        (m_debuggerDlg != nullptr && m_debuggerDlg->IsEnabled()))
+        (m_debuggerDlg != nullptr && m_debuggerDlg->IsEnabled()) ||
+        (m_settingsDlg != nullptr && m_settingsDlg->IsEnabled()))
         GuiDisable();
 
     m_renderer->Draw(Rectangle{ 0, 48, r.width, r.height - 72 });
@@ -101,6 +107,10 @@ void MainFrame::Draw(Rectangle r) {
     }
     DrawStatusBar(Rectangle{ 0, r.height-24, r.width, 24 });
 
+    if (m_settingsDlg != nullptr && m_settingsDlg->IsEnabled()) {
+        GuiEnable();
+        m_settingsDlg->Draw(r);
+    }
     if (m_debuggerDlg != nullptr && m_debuggerDlg->IsEnabled()) {
         GuiEnable();
         m_debuggerDlg->Draw(r);
@@ -225,10 +235,10 @@ void MainFrame::ChangeFile(const std::string &fileName)
             return;//m_debuggerDlg = new DebuggerGBDialog(device);
         else if (device->GetType() == DeviceType::NES)
             //m_debuggerDlg = new DebuggerNESDialog(device);
-            NewDialog<DebuggerNESDialog>((DebuggerNESDialog**)&m_debuggerDlg, m_font, m_fontSize, device);
+            NewDialog<DebuggerNESDialog>((DebuggerNESDialog**)&m_debuggerDlg, device);
     }
     else {
-        NewDialog<MessageBoxDialog>(&m_msgBoxDlg, m_font, m_fontSize, m_emulation->GetLastError());
+        NewDialog<MessageBoxDialog>(&m_msgBoxDlg, m_emulation->GetLastError());
         m_msgBoxDlg->Show();
         m_emulation->SetState(EmuState::Paused);
     }
@@ -244,7 +254,7 @@ void MainFrame::UpdateRecentMenu(const std::string* fileNames) {
             break;
 
         m_recentFiles[i].fullName = fileNames[i];
-        m_recentFiles[i].shortName = fileNames[i].substr(fileNames[i].rfind(separator) + 1);
+        m_recentFiles[i].shortName = fileNames[i].substr(fileNames[i].rfind((char)separator) + 1);
 
         if (recentMenu.GetNumItems() <= i)
             recentMenu.NewItem(" ", std::bind(&MainFrame::OnOpenRecentUI, this, std::placeholders::_1));
@@ -277,7 +287,7 @@ void MainFrame::UpdateRecentMenu(const std::string &fileName)
     SubMenu& recentMenu = m_menuBar.GetSubMenu(0).GetItem(1).GetSubMenu();
 
     wchar_t separator = std::filesystem::path::preferred_separator;
-    std::string shortName = fileName.substr(fileName.rfind(separator) + 1);
+    std::string shortName = fileName.substr(fileName.rfind((char)separator) + 1);
     std::string fullName = fileName;
     int previousIndex = -1;
     for (int i = 0; i < m_numRecentFiles; i++)
@@ -330,7 +340,7 @@ void MainFrame::UpdateRecentMenu(const std::string &fileName)
     recentMenu.UpdateTexts();
 
     RecentRomsToSettings();
-    Settings::Save("config.json");
+    Settings::Save();
 }
 
 void MainFrame::SetStyle() {
@@ -478,7 +488,7 @@ void MainFrame::OnLoadStateUI(int id) {
     }
     catch (Exception e)
     {
-        NewDialog<MessageBoxDialog>(&m_msgBoxDlg, m_font, m_fontSize, e.what());
+        NewDialog<MessageBoxDialog>(&m_msgBoxDlg, e.what());
         m_msgBoxDlg->Show();
     }
 }
@@ -498,7 +508,7 @@ void MainFrame::OnSaveStateUI(int id) {
     }
     catch (Exception e)
     {
-        NewDialog<MessageBoxDialog>(&m_msgBoxDlg, m_font, m_fontSize, e.what());
+        NewDialog<MessageBoxDialog>(&m_msgBoxDlg, e.what());
         m_msgBoxDlg->Show();
     }
 }
@@ -519,7 +529,10 @@ void MainFrame::OnStopUI() {
 }
 
 void MainFrame::OnSettingsUI() {
-
+    m_settingsDlg->Show();
+    m_prevState = m_emulation->GetState();
+    if (m_prevState == EmuState::Playing)
+        m_emulation->SetState(EmuState::Paused);
 }
 
 void MainFrame::OnDebugUI() {
@@ -559,7 +572,7 @@ void MainFrame::OnLanguageUI(int id) {
     SetStyle();
     CreateMenuBar();
     Settings::SetLanguage(language);
-    Settings::Save("config.json");
+    Settings::Save();
 }
 
 template <typename T, typename... Targs>
@@ -570,4 +583,13 @@ void MainFrame::NewDialog(T** dialog, Targs... args) {
     static_assert(std::is_base_of<Dialog, T>::value, "T must derive from Dialog");
 
     *dialog = new T(args...);
+}
+
+void MainFrame::OnSettingsClosed() {
+    m_emulation->ApplySettings();
+
+    if (m_renderer)
+        m_renderer->SetGBPalette(Settings::GetGreenScale());
+
+    m_emulation->SetState(m_prevState);
 }

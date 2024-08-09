@@ -20,16 +20,17 @@
 
 #include <string>
 #include "raylib.h"
+#include "EmulationThread.h"
 #include "MenuBar.h"
 
 #define MAX_RECENT_FILES 10
 
 class RendererBase;
 class VideoGameDevice;
-class EmulationThread;
 class Dialog;
 class MessageBoxDialog;
 class DebuggerDialog;
+class SettingsDialog;
 
 struct RecentFile
 {
@@ -58,6 +59,7 @@ private:
     EmulationThread*  m_emulation   = nullptr;
     MessageBoxDialog* m_msgBoxDlg   = nullptr;
     DebuggerDialog*   m_debuggerDlg = nullptr;
+    SettingsDialog*   m_settingsDlg = nullptr;
     Font m_font;
     int m_fontSize;
     MenuBar m_menuBar;
@@ -66,6 +68,7 @@ private:
     bool m_recentMenuOpened;
     RecentFile m_recentFiles[MAX_RECENT_FILES];
     int m_numRecentFiles;
+    EmuState m_prevState;
 
     void CreateMenuBar();
     void ChangeFile(const std::string& fileName);
@@ -92,6 +95,7 @@ private:
     void OnFullscreenUI();
     void OnLanguageUI(int id);
     void OnExitUI();
+    void OnSettingsClosed();
 };
 
 #endif

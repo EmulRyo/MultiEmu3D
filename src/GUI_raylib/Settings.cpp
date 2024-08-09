@@ -22,6 +22,7 @@
 #include "raylib.h"
 #include "json.hpp"
 
+static std::string _fileName = "";
 static int  _renderMethod    = 1;
 static bool _greenScale      = false;
 static int  _windowZoom      = 1;
@@ -128,7 +129,13 @@ void Settings::SetRecentRoms(const std::string* recentRoms) {
         _recentRoms[i] = recentRoms[i];
 }
 
+void Settings::SetFile(const std::string& fileName) {
+    _fileName = fileName;
+}
+
 void Settings::Save(const std::string& fileName) {
+    std::string f = fileName.empty() ? _fileName : fileName;
+
     nlohmann::json data;
     
     data["general"]["renderMethod"] = _renderMethod;
@@ -146,16 +153,19 @@ void Settings::Save(const std::string& fileName) {
     data["recentRoms"]              = _recentRoms;
 
     std::string s = data.dump(4, ' ', false);
-    std::ofstream f(fileName);
-    f << s;
+    std::ofstream stream(f);
+    stream << s;
 }
+
 
 void Settings::Load(const std::string& fileName)
 {
-    std::ifstream f(fileName);
+    std::string f = fileName.empty() ? _fileName : fileName;
+
+    std::ifstream stream(f);
     nlohmann::json data;
     try {
-        data = nlohmann::json::parse(f);
+        data = nlohmann::json::parse(stream);
     }
     catch (const nlohmann::json::exception& e) {
         printf("%s\n", e.what());

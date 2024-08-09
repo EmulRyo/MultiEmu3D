@@ -28,7 +28,7 @@ namespace Nes {
 
 class DebuggerNESDialog: public DebuggerDialog {
 public:
-    DebuggerNESDialog(Font font, float fontSize, VideoGameDevice *device);
+    DebuggerNESDialog(VideoGameDevice *device);
     ~DebuggerNESDialog();
 
     void Update() override;

@@ -17,12 +17,6 @@
 
 #include "DebuggerDialog.h"
 
-DebuggerDialog::DebuggerDialog(Font font, float fontSize, VideoGameDevice* device)
-: Dialog(font, fontSize)
-{
-
-}
-
 void DebuggerDialog::Show() {
 	Dialog::Show();
 }

@@ -20,8 +20,8 @@
 #include "MessageBoxDialog.h"
 
 
-MessageBoxDialog::MessageBoxDialog(Font font, float fontSize, const std::string& message)
-    : Dialog(font, fontSize), m_message(message)
+MessageBoxDialog::MessageBoxDialog(const std::string& message)
+    : m_message(message)
 {
 
 }
@@ -36,7 +36,8 @@ void MessageBoxDialog::Draw(Rectangle dst) {
 
     GuiEnable();
     DrawRectangleRec(Rectangle { dst.x, dst.y + 24 * 2, dst.width, dst.height - 24 * 3 }, ColorAlpha(BLACK, 0.7f));
-    Vector2 fontSize = MeasureTextEx(m_font, m_message.c_str(), (float)m_fontSize, 1);
+    Font font = GuiGetFont();
+    Vector2 fontSize = MeasureTextEx(font, m_message.c_str(), (float)font.baseSize, 1);
     float w = fontSize.x + 20;
     float h = fontSize.y + 24 * 3;
     int result = GuiMessageBox(Rectangle{ (dst.width - w) / 2.0f, (dst.height - h) / 2.0f, w, h }, _("Error"), m_message.c_str(), _("OK"));

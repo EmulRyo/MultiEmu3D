@@ -24,8 +24,7 @@
 #include "../NES/Debugger.h"
 #include "DebuggerNESDialog.h"
 
-DebuggerNESDialog::DebuggerNESDialog(Font font, float fontSize, VideoGameDevice* device)
-	: DebuggerDialog(font, fontSize, device)
+DebuggerNESDialog::DebuggerNESDialog(VideoGameDevice* device)
 {
 	m_disassemblerFirst = m_disassemblerLast = 0;
 	m_dialogOffset = { 0 };
@@ -87,6 +86,7 @@ void DebuggerNESDialog::Draw(Rectangle dst) {
 	int borderColorNormal = GuiGetStyle(DEFAULT, BORDER_COLOR_NORMAL);
 	int lineColor = GuiGetStyle(DEFAULT, LINE_COLOR);
 	int fontSize = GuiGetStyle(DEFAULT, TEXT_SIZE);
+	int baseColorPressed = GuiGetStyle(DEFAULT, BASE_COLOR_PRESSED);
 	GuiSetStyle(DEFAULT, BORDER_COLOR_NORMAL, 0x808080FF);
 	GuiSetStyle(DEFAULT, LINE_COLOR, 0x808080FF);
 	GuiSetStyle(DEFAULT, BASE_COLOR_PRESSED, 0x3D3D3DFF);
@@ -137,6 +137,7 @@ void DebuggerNESDialog::Draw(Rectangle dst) {
 
 	GuiSetStyle(DEFAULT, BORDER_COLOR_NORMAL, borderColorNormal);
 	GuiSetStyle(DEFAULT, LINE_COLOR, lineColor);
+	GuiSetStyle(DEFAULT, BASE_COLOR_PRESSED, baseColorPressed);
 	GuiSetFont(font);
 	GuiSetStyle(DEFAULT, TEXT_SIZE, font.baseSize);
 }

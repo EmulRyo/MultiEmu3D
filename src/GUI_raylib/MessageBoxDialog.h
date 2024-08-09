@@ -24,7 +24,7 @@
 
 class MessageBoxDialog: public Dialog {
 public:
-    MessageBoxDialog(Font font, float fontSize, const std::string &message);
+    MessageBoxDialog(const std::string &message);
     
     void Update();
     void Draw(Rectangle dst);
