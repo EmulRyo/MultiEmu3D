@@ -299,6 +299,7 @@ void SettingsDialog::ListenForKey(Input& input) {
     }
 }
 
+// GuiTabBar modification: custom icons and no close buttons
 static int TabBar(Rectangle bounds, const char** text, int* icons, int count, int* active)
 {
 #define RAYGUI_TABBAR_ITEM_WIDTH    160
@@ -355,6 +356,7 @@ static int TabBar(Rectangle bounds, const char** text, int* icons, int count, in
     return result;     // Return as result the current TAB closing requested
 }
 
+// Physical key names for the US Layout keyboard
 static const char* GetKeyName(int key) {
     switch (key) {
     case KEY_NULL:          return "NULL";			// Key: NULL, used for no key pressed
