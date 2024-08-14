@@ -59,9 +59,9 @@ u8 MMC1::ReadPRG(u16 address) {
     if (address < 0x8000)
         return m_prgRam[address - 0x6000];
     else if (address < 0xC000)
-        return m_prgData[(GetPRGBank0() * 0x4000) + address - 0x8000];
+        return m_prgData[(GetPRGBank(0) * 0x4000) + address - 0x8000];
     else
-        return m_prgData[(GetPRGBank1() * 0x4000) + address - 0xC000];
+        return m_prgData[(GetPRGBank(1) * 0x4000) + address - 0xC000];
 }
 
 void MMC1::WritePRG(u16 address, u8 value) {
@@ -97,17 +97,17 @@ void MMC1::WritePRG(u16 address, u8 value) {
 
 u8 MMC1::ReadCHR(u16 address) {
     if (address < 0x1000)
-        return m_chrBuffer[(GetCHRBank0() * 0x1000) + address];
+        return m_chrBuffer[(GetCHRBank(0) * 0x1000) + address];
     else
-        return m_chrBuffer[(GetCHRBank1() * 0x1000) + (address - 0x1000)];
+        return m_chrBuffer[(GetCHRBank(1) * 0x1000) + (address - 0x1000)];
 }
 
 void MMC1::WriteCHR(u16 address, u8 value) {
 
     if (address < 0x1000)
-        m_chrBuffer[(GetCHRBank0() * 0x1000) + address] = value;
+        m_chrBuffer[(GetCHRBank(0) * 0x1000) + address] = value;
     else
-        m_chrBuffer[(GetCHRBank1() * 0x1000) + (address - 0x1000)] = value;
+        m_chrBuffer[(GetCHRBank(1) * 0x1000) + (address - 0x1000)] = value;
 }
 
 u8 MMC1::GetMapperNum() {
@@ -118,28 +118,28 @@ const char* MMC1::GetMapperName() {
     return "MMC1";
 }
 
-u8 MMC1::GetPRGBanks() {
+u8 MMC1::GetPRGBanks() const {
     return m_prgBanks;
 }
 
-u8 MMC1::GetPRGBank0() {
-    return m_prgBank0;
+u8 MMC1::GetPRGBanksVisible() const {
+    return 2;
 }
 
-u8 MMC1::GetPRGBank1() {
-    return m_prgBank1;
+u8 MMC1::GetPRGBank(u8 number) const {
+    return number ? m_prgBank1 : m_prgBank0;
 }
 
-u8 MMC1::GetCHRBanks() {
+u8 MMC1::GetCHRBanks() const {
     return m_chrBanks;
 }
 
-u8 MMC1::GetCHRBank0() {
-    return m_chrBank0;
+u8 MMC1::GetCHRBanksVisible() const {
+    return 2;
 }
 
-u8 MMC1::GetCHRBank1() {
-    return m_chrBank1;
+u8 MMC1::GetCHRBank(u8 number) const {
+    return number ? m_chrBank1 : m_chrBank0;
 }
 
 void MMC1::SaveState(std::ostream* stream) {}

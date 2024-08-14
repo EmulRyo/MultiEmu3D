@@ -44,9 +44,9 @@ NametableMirroring CNROM::GetNametableMirroring() {
 
 u8 CNROM::ReadPRG(u16 address) {
     if (address < 0xC000)
-        return m_prgData[(GetPRGBank0() * 0x4000) + address - 0x8000];
+        return m_prgData[(GetPRGBank(0) * 0x4000) + address - 0x8000];
     else
-        return m_prgData[(GetPRGBank1() * 0x4000) + address - 0xC000];
+        return m_prgData[(GetPRGBank(1) * 0x4000) + address - 0xC000];
 }
 
 void CNROM::WritePRG(u16 address, u8 value) {
@@ -56,7 +56,7 @@ void CNROM::WritePRG(u16 address, u8 value) {
 }
 
 u8 CNROM::ReadCHR(u16 address) {
-    return m_chrData[(GetCHRBank0() * 0x2000) + address];
+    return m_chrData[(GetCHRBank(0) * 0x2000) + address];
 }
 
 void CNROM::WriteCHR(u16 address, u8 value) {
@@ -71,27 +71,30 @@ const char* CNROM::GetMapperName() {
     return "CNROM";
 }
 
-u8 CNROM::GetPRGBanks() {
+u8 CNROM::GetPRGBanks() const {
     return m_prgBanks;
 }
 
-u8 CNROM::GetPRGBank0() {
-    return 0;
+u8 CNROM::GetPRGBanksVisible() const {
+    return 2;
 }
 
-u8 CNROM::GetPRGBank1() {
-    return (m_prgBanks > 0) ? 1 : 0;
+u8 CNROM::GetPRGBank(u8 number) const {
+    if (number == 0)
+        return 0;
+    else
+        return (m_prgBanks > 0) ? 1 : 0;
 }
 
-u8 CNROM::GetCHRBanks() {
+u8 CNROM::GetCHRBanks() const {
     return m_chrBanks;
 }
 
-u8 CNROM::GetCHRBank0() {
-    return m_chrBank;
+u8 CNROM::GetCHRBanksVisible() const {
+    return 1;
 }
 
-u8 CNROM::GetCHRBank1() {
+u8 CNROM::GetCHRBank(u8 number) const {
     return m_chrBank;
 }
 

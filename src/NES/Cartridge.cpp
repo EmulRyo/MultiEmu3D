@@ -116,17 +116,17 @@ u8 *Cartridge::GetData()
 	return nullptr;
 }
 
-unsigned int Cartridge::GetSize()
+unsigned int Cartridge::GetSize() const
 {
 	return m_romSize;
 }
 
-string Cartridge::GetName()
+string Cartridge::GetName() const
 {
 	return m_name;
 }
 
-bool Cartridge::IsLoaded()
+bool Cartridge::IsLoaded() const
 {
 	return m_isLoaded;
 }
@@ -175,27 +175,27 @@ void Cartridge::WriteCHR(u16 address, u8 value) {
     m_mapper->WriteCHR(address, value);
 };
 
-u8 Cartridge::GetPRGBanks() {
+u8 Cartridge::GetPRGBanks() const {
     return m_mapper->GetPRGBanks();
 }
 
-u8 Cartridge::GetPRGBank0() {
-    return m_mapper->GetPRGBank0();
+u8 Cartridge::GetPRGBanksVisible() const {
+    return m_mapper->GetPRGBanksVisible();
 }
 
-u8 Cartridge::GetPRGBank1() {
-    return m_mapper->GetPRGBank1();
+u8 Cartridge::GetPRGBank(u8 number) const {
+    return m_mapper->GetPRGBank(number);
 }
 
-u8 Cartridge::GetCHRBanks() {
+u8 Cartridge::GetCHRBanks() const {
     return m_mapper->GetCHRBanks();
 }
 
-u8 Cartridge::GetCHRBank0() {
-    return m_mapper->GetCHRBank0();
+u8 Cartridge::GetCHRBanksVisible() const {
+    return m_mapper->GetCHRBanksVisible();
 }
 
-u8 Cartridge::GetCHRBank1() {
-    return m_mapper->GetCHRBank1();
+u8 Cartridge::GetCHRBank(u8 number) const {
+    return m_mapper->GetCHRBank(number);
 }
 

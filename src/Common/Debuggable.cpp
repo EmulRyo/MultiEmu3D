@@ -31,14 +31,14 @@ Debuggable::~Debuggable() {
     ClearBreakpoints();
 }
 
-std::string Debuggable::HexToString(int value, int width, char fill, const std::string& prefix)
+std::string Debuggable::HexToString(int value, int width, char fill, const std::string& prefix) const
 {
     stringstream ss;
     ss << prefix << setfill(fill) << setw(width) << uppercase << hex << value;
     return ss.str();
 }
 
-std::string Debuggable::IntToString(int value, int width, char fill)
+std::string Debuggable::IntToString(int value, int width, char fill) const
 {
     stringstream ss;
     ss << setfill(fill) << setw(width) << value;

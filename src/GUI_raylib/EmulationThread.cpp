@@ -172,6 +172,9 @@ void EmulationThread::Entry()
     }
     catch (Exception& exc) {
         //wxMessageBox(exc.what());
+        // TODO:
+        // - Informar de las excepciones a MainFrame
+        // - Quitar excepciones
         printf("%s\n", exc.what());
     }
     

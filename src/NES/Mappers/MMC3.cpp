@@ -118,28 +118,28 @@ const char* MMC3::GetMapperName() {
     return "MMC3";
 }
 
-u8 MMC3::GetPRGBanks() {
+u8 MMC3::GetPRGBanks() const {
     return m_prgBanks;
 }
 
-u8 MMC3::GetPRGBank0() {
-    return m_prgBank[0];
+u8 MMC3::GetPRGBanksVisible() const {
+    return 4;
 }
 
-u8 MMC3::GetPRGBank1() {
-    return m_prgBank[1];
+u8 MMC3::GetPRGBank(u8 number) const {
+    return m_prgBank[number];
 }
 
-u8 MMC3::GetCHRBanks() {
+u8 MMC3::GetCHRBanks() const {
     return m_chrBanks;
 }
 
-u8 MMC3::GetCHRBank0() {
-    return m_chrBank[0];
+u8 MMC3::GetCHRBanksVisible() const {
+    return 8;
 }
 
-u8 MMC3::GetCHRBank1() {
-    return m_chrBank[1];
+u8 MMC3::GetCHRBank(u8 number) const {
+    return m_chrBank[number];
 }
 
 void MMC3::SaveState(std::ostream* stream) {}

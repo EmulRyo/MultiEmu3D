@@ -456,13 +456,13 @@ void DebuggerNESDialog::DrawKeyValue(float x, float& y, float w1, float w2, floa
 	else
 		GuiLabel(Rectangle{ x + w1 + offset, y, w2, h }, value.c_str());
 
-
 	y += 24;
 }
 
 void DebuggerNESDialog::DrawOtherRegisters(Rectangle dst) {
 	Rectangle panelView = { 0 };
-	GuiScrollPanel({ dst.x, dst.y + 40, dst.width, dst.height - 40 }, nullptr, { dst.x, dst.y, dst.width - 14, 8*24+24 }, &m_otherRegsScroll, &panelView);
+	float height = 24 * (4 + m_debugger->GetCartridgePRGBanksVisible() + m_debugger->GetCartridgeCHRBanksVisible()) + 24;
+	GuiScrollPanel({ dst.x, dst.y + 40, dst.width, dst.height - 40 }, nullptr, { dst.x, dst.y, dst.width - 14, height}, &m_otherRegsScroll, &panelView);
 
 	GuiGroupBox(dst, "Other registers");
 	float x = dst.x + 10;
@@ -485,11 +485,15 @@ void DebuggerNESDialog::DrawOtherRegisters(Rectangle dst) {
 	DrawKeyValue(x, y, w1, w2, h, "Mapper ID",	m_debugger->GetMapperID());
 	DrawKeyValue(x, y, w1, w2, h, "Map. Name",	m_debugger->GetMapperName());
 	DrawKeyValue(x, y, w1, w2, h, "PRG Banks",	m_debugger->GetCartridgePRGBanks());
-	DrawKeyValue(x, y, w1, w2, h, "PRG 0",		m_debugger->GetCartridgePRGBank0());
-	DrawKeyValue(x, y, w1, w2, h, "PRG 1",		m_debugger->GetCartridgePRGBank1());
+	for (int i = 0; i < m_debugger->GetCartridgePRGBanksVisible(); i++) {
+		const char* text = TextFormat("PRG %i", i);
+		DrawKeyValue(x, y, w1, w2, h, text,		m_debugger->GetCartridgePRGBank(i));
+	}
 	DrawKeyValue(x, y, w1, w2, h, "CHR Banks",	m_debugger->GetCartridgeCHRBanks());
-	DrawKeyValue(x, y, w1, w2, h, "CHR 0",		m_debugger->GetCartridgeCHRBank0());
-	DrawKeyValue(x, y, w1, w2, h, "CHR 1",		m_debugger->GetCartridgeCHRBank1());
+	for (int i = 0; i < m_debugger->GetCartridgeCHRBanksVisible(); i++) {
+		const char* text = TextFormat("CHR %i", i);
+		DrawKeyValue(x, y, w1, w2, h, text,		m_debugger->GetCartridgeCHRBank(i));
+	}
 
 	EndScissorMode();
 }
@@ -639,11 +643,15 @@ void DebuggerNESDialog::UpdatePrevValues() {
 	m_prevValues["Mapper ID"]	= m_debugger->GetMapperID();
 	m_prevValues["Map. Name"]	= m_debugger->GetMapperName();
 	m_prevValues["PRG Banks"]	= m_debugger->GetCartridgePRGBanks();
-	m_prevValues["PRG 0"]		= m_debugger->GetCartridgePRGBank0();
-	m_prevValues["PRG 1"]		= m_debugger->GetCartridgePRGBank1();
+	for (int i = 0; i < m_debugger->GetCartridgePRGBanksVisible(); i++) {
+		const char* text = TextFormat("PRG %i", i);
+		m_prevValues[text]		= m_debugger->GetCartridgePRGBank(i);
+	}
 	m_prevValues["CHR Banks"]	= m_debugger->GetCartridgeCHRBanks();
-	m_prevValues["CHR 0"]		= m_debugger->GetCartridgeCHRBank0();
-	m_prevValues["CHR 1"]		= m_debugger->GetCartridgeCHRBank1();
+	for (int i = 0; i < m_debugger->GetCartridgeCHRBanksVisible(); i++) {
+		const char* text = TextFormat("CHR %i", i);
+		m_prevValues[text] = m_debugger->GetCartridgeCHRBank(i);
+	}
 }
 
 void DebuggerNESDialog::DrawTiles(Rectangle dst, int slot) {

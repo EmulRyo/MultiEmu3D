@@ -44,9 +44,9 @@ NametableMirroring UxROM::GetNametableMirroring() {
 
 u8 UxROM::ReadPRG(u16 address) {
     if (address < 0xC000)
-        return m_prgData[(GetPRGBank0() * 0x4000) + address - 0x8000];
+        return m_prgData[(GetPRGBank(0) * 0x4000) + address - 0x8000];
     else
-        return m_prgData[(GetPRGBank1() * 0x4000) + address - 0xC000];
+        return m_prgData[(GetPRGBank(1) * 0x4000) + address - 0xC000];
 }
 
 void UxROM::WritePRG(u16 address, u8 value) {
@@ -72,28 +72,28 @@ const char* UxROM::GetMapperName() {
     return "UxROM";
 }
 
-u8 UxROM::GetPRGBanks() {
+u8 UxROM::GetPRGBanks() const {
     return m_prgBanks;
 }
 
-u8 UxROM::GetPRGBank0() {
-    return m_prgBank;
+u8 UxROM::GetPRGBanksVisible() const {
+    return 2;
 }
 
-u8 UxROM::GetPRGBank1() {
-    return m_prgBanks - 1;
+u8 UxROM::GetPRGBank(u8 number) const {
+    return number ? m_prgBanks - 1 : m_prgBank;
 }
 
-u8 UxROM::GetCHRBanks() {
+u8 UxROM::GetCHRBanks() const {
     return m_chrBanks;
 }
 
-u8 UxROM::GetCHRBank0() {
-    return 0;
+u8 UxROM::GetCHRBanksVisible() const {
+    return 2;
 }
 
-u8 UxROM::GetCHRBank1() {
-    return 1;
+u8 UxROM::GetCHRBank(u8 number) const {
+    return number;
 }
 
 void UxROM::SaveState(std::ostream* stream) {}

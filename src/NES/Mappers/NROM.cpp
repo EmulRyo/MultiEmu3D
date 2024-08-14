@@ -69,28 +69,31 @@ const char* NROM::GetMapperName() {
     return "NROM";
 }
 
-u8 NROM::GetPRGBanks() {
+u8 NROM::GetPRGBanks() const {
     return m_prgBanks;
 }
 
-u8 NROM::GetPRGBank0() {
-    return 0;
-}
-
-u8 NROM::GetPRGBank1() {
-    return (m_prgBanks == 2) ? 1 : 0;
-}
-
-u8 NROM::GetCHRBanks() {
+u8 NROM::GetPRGBanksVisible() const {
     return 2;
 }
 
-u8 NROM::GetCHRBank0() {
-    return 0;
+u8 NROM::GetPRGBank(u8 number) const {
+    if (number == 0)
+        return 0;
+    else
+        return (m_prgBanks == 2) ? 1 : 0;
 }
 
-u8 NROM::GetCHRBank1() {
-    return 1;
+u8 NROM::GetCHRBanks() const {
+    return 2;
+}
+
+u8 NROM::GetCHRBanksVisible() const {
+    return 2;
+}
+
+u8 NROM::GetCHRBank(u8 number) const {
+    return number;
 }
 
 void NROM::SaveState(std::ostream* stream) {}

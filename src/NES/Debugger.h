@@ -83,12 +83,12 @@ namespace Nes {
 
         std::string GetMapperID();
         std::string GetMapperName();
-        std::string GetCartridgePRGBanks();
-        std::string GetCartridgePRGBank0();
-        std::string GetCartridgePRGBank1();
-        std::string GetCartridgeCHRBanks();
-        std::string GetCartridgeCHRBank0();
-        std::string GetCartridgeCHRBank1();
+        std::string GetCartridgePRGBanks() const;
+        u8          GetCartridgePRGBanksVisible() const;
+        std::string GetCartridgePRGBank(u8 number) const;
+        std::string GetCartridgeCHRBanks() const;
+        u8          GetCartridgeCHRBanksVisible() const;
+        std::string GetCartridgeCHRBank(u8 number) const;
         
         std::string Disassemble(u16 start, int numInstructions);
         std::string Disassemble(int numInstructions);
