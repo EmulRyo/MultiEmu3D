@@ -229,7 +229,7 @@ void MMC3::OnBankData(u8 value) {
         if (bankRegister < 2)
             value &= 0xFE;
 
-        if (CHRMode == 1) {
+        if (CHRMode) {
             if (bankRegister == 0) {
                 m_chrBank[4] = value;
                 m_chrBank[5] = value + 1;

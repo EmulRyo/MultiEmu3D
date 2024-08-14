@@ -69,7 +69,8 @@ string Cartridge::GetShortName(string fileName) {
 
 void Cartridge::Reset()
 {
-    
+    if (m_mapper != nullptr)
+        m_mapper->Reset();
 }
 
 void Cartridge::LoadFile(string fileName, string batteriesPath) {
