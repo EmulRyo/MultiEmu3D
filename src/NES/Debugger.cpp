@@ -413,7 +413,12 @@ void Debugger::StepInto() {
 bool Debugger::ExecuteOneFrame() {
     int cycles = 0;
     while(cycles < NES_FRAME_CPU_CYCLES) {
-        cycles += m_cpu->Execute(1);
+        try {
+            cycles += m_cpu->Execute(1);
+        }
+        catch (Exception& e) {
+            return false;
+        }
         if (GetBreakpointNode(m_cpu->GetPC()))
             return false;
     }

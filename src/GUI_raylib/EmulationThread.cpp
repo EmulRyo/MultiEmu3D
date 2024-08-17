@@ -127,55 +127,63 @@ void EmulationThread::Entry()
     int frames = 0;
     auto fpsBegin = std::chrono::steady_clock::now();
     auto fpsEnd = fpsBegin;
-    try {
-        while (!m_threadShouldClose)
+    
+    while (!m_threadShouldClose)
+    {
+        auto frameBegin = std::chrono::steady_clock::now();
         {
-            auto frameBegin = std::chrono::steady_clock::now();
+            std::lock_guard<std::mutex> lg(m_mutex);
+            if (m_emuState == EmuState::Playing)
             {
-                std::lock_guard<std::mutex> lg(m_mutex);
-                if (m_emuState == EmuState::Playing)
-                {
-                    if (!m_rewind->IsEnabled()) {
-                        if (!m_buttonRewind) {
-                            m_device->PadSetButtons(m_buttonsState);
-                            SetSpeed(m_buttonSpeed ? EmuSpeed::Max : EmuSpeed::Normal);
-                            if (m_buttonSpeed)
-                                ((RendererBase*)m_screen)->SetIcon(Renderer::MaxSpeed);
-                        }
-                        m_device->ExecuteOneFrame();
-                        m_rewind->AddFrame();
-                        frames++;
+                if (!m_rewind->IsEnabled()) {
+                    if (!m_buttonRewind) {
+                        m_device->PadSetButtons(m_buttonsState);
+                        SetSpeed(m_buttonSpeed ? EmuSpeed::Max : EmuSpeed::Normal);
+                        if (m_buttonSpeed)
+                            ((RendererBase*)m_screen)->SetIcon(Renderer::MaxSpeed);
                     }
-                    
-                    m_rewind->UpdatePad(m_buttonsState, m_buttonRewind);
-                }
-            }   // Desbloquear el mutex
+                    try {
+                        m_device->ExecuteOneFrame();
+                    }
+                    catch (Exception& exc) {
+                        //wxMessageBox(exc.what());
+                        // TODO:
+                        // - Informar de las excepciones a MainFrame
+                        // - Quitar excepciones
+                        printf("%s\n", exc.what());
+                        m_emuState = EmuState::Stopped;
+                        ((RendererBase*)m_screen)->SetIcon(Renderer::Stop);
+                        ((RendererBase*)m_screen)->SetRewindValue(-1);
+                        m_rewind->Disable();
 
-            auto frameEnd = std::chrono::steady_clock::now();
-            if (m_speed == EmuSpeed::Normal) {
-                while ((ElapsedMicroSeconds(frameBegin, frameEnd) + accumulated) < desired) {
-                    std::this_thread::sleep_for(std::chrono::milliseconds(1));
-                    frameEnd = std::chrono::steady_clock::now();
+                        m_device->CartridgeExtract();
+                        m_device->Reset();
+                    }
+                    m_rewind->AddFrame();
+                    frames++;
                 }
-                accumulated = ElapsedMicroSeconds(frameBegin, frameEnd) + accumulated - desired;
+                    
+                m_rewind->UpdatePad(m_buttonsState, m_buttonRewind);
             }
-            
-            fpsEnd = std::chrono::steady_clock::now();
-            long long elapsed = ElapsedMilliSeconds(fpsBegin, fpsEnd);
-            if (elapsed > 1000) {
-                m_fps = frames * 1000.0f / elapsed;
-                PrintfVisualStudioOutput("FPS: %f\n", m_fps);
-                fpsBegin = fpsEnd;
-                frames = 0;
+        }   // Desbloquear el mutex
+
+        auto frameEnd = std::chrono::steady_clock::now();
+        if (m_speed == EmuSpeed::Normal) {
+            while ((ElapsedMicroSeconds(frameBegin, frameEnd) + accumulated) < desired) {
+                std::this_thread::sleep_for(std::chrono::milliseconds(1));
+                frameEnd = std::chrono::steady_clock::now();
             }
+            accumulated = ElapsedMicroSeconds(frameBegin, frameEnd) + accumulated - desired;
         }
-    }
-    catch (Exception& exc) {
-        //wxMessageBox(exc.what());
-        // TODO:
-        // - Informar de las excepciones a MainFrame
-        // - Quitar excepciones
-        printf("%s\n", exc.what());
+            
+        fpsEnd = std::chrono::steady_clock::now();
+        long long elapsed = ElapsedMilliSeconds(fpsBegin, fpsEnd);
+        if (elapsed > 1000) {
+            m_fps = frames * 1000.0f / elapsed;
+            PrintfVisualStudioOutput("FPS: %f\n", m_fps);
+            fpsBegin = fpsEnd;
+            frames = 0;
+        }
     }
     
     m_finished = true;
