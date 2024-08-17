@@ -43,9 +43,11 @@ void MMC1::Reset() {
     m_numWrites = 0;
     m_regs[REG_CONTROL]  = 0x0C;
     m_regs[REG_CHRBANK0] = 0x00;
-    m_regs[REG_CHRBANK1] = 0x00;
+    m_regs[REG_CHRBANK1] = 0x01;
     m_regs[REG_PRGBANK]  = 0x00;
     m_chrBuffer = (m_chrBanks == 0) ? m_chrRam : m_chrData;
+    m_chrBank0 = 0x00;
+    m_chrBank1 = 0x01;
     UpdateMirroring();
     UpdatePRGBanks();
     UpdateCHRBanks();
@@ -160,6 +162,9 @@ void MMC1::UpdateMirroring() {
 void MMC1::UpdatePRGBanks() {
     u8 mode = (m_regs[REG_CONTROL] >> 2) & 0x03;
     u8 bank = m_regs[REG_PRGBANK] & 0x0F;
+    if (m_prgBanks >= 0x1F)
+        bank = (m_regs[REG_CHRBANK0] & 0x10) | bank;
+
     if (mode < 2) { // Modo 32 KB
         m_prgBank0 = bank & 0x0E;
         m_prgBank1 = m_prgBank0 + 1;
@@ -175,10 +180,12 @@ void MMC1::UpdatePRGBanks() {
 }
 
 void MMC1::UpdateCHRBanks() {
+    if (m_chrBanks > (m_regs[REG_CHRBANK0] & 0x1F))
+        m_chrBank0 = m_regs[REG_CHRBANK0] & 0x1F;
+    if (m_chrBanks > (m_regs[REG_CHRBANK0] & 0x1F))
+        m_chrBank1 = m_regs[REG_CHRBANK1] & 0x1F;
+
     u8 mode = m_regs[REG_CONTROL] >> 4;
-    m_chrBank0 = m_regs[REG_CHRBANK0] & 0x1F;
-    m_chrBank1 = m_regs[REG_CHRBANK1] & 0x1F;
-    u8* buffer = m_chrRam;
     if (mode == 0) { // 8KB mode
         m_chrBank0 &= 0x1E;
         m_chrBank1 = m_chrBank0+1;
