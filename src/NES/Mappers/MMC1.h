@@ -33,11 +33,11 @@ namespace Nes {
         
         void Reset();
 
-        NametableMirroring GetNametableMirroring();
+        NametableMirroring GetNametableMirroring() const;
 
         u8   ReadPRG(u16 address);
         void WritePRG(u16 address, u8 value);
-        u8   ReadCHR(u16 address);
+        u8   ReadCHR(u16 address) const;
         void WriteCHR(u16 address, u8 value);
         
         void SaveState(std::ostream *stream);

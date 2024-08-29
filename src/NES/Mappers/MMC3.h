@@ -32,12 +32,15 @@ namespace Nes {
         
         void Reset();
 
-        NametableMirroring GetNametableMirroring();
+        NametableMirroring GetNametableMirroring() const;
 
         u8   ReadPRG(u16 address);
         void WritePRG(u16 address, u8 value);
-        u8   ReadCHR(u16 address);
+        u8   ReadCHR(u16 address) const;
         void WriteCHR(u16 address, u8 value);
+
+        void Scanline() override;
+        bool IRQ() override;
         
         void SaveState(std::ostream *stream);
         void LoadState(std::istream *stream);
@@ -55,7 +58,20 @@ namespace Nes {
         u8 GetCHRBanksVisible() const;
         u8 GetCHRBank(u8 number) const;
 
+        bool HasIRQ() const;
+        u8   GetIRQReloadValue() const;
+        u8   GetIRQCounter() const;
+        bool GetIRQReloadFlag() const;
+        bool GetIRQEnabled() const;
+
     private:
+        struct IRQ_t {
+            u8      counter;
+            bool    enabled;
+            bool    reload;
+            bool    triggered;
+        };
+
         u8 m_regs[5];
         u8 m_prgRam[0x2000];
         u8 m_chrRam[0x2000];
@@ -64,8 +80,15 @@ namespace Nes {
         u8 m_prgBank[4];
         u8 m_chrBank[8];
 
+        IRQ_t m_IRQ;
+
         void OnBankSelect(u8 value);
         void OnBankData(u8 value);
         void OnMirroring(u8 value);
+        void OnPRGRAMProtect(u8 value);
+        void OnIRQLatch(u8 value);
+        void OnIRQReload(u8 value);
+        void OnIRQDisable(u8 value);
+        void OnIRQEnable(u8 value);
     };
 }

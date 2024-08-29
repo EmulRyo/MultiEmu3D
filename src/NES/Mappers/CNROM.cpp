@@ -38,7 +38,7 @@ void CNROM::Reset() {
     m_mapperMirroring = m_hardWireMirroring;
 }
 
-NametableMirroring CNROM::GetNametableMirroring() {
+NametableMirroring CNROM::GetNametableMirroring() const {
     return m_hardWireMirroring;
 }
 
@@ -55,7 +55,7 @@ void CNROM::WritePRG(u16 address, u8 value) {
     }
 }
 
-u8 CNROM::ReadCHR(u16 address) {
+u8 CNROM::ReadCHR(u16 address) const {
     return m_chrData[(GetCHRBank(0) * 0x2000) + address];
 }
 

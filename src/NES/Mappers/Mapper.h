@@ -30,12 +30,15 @@ namespace Nes {
         Mapper(u8* buffer);
         virtual void Reset() = 0;
 
-        virtual NametableMirroring GetNametableMirroring() = 0;
+        virtual NametableMirroring GetNametableMirroring() const = 0;
 
         virtual u8   ReadPRG(u16 address)            = 0;
         virtual void WritePRG(u16 address, u8 value) = 0;
-        virtual u8   ReadCHR(u16 address)            = 0;
+        virtual u8   ReadCHR(u16 address) const      = 0;
         virtual void WriteCHR(u16 address, u8 value) = 0;
+
+        virtual void Scanline() {};
+        virtual bool IRQ() { return false; };
         
         virtual void SaveState(std::ostream *stream) = 0;
         virtual void LoadState(std::istream *stream) = 0;
@@ -52,6 +55,12 @@ namespace Nes {
         virtual u8 GetCHRBanks() const = 0;
         virtual u8 GetCHRBanksVisible() const = 0;
         virtual u8 GetCHRBank(u8 number) const = 0;
+
+        virtual bool HasIRQ() const { return false; };
+        virtual u8   GetIRQReloadValue() const { return 0; };
+        virtual u8   GetIRQCounter() const { return 0; };
+        virtual bool GetIRQReloadFlag() const { return false; };
+        virtual bool GetIRQEnabled() const { return false; };
 
         static Mapper* Create(u16 mapperId, u8* buffer);
 

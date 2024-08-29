@@ -37,7 +37,7 @@ namespace Nes {
         void Reset();
         void RefreshScreen();
         void ClearScreen();
-        bool Interrupt();
+        bool NMI();
         
         void WriteReg(u16 address, u8 value);
         u8   ReadReg(u16 address, bool debug=false);
@@ -45,22 +45,21 @@ namespace Nes {
 
         u8   MemR(u16 address, bool skipBuffer=true);
         void MemW(u16 address, u8 value);
-
-        u8   OAMR(u16 address);
+        u8   OAMR(u16 address) const;
         
-        bool Update(u16 cycles);
+        void Update(u16 cycles);
 
-        u32 GetNumFrames();
-        u16 GetX();
-        u16 GetY();
-        u8  GetScrollX();
-        u8  GetScrollY();
-        u16 GetCurrentAddress();
+        u32 GetNumFrames() const;
+        u16 GetX() const;
+        u16 GetY() const;
+        u8  GetScrollX() const;
+        u8  GetScrollY() const;
+        u16 GetCurrentAddress() const;
         u16 GetTempAddress();
         u8  GetFineXScroll();
         u8  GetWriteToggle();
         
-        void SaveState(std::ostream *file);
+        void SaveState(std::ostream *file) const;
         void LoadState(std::istream *file);
         
     private:
@@ -113,6 +112,7 @@ namespace Nes {
         IScreenDrawable *m_screen;
         u8  m_genLatch;
         u16 m_nameTableAddress;
+        bool m_NMI;
 
         // PPU internal registers
         // https://wiki.nesdev.com/w/index.php?title=PPU_scrolling
@@ -127,6 +127,7 @@ namespace Nes {
         // u8  m_x;
         // u8  m_w;
 
+        u8 VRAMR(u16 address) const;
         void OnEndFrame();
         u16  GetBGPaletteAddress(u16 x, u16 y, u16 attrTableAddress);
         void SpriteEvaluation(u16 line);

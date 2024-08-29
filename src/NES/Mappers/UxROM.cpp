@@ -38,7 +38,7 @@ void UxROM::Reset() {
     m_mapperMirroring = m_hardWireMirroring;
 }
 
-NametableMirroring UxROM::GetNametableMirroring() {
+NametableMirroring UxROM::GetNametableMirroring() const {
     return m_hardWireMirroring;
 }
 
@@ -55,8 +55,8 @@ void UxROM::WritePRG(u16 address, u8 value) {
     }
 }
 
-u8 UxROM::ReadCHR(u16 address) {
-    u8* buffer = (m_chrBanks == 0) ? m_chrRam : m_chrData;
+u8 UxROM::ReadCHR(u16 address) const {
+    const u8* buffer = (m_chrBanks == 0) ? m_chrRam : m_chrData;
     return buffer[address];
 }
 

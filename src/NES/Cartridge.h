@@ -35,17 +35,19 @@ namespace Nes {
         
         void Reset();
         
-        u8 *GetData();
         unsigned int GetSize() const;
         std::string GetName() const;
         bool IsLoaded() const;
 
-        NametableMirroring GetNametableMirroring();
+        NametableMirroring GetNametableMirroring() const;
 
         u8   ReadPRG(u16 address);
         void WritePRG(u16 address, u8 value);
-        u8   ReadCHR(u16 address);
+        u8   ReadCHR(u16 address) const;
         void WriteCHR(u16 address, u8 value);
+
+        void Scanline();
+        bool IRQ();
         
         void SaveState(std::ostream *stream);
         void LoadState(std::istream *stream);
@@ -62,6 +64,12 @@ namespace Nes {
         u8 GetCHRBanks() const;
         u8 GetCHRBanksVisible() const;
         u8 GetCHRBank(u8 number) const;
+
+        bool HasIRQ() const;
+        u8   GetIRQReloadValue() const;
+        u8   GetIRQCounter() const;
+        bool GetIRQReloadFlag() const;
+        bool GetIRQEnabled() const;
 
     private:
         unsigned long m_romSize;

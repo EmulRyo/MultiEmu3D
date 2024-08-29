@@ -89,6 +89,12 @@ namespace Nes {
         std::string GetCartridgeCHRBanks() const;
         u8          GetCartridgeCHRBanksVisible() const;
         std::string GetCartridgeCHRBank(u8 number) const;
+
+        bool        HasCartridgeIRQ() const;
+        std::string GetCartridgeIRQReloadValue() const;
+        std::string GetCartridgeIRQCounter() const;
+        std::string GetCartridgeIRQReloadFlag() const;
+        std::string GetCartridgeIRQEnabled() const;
         
         std::string Disassemble(u16 start, int numInstructions);
         std::string Disassemble(int numInstructions);

@@ -38,7 +38,7 @@ namespace Nes {
         Memory(CPU* cpu, Video* v, Pad* pad, Sound* s);
         ~Memory();
         Memory* GetPtrMemory();
-        bool GetPageCrossed();
+        bool GetPageCrossed() const;
         void SetPageCrossed(bool value);
         void PageCrossed(u16 address1, u16 address2);
         void ResetMem();
@@ -70,7 +70,7 @@ namespace Nes {
                 return m_c->ReadPRG(address);
             return 0;
         }
-        void SaveMemory(std::ostream* stream);
+        void SaveMemory(std::ostream* stream) const;
         void LoadMemory(std::istream* stream);
 
     protected:

@@ -253,6 +253,25 @@ std::string Debugger::GetCartridgeCHRBank(u8 number) const {
     return HexToString(m_cartridge->GetCHRBank(number), 2, '0');
 }
 
+bool Debugger::HasCartridgeIRQ() const {
+    return m_cartridge->HasIRQ();
+}
+
+std::string Debugger::GetCartridgeIRQReloadValue() const {
+    return IntToString(m_cartridge->GetIRQReloadValue(), 3, '0');
+}
+
+std::string Debugger::GetCartridgeIRQCounter() const {
+    return IntToString(m_cartridge->GetIRQCounter(), 3, '0');
+}
+
+std::string Debugger::GetCartridgeIRQReloadFlag() const {
+    return m_cartridge->GetIRQReloadFlag() ? "True" : "False";
+}
+
+std::string Debugger::GetCartridgeIRQEnabled() const {
+    return m_cartridge->GetIRQEnabled() ? "True" : "False";
+}
 
 std::string Debugger::GetMem(u16 address) {
     stringstream ss;
@@ -416,7 +435,7 @@ bool Debugger::ExecuteOneFrame() {
         try {
             cycles += m_cpu->Execute(1);
         }
-        catch (Exception& e) {
+        catch (Exception&) {
             return false;
         }
         if (GetBreakpointNode(m_cpu->GetPC()))

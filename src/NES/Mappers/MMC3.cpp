@@ -63,13 +63,19 @@ void MMC3::Reset() {
     for (int i = 0; i < 8; i++)
         m_chrBank[i] = i;
 
+    m_IRQ.counter = 0;
+    m_IRQ.enabled = false;
+    m_IRQ.reload = false;
+    m_IRQ.triggered = false;
+    m_regs[REG_IRQLATCH] = 0;
+
     if (m_hardWireMirroring == NametableMirroring::FOUR_SCREEN)
         m_mapperMirroring = NametableMirroring::FOUR_SCREEN;
     else
         m_mapperMirroring = NametableMirroring::HORIZONTAL;
 }
 
-NametableMirroring MMC3::GetNametableMirroring() {
+NametableMirroring MMC3::GetNametableMirroring() const {
     return m_mapperMirroring;
 }
 
@@ -96,11 +102,23 @@ void MMC3::WritePRG(u16 address, u8 value) {
         if ((address & 0001) == 0)
             OnMirroring(value);
         else
-            m_regs[REG_PRGRAM] = value;
+            OnPRGRAMProtect(value);
+    }
+    else if ((address >= 0xC000) && (address < 0xE000)) {
+        if ((address & 0001) == 0)
+            OnIRQLatch(value);
+        else
+            OnIRQReload(value);
+    }
+    else if ((address >= 0xE000) && (address <= 0xFFFF)) {
+        if ((address & 0001) == 0)
+            OnIRQDisable(value);
+        else
+            OnIRQEnable(value);
     }
 }
 
-u8 MMC3::ReadCHR(u16 address) {
+u8 MMC3::ReadCHR(u16 address) const {
     u8 addressZone = address / 0x400;
     return m_chrBuffer[(m_chrBank[addressZone] * 0x400) + (address - (0x400*addressZone))];
 }
@@ -141,6 +159,27 @@ u8 MMC3::GetCHRBanksVisible() const {
 u8 MMC3::GetCHRBank(u8 number) const {
     return m_chrBank[number];
 }
+
+bool MMC3::HasIRQ() const {
+    return true;
+};
+
+u8 MMC3::GetIRQReloadValue() const {
+    return m_regs[REG_IRQLATCH];
+};
+
+u8 MMC3::GetIRQCounter() const {
+    return m_IRQ.counter;
+};
+
+bool MMC3::GetIRQReloadFlag() const {
+    return m_IRQ.reload;
+};
+
+bool MMC3::GetIRQEnabled() const {
+    return m_IRQ.enabled;
+};
+
 
 void MMC3::SaveState(std::ostream* stream) {}
 void MMC3::LoadState(std::istream* stream) {}
@@ -238,8 +277,10 @@ void MMC3::OnBankData(u8 value) {
                 m_chrBank[6] = value;
                 m_chrBank[7] = value + 1;
             }
-            else
+            else if (bankRegister >= 2)
                 m_chrBank[bankRegister - 2] = value;
+            else
+                assert("");
         }
         else {
             if (bankRegister == 0) {
@@ -265,4 +306,47 @@ void MMC3::OnMirroring(u8 value) {
         m_mapperMirroring = BIT0(value) ? NametableMirroring::HORIZONTAL : NametableMirroring::VERTICAL;
 
     m_regs[REG_MIRRORING] = value;
+}
+
+void MMC3::OnPRGRAMProtect(u8 value) {
+    m_regs[REG_PRGRAM] = value;
+}
+
+void MMC3::Scanline() {
+    m_IRQ.counter--;
+
+    if (m_IRQ.counter == 0) {
+        if (m_IRQ.enabled)
+            m_IRQ.triggered = true;
+        m_IRQ.reload = true;
+    }
+    if (m_IRQ.reload) {
+        m_IRQ.counter = m_regs[REG_IRQLATCH];
+        m_IRQ.reload = false;
+    }
+}
+
+bool MMC3::IRQ() {
+    if (m_IRQ.triggered) {
+        m_IRQ.triggered = false;
+        return true;
+    }
+    else
+        return false;
+}
+
+void MMC3::OnIRQLatch(u8 value) {
+    m_regs[REG_IRQLATCH] = value;
+}
+
+void MMC3::OnIRQReload(u8 value) {
+    m_IRQ.reload = true;
+}
+
+void MMC3::OnIRQDisable(u8 value) {
+    m_IRQ.enabled = false;
+}
+
+void MMC3::OnIRQEnable(u8 value) {
+    m_IRQ.enabled = true;
 }

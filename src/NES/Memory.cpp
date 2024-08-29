@@ -44,7 +44,7 @@ Memory::~Memory()
 
 Memory *Memory::GetPtrMemory() { return this; }
 
-bool Memory::GetPageCrossed() {
+bool Memory::GetPageCrossed() const {
     return m_pageCrossed;
 }
 
@@ -93,7 +93,7 @@ void Memory::MemW(u16 address, u8 value)
         m_c->WritePRG(address, value);
 }
 
-void Memory::SaveMemory(ostream *stream)
+void Memory::SaveMemory(ostream *stream) const
 {
 	stream->write((char *)&memory[0x0000], SIZE_MEM);
 }

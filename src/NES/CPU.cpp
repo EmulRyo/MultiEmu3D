@@ -94,9 +94,13 @@ int CPU::Execute(int cyclesToExecute)
 		if (OAMDMAPending)
 			cycles += OAMDMA();
 
-        bool NMI = m_v->Update(cycles);
+        m_v->Update(cycles);
 
-        Interrupts(NMI, inst);
+		if (m_v->NMI())
+			ExecuteNMI(inst);
+
+		if (m_c->IRQ() && GetFlagI() == 0)
+			ExecuteIRQ(inst);
         
         m_cycles += cycles;
 		
@@ -105,7 +109,7 @@ int CPU::Execute(int cyclesToExecute)
     return m_cycles;
 }
 
-int  CPU::GetElapsedCycles() {
+int  CPU::GetElapsedCycles() const {
     return m_cycles;
 }
 
@@ -125,13 +129,15 @@ u16 CPU::OAMDMA() {
 	return 514;
 }
 
-void CPU::Interrupts(bool NMI, Instructions &inst) {
-	if (NMI) {
-		inst.NMI();
-		// Deberian de ser 7 ciclos pero para pasar el test "blargg_ppu_tests_2005.09.15b/vbl_clear_time.nes" requiere 10
-		m_v->Update(10);
-		m_cycles += 10;
-	}
+void CPU::ExecuteNMI(Instructions &inst) {
+	inst.NMI();
+	// Deberian de ser 7 ciclos pero para pasar el test "blargg_ppu_tests_2005.09.15b/vbl_clear_time.nes" requiere 10
+	m_v->Update(10);
+	m_cycles += 10;
+}
+
+void CPU::ExecuteIRQ(Instructions& inst) {
+	inst.IRQ(GetPC(), 0x20, 0xFFFE);
 }
 
 void CPU::LoadStateFromRAM(istream *stream) {

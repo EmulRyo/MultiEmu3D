@@ -34,7 +34,7 @@ NROM::NROM(u8* buffer)
 
 void NROM::Reset() {}
 
-NametableMirroring NROM::GetNametableMirroring() { return m_hardWireMirroring; }
+NametableMirroring NROM::GetNametableMirroring() const { return m_hardWireMirroring; }
 
 u8 NROM::ReadPRG(u16 address) {
     if (address < 0x8000)
@@ -53,7 +53,7 @@ void NROM::WritePRG(u16 address, u8 value) {
 
 }
 
-u8 NROM::ReadCHR(u16 address) {
+u8 NROM::ReadCHR(u16 address) const {
 	return m_chrBuffer[address];
 }
 

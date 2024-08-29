@@ -461,7 +461,7 @@ void DebuggerNESDialog::DrawKeyValue(float x, float& y, float w1, float w2, floa
 
 void DebuggerNESDialog::DrawOtherRegisters(Rectangle dst) {
 	Rectangle panelView = { 0 };
-	float height = 24 * (4 + m_debugger->GetCartridgePRGBanksVisible() + m_debugger->GetCartridgeCHRBanksVisible()) + 24;
+	float height = 24 * (4 + m_debugger->GetCartridgePRGBanksVisible() + m_debugger->GetCartridgeCHRBanksVisible() + (m_debugger->HasCartridgeIRQ() ? 4 : 0)) + 24;
 	GuiScrollPanel({ dst.x, dst.y + 40, dst.width, dst.height - 40 }, nullptr, { dst.x, dst.y, dst.width - 14, height}, &m_otherRegsScroll, &panelView);
 
 	GuiGroupBox(dst, "Other registers");
@@ -493,6 +493,12 @@ void DebuggerNESDialog::DrawOtherRegisters(Rectangle dst) {
 	for (int i = 0; i < m_debugger->GetCartridgeCHRBanksVisible(); i++) {
 		const char* text = TextFormat("CHR %i", i);
 		DrawKeyValue(x, y, w1, w2, h, text,		m_debugger->GetCartridgeCHRBank(i));
+	}
+	if (m_debugger->HasCartridgeIRQ()) {
+		DrawKeyValue(x, y, w1, w2, h, "IRQ Counter",     m_debugger->GetCartridgeIRQCounter());
+		DrawKeyValue(x, y, w1, w2, h, "IRQ Reload Flag", m_debugger->GetCartridgeIRQReloadFlag());
+		DrawKeyValue(x, y, w1, w2, h, "IRQ Reload",      m_debugger->GetCartridgeIRQReloadValue());
+		DrawKeyValue(x, y, w1, w2, h, "IRQ Enabled",     m_debugger->GetCartridgeIRQEnabled());
 	}
 
 	EndScissorMode();
@@ -651,6 +657,12 @@ void DebuggerNESDialog::UpdatePrevValues() {
 	for (int i = 0; i < m_debugger->GetCartridgeCHRBanksVisible(); i++) {
 		const char* text = TextFormat("CHR %i", i);
 		m_prevValues[text] = m_debugger->GetCartridgeCHRBank(i);
+	}
+	if (m_debugger->HasCartridgeIRQ()) {
+		m_prevValues["IRQ Counter"]     = m_debugger->GetCartridgeIRQCounter();
+		m_prevValues["IRQ Reload Flag"] = m_debugger->GetCartridgeIRQReloadFlag();
+		m_prevValues["IRQ Reload"]      = m_debugger->GetCartridgeIRQReloadValue();
+		m_prevValues["IRQ Enabled"]     = m_debugger->GetCartridgeIRQEnabled();
 	}
 }
 

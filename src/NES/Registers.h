@@ -37,55 +37,55 @@ namespace Nes {
 
         Registers *GetPtrRegisters();
 
-        inline u8 GetA()			{ return m_A; }
+        inline u8 GetA() const      { return m_A; }
         inline void SetA(u8 value)	{ m_A = value; }
         inline u8 *PtrA()           { return &m_A; }
-        inline u8 GetX()			{ return m_X; }
+        inline u8 GetX() const      { return m_X; }
         inline void SetX(u8 value)	{ m_X = value; }
         inline u8 *PtrX()           { return &m_X; }
-        inline u8 GetY()			{ return m_Y; }
+        inline u8 GetY() const      { return m_Y; }
         inline void SetY(u8 value)	{ m_Y = value; }
         inline u8 *PtrY()           { return &m_Y; }
 
-        inline u8 GetS()			{ return m_S; }
+        inline u8 GetS() const      { return m_S; }
         inline void SetS(u8 value)	{ m_S = value; }
         inline u8 *PtrS()           { return &m_S; }
         inline void AddS(int value) { m_S += value; };
-        inline u8 GetP()			{ return m_P; }
+        inline u8 GetP() const      { return m_P; }
         inline void SetP(u8 value)	{ m_P = value; }
         inline u8 *PtrP()           { return &m_P; }
 
-        inline u16 GetPC()           { return m_PC; }
+        inline u16 GetPC() const     { return m_PC; }
         inline void SetPC(u16 value) { m_PC = value; }
         inline u16 *PtrPC()          { return &m_PC; }
         inline void AddPC(int value) { m_PC += value; };
 
         // Carry
-        inline u8 GetFlagC() { return (m_P & 0x01); }
+        inline u8 GetFlagC() const { return (m_P & 0x01); }
         // Carry
         inline void SetFlagC(u8 value) { m_P = (m_P & 0xFE) | (value & 0x01); }
         // Zero
-        inline u8 GetFlagZ() { return ((m_P & 0x02) >> 1); }
+        inline u8 GetFlagZ() const { return ((m_P & 0x02) >> 1); }
         // Zero
         inline void SetFlagZ(u8 value) { m_P = (m_P & 0xFD) | ((value & 0x01) << 1); }
         // Interrupt
-        inline u8 GetFlagI() { return ((m_P & 0x04) >> 2); }
+        inline u8 GetFlagI() const { return ((m_P & 0x04) >> 2); }
         // Interrupt
         inline void SetFlagI(u8 value) { m_P = (m_P & 0xFB) | ((value & 0x01) << 2); }
         // Decimal
-        inline u8 GetFlagD() { return ((m_P & 0x08) >> 3); }
+        inline u8 GetFlagD() const { return ((m_P & 0x08) >> 3); }
         // Decimal
         inline void SetFlagD(u8 value) { m_P = (m_P & 0xF7) | ((value & 0x01) << 3); }
         // B flag
-        inline u8 GetFlagB() { return ((m_P & 0x30) >> 4); }
+        inline u8 GetFlagB() const { return ((m_P & 0x30) >> 4); }
         // B flag
         inline void SetFlagB(u8 value) { m_P = (m_P & 0xCF) | ((value & 0x02) << 4); }
         // Overflow
-        inline u8 GetFlagV() { return ((m_P & 0x40) >> 6); }
+        inline u8 GetFlagV() const { return ((m_P & 0x40) >> 6); }
         // Overflow
         inline void SetFlagV(u8 value) { m_P = (m_P & 0xBF) | ((value & 0x01) << 6); }
         // Negative
-        inline u8 GetFlagN() { return ((m_P & 0x80) >> 7); }
+        inline u8 GetFlagN() const { return ((m_P & 0x80) >> 7); }
         // Negative
         inline void SetFlagN(u8 value) { m_P = (m_P & 0x7F) | ((value & 0x01) << 7); }
 

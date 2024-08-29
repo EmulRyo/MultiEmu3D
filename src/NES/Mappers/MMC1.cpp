@@ -53,7 +53,7 @@ void MMC1::Reset() {
     UpdateCHRBanks();
 }
 
-NametableMirroring MMC1::GetNametableMirroring() {
+NametableMirroring MMC1::GetNametableMirroring() const {
     return m_mapperMirroring;
 }
 
@@ -97,7 +97,7 @@ void MMC1::WritePRG(u16 address, u8 value) {
     }
 }
 
-u8 MMC1::ReadCHR(u16 address) {
+u8 MMC1::ReadCHR(u16 address) const {
     if (address < 0x1000)
         return m_chrBuffer[(GetCHRBank(0) * 0x1000) + address];
     else

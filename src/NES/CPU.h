@@ -47,7 +47,7 @@ namespace Nes {
         int  Execute(int cyclesToExecute);
         int  ExecuteOneFrame();
         void Reset();
-        int  GetElapsedCycles();
+        int  GetElapsedCycles() const;
         void OAMDMARequest(u8 value);
         void LoadStateFromRAM(std::istream *stream);
         void SaveStateToRAM(std::ostream *stream);
@@ -57,7 +57,8 @@ namespace Nes {
     private:
         void Init(Video *v, Pad *p);
         void ResetGlobalVariables();
-        void Interrupts(bool NMI, Instructions &inst);
+        void ExecuteNMI(Instructions &inst);
+        void ExecuteIRQ(Instructions& inst);
         u16  OAMDMA();
         
         u8 ExecuteOpcode(u8 opcode, Instructions &inst);

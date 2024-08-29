@@ -112,11 +112,6 @@ void Cartridge::ReadHeader() {
     assert((m_mapper != nullptr) && "Mapper not implemented");
 }
 
-u8 *Cartridge::GetData()
-{
-	return nullptr;
-}
-
 unsigned int Cartridge::GetSize() const
 {
 	return m_romSize;
@@ -132,7 +127,7 @@ bool Cartridge::IsLoaded() const
 	return m_isLoaded;
 }
 
-NametableMirroring Cartridge::GetNametableMirroring() {
+NametableMirroring Cartridge::GetNametableMirroring() const {
     return m_mapper->GetNametableMirroring();
 }
 
@@ -168,7 +163,7 @@ void Cartridge::WritePRG(u16 address, u8 value) {
     m_mapper->WritePRG(address, value);
 };
 
-u8 Cartridge::ReadCHR(u16 address) {
+u8 Cartridge::ReadCHR(u16 address) const {
     return m_mapper->ReadCHR(address);
 };
 
@@ -198,5 +193,33 @@ u8 Cartridge::GetCHRBanksVisible() const {
 
 u8 Cartridge::GetCHRBank(u8 number) const {
     return m_mapper->GetCHRBank(number);
+}
+
+void Cartridge::Scanline() {
+    m_mapper->Scanline();
+}
+
+bool Cartridge::IRQ() {
+    return m_mapper->IRQ();
+}
+
+bool Cartridge::HasIRQ() const {
+    return m_mapper->HasIRQ();
+}
+
+u8 Cartridge::GetIRQReloadValue() const {
+    return m_mapper->GetIRQReloadValue();
+}
+
+u8 Cartridge::GetIRQCounter() const {
+    return m_mapper->GetIRQCounter();
+}
+
+bool Cartridge::GetIRQReloadFlag() const {
+    return m_mapper->GetIRQReloadFlag();
+}
+
+bool Cartridge::GetIRQEnabled() const {
+    return m_mapper->GetIRQEnabled();
 }
 

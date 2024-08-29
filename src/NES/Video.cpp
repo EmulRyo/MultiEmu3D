@@ -171,24 +171,41 @@ void Video::WriteReg(u16 address, u8 value) {
     }
 }
 
-bool Video::Update(u16 cpuCycles) {
-    bool NMI = false;
+void Video::Update(u16 cpuCycles) {
+    m_NMI = false;
 
     u16 ppuCycles = cpuCycles * 3;
 
     while (ppuCycles > 0) {
-        u16 dot = m_cycles % NES_SCANLINE_PPU_CYCLES;
+        u16 prevDot = m_cycles % NES_SCANLINE_PPU_CYCLES;
 
         u16 cycles = ppuCycles;
-        if ((dot + ppuCycles) >= NES_SCANLINE_PPU_CYCLES)
-            cycles = NES_SCANLINE_PPU_CYCLES - dot - 1;
+        if ((prevDot + ppuCycles) >= NES_SCANLINE_PPU_CYCLES)
+            cycles = NES_SCANLINE_PPU_CYCLES - prevDot - 1;
 
         m_cycles += cycles;
         ppuCycles -= cycles;
 
         DrawPixels();
 
-        dot = m_cycles % NES_SCANLINE_PPU_CYCLES;
+        u16 line = m_cycles / NES_SCANLINE_PPU_CYCLES;
+        u16 dot = m_cycles % NES_SCANLINE_PPU_CYCLES;
+
+        // MMC3
+        if ((line < 240) || (line == 261)) {
+            if (m_regs[PPUMASK & 0x07] & 0x18) { // BG o sprites activos
+                if (BIT3(m_regs[PPUCTRL & 0x07])) { // SpritePattern address
+                    if ((prevDot < 260) && (dot >= 260)) {
+                        m_cartridge->Scanline();
+                    }
+                }
+                else {
+                    if ((prevDot < 324) && (dot >= 324)) {
+                        m_cartridge->Scanline();
+                    }
+                }
+            }
+        }
 
         if (dot >= NES_SCANLINE_PPU_CYCLES-1) {
             if (ppuCycles > 0) {
@@ -198,7 +215,7 @@ bool Video::Update(u16 cpuCycles) {
             m_x = 0;
             m_scrollX = m_scrollXRequest;
             m_nameTableAddress = ((m_regs[PPUCTRL & 0x07] & 0x03) * 0x400) + 0x2000;
-            u16 line = m_cycles / NES_SCANLINE_PPU_CYCLES;
+            line = m_cycles / NES_SCANLINE_PPU_CYCLES;
             if (line == NES_SCREEN_H)
                 RefreshScreen();
             else if (line == 241) {
@@ -207,8 +224,9 @@ bool Video::Update(u16 cpuCycles) {
                 m_regs[regID] |= 0x80;
 
                 u8 ppuCtrlData = m_regs[PPUCTRL & 0x07];
-                if ((ppuCtrlData & 0x80) > 0)
-                    NMI = true; // Si el bit 7 de PPUCTRL está activo, generar una Non-Maskable Interrupt
+                if ((ppuCtrlData & 0x80) > 0) {
+                    m_NMI = true; // Si el bit 7 de PPUCTRL está activo, generar una Non-Maskable Interrupt
+                }
             }
             else if (line == 261) { // Pre-render line
                 // Clear Sprite Overflow, Sprite 0 Hit and VBlank
@@ -221,8 +239,14 @@ bool Video::Update(u16 cpuCycles) {
             SpriteEvaluation(line);
         }
     }
+}
 
-    return NMI;
+bool Video::NMI() {
+    if (m_NMI) {
+        m_NMI = false;
+        return true;
+    } else
+        return false;
 }
 
 void Video::OnEndFrame() {
@@ -440,26 +464,10 @@ u16  Video::GetBGPaletteAddress(u16 x, u16 y, u16 attrTableAddress) {
 u8 Video::MemR(u16 address, bool skipBuffer) {
     if (address < 0x3000) { // PPUDATA read buffer (post-fetch)
         u8 value = m_readBuffer;
-        if (address < 0x2000) { // Pattern table 0 y 1
+        if (address < 0x2000) // Pattern table 0 y 1
             value = m_cartridge->ReadCHR(address);
-        }
-        else if (address < 0x3000) {// internal VRAM: Nametable 0, 1, 2, 3
-            if (m_cartridge->GetNametableMirroring() == NametableMirroring::VERTICAL) {
-                value = m_VRAM[(address - 0x2000) % 0x800];
-            }
-            else if (m_cartridge->GetNametableMirroring() == NametableMirroring::HORIZONTAL) {
-                if (address < 0x2400)
-                    value = m_VRAM[address - 0x2000];
-                else if (address < 0x2800)
-                    value = m_VRAM[address - 0x2400];
-                else if (address < 0x2C00)
-                    value = m_VRAM[address - 0x2000];
-                else
-                    value = m_VRAM[address - 0x2400];
-            }
-            else
-                value = m_VRAM[address - 0x2000];
-        }
+        else // internal VRAM: Nametable 0, 1, 2, 3
+            value = VRAMR(address);
 
         u8 retValue = skipBuffer ? value : m_readBuffer;
         m_readBuffer = value;
@@ -480,8 +488,24 @@ u8 Video::MemR(u16 address, bool skipBuffer) {
     }
     else
         return 0;
+}
 
-
+u8 Video::VRAMR(u16 address) const {
+    if (m_cartridge->GetNametableMirroring() == NametableMirroring::VERTICAL) {
+        return m_VRAM[(address - 0x2000) % 0x800];
+    }
+    else if (m_cartridge->GetNametableMirroring() == NametableMirroring::HORIZONTAL) {
+        if (address < 0x2400)
+            return m_VRAM[address - 0x2000];
+        else if (address < 0x2800)
+            return m_VRAM[address - 0x2400];
+        else if (address < 0x2C00)
+            return m_VRAM[address - 0x2000];
+        else
+            return m_VRAM[address - 0x2400];
+    }
+    else
+        return m_VRAM[address - 0x2000];
 }
 
 void Video::MemW(u16 address, u8 value) {
@@ -542,27 +566,27 @@ void Video::GetTile(u8* buffer, int widthSize, int tile) {
     }
 }
 
-u32 Video::GetNumFrames() {
+u32 Video::GetNumFrames() const {
     return m_numFrames;
 }
 
-u16 Video::GetX() {
+u16 Video::GetX() const {
     return m_cycles % NES_SCANLINE_PPU_CYCLES;
 }
 
-u16 Video::GetY() {
+u16 Video::GetY() const {
     return m_cycles / NES_SCANLINE_PPU_CYCLES;
 }
 
-u8 Video::GetScrollX() {
+u8 Video::GetScrollX() const {
     return m_scrollX;
 }
 
-u8 Video::GetScrollY() {
+u8 Video::GetScrollY() const {
     return m_scrollY;
 }
 
-u16 Video::GetCurrentAddress() {
+u16 Video::GetCurrentAddress() const {
     return m_addressLatch; // m_v;
 }
 
@@ -578,7 +602,7 @@ u8 Video::GetWriteToggle() {
     return 0; // m_w;
 }
 
-void Video::SaveState(ostream *stream) {
+void Video::SaveState(ostream *stream) const {
     stream->write((char*)&m_regs[0], sizeof(u8) * 8);
     stream->write((char*)&m_readBuffer, sizeof(u8));
     stream->write((char*)&m_palette[0], sizeof(u8) * 0x20);
@@ -622,6 +646,6 @@ void Video::LoadState(istream *stream) {
     stream->read((char*)&m_VRAM[0], sizeof(u8) * 0x1000);
 }
 
-u8 Video::OAMR(u16 address) {
+u8 Video::OAMR(u16 address) const {
     return (address < 0x100) ? m_OAM[address] : 0;
 }
