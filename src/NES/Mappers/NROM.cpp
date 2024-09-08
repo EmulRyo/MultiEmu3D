@@ -36,7 +36,7 @@ void NROM::Reset() {}
 
 NametableMirroring NROM::GetNametableMirroring() const { return m_hardWireMirroring; }
 
-u8 NROM::ReadPRG(u16 address) {
+u8 NROM::ReadPRG(u16 address) const {
     if (address < 0x8000)
         return m_prgData[address - 0x8000];
     else if (address < 0xC000)
@@ -61,11 +61,11 @@ void NROM::WriteCHR(u16 address, u8 value) {
     m_chrBuffer[address] = value;
 }
 
-u8 NROM::GetMapperNum() {
+u8 NROM::GetMapperNum() const {
     return 0;
 }
 
-const char* NROM::GetMapperName() {
+const char* NROM::GetMapperName() const {
     return "NROM";
 }
 

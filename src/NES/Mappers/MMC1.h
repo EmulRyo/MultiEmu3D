@@ -35,7 +35,7 @@ namespace Nes {
 
         NametableMirroring GetNametableMirroring() const;
 
-        u8   ReadPRG(u16 address);
+        u8   ReadPRG(u16 address) const;
         void WritePRG(u16 address, u8 value);
         u8   ReadCHR(u16 address) const;
         void WriteCHR(u16 address, u8 value);
@@ -45,8 +45,8 @@ namespace Nes {
         
         void Extract();
 
-        u8 GetMapperNum();
-        const char* GetMapperName();
+        u8 GetMapperNum() const;
+        const char* GetMapperName() const;
 
         u8 GetPRGBanks() const;
         u8 GetPRGBanksVisible() const;

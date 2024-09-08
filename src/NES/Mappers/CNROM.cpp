@@ -42,7 +42,7 @@ NametableMirroring CNROM::GetNametableMirroring() const {
     return m_hardWireMirroring;
 }
 
-u8 CNROM::ReadPRG(u16 address) {
+u8 CNROM::ReadPRG(u16 address) const {
     if (address < 0xC000)
         return m_prgData[(GetPRGBank(0) * 0x4000) + address - 0x8000];
     else
@@ -63,11 +63,11 @@ void CNROM::WriteCHR(u16 address, u8 value) {
     //assert(false && "Trying to write to CHR");
 }
 
-u8 CNROM::GetMapperNum() {
+u8 CNROM::GetMapperNum() const {
     return 3;
 }
 
-const char* CNROM::GetMapperName() {
+const char* CNROM::GetMapperName() const {
     return "CNROM";
 }
 

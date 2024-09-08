@@ -79,7 +79,7 @@ NametableMirroring MMC3::GetNametableMirroring() const {
     return m_mapperMirroring;
 }
 
-u8 MMC3::ReadPRG(u16 address) {
+u8 MMC3::ReadPRG(u16 address) const {
     if (address < 0x8000)
         return m_prgRam[address - 0x6000];
     else {
@@ -128,11 +128,11 @@ void MMC3::WriteCHR(u16 address, u8 value) {
     m_chrBuffer[(m_chrBank[addressZone] * 0x400) + (address - (0x400 * addressZone))] = value;
 }
 
-u8 MMC3::GetMapperNum() {
+u8 MMC3::GetMapperNum() const {
     return 4;
 }
 
-const char* MMC3::GetMapperName() {
+const char* MMC3::GetMapperName() const {
     return "MMC3";
 }
 

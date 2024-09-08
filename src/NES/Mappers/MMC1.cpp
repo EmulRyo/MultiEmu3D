@@ -57,7 +57,7 @@ NametableMirroring MMC1::GetNametableMirroring() const {
     return m_mapperMirroring;
 }
 
-u8 MMC1::ReadPRG(u16 address) {
+u8 MMC1::ReadPRG(u16 address) const {
     if (address < 0x8000)
         return m_prgRam[address - 0x6000];
     else if (address < 0xC000)
@@ -112,11 +112,11 @@ void MMC1::WriteCHR(u16 address, u8 value) {
         m_chrBuffer[(GetCHRBank(1) * 0x1000) + (address - 0x1000)] = value;
 }
 
-u8 MMC1::GetMapperNum() {
+u8 MMC1::GetMapperNum() const {
     return 1;
 }
 
-const char* MMC1::GetMapperName() {
+const char* MMC1::GetMapperName() const {
     return "MMC1";
 }
 

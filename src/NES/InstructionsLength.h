@@ -22,12 +22,6 @@
 
 namespace Nes {
 	u8 GetInstructionLength(u8 opcode);
-	u8 GetInstructionCBLength(u8 opcode);
-	u8 GetInstructionDDLength(u8 opcode);
-	u8 GetInstructionEDLength(u8 opcode);
-	u8 GetInstructionFDLength(u8 opcode);
-	u8 GetInstructionDDCBLength(u8 opcode);
-	u8 GetInstructionFDCBLength(u8 opcode);
 }
 
 #endif

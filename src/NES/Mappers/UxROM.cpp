@@ -42,7 +42,7 @@ NametableMirroring UxROM::GetNametableMirroring() const {
     return m_hardWireMirroring;
 }
 
-u8 UxROM::ReadPRG(u16 address) {
+u8 UxROM::ReadPRG(u16 address) const {
     if (address < 0xC000)
         return m_prgData[(GetPRGBank(0) * 0x4000) + address - 0x8000];
     else
@@ -64,11 +64,11 @@ void UxROM::WriteCHR(u16 address, u8 value) {
     m_chrRam[address] = value;
 }
 
-u8 UxROM::GetMapperNum() {
+u8 UxROM::GetMapperNum() const {
     return 2;
 }
 
-const char* UxROM::GetMapperName() {
+const char* UxROM::GetMapperName() const {
     return "UxROM";
 }
 

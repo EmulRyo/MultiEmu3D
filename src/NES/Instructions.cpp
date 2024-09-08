@@ -42,7 +42,7 @@ u16 Instructions::Get16BitsInmValue() {
 	return ((m_mem->MemR(m_reg->GetPC() + 2)) << 8) | m_mem->MemR(m_reg->GetPC() + 1);
 }
 
-u8 Instructions::GetCyclesExtra() {
+u8 Instructions::GetCyclesExtra() const {
 	return m_cyclesExtra;
 }
 

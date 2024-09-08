@@ -147,15 +147,15 @@ void Cartridge::Extract() {
     m_mapper->Extract();
 }
 
-u8 Cartridge::GetMapperNum() {
+u8 Cartridge::GetMapperNum() const {
     return m_mapper->GetMapperNum();
 }
 
-const char* Cartridge::GetMapperName() {
+const char* Cartridge::GetMapperName() const {
     return m_mapper->GetMapperName();
 }
 
-u8 Cartridge::ReadPRG(u16 address) {
+u8 Cartridge::ReadPRG(u16 address) const {
     return m_mapper->ReadPRG(address);
 };
 

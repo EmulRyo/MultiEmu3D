@@ -29,7 +29,7 @@ namespace Nes {
         Instructions(Registers *reg, Memory *mem);
         ~Instructions(void);
 
-        u8   GetCyclesExtra();
+        u8   GetCyclesExtra() const;
         void ResetCyclesExtra();
 
         u8  Get8BitsInmValue();

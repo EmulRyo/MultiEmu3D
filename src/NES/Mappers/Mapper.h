@@ -32,7 +32,7 @@ namespace Nes {
 
         virtual NametableMirroring GetNametableMirroring() const = 0;
 
-        virtual u8   ReadPRG(u16 address)            = 0;
+        virtual u8   ReadPRG(u16 address) const      = 0;
         virtual void WritePRG(u16 address, u8 value) = 0;
         virtual u8   ReadCHR(u16 address) const      = 0;
         virtual void WriteCHR(u16 address, u8 value) = 0;
@@ -45,8 +45,8 @@ namespace Nes {
         
         virtual void Extract() = 0;
 
-        virtual u8 GetMapperNum() = 0;
-        virtual const char *GetMapperName() = 0;
+        virtual u8 GetMapperNum() const = 0;
+        virtual const char *GetMapperName() const = 0;
 
         virtual u8 GetPRGBanks() const = 0;
         virtual u8 GetPRGBanksVisible() const = 0;
