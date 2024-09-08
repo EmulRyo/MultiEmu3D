@@ -67,8 +67,8 @@ namespace Nes {
     protected:
         u8*  m_prgData;
         u8*  m_chrData;
-        u8   m_prgBanks;
-        u8   m_chrBanks;
+        u16  m_prgBanks;
+        u16  m_chrBanks;
         NametableMirroring m_hardWireMirroring;
         NametableMirroring m_mapperMirroring;
     };

@@ -41,7 +41,7 @@ MMC3::MMC3(u8* buffer)
     // El numero de bancos de PRG en la cabecera del cartucho esta especificado en 16KB.
     // Lo multiplicamos por 2 para tener el numero de bancos en 8KB
     m_prgBanks *= 2;
-    // El numero de bancos de CHRen la cabecera del cartucho esta especificado en 8KB.
+    // El numero de bancos de CHR en la cabecera del cartucho esta especificado en 8KB.
     // Lo multiplicamos por 8 para tener el numero de bancos en 1KB
     m_chrBanks *= 8;
 
