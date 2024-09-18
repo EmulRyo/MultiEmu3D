@@ -50,13 +50,13 @@ namespace Nes {
         u8 GetMapperNum() const;
         const char* GetMapperName() const;
 
-        u8 GetPRGBanks() const;
-        u8 GetPRGBanksVisible()  const;
-        u8 GetPRGBank(u8 number) const;
+        u16 GetPRGBanks() const;
+        u8  GetPRGBanksVisible()  const;
+        u16 GetPRGBank(u8 number) const;
 
-        u8 GetCHRBanks() const;
-        u8 GetCHRBanksVisible() const;
-        u8 GetCHRBank(u8 number) const;
+        u16 GetCHRBanks() const;
+        u8  GetCHRBanksVisible() const;
+        u16 GetCHRBank(u8 number) const;
 
         bool HasIRQ() const;
         u8   GetIRQReloadValue() const;
@@ -77,8 +77,8 @@ namespace Nes {
         u8 m_chrRam[0x2000];
 
         u8* m_chrBuffer;
-        u8 m_prgBank[4];
-        u8 m_chrBank[8];
+        u16 m_prgBank[4];
+        u16 m_chrBank[8];
 
         IRQ_t m_IRQ;
 

@@ -48,13 +48,13 @@ namespace Nes {
         u8 GetMapperNum() const;
         const char* GetMapperName() const;
 
-        u8 GetPRGBanks() const;
-        u8 GetPRGBanksVisible() const;
-        u8 GetPRGBank(u8 number) const;
+        u16 GetPRGBanks() const;
+        u8  GetPRGBanksVisible() const;
+        u16 GetPRGBank(u8 number) const;
 
-        u8 GetCHRBanks() const;
+        u16 GetCHRBanks() const;
         u8 GetCHRBanksVisible() const;
-        u8 GetCHRBank(u8 number) const;
+        u16 GetCHRBank(u8 number) const;
 
     private:
         u8 m_shiftRegister;

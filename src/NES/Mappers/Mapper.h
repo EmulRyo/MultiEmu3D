@@ -48,13 +48,13 @@ namespace Nes {
         virtual u8 GetMapperNum() const = 0;
         virtual const char *GetMapperName() const = 0;
 
-        virtual u8 GetPRGBanks() const = 0;
-        virtual u8 GetPRGBanksVisible() const = 0;
-        virtual u8 GetPRGBank(u8 number) const = 0;
+        virtual u16 GetPRGBanks() const = 0;
+        virtual u8  GetPRGBanksVisible() const = 0;
+        virtual u16 GetPRGBank(u8 number) const = 0;
 
-        virtual u8 GetCHRBanks() const = 0;
-        virtual u8 GetCHRBanksVisible() const = 0;
-        virtual u8 GetCHRBank(u8 number) const = 0;
+        virtual u16 GetCHRBanks() const = 0;
+        virtual u8  GetCHRBanksVisible() const = 0;
+        virtual u16 GetCHRBank(u8 number) const = 0;
 
         virtual bool HasIRQ() const { return false; };
         virtual u8   GetIRQReloadValue() const { return 0; };

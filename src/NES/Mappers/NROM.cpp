@@ -69,7 +69,7 @@ const char* NROM::GetMapperName() const {
     return "NROM";
 }
 
-u8 NROM::GetPRGBanks() const {
+u16 NROM::GetPRGBanks() const {
     return m_prgBanks;
 }
 
@@ -77,14 +77,14 @@ u8 NROM::GetPRGBanksVisible() const {
     return 2;
 }
 
-u8 NROM::GetPRGBank(u8 number) const {
+u16 NROM::GetPRGBank(u8 number) const {
     if (number == 0)
         return 0;
     else
         return (m_prgBanks == 2) ? 1 : 0;
 }
 
-u8 NROM::GetCHRBanks() const {
+u16 NROM::GetCHRBanks() const {
     return 2;
 }
 
@@ -92,7 +92,7 @@ u8 NROM::GetCHRBanksVisible() const {
     return 2;
 }
 
-u8 NROM::GetCHRBank(u8 number) const {
+u16 NROM::GetCHRBank(u8 number) const {
     return number;
 }
 

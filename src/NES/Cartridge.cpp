@@ -171,7 +171,7 @@ void Cartridge::WriteCHR(u16 address, u8 value) {
     m_mapper->WriteCHR(address, value);
 };
 
-u8 Cartridge::GetPRGBanks() const {
+u16 Cartridge::GetPRGBanks() const {
     return m_mapper->GetPRGBanks();
 }
 
@@ -179,11 +179,11 @@ u8 Cartridge::GetPRGBanksVisible() const {
     return m_mapper->GetPRGBanksVisible();
 }
 
-u8 Cartridge::GetPRGBank(u8 number) const {
+u16 Cartridge::GetPRGBank(u8 number) const {
     return m_mapper->GetPRGBank(number);
 }
 
-u8 Cartridge::GetCHRBanks() const {
+u16 Cartridge::GetCHRBanks() const {
     return m_mapper->GetCHRBanks();
 }
 
@@ -191,7 +191,7 @@ u8 Cartridge::GetCHRBanksVisible() const {
     return m_mapper->GetCHRBanksVisible();
 }
 
-u8 Cartridge::GetCHRBank(u8 number) const {
+u16 Cartridge::GetCHRBank(u8 number) const {
     return m_mapper->GetCHRBank(number);
 }
 

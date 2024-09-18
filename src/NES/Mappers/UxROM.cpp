@@ -72,7 +72,7 @@ const char* UxROM::GetMapperName() const {
     return "UxROM";
 }
 
-u8 UxROM::GetPRGBanks() const {
+u16 UxROM::GetPRGBanks() const {
     return m_prgBanks;
 }
 
@@ -80,11 +80,11 @@ u8 UxROM::GetPRGBanksVisible() const {
     return 2;
 }
 
-u8 UxROM::GetPRGBank(u8 number) const {
+u16 UxROM::GetPRGBank(u8 number) const {
     return number ? m_prgBanks - 1 : m_prgBank;
 }
 
-u8 UxROM::GetCHRBanks() const {
+u16 UxROM::GetCHRBanks() const {
     return m_chrBanks;
 }
 
@@ -92,7 +92,7 @@ u8 UxROM::GetCHRBanksVisible() const {
     return 2;
 }
 
-u8 UxROM::GetCHRBank(u8 number) const {
+u16 UxROM::GetCHRBank(u8 number) const {
     return number;
 }
 

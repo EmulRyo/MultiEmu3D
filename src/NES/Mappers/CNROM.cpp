@@ -71,7 +71,7 @@ const char* CNROM::GetMapperName() const {
     return "CNROM";
 }
 
-u8 CNROM::GetPRGBanks() const {
+u16 CNROM::GetPRGBanks() const {
     return m_prgBanks;
 }
 
@@ -79,14 +79,14 @@ u8 CNROM::GetPRGBanksVisible() const {
     return 2;
 }
 
-u8 CNROM::GetPRGBank(u8 number) const {
+u16 CNROM::GetPRGBank(u8 number) const {
     if (number == 0)
         return 0;
     else
         return (m_prgBanks > 0) ? 1 : 0;
 }
 
-u8 CNROM::GetCHRBanks() const {
+u16 CNROM::GetCHRBanks() const {
     return m_chrBanks;
 }
 
@@ -94,7 +94,7 @@ u8 CNROM::GetCHRBanksVisible() const {
     return 1;
 }
 
-u8 CNROM::GetCHRBank(u8 number) const {
+u16 CNROM::GetCHRBank(u8 number) const {
     return m_chrBank;
 }
 

@@ -136,7 +136,7 @@ const char* MMC3::GetMapperName() const {
     return "MMC3";
 }
 
-u8 MMC3::GetPRGBanks() const {
+u16 MMC3::GetPRGBanks() const {
     return m_prgBanks;
 }
 
@@ -144,11 +144,11 @@ u8 MMC3::GetPRGBanksVisible() const {
     return 4;
 }
 
-u8 MMC3::GetPRGBank(u8 number) const {
+u16 MMC3::GetPRGBank(u8 number) const {
     return m_prgBank[number];
 }
 
-u8 MMC3::GetCHRBanks() const {
+u16 MMC3::GetCHRBanks() const {
     return m_chrBanks;
 }
 
@@ -156,7 +156,7 @@ u8 MMC3::GetCHRBanksVisible() const {
     return 8;
 }
 
-u8 MMC3::GetCHRBank(u8 number) const {
+u16 MMC3::GetCHRBank(u8 number) const {
     return m_chrBank[number];
 }
 
@@ -192,16 +192,16 @@ void MMC3::OnBankSelect(u8 value) {
 
     if (oldPRGMode != newPRGMode) {
         if (newPRGMode) {
-            u8 r6 = m_prgBank[0];
-            u8 r7 = m_prgBank[1];
+            u16 r6 = m_prgBank[0];
+            u16 r7 = m_prgBank[1];
             m_prgBank[0] = m_prgBanks - 2;
             m_prgBank[1] = r7;
             m_prgBank[2] = r6;
             m_prgBank[3] = m_prgBanks - 1;
         }
         else {
-            u8 r6 = m_prgBank[2];
-            u8 r7 = m_prgBank[1];
+            u16 r6 = m_prgBank[2];
+            u16 r7 = m_prgBank[1];
             m_prgBank[0] = r6;
             m_prgBank[1] = r7;
             m_prgBank[2] = m_prgBanks - 2;
@@ -214,12 +214,12 @@ void MMC3::OnBankSelect(u8 value) {
 
     if (oldCHRMode != newCHRMode) {
         if (newCHRMode) {
-            u8 r0 = m_chrBank[0];
-            u8 r1 = m_chrBank[2];
-            u8 r2 = m_chrBank[4];
-            u8 r3 = m_chrBank[5];
-            u8 r4 = m_chrBank[6];
-            u8 r5 = m_chrBank[7];
+            u16 r0 = m_chrBank[0];
+            u16 r1 = m_chrBank[2];
+            u16 r2 = m_chrBank[4];
+            u16 r3 = m_chrBank[5];
+            u16 r4 = m_chrBank[6];
+            u16 r5 = m_chrBank[7];
             m_chrBank[0] = r2;
             m_chrBank[1] = r3;
             m_chrBank[2] = r4;
@@ -230,12 +230,12 @@ void MMC3::OnBankSelect(u8 value) {
             m_chrBank[7] = r1+1;
         }
         else {
-            u8 r0 = m_chrBank[4];
-            u8 r1 = m_chrBank[6];
-            u8 r2 = m_chrBank[0];
-            u8 r3 = m_chrBank[1];
-            u8 r4 = m_chrBank[2];
-            u8 r5 = m_chrBank[3];
+            u16 r0 = m_chrBank[4];
+            u16 r1 = m_chrBank[6];
+            u16 r2 = m_chrBank[0];
+            u16 r3 = m_chrBank[1];
+            u16 r4 = m_chrBank[2];
+            u16 r5 = m_chrBank[3];
             m_chrBank[0] = r0;
             m_chrBank[1] = r0+1;
             m_chrBank[2] = r1;
@@ -253,6 +253,7 @@ void MMC3::OnBankSelect(u8 value) {
 void MMC3::OnBankData(u8 value) {
     u8 bankRegister = m_regs[REG_BANKSELECT] & 0x07;
     if (bankRegister > 5) { // PRG Banks
+        value = value & (m_prgBanks-1);
         if (bankRegister == 7) // r7
             m_prgBank[1] = value;
         else { // r6
@@ -267,6 +268,11 @@ void MMC3::OnBankData(u8 value) {
         u8 CHRMode = BIT7(m_regs[REG_BANKSELECT]);
         if (bankRegister < 2)
             value &= 0xFE;
+
+        if (m_chrBanks > 0)
+            value = value & (m_chrBanks - 1);
+        else
+            value = value & (8 - 1);
 
         if (CHRMode) {
             if (bankRegister == 0) {

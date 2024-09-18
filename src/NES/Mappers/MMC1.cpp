@@ -120,7 +120,7 @@ const char* MMC1::GetMapperName() const {
     return "MMC1";
 }
 
-u8 MMC1::GetPRGBanks() const {
+u16 MMC1::GetPRGBanks() const {
     return m_prgBanks;
 }
 
@@ -128,11 +128,11 @@ u8 MMC1::GetPRGBanksVisible() const {
     return 2;
 }
 
-u8 MMC1::GetPRGBank(u8 number) const {
+u16 MMC1::GetPRGBank(u8 number) const {
     return number ? m_prgBank1 : m_prgBank0;
 }
 
-u8 MMC1::GetCHRBanks() const {
+u16 MMC1::GetCHRBanks() const {
     return m_chrBanks;
 }
 
@@ -140,7 +140,7 @@ u8 MMC1::GetCHRBanksVisible() const {
     return 2;
 }
 
-u8 MMC1::GetCHRBank(u8 number) const {
+u16 MMC1::GetCHRBank(u8 number) const {
     return number ? m_chrBank1 : m_chrBank0;
 }
 
