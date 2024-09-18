@@ -95,14 +95,12 @@ namespace Nes {
         u8 m_VRAM[0x1000];
         u8 m_readBuffer;
         u8 m_palette[0x20];
-        u16 m_addressLatch;
-        u8  m_writeToggle;
         u8  m_OAM[256];
         u8  m_OAMAddress;
         u8  m_secondaryOAM[64];
         u8  m_secondaryOAMLength;
         Cartridge* m_cartridge;
-        u16 m_x;
+        u16 m_nextDot;
         u32 m_cycles;
         u32 m_numFrames;
         u8  m_scrollX;
@@ -122,10 +120,10 @@ namespace Nes {
         // ||| ++-------------- nametable select
         // +++----------------- fine Y scroll
         // ----------------------
-        // u16 m_v;
-        // u16 m_t;
-        // u8  m_x;
-        // u8  m_w;
+        u16 m_v; // current VRAM address
+        u16 m_t; // temp VRAM address. Address of the top left tile (15 bits)
+        u8  m_x; // fine x scroll (3 bits)
+        u8  m_w; // write toggle (1 bit)
 
         u8 VRAMR(u16 address) const;
         void OnEndFrame();

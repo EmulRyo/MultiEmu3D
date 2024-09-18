@@ -70,7 +70,7 @@ void Video::RefreshScreen()
 }
 
 void Video::Reset() {
-    m_x = 0;
+    m_nextDot = 0;
     m_cycles = 0;
     m_numFrames = 0;
     m_regs[ 0] = 0x00;
@@ -83,8 +83,9 @@ void Video::Reset() {
     m_regs[ 7] = 0x00;
     
     m_genLatch = 0;
-    m_addressLatch = 0x0000;
-    m_writeToggle = 0;
+    m_v = 0x0000;
+    m_t = 0x0000;
+    m_w = 0;
 
     memset(m_OAM, 0xFF, 256);
     m_secondaryOAMLength = 0;
@@ -112,8 +113,8 @@ u8 Video::ReadReg(u16 address, bool debug) {
     if (address == PPUSTATUS) {
         u8 value = (m_regs[regID] & 0xE0) | (m_genLatch & 0x1F); // Los bits 0-4 se cogen del valor del latch
         m_regs[regID] = m_regs[regID] & 0x7F; // Al leer este registro se desactiva el bit 7 (V-Blank)
-        m_addressLatch = 0x0000; // Y tambien se resetea el address latch
-        m_writeToggle = 0;
+        m_t = 0;
+        m_w = 0;
         m_genLatch = m_regs[regID];
         return value;
     }
@@ -122,9 +123,9 @@ u8 Video::ReadReg(u16 address, bool debug) {
         return m_regs[regID];
     }
     else if (address == PPUDATA) {
-        u8 value = MemR(m_addressLatch, false);
+        u8 value = MemR(m_v, false);
         u8 increment = (m_regs[PPUCTRL & 0x07] & 0x04) == 0 ? 1 : 32;
-        m_addressLatch += increment;
+        m_v += increment;
 
         m_genLatch = value;
         return value;
@@ -136,7 +137,10 @@ u8 Video::ReadReg(u16 address, bool debug) {
 void Video::WriteReg(u16 address, u8 value) {
     m_genLatch = value;
     address = ((address - 0x2000) % 8) + 0x2000;
-    if (address == OAMADDR) {
+    if (address == PPUCTRL) {
+        m_t = (m_t & 0xF3FF) | ((value & 0x03) << 10);
+    }
+    else if (address == OAMADDR) {
         m_OAMAddress = value;
         m_regs[OAMDATA & 0x07] = m_OAM[m_OAMAddress];
     }
@@ -145,24 +149,31 @@ void Video::WriteReg(u16 address, u8 value) {
         m_OAMAddress++;
     }
     else if (address == PPUSCROLL) {
-        if (m_writeToggle == 0) { // X
+        if (m_w == 0) { // X
             m_scrollXRequest = value;
+            m_t = (m_t & 0x7FE0) | (value >> 3);
+            m_x = value & 0x07;
         }
-        else
+        else {
             m_scrollYRequest = value;
-        m_writeToggle = (m_writeToggle + 1) % 2;
+            m_t = (m_t & 0xC1F) | ((value & 0x07) << 12) | ((value & 0xF8) << 2);
+        }
+        m_w = (m_w + 1) % 2;
     }
     else if (address == PPUADDR) {
-        if (m_writeToggle == 0) // Primera escritura, upper byte
-            m_addressLatch = (value << 8) | (m_addressLatch & 0x00FF);
-        else // Segunda escritura, lower byte
-            m_addressLatch = (m_addressLatch & 0xFF00) | value;
-        m_writeToggle = (m_writeToggle+1) % 2;
+        if (m_w == 0) { // Primera escritura, upper byte
+            m_t = (m_t & 0x00FF) | ((value & 0x3F) << 8);
+        }
+        else { // Segunda escritura, lower byte
+            m_t = (m_t & 0xFF00) | value;
+            m_v = m_t;
+        }
+        m_w = (m_w + 1) % 2;
     }
     else if (address == PPUDATA) {
-        MemW(m_addressLatch, value);
+        MemW(m_v, value);
         u8 increment = (m_regs[PPUCTRL & 0x07] & 0x04) == 0 ? 1 : 32;
-        m_addressLatch += increment;
+        m_v += increment;
     }
     
     if (address != PPUSTATUS) {
@@ -212,7 +223,7 @@ void Video::Update(u16 cpuCycles) {
                 m_cycles += 1;
                 ppuCycles -= 1;
             }
-            m_x = 0;
+            m_nextDot = 0;
             m_scrollX = m_scrollXRequest;
             m_nameTableAddress = ((m_regs[PPUCTRL & 0x07] & 0x03) * 0x400) + 0x2000;
             line = m_cycles / NES_SCANLINE_PPU_CYCLES;
@@ -300,7 +311,7 @@ void Video::DrawPixels() {
     if (maxX > NES_SCREEN_W)
         maxX = NES_SCREEN_W;
 
-    for (u16 x = m_x; x < maxX; x++) {
+    for (u16 x = m_nextDot; x < maxX; x++) {
         bgPix.x = sprPix.xScreen = x;
         bgPix.valid = sprPix.valid = false;
         
@@ -322,7 +333,7 @@ void Video::DrawPixels() {
             m_screen->OnDrawPixel(0, 0, 0, x, line);
     }
 
-    m_x = maxX;
+    m_nextDot = maxX;
 }
 
 void Video::PixelBG(BGPixel& bgPix) {
@@ -587,32 +598,32 @@ u8 Video::GetScrollY() const {
 }
 
 u16 Video::GetCurrentAddress() const {
-    return m_addressLatch; // m_v;
+    return m_v;
 }
 
 u16 Video::GetTempAddress() {
-    return 0; // m_t;
+    return m_t;
 }
 
 u8 Video::GetFineXScroll() {
-    return 0; // m_x;
+    return m_x;
 }
 
 u8 Video::GetWriteToggle() {
-    return 0; // m_w;
+    return m_w;
 }
 
 void Video::SaveState(ostream *stream) const {
     stream->write((char*)&m_regs[0], sizeof(u8) * 8);
     stream->write((char*)&m_readBuffer, sizeof(u8));
     stream->write((char*)&m_palette[0], sizeof(u8) * 0x20);
-    stream->write((char*)&m_addressLatch, sizeof(u16));
-    stream->write((char*)&m_writeToggle, sizeof(u8));
+    stream->write((char*)&m_v, sizeof(u16));
+    stream->write((char*)&m_w, sizeof(u8));
     stream->write((char*)&m_OAM[0], sizeof(u8) * 256);
     stream->write((char*)&m_OAMAddress, sizeof(u8));
     stream->write((char*)&m_secondaryOAM[0], sizeof(u8) * 64);
     stream->write((char*)&m_secondaryOAMLength, sizeof(u8));
-    stream->write((char*)&m_x, sizeof(u16));
+    stream->write((char*)&m_nextDot, sizeof(u16));
     stream->write((char*)&m_cycles, sizeof(float));
     stream->write((char*)&m_numFrames, sizeof(u32));
     stream->write((char*)&m_scrollX, sizeof(u8));
@@ -628,13 +639,13 @@ void Video::LoadState(istream *stream) {
     stream->read((char*)&m_regs[0], sizeof(u8) * 8);
     stream->read((char*)&m_readBuffer, sizeof(u8));
     stream->read((char*)&m_palette[0], sizeof(u8) * 0x20);
-    stream->read((char*)&m_addressLatch, sizeof(u16));
-    stream->read((char*)&m_writeToggle, sizeof(u8));
+    stream->read((char*)&m_v, sizeof(u16));
+    stream->read((char*)&m_w, sizeof(u8));
     stream->read((char*)&m_OAM[0], sizeof(u8) * 256);
     stream->read((char*)&m_OAMAddress, sizeof(u8));
     stream->read((char*)&m_secondaryOAM[0], sizeof(u8) * 64);
     stream->read((char*)&m_secondaryOAMLength, sizeof(u8));
-    stream->read((char*)&m_x, sizeof(u16));
+    stream->read((char*)&m_nextDot, sizeof(u16));
     stream->read((char*)&m_cycles, sizeof(float));
     stream->read((char*)&m_numFrames, sizeof(u32));
     stream->read((char*)&m_scrollX, sizeof(u8));
