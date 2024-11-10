@@ -413,11 +413,11 @@ void DebuggerNESDialog::DrawVideoRegisters(Rectangle dst) {
 	DrawKeyValue(x, y, w1, w2, h, "Scanline",			m_debugger->GetVideoY());
 	DrawKeyValue(x, y, w1, w2, h, "ScrollX",			m_debugger->GetVideoScrollX());
 	DrawKeyValue(x, y, w1, w2, h, "ScrollY",			m_debugger->GetVideoScrollY());
-	DrawKeyValue(x, y, w1, w2, h, "Curr. address",		m_debugger->GetVideoCurrentAddress());
 	DrawKeyValue(x, y, w1, w2, h, "CoarseX",			m_debugger->GetVideoCoarseX());
 	DrawKeyValue(x, y, w1, w2, h, "CoarseY",			m_debugger->GetVideoCoarseY());
 	DrawKeyValue(x, y, w1, w2, h, "Name table sel.",	m_debugger->GetVideoNameTable());
 	DrawKeyValue(x, y, w1, w2, h, "Fine Y scroll",		m_debugger->GetVideoFineY());
+	DrawKeyValue(x, y, w1, w2, h, "Curr. address",		m_debugger->GetVideoCurrentAddress());
 	DrawKeyValue(x, y, w1, w2, h, "Temp. address",		m_debugger->GetVideoTempAddress());
 	DrawKeyValue(x, y, w1, w2, h, "Fine X scroll",		m_debugger->GetVideoFineXScroll());
 	DrawKeyValue(x, y, w1, w2, h, "Write toggle",		m_debugger->GetVideoWriteToggle());

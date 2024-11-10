@@ -55,9 +55,9 @@ namespace Nes {
         u8  GetScrollX() const;
         u8  GetScrollY() const;
         u16 GetCurrentAddress() const;
-        u16 GetTempAddress();
-        u8  GetFineXScroll();
-        u8  GetWriteToggle();
+        u16 GetTempAddress() const;
+        u8  GetFineXScroll() const;
+        u8  GetWriteToggle() const;
         
         void SaveState(std::ostream *file) const;
         void LoadState(std::istream *file);
@@ -132,6 +132,9 @@ namespace Nes {
         void DrawPixels();
         void PixelBG(BGPixel& bgPix);
         void PixelSprite(SpritePixel& sprPix);
+        void YIncrement();
+        void CoarseXIncrement();
+        void ScanlineEvents(u16 prevDot, u16 dot, u16 line);
     };
 }
 

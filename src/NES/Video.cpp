@@ -202,21 +202,7 @@ void Video::Update(u16 cpuCycles) {
         u16 line = m_cycles / NES_SCANLINE_PPU_CYCLES;
         u16 dot = m_cycles % NES_SCANLINE_PPU_CYCLES;
 
-        // MMC3
-        if ((line < 240) || (line == 261)) {
-            if (m_regs[PPUMASK & 0x07] & 0x18) { // BG o sprites activos
-                if (BIT3(m_regs[PPUCTRL & 0x07])) { // SpritePattern address
-                    if ((prevDot < 260) && (dot >= 260)) {
-                        m_cartridge->Scanline();
-                    }
-                }
-                else {
-                    if ((prevDot < 324) && (dot >= 324)) {
-                        m_cartridge->Scanline();
-                    }
-                }
-            }
-        }
+        ScanlineEvents(prevDot, dot, line);
 
         if (dot >= NES_SCANLINE_PPU_CYCLES-1) {
             if (ppuCycles > 0) {
@@ -248,6 +234,40 @@ void Video::Update(u16 cpuCycles) {
                 OnEndFrame();
 
             SpriteEvaluation(line);
+        }
+    }
+}
+
+void Video::ScanlineEvents(u16 prevDot, u16 dot, u16 line) {
+    bool renderingEnabled = ((m_regs[PPUMASK & 0x07] & 0x18) > 0);
+    bool scanlineWithEvents = (line < 240) || (line == 261);
+
+    if (renderingEnabled && scanlineWithEvents) {
+        for (int i = prevDot + 1; i <= dot; i++) {
+            if (((i <= 256) || (i >= 328)) && (i % 8 == 0)) {
+                CoarseXIncrement();
+            }
+        }
+        if ((prevDot < 256) && (dot >= 256)) {
+            YIncrement();
+        }
+        if ((prevDot < 257) && (dot >= 257)) {
+            m_v = (m_v & 0x7BE0) | (m_t & 0x041F);
+        }
+        if ((line == 261) && (prevDot >= 280) && (dot <= 304)) { // end of vblank
+            m_v = (m_v & 0x041F) | (m_t & 0x7BE0);
+        }
+
+        // MMC3
+        if (BIT3(m_regs[PPUCTRL & 0x07])) { // SpritePattern address
+            if ((prevDot < 260) && (dot >= 260)) {
+                m_cartridge->Scanline();
+            }
+        }
+        else {
+            if ((prevDot < 324) && (dot >= 324)) {
+                m_cartridge->Scanline();
+            }
         }
     }
 }
@@ -577,6 +597,33 @@ void Video::GetTile(u8* buffer, int widthSize, int tile) {
     }
 }
 
+void Video::YIncrement() {
+    if ((m_v & 0x7000) != 0x7000)           // if fine Y < 7
+        m_v += 0x1000;                      // increment fine Y
+    else {
+        m_v &= ~0x7000;                     // fine Y = 0
+        int y = (m_v & 0x03E0) >> 5;        // let y = coarse Y
+        if (y == 29) {
+            y = 0;                          // coarse Y = 0
+            m_v ^= 0x0800;                  // switch vertical nametable
+        }
+        else if (y == 31)
+            y = 0;                          // coarse Y = 0, nametable not switched
+        else
+            y += 1;                         // increment coarse Y
+        m_v = (m_v & ~0x03E0) | (y << 5);   // put coarse Y back into v
+    }
+}
+
+void Video::CoarseXIncrement() {
+    if ((m_v & 0x001F) == 31) {    // if coarse X == 31
+        m_v &= ~0x001F;          // coarse X = 0
+        m_v ^= 0x0400;           // switch horizontal nametable
+    }
+    else
+        m_v += 1;                // increment coarse X
+}
+
 u32 Video::GetNumFrames() const {
     return m_numFrames;
 }
@@ -590,26 +637,28 @@ u16 Video::GetY() const {
 }
 
 u8 Video::GetScrollX() const {
-    return m_scrollX;
+    u8 coarseX = m_v & 0x1F;
+    return (coarseX << 3) | m_x;
 }
 
 u8 Video::GetScrollY() const {
-    return m_scrollY;
+    u8 coarseY = (m_v & 0x3E0) >> 5;
+    return (coarseY << 3) | ((m_v & 0x7000) >> 12);
 }
 
 u16 Video::GetCurrentAddress() const {
     return m_v;
 }
 
-u16 Video::GetTempAddress() {
+u16 Video::GetTempAddress() const {
     return m_t;
 }
 
-u8 Video::GetFineXScroll() {
+u8 Video::GetFineXScroll() const {
     return m_x;
 }
 
-u8 Video::GetWriteToggle() {
+u8 Video::GetWriteToggle() const {
     return m_w;
 }
 
