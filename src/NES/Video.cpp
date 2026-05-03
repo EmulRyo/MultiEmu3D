@@ -91,9 +91,6 @@ void Video::Reset() {
     m_secondaryOAMLength = 0;
 
     memset(m_VRAM, 0, 0x1000);
-
-    m_scrollX = m_scrollY = 0;
-    m_scrollXRequest = m_scrollYRequest = 0;
 }
 
 void Video::ClearScreen()
@@ -113,8 +110,7 @@ u8 Video::ReadReg(u16 address, bool debug) {
     if (address == PPUSTATUS) {
         u8 value = (m_regs[regID] & 0xE0) | (m_genLatch & 0x1F); // Los bits 0-4 se cogen del valor del latch
         m_regs[regID] = m_regs[regID] & 0x7F; // Al leer este registro se desactiva el bit 7 (V-Blank)
-        m_t = 0;
-        m_w = 0;
+        m_w = 0; // Reset write toggle
         m_genLatch = m_regs[regID];
         return value;
     }
@@ -150,12 +146,10 @@ void Video::WriteReg(u16 address, u8 value) {
     }
     else if (address == PPUSCROLL) {
         if (m_w == 0) { // X
-            m_scrollXRequest = value;
             m_t = (m_t & 0x7FE0) | (value >> 3);
             m_x = value & 0x07;
         }
         else {
-            m_scrollYRequest = value;
             m_t = (m_t & 0xC1F) | ((value & 0x07) << 12) | ((value & 0xF8) << 2);
         }
         m_w = (m_w + 1) % 2;
@@ -197,12 +191,12 @@ void Video::Update(u16 cpuCycles) {
         m_cycles += cycles;
         ppuCycles -= cycles;
 
-        DrawPixels();
-
         u16 line = m_cycles / NES_SCANLINE_PPU_CYCLES;
         u16 dot = m_cycles % NES_SCANLINE_PPU_CYCLES;
 
         ScanlineEvents(prevDot, dot, line);
+
+        DrawPixels();
 
         if (dot >= NES_SCANLINE_PPU_CYCLES-1) {
             if (ppuCycles > 0) {
@@ -210,30 +204,15 @@ void Video::Update(u16 cpuCycles) {
                 ppuCycles -= 1;
             }
             m_nextDot = 0;
-            m_scrollX = m_scrollXRequest;
-            m_nameTableAddress = ((m_regs[PPUCTRL & 0x07] & 0x03) * 0x400) + 0x2000;
             line = m_cycles / NES_SCANLINE_PPU_CYCLES;
             if (line == NES_SCREEN_H)
                 RefreshScreen();
-            else if (line == 241) {
-                // Set VBlank Flag
-                u8 regID = PPUSTATUS & 0x07;
-                m_regs[regID] |= 0x80;
-
-                u8 ppuCtrlData = m_regs[PPUCTRL & 0x07];
-                if ((ppuCtrlData & 0x80) > 0) {
-                    m_NMI = true; // Si el bit 7 de PPUCTRL está activo, generar una Non-Maskable Interrupt
-                }
-            }
             else if (line == 261) { // Pre-render line
                 // Clear Sprite Overflow, Sprite 0 Hit and VBlank
                 m_regs[PPUSTATUS & 0x07] = (m_regs[PPUSTATUS & 0x07] & 0x1F);
-                m_scrollY = m_scrollYRequest;
             }
             else if (line == 262)
                 OnEndFrame();
-
-            SpriteEvaluation(line);
         }
     }
 }
@@ -258,6 +237,11 @@ void Video::ScanlineEvents(u16 prevDot, u16 dot, u16 line) {
             m_v = (m_v & 0x041F) | (m_t & 0x7BE0);
         }
 
+        // Sprite evaluation for the NEXT scanline (happens during dots 65-256)
+        if ((prevDot < 256) && (dot >= 256)) {
+            SpriteEvaluation(line + 1);
+        }
+
         // MMC3
         if (BIT3(m_regs[PPUCTRL & 0x07])) { // SpritePattern address
             if ((prevDot < 260) && (dot >= 260)) {
@@ -269,6 +253,21 @@ void Video::ScanlineEvents(u16 prevDot, u16 dot, u16 line) {
                 m_cartridge->Scanline();
             }
         }
+    }
+
+    // VBlank flag set at dot 1 of scanline 241
+    if ((line == 241) && (prevDot < 1) && (dot >= 1)) {
+        u8 regID = PPUSTATUS & 0x07;
+        m_regs[regID] |= 0x80;
+        u8 ppuCtrlData = m_regs[PPUCTRL & 0x07];
+        if ((ppuCtrlData & 0x80) > 0) {
+            m_NMI = true;
+        }
+    }
+
+    // VBlank flag cleared at dot 1 of pre-render scanline 261
+    if ((line == 261) && (prevDot < 1) && (dot >= 1)) {
+        m_regs[PPUSTATUS & 0x07] = (m_regs[PPUSTATUS & 0x07] & 0x1F);
     }
 }
 
@@ -288,6 +287,8 @@ void Video::OnEndFrame() {
 void Video::SpriteEvaluation(u16 line) {
     u8 ppuCtrl = m_regs[PPUCTRL & 0x07];
     u8 size = (ppuCtrl & 0x20) > 0 ? 16 : 8;
+    // Initialize secondary OAM to $FF as per PPU spec
+    memset(m_secondaryOAM, 0xFF, 64);
     m_secondaryOAMLength = 0;
     for (u8 i = 0; i < 64; i++) {
         u8 y = m_OAM[i * 4];
@@ -317,9 +318,7 @@ void Video::DrawPixels() {
 
     BGPixel bgPix{};
     bgPix.patternTableAddress = (ppuCtrl & 0x10) > 0 ? 0x1000 : 0x0000;
-    bgPix.nameTableAddress = m_nameTableAddress;
     bgPix.show8Left = BIT1(ppuMask) ? true : false;
-    bgPix.mirroring = m_cartridge->GetNametableMirroring();
     
     SpritePixel sprPix{};
     sprPix.patternTableAddress = (ppuCtrl & 0x08) > 0 ? 0x1000 : 0x0000;
@@ -342,8 +341,14 @@ void Video::DrawPixels() {
             PixelSprite(sprPix);
 
         // Sprite 0 hit
-        if ((bgPix.valid) && (bgPix.colorId >= 0) && (sprPix.valid) && (sprPix.id == 0) && (x < 255))
-            m_regs[PPUSTATUS & 0x07] |= 0x40;
+        if ((bgPix.valid) && (bgPix.colorId > 0) && (sprPix.valid) && (sprPix.colorId > 0) && (sprPix.id == 0) && (x < 255)) {
+            u8 ppuMask = m_regs[PPUMASK & 0x07];
+            bool bgEnabled = BIT3(ppuMask);
+            bool sprEnabled = BIT4(ppuMask);
+            bool show8Left = BIT2(ppuMask);
+            if (bgEnabled && sprEnabled && (show8Left || (x >= 8)))
+                m_regs[PPUSTATUS & 0x07] |= 0x40;
+        }
 
         if ((sprPix.valid) && ((sprPix.priorityBg == 0) || (!bgPix.valid) || ((sprPix.priorityBg > 0) && (bgPix.colorId == 0))))
             m_screen->OnDrawPixel(sprPix.r, sprPix.g, sprPix.b, x, line);
@@ -362,44 +367,62 @@ void Video::PixelBG(BGPixel& bgPix) {
 
     u16 line = m_cycles / NES_SCANLINE_PPU_CYCLES;
 
-    u16 nameTableAddress = bgPix.nameTableAddress;
-    u16 x = bgPix.x + m_scrollX;
-    if (x > 255) { // Si se sale de su nametable cambiar x y direccion
-        x -= 256;
+    // Get scroll position from m_t (temp register) and m_x (fine X)
+    u8 coarseX_scroll = m_t & 0x001F;         // bits 0-4: coarse X
+    u8 coarseY_scroll = (m_t & 0x03E0) >> 5; // bits 5-9: coarse Y
+    u8 fineY_scroll = (m_t & 0x7000) >> 12;  // bits 12-14: fine Y
+    u8 fineX_scroll = m_x;                     // fine X scroll (separate register)
+    u8 nametable_scroll = (m_t & 0x0C00) >> 10; // bits 10-11: nametable select
 
-        // Sumar 0x400 y si se sale del nametable 0x2400 volver al 0x2000
-        if ((bgPix.mirroring == NametableMirroring::VERTICAL) || (bgPix.mirroring == NametableMirroring::FOUR_SCREEN))
-            nameTableAddress = (((nameTableAddress - 0x2000) + 0x400) % 0x800) + 0x2000;
-    }
-    u8 scrollY = (m_scrollY > 239) ? 0 : m_scrollY;
-    u16 y = line + scrollY;
-    if (y > 239) {
-        y -= 240;
-        // Sumar 0x800 y si se sale del nametable 0x2800 volver al 0x2000
-        if ((bgPix.mirroring == NametableMirroring::HORIZONTAL) || (bgPix.mirroring == NametableMirroring::FOUR_SCREEN))
-            nameTableAddress = (((nameTableAddress - 0x2000) + 0x800) % 0x1000) + 0x2000;
-    }
-    u16 attrTableAddress = nameTableAddress + 0x03C0;
+    // Calculate source position in pixels
+    u16 srcX = coarseX_scroll * 8 + fineX_scroll + bgPix.x;
+    u16 srcY = coarseY_scroll * 8 + fineY_scroll + line;
 
-    u8 tileCol = x / 8;
-    u8 tileRow = y / 8;
-    u16 nameTableOffset = tileRow * 32 + tileCol;
-    u8 tileID = MemR(nameTableAddress + nameTableOffset);
-    u16 tilePatternAddress = bgPix.patternTableAddress + (tileID * 16);
+    // Handle wrapping within the nametable space
+    // Each nametable is 256x240 pixels (32x30 tiles)
+    u16 x_in_nametable = srcX % 256;
+    u16 y_in_nametable = srcY % 240;
 
-    u8 tileY = y - (tileRow * 8);
-    // Cada linea se representa con 2 bytes (dos bit planes)
-    u8 bitPlane0 = MemR(tilePatternAddress + tileY);
-    u8 bitPlane1 = MemR(tilePatternAddress + tileY + 8);
+    // Determine which nametable we're in (may have crossed boundary)
+    u8 nametableX = (srcX / 256) % 2;
+    u8 nametableY = (srcY / 240) % 2;
+    u8 nametable_idx = nametableY * 2 + nametableX;
 
-    u8 tileX = x - (tileCol * 8);
-    tileX = ABS(tileX - 7);
-    u8 mask = (0x01 << tileX);
-    u8 colorId = (((bitPlane1 & mask) << 1) | (bitPlane0 & mask)) >> tileX;
+    // Adjust for the starting nametable from m_t
+    nametable_idx = (nametable_scroll + nametable_idx) % 4;
 
-    u16 paletteAddress = GetBGPaletteAddress(x, y, attrTableAddress);
-    u16 colorAddress = (colorId == 0) ? 0x3F00 : (paletteAddress + (colorId - 1));
-    u8  colorData = MemR(colorAddress) & 0x3F;
+    // Calculate nametable base address
+    u16 nameTableBase = 0x2000 + nametable_idx * 0x400;
+    u16 attrTableBase = nameTableBase + 0x03C0;
+
+    // Calculate tile position within nametable
+    u8 tileCol = x_in_nametable / 8;
+    u8 tileRow = y_in_nametable / 8;
+    u16 tileOffset = tileRow * 32 + tileCol;
+
+    // Get tile ID from nametable (VRAMR handles mirroring)
+    u8 tileID = VRAMR(nameTableBase + tileOffset);
+
+    // Pattern table address for this tile
+    u16 tilePatternAddr = bgPix.patternTableAddress + (tileID * 16);
+
+    // Pixel within tile
+    u8 tileX = x_in_nametable % 8;
+    u8 tileY = y_in_nametable % 8;
+
+    // Get bit planes
+    u8 bitPlane0 = MemR(tilePatternAddr + tileY);
+    u8 bitPlane1 = MemR(tilePatternAddr + tileY + 8);
+
+    // Extract pixel (bit 7 = leftmost pixel)
+    u8 bitPos = 7 - tileX;
+    u8 mask = (0x01 << bitPos);
+    u8 colorId = (((bitPlane1 & mask) << 1) | (bitPlane0 & mask)) >> bitPos;
+
+    // Get palette address
+    u16 paletteAddr = GetBGPaletteAddress(x_in_nametable, y_in_nametable, attrTableBase);
+    u16 colorAddress = (colorId == 0) ? 0x3F00 : (paletteAddr + (colorId - 1));
+    u8 colorData = MemR(colorAddress) & 0x3F;
 
     bgPix.valid = true;
     bgPix.colorId = colorId;
@@ -416,8 +439,7 @@ void Video::PixelSprite(SpritePixel& sprPix) {
 
     u16 line = m_cycles / NES_SCANLINE_PPU_CYCLES;
 
-    s8 s = m_secondaryOAMLength - 1;
-    while (s >= 0) {
+    for (u8 s = 0; s < m_secondaryOAMLength; s++) {
         u8 id = m_secondaryOAM[s];
         u8 xStart = m_OAM[id * 4 + 3];
         if ((xStart > sprPix.xScreen - 8) && (xStart <= sprPix.xScreen)) {
@@ -469,9 +491,9 @@ void Video::PixelSprite(SpritePixel& sprPix) {
                 sprPix.r = PALETTE_2C02_NESTOPIA[colorData * 3 + 0];
                 sprPix.g = PALETTE_2C02_NESTOPIA[colorData * 3 + 1];
                 sprPix.b = PALETTE_2C02_NESTOPIA[colorData * 3 + 2];
+                break; // Stop at first visible sprite (highest priority)
             }
         }
-        s--;
     }
 }
 
@@ -675,10 +697,6 @@ void Video::SaveState(ostream *stream) const {
     stream->write((char*)&m_nextDot, sizeof(u16));
     stream->write((char*)&m_cycles, sizeof(float));
     stream->write((char*)&m_numFrames, sizeof(u32));
-    stream->write((char*)&m_scrollX, sizeof(u8));
-    stream->write((char*)&m_scrollY, sizeof(u8));
-    stream->write((char*)&m_scrollXRequest, sizeof(u8));
-    stream->write((char*)&m_scrollYRequest, sizeof(u8));
     stream->write((char*)&m_genLatch, sizeof(u8));
 
     stream->write((char*)&m_VRAM[0], sizeof(u8) * 0x1000);
@@ -697,10 +715,6 @@ void Video::LoadState(istream *stream) {
     stream->read((char*)&m_nextDot, sizeof(u16));
     stream->read((char*)&m_cycles, sizeof(float));
     stream->read((char*)&m_numFrames, sizeof(u32));
-    stream->read((char*)&m_scrollX, sizeof(u8));
-    stream->read((char*)&m_scrollY, sizeof(u8));
-    stream->read((char*)&m_scrollXRequest, sizeof(u8));
-    stream->read((char*)&m_scrollYRequest, sizeof(u8));
     stream->read((char*)&m_genLatch, sizeof(u8));
 
     stream->read((char*)&m_VRAM[0], sizeof(u8) * 0x1000);

@@ -66,10 +66,8 @@ namespace Nes {
         struct BGPixel {
             // Input
             u16 x;
-            u16 nameTableAddress;
             u16 patternTableAddress;
             bool show8Left;
-            NametableMirroring mirroring;
 
             // Output
             bool valid;
@@ -103,13 +101,8 @@ namespace Nes {
         u16 m_nextDot;
         u32 m_cycles;
         u32 m_numFrames;
-        u8  m_scrollX;
-        u8  m_scrollY;
-        u8  m_scrollXRequest;
-        u8  m_scrollYRequest;
         IScreenDrawable *m_screen;
         u8  m_genLatch;
-        u16 m_nameTableAddress;
         bool m_NMI;
 
         // PPU internal registers
