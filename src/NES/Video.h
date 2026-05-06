@@ -97,6 +97,7 @@ namespace Nes {
         u8  m_OAMAddress;
         u8  m_secondaryOAM[64];
         u8  m_secondaryOAMLength;
+        u16 m_secondaryOAMLine;
         Cartridge* m_cartridge;
         u16 m_nextDot;
         u32 m_cycles;

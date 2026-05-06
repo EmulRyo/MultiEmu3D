@@ -89,6 +89,7 @@ void Video::Reset() {
 
     memset(m_OAM, 0xFF, 256);
     m_secondaryOAMLength = 0;
+    m_secondaryOAMLine = 0xFFFF;
 
     memset(m_VRAM, 0, 0x1000);
 }
@@ -194,9 +195,9 @@ void Video::Update(u16 cpuCycles) {
         u16 line = m_cycles / NES_SCANLINE_PPU_CYCLES;
         u16 dot = m_cycles % NES_SCANLINE_PPU_CYCLES;
 
-        ScanlineEvents(prevDot, dot, line);
-
         DrawPixels();
+
+        ScanlineEvents(prevDot, dot, line);
 
         if (dot >= NES_SCANLINE_PPU_CYCLES-1) {
             if (ppuCycles > 0) {
@@ -238,8 +239,8 @@ void Video::ScanlineEvents(u16 prevDot, u16 dot, u16 line) {
         }
 
         // Sprite evaluation for the NEXT scanline (happens during dots 65-256)
-        if ((prevDot < 256) && (dot >= 256)) {
-            SpriteEvaluation(line + 1);
+        if ((prevDot < 65) && (dot >= 65)) {
+            SpriteEvaluation((line == 261) ? 0 : line + 1);
         }
 
         // MMC3
@@ -290,6 +291,7 @@ void Video::SpriteEvaluation(u16 line) {
     // Initialize secondary OAM to $FF as per PPU spec
     memset(m_secondaryOAM, 0xFF, 64);
     m_secondaryOAMLength = 0;
+    m_secondaryOAMLine = line;
     for (u8 i = 0; i < 64; i++) {
         u8 y = m_OAM[i * 4];
         // Los sprites se pintan en y+1
@@ -324,6 +326,9 @@ void Video::DrawPixels() {
     sprPix.patternTableAddress = (ppuCtrl & 0x08) > 0 ? 0x1000 : 0x0000;
     sprPix.show8Left = BIT2(ppuMask) ? true : false;
     sprPix.size16 = (ppuCtrl & 0x20) > 0 ? true : false;
+
+    if (m_secondaryOAMLine != line)
+        SpriteEvaluation(line);
 
     u16 dot = m_cycles % NES_SCANLINE_PPU_CYCLES;
     u16 maxX = dot - 1;
@@ -441,9 +446,13 @@ void Video::PixelSprite(SpritePixel& sprPix) {
 
     for (u8 s = 0; s < m_secondaryOAMLength; s++) {
         u8 id = m_secondaryOAM[s];
-        u8 xStart = m_OAM[id * 4 + 3];
-        if ((xStart > sprPix.xScreen - 8) && (xStart <= sprPix.xScreen)) {
-            u8 yStart = m_OAM[id * 4 + 0] + 1; // Los sprites se pintan en y+1
+        u16 xStart = m_OAM[id * 4 + 3];
+        if ((sprPix.xScreen >= xStart) && (sprPix.xScreen < (xStart + 8))) {
+            u16 yStart = m_OAM[id * 4 + 0] + 1; // Los sprites se pintan en y+1
+            u16 spriteHeight = sprPix.size16 ? 16 : 8;
+            if ((line < yStart) || (line >= (yStart + spriteHeight)))
+                continue;
+
             u8 tileID = m_OAM[id * 4 + 1];
             u8 attr = m_OAM[id * 4 + 2];
             u8 flipX = BIT6(attr);
@@ -712,6 +721,7 @@ void Video::LoadState(istream *stream) {
     stream->read((char*)&m_OAMAddress, sizeof(u8));
     stream->read((char*)&m_secondaryOAM[0], sizeof(u8) * 64);
     stream->read((char*)&m_secondaryOAMLength, sizeof(u8));
+    m_secondaryOAMLine = 0xFFFF;
     stream->read((char*)&m_nextDot, sizeof(u16));
     stream->read((char*)&m_cycles, sizeof(float));
     stream->read((char*)&m_numFrames, sizeof(u32));
