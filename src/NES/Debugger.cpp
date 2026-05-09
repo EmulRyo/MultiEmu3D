@@ -324,12 +324,12 @@ std::string Debugger::GetVMem(u16 start, u16 end)
         ss << ": ";
         for (int i = 0x0; i < 0xF; i++)
         {
-            u8 value = m_video->MemR(row + i);
+            u8 value = m_video->MemRInternal(row + i);
             AppendHex(ss, value, 2, '0');
             ss << ' ';
         }
 
-        u8 value = m_video->MemR(row + 0xF);
+        u8 value = m_video->MemRInternal(row + 0xF);
         AppendHex(ss, value, 2, '0');
         if (row < end1)
             ss << '\n';
@@ -358,7 +358,7 @@ std::string Debugger::GetOAMData(u16 start, u16 end)
             ss << ' ';
         }
 
-        u8 value = m_video->MemR(row + 0xF);
+        u8 value = m_video->MemRInternal(row + 0xF);
         AppendHex(ss, value, 2, '0');
         if (row < end1)
             ss << '\n';

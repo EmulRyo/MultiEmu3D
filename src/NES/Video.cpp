@@ -86,6 +86,13 @@ void Video::Reset() {
     m_v = 0x0000;
     m_t = 0x0000;
     m_w = 0;
+    m_x = 0;
+
+    m_readBuffer = 0;
+	for (int i = 0; i < 0x20; i++)
+        m_palette[i] = 0;
+    m_OAMAddress = 0;
+    m_NMI = false;
 
     memset(m_OAM, 0xFF, 256);
     m_secondaryOAMLength = 0;
@@ -116,13 +123,14 @@ u8 Video::ReadReg(u16 address, bool debug) {
         return value;
     }
     else if (address == OAMDATA) {
-        m_genLatch = m_regs[regID];
-        return m_regs[regID];
+        u8 value = m_OAM[m_OAMAddress];
+        m_genLatch = value;
+        return value;
     }
     else if (address == PPUDATA) {
-        u8 value = MemR(m_v, false);
+        u8 value = MemR(m_v);
         u8 increment = (m_regs[PPUCTRL & 0x07] & 0x04) == 0 ? 1 : 32;
-        m_v += increment;
+        m_v = (m_v + increment) & 0x3FFF;
 
         m_genLatch = value;
         return value;
@@ -168,7 +176,7 @@ void Video::WriteReg(u16 address, u8 value) {
     else if (address == PPUDATA) {
         MemW(m_v, value);
         u8 increment = (m_regs[PPUCTRL & 0x07] & 0x04) == 0 ? 1 : 32;
-        m_v += increment;
+        m_v = (m_v + increment) & 0x3FFF;
     }
     
     if (address != PPUSTATUS) {
@@ -416,8 +424,8 @@ void Video::PixelBG(BGPixel& bgPix) {
     u8 tileY = y_in_nametable % 8;
 
     // Get bit planes
-    u8 bitPlane0 = MemR(tilePatternAddr + tileY);
-    u8 bitPlane1 = MemR(tilePatternAddr + tileY + 8);
+    u8 bitPlane0 = MemRInternal(tilePatternAddr + tileY);
+    u8 bitPlane1 = MemRInternal(tilePatternAddr + tileY + 8);
 
     // Extract pixel (bit 7 = leftmost pixel)
     u8 bitPos = 7 - tileX;
@@ -427,7 +435,7 @@ void Video::PixelBG(BGPixel& bgPix) {
     // Get palette address
     u16 paletteAddr = GetBGPaletteAddress(x_in_nametable, y_in_nametable, attrTableBase);
     u16 colorAddress = (colorId == 0) ? 0x3F00 : (paletteAddr + (colorId - 1));
-    u8 colorData = MemR(colorAddress) & 0x3F;
+    u8 colorData = MemRInternal(colorAddress) & 0x3F;
 
     bgPix.valid = true;
     bgPix.colorId = colorId;
@@ -457,32 +465,22 @@ void Video::PixelSprite(SpritePixel& sprPix) {
             u8 attr = m_OAM[id * 4 + 2];
             u8 flipX = BIT6(attr);
             u8 flipY = BIT7(attr);
-            u8 fineY = line - yStart;
+            u8 row = line - yStart;
             u8 fineX = sprPix.xScreen - xStart;
             u16 patternTableAddress = sprPix.patternTableAddress;
-            if (sprPix.size16) {
-                patternTableAddress = BIT0(m_OAM[id * 4 + 1]) * 0x1000;
-                u8 tileIDUp = tileID & 0xFE;
-                u8 tileIDDown = tileIDUp + 1;
-                if (flipY) {
-                    tileIDUp = tileIDDown;
-                    tileIDDown = tileID & 0xFE;
-                }
-
-                if (fineY > 7) {
-                    fineY -= 8;
-                    tileID = tileIDDown;
-                }
-                else
-                    tileID = tileIDUp;
-            }
 
             if (flipY)
-                fineY = ABS(fineY - 7);
-                
+                row = spriteHeight - 1 - row;
+
+            if (sprPix.size16) {
+                patternTableAddress = (tileID & 1) ? 0x1000 : 0x0000;
+                tileID = (tileID & 0xFE) + (row / 8);
+            }
+            u8 fineY = row % 8;
+                 
             u16 tilePatternAddress = patternTableAddress + (tileID * 16);
-            u8 bitPlane0 = MemR(tilePatternAddress + fineY);
-            u8 bitPlane1 = MemR(tilePatternAddress + fineY + 8);
+            u8 bitPlane0 = MemRInternal(tilePatternAddress + fineY);
+            u8 bitPlane1 = MemRInternal(tilePatternAddress + fineY + 8);
             if (flipX == 0)
                 fineX = ABS(fineX - 7);
             u8 mask = (0x01 << fineX);
@@ -491,7 +489,7 @@ void Video::PixelSprite(SpritePixel& sprPix) {
                 u8  numPalette = attr & 0x03;
                 u16 paletteAddress = 0x3F11 + (numPalette * 4);
                 u16 colorAddress = paletteAddress + (colorId - 1);
-                u8  colorData = MemR(colorAddress) & 0x3F;
+                u8  colorData = MemRInternal(colorAddress) & 0x3F;
 
                 sprPix.valid = true;
                 sprPix.id = id;
@@ -511,7 +509,7 @@ u16  Video::GetBGPaletteAddress(u16 x, u16 y, u16 attrTableAddress) {
     u8 attrCol = x / 32;
     u8 attrRow = y / 32;
     u8 attrOffset = attrRow * 8 + attrCol;
-    u8 attrData = MemR(attrTableAddress + attrOffset);
+    u8 attrData = MemRInternal(attrTableAddress + attrOffset);
     bool attrRight  = ((x / 16) % 2) == 1;
     bool attrBottom = ((y / 16) % 2) == 1;
     u8 attrMaskShift = 0;
@@ -523,7 +521,8 @@ u16  Video::GetBGPaletteAddress(u16 x, u16 y, u16 attrTableAddress) {
     return paletteAddress;
 }
 
-u8 Video::MemR(u16 address, bool skipBuffer) {
+u8 Video::MemR(u16 address) {
+    address &= 0x3FFF;
     if (address < 0x3000) { // PPUDATA read buffer (post-fetch)
         u8 value = m_readBuffer;
         if (address < 0x2000) // Pattern table 0 y 1
@@ -531,21 +530,47 @@ u8 Video::MemR(u16 address, bool skipBuffer) {
         else // internal VRAM: Nametable 0, 1, 2, 3
             value = VRAMR(address);
 
-        u8 retValue = skipBuffer ? value : m_readBuffer;
+        u8 retValue = m_readBuffer;
         m_readBuffer = value;
         return retValue;
     }
     else if (address < 0x3F00) // Mirror
-        return MemR(address - 0x3000, skipBuffer);
+        return MemR(address - 0x3000);
     else if (address < 0x3F20) { // Palette
-        m_readBuffer = MemR(address - 0x1000, true); // El buffer se rellena con el mirror del nametable si no existiera la paleta
+        m_readBuffer = MemRInternal(address - 0x1000); // El buffer se rellena con el mirror del nametable si no existiera la paleta
         // Estas direcciones son mirrors
         if ((address == 0x3F10) || (address == 0x3F14) || (address == 0x3F18) || (address == 0x3F1C))
             address -= 0x10;
         return m_palette[address - 0x3F00];
     }
-    else if (address < 0x3FFF) { // Mirror
-        m_readBuffer = MemR(address - 0x1000, true);  // El buffer se rellena con el mirror del nametable si no existiera la paleta
+    else if (address < 0x4000) { // Mirror
+        m_readBuffer = MemRInternal(address - 0x1000);  // El buffer se rellena con el mirror del nametable si no existiera la paleta
+        return m_palette[(address - 0x3F20) % 0x0020];
+    }
+    else
+        return 0;
+}
+
+u8 Video::MemRInternal(u16 address) {
+    address &= 0x3FFF;
+    if (address < 0x3000) { // PPUDATA read buffer (post-fetch)
+        u8 value = m_readBuffer;
+        if (address < 0x2000) // Pattern table 0 y 1
+            value = m_cartridge->ReadCHR(address);
+        else // internal VRAM: Nametable 0, 1, 2, 3
+            value = VRAMR(address);
+
+        return value;
+    }
+    else if (address < 0x3F00) // Mirror
+        return MemRInternal(address - 0x3000);
+    else if (address < 0x3F20) { // Palette
+        // Estas direcciones son mirrors
+        if ((address == 0x3F10) || (address == 0x3F14) || (address == 0x3F18) || (address == 0x3F1C))
+            address -= 0x10;
+        return m_palette[address - 0x3F00];
+    }
+    else if (address < 0x4000) { // Mirror
         return m_palette[(address - 0x3F20) % 0x0020];
     }
     else
@@ -571,6 +596,7 @@ u8 Video::VRAMR(u16 address) const {
 }
 
 void Video::MemW(u16 address, u8 value) {
+    address &= 0x3FFF;
     if (address < 0x2000) // Pattern table 0 y 1
         m_cartridge->WriteCHR(address, value);
     else if (address < 0x3000) { // internal VRAM: Nametable 0, 1, 2, 3
@@ -591,13 +617,13 @@ void Video::MemW(u16 address, u8 value) {
             m_VRAM[address - 0x2000] = value;
     }
     else if (address < 0x3F00) // Mirror
-        m_VRAM[address - 0x3000] = value;
+        MemW(address - 0x1000, value);
     else if (address < 0x3F20) { // Palette
         if ((address == 0x3F10) || (address == 0x3F14) || (address == 0x3F18) || (address == 0x3F1C))
             address -= 0x10;
         m_palette[address - 0x3F00] = value;
     }
-    else if (address < 0x3FFF) // Mirror
+    else if (address < 0x4000) // Mirror
         m_palette[(address - 0x3F20) % 0x0020] = value;
     else
         return;
@@ -610,8 +636,8 @@ void Video::GetTile(u8* buffer, int widthSize, int tile) {
     {
         int addressLineTile = addressTile + y;
         // Cada linea se representa con 2 bytes (dos bit planes)
-        u8 bitPlane0 = MemR(addressLineTile + 0);
-        u8 bitPlane1 = MemR(addressLineTile + 8);
+        u8 bitPlane0 = MemRInternal(addressLineTile + 0);
+        u8 bitPlane1 = MemRInternal(addressLineTile + 8);
 
         for (int x = 0; x < 8; x++)
         {
@@ -698,16 +724,18 @@ void Video::SaveState(ostream *stream) const {
     stream->write((char*)&m_readBuffer, sizeof(u8));
     stream->write((char*)&m_palette[0], sizeof(u8) * 0x20);
     stream->write((char*)&m_v, sizeof(u16));
+    stream->write((char*)&m_t, sizeof(u16));
     stream->write((char*)&m_w, sizeof(u8));
+    stream->write((char*)&m_x, sizeof(u8));
     stream->write((char*)&m_OAM[0], sizeof(u8) * 256);
     stream->write((char*)&m_OAMAddress, sizeof(u8));
     stream->write((char*)&m_secondaryOAM[0], sizeof(u8) * 64);
     stream->write((char*)&m_secondaryOAMLength, sizeof(u8));
     stream->write((char*)&m_nextDot, sizeof(u16));
-    stream->write((char*)&m_cycles, sizeof(float));
+    stream->write((char*)&m_cycles, sizeof(u32));
     stream->write((char*)&m_numFrames, sizeof(u32));
     stream->write((char*)&m_genLatch, sizeof(u8));
-
+    stream->write((char*)&m_NMI, sizeof(bool));
     stream->write((char*)&m_VRAM[0], sizeof(u8) * 0x1000);
 }
 
@@ -716,18 +744,25 @@ void Video::LoadState(istream *stream) {
     stream->read((char*)&m_readBuffer, sizeof(u8));
     stream->read((char*)&m_palette[0], sizeof(u8) * 0x20);
     stream->read((char*)&m_v, sizeof(u16));
+    stream->read((char*)&m_t, sizeof(u16));
     stream->read((char*)&m_w, sizeof(u8));
+    stream->read((char*)&m_x, sizeof(u8));
     stream->read((char*)&m_OAM[0], sizeof(u8) * 256);
     stream->read((char*)&m_OAMAddress, sizeof(u8));
     stream->read((char*)&m_secondaryOAM[0], sizeof(u8) * 64);
     stream->read((char*)&m_secondaryOAMLength, sizeof(u8));
-    m_secondaryOAMLine = 0xFFFF;
     stream->read((char*)&m_nextDot, sizeof(u16));
-    stream->read((char*)&m_cycles, sizeof(float));
+    stream->read((char*)&m_cycles, sizeof(u32));
     stream->read((char*)&m_numFrames, sizeof(u32));
     stream->read((char*)&m_genLatch, sizeof(u8));
-
+    stream->read((char*)&m_NMI, sizeof(bool));
     stream->read((char*)&m_VRAM[0], sizeof(u8) * 0x1000);
+
+    m_secondaryOAMLine = 0xFFFF;
+    m_v &= 0x3FFF;
+    m_t &= 0x7FFF;
+    m_x &= 0x07;
+    m_w &= 0x01;
 }
 
 u8 Video::OAMR(u16 address) const {

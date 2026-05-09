@@ -18,7 +18,7 @@
 #ifndef __NES_DEF_H__
 #define __NES_DEF_H__
 
-#define NES_SAVE_STATE_VERSION	0x01
+#define NES_SAVE_STATE_VERSION	0x02
 
 // 256x240
 #define NES_SCREEN_W 256
