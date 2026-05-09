@@ -457,12 +457,11 @@ void DebuggerNESDialog::UpdateOtherRegs() {
     m_othersView->SetItem(pos++, 1, m_debugger->GetMapperID());
     m_othersView->SetItem(pos++, 1, m_debugger->GetMapperName());
     m_othersView->SetItem(pos++, 1, m_debugger->GetCartridgePRGBanks());
-    m_othersView->SetItem(pos++, 1, m_debugger->GetCartridgePRGBank0());
-    m_othersView->SetItem(pos++, 1, m_debugger->GetCartridgePRGBank1());
+    m_othersView->SetItem(pos++, 1, m_debugger->GetCartridgePRGBank(0));
+    m_othersView->SetItem(pos++, 1, m_debugger->GetCartridgePRGBank(1));
     m_othersView->SetItem(pos++, 1, m_debugger->GetCartridgeCHRBanks());
-    m_othersView->SetItem(pos++, 1, m_debugger->GetCartridgeCHRBank0());
-    m_othersView->SetItem(pos++, 1, m_debugger->GetCartridgeCHRBank1());
-
+    m_othersView->SetItem(pos++, 1, m_debugger->GetCartridgeCHRBank(0));
+    m_othersView->SetItem(pos++, 1, m_debugger->GetCartridgeCHRBank(1));
     SetTextColorOnChanged(oldValues, m_othersView);
 }
 
