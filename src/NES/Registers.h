@@ -77,9 +77,9 @@ namespace Nes {
         // Decimal
         inline void SetFlagD(u8 value) { m_P = (m_P & 0xF7) | ((value & 0x01) << 3); }
         // B flag
-        inline u8 GetFlagB() const { return ((m_P & 0x30) >> 4); }
+        inline u8 GetFlagB() const { return ((m_P & 0x10) >> 4); }
         // B flag
-        inline void SetFlagB(u8 value) { m_P = (m_P & 0xCF) | ((value & 0x02) << 4); }
+        inline void SetFlagB(u8 value) { m_P = (m_P & 0xEF) | ((value & 0x01) << 4); }
         // Overflow
         inline u8 GetFlagV() const { return ((m_P & 0x40) >> 6); }
         // Overflow
