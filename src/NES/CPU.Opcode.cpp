@@ -88,6 +88,14 @@ u16 CPU::AddressIndirectIndexedWrite() {
     return AddressIndirectIndexed();
 }
 
+u16 CPU::AddressIndirectIndexedRMW() {
+    u16 address1 = MemR(Get8BitsInmValue()) + MemR((Get8BitsInmValue() + 1) % 256) * 256;
+    u16 address2 = address1 + GetY();
+    MemR((address1 & 0xFF00) | (address2 & 0x00FF));
+    PageCrossed(address1, address2);
+    return address2;
+}
+
 // (d),y
 u8 CPU::GetIndirectIndexed() {
     return MemR(AddressIndirectIndexed());
@@ -125,27 +133,34 @@ u8 CPU::ExecuteOpcode(u8 opcode, Instructions &inst) {
     {
         case (0x00): inst.BRK(); break;
         case (0x01): inst.ORA(GetIndexedIndirect(), 2); break;
+        case (0x03): inst.SLO(AddressIndexedIndirect(), 2); break;
         case (0x04): MemR(AddressZeroPage()); inst.NOP(2); break;
         case (0x05): inst.ORA(GetZeroPage(), 2); break;
         case (0x06): inst.ASL(AddressZeroPage(), 2); break;
+        case (0x07): inst.SLO(AddressZeroPage(), 2); break;
         case (0x08): inst.PHP(); break;
         case (0x09): inst.ORA(Get8BitsInmValue(), 2); break;
         case (0x0A): inst.ASL(); break;
         case (0x0C): MemR(Address16BitsInmValue()); inst.NOP(3); break;
         case (0x0D): inst.ORA(Get16BitsInmValue(), 3); break;
         case (0x0E): inst.ASL(Address16BitsInmValue(), 3); break;
+        case (0x0F): inst.SLO(Address16BitsInmValue(), 3); break;
 
         case (0x10): inst.BPL(); break;
         case (0x11): inst.ORA(GetIndirectIndexed(), 2); break;
+        case (0x13): inst.SLO(AddressIndirectIndexedRMW(), 2); break;
         case (0x14): MemR(AddressZeroPageIndexed(GetX())); inst.NOP(2); break;
         case (0x15): inst.ORA(GetZeroPageIndexed(GetX()), 2); break;
         case (0x16): inst.ASL(AddressZeroPageIndexed(GetX()), 2); break;
+        case (0x17): inst.SLO(AddressZeroPageIndexed(GetX()), 2); break;
         case (0x18): inst.CLC(); break;
         case (0x19): inst.ORA(GetAbsoluteIndexed(GetY()), 3); break;
         case (0x1A): inst.NOP(1); break;
+        case (0x1B): inst.SLO(AddressAbsoluteIndexedWrite(GetY()), 3); break;
         case (0x1C): MemR(AddressAbsoluteIndexed(GetX())); inst.NOP(3); break;
         case (0x1D): inst.ORA(GetAbsoluteIndexed(GetX()), 3); break;
         case (0x1E): inst.ASL(AddressAbsoluteIndexedWrite(GetX()), 3); break;
+        case (0x1F): inst.SLO(AddressAbsoluteIndexedWrite(GetX()), 3); break;
 
         case (0x20): inst.JSR(); break;
         case (0x21): inst.AND(GetIndexedIndirect(), 2); break;

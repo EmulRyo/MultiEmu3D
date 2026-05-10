@@ -69,6 +69,7 @@ namespace Nes {
         inline u16 AddressIndirectIndexed();
         inline u16 AddressAbsoluteIndexed(u8 regValue);
         inline u16 AddressIndirectIndexedWrite();
+        inline u16 AddressIndirectIndexedRMW();
         inline u16 AddressAbsoluteIndexedWrite(u8 regValue);
 
         inline u8  Get8BitsInmValue();

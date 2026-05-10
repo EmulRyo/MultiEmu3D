@@ -102,6 +102,7 @@ namespace Nes {
         void SEC();
         void SED();
         void SEI();
+        void SLO(u16 address, u8 length);
         void STA(u16 address, u8 length);
         void STX(u16 address, u8 length);
         void STY(u16 address, u8 length);

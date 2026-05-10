@@ -601,8 +601,22 @@ void Instructions::ASL(u16 address, u8 length) {
     m_mem->MemW(address, value);
 	m_reg->SetFlagC(bit7);
 	m_reg->SetFlagZ(value == 0 ? 1 : 0);
-	m_reg->SetFlagN(BIT7(value) >> 7);
-	m_reg->AddPC(length);
+    m_reg->SetFlagN(BIT7(value) >> 7);
+    m_reg->AddPC(length);
+}
+
+void Instructions::SLO(u16 address, u8 length) {
+    u8 oldValue = m_mem->MemR(address);
+    u8 value = oldValue << 1;
+    u8 result = m_reg->GetA() | value;
+
+    m_mem->MemW(address, oldValue);
+    m_mem->MemW(address, value);
+    m_reg->SetA(result);
+    m_reg->SetFlagC((oldValue & 0x80) >> 7);
+    m_reg->SetFlagZ(result == 0 ? 1 : 0);
+    m_reg->SetFlagN(BIT7(result) >> 7);
+    m_reg->AddPC(length);
 }
 
 void Instructions::BIT(u8 value, u8 length) {
