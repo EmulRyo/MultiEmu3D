@@ -37,9 +37,16 @@ namespace Nes {
     #endif
         bool m_initialized;
         bool m_enabled;
+        bool m_frameIRQFlag;
+        bool m_frameIRQInhibit;
+        bool m_frameFiveStepMode;
+        u32 m_lastCyclesElapsed;
+        u64 m_totalCycles;
+        u64 m_frameCounterResetCycle;
         long m_sampleRate;
         
         int HandleError( const char* str );
+        void Sync(u32 cyclesElapsed);
     public:
         Sound();
         ~Sound();
@@ -51,6 +58,7 @@ namespace Nes {
         void SetEnabled(bool enabled);
         u8   MemR(u16 address);
         void MemW(u16 address, u8 value, u32 cyclesElapsed);
+        bool IRQ(u32 cyclesElapsed);
         void EndFrame(u32 cyclesElapsed);
     };
 }

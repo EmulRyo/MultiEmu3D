@@ -119,7 +119,7 @@ u8 Video::ReadReg(u16 address, bool debug) {
         u8 value = (m_regs[regID] & 0xE0) | (m_genLatch & 0x1F); // Los bits 0-4 se cogen del valor del latch
         m_regs[regID] = m_regs[regID] & 0x7F; // Al leer este registro se desactiva el bit 7 (V-Blank)
         m_w = 0; // Reset write toggle
-        m_genLatch = m_regs[regID];
+        m_genLatch = value;
         return value;
     }
     else if (address == OAMDATA) {

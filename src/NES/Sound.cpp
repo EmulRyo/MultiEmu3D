@@ -44,6 +44,12 @@ Sound::Sound()
 	m_enabled = false;
 	m_initialized = true;
 	m_sampleRate = 44100;
+	m_frameIRQFlag = false;
+	m_frameIRQInhibit = false;
+	m_frameFiveStepMode = false;
+	m_lastCyclesElapsed = 0;
+	m_totalCycles = 0;
+	m_frameCounterResetCycle = 0;
 
 #ifdef _WINDOWS
 	m_sound = new SoundSDL();
@@ -140,9 +146,41 @@ void Sound::EndFrame(u32 cyclesElapsed) {
 }
 
 u8 Sound::MemR(u16 address) {
+	if (address == 0x4015) {
+		u8 value = m_frameIRQFlag ? 0x40 : 0x00;
+		m_frameIRQFlag = false;
+		return value;
+	}
+
 	return 0;
 }
 
 void Sound::MemW(u16 address, u8 value, u32 cyclesElapsed) {
-    
+	Sync(cyclesElapsed);
+
+	if (address == 0x4017) {
+		m_frameFiveStepMode = (value & 0x80) != 0;
+		m_frameIRQInhibit = (value & 0x40) != 0;
+		m_frameCounterResetCycle = m_totalCycles;
+		if (m_frameIRQInhibit)
+			m_frameIRQFlag = false;
+	}
+}
+
+bool Sound::IRQ(u32 cyclesElapsed) {
+	Sync(cyclesElapsed);
+
+	if (!m_frameFiveStepMode && !m_frameIRQInhibit && (m_totalCycles - m_frameCounterResetCycle) >= 29828)
+		m_frameIRQFlag = true;
+
+	return m_frameIRQFlag && !m_frameIRQInhibit;
+}
+
+void Sound::Sync(u32 cyclesElapsed) {
+	if (cyclesElapsed >= m_lastCyclesElapsed)
+		m_totalCycles += cyclesElapsed - m_lastCyclesElapsed;
+	else
+		m_totalCycles += cyclesElapsed;
+
+	m_lastCyclesElapsed = cyclesElapsed;
 }

@@ -99,8 +99,8 @@ int CPU::Execute(int cyclesToExecute)
 		if (m_v->NMI())
 			ExecuteNMI(inst);
 
-		if (m_c->IRQ() && GetFlagI() == 0)
-			ExecuteIRQ(inst);
+        if (((m_c->IRQ()) || (m_s && m_s->IRQ(m_cycles))) && GetFlagI() == 0)
+            ExecuteIRQ(inst);
         
         m_cycles += cycles;
 		

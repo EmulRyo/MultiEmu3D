@@ -39,7 +39,9 @@ u8 Instructions::Get8BitsInmValue() {
 }
 
 u16 Instructions::Get16BitsInmValue() {
-	return ((m_mem->MemR(m_reg->GetPC() + 2)) << 8) | m_mem->MemR(m_reg->GetPC() + 1);
+    u8 low = m_mem->MemR(m_reg->GetPC() + 1);
+    u8 high = m_mem->MemR(m_reg->GetPC() + 2);
+    return (high << 8) | low;
 }
 
 u8 Instructions::GetCyclesExtra() const {
@@ -203,7 +205,7 @@ void Instructions::JMP() {
 void Instructions::JMPIndirect() {
 	u16 indirectAddress = Get16BitsInmValue();
 	u8 iaL = m_mem->MemR(indirectAddress);
-	// La dirección del salto no puede estar en diferentes páginas
+	// La direcciÃ³n del salto no puede estar en diferentes pÃ¡ginas
 	if ((indirectAddress & 0xFF) == 0xFF)
 		indirectAddress &= 0xFF00;
 	else
@@ -464,8 +466,10 @@ void Instructions::TXS() {
 }
 
 void Instructions::DEC(u16 address, u8 length) {
-	u8 value = m_mem->MemR(address) - 1;
-	m_mem->MemW(address, value);
+    u8 oldValue = m_mem->MemR(address);
+    u8 value = oldValue - 1;
+    m_mem->MemW(address, oldValue);
+    m_mem->MemW(address, value);
 	m_reg->SetFlagZ(value == 0 ? 1 : 0);
 	m_reg->SetFlagN(BIT7(value) >> 7);
 	m_reg->AddPC(length);
@@ -488,8 +492,10 @@ void Instructions::DEY() {
 }
 
 void Instructions::INC(u16 address, u8 length) {
-	u8 value = m_mem->MemR(address) + 1;
-	m_mem->MemW(address, value);
+    u8 oldValue = m_mem->MemR(address);
+    u8 value = oldValue + 1;
+    m_mem->MemW(address, oldValue);
+    m_mem->MemW(address, value);
 	m_reg->SetFlagZ(value == 0 ? 1 : 0);
 	m_reg->SetFlagN(BIT7(value) >> 7);
 	m_reg->AddPC(length);
@@ -522,9 +528,11 @@ void Instructions::LSR() {
 }
 
 void Instructions::LSR(u16 address, u8 length) {
-	u8 bit0 = m_mem->MemR(address) & 0x01;
-	u8 value = m_mem->MemR(address) >> 1;
-	m_mem->MemW(address, value);
+    u8 oldValue = m_mem->MemR(address);
+    u8 bit0 = oldValue & 0x01;
+    u8 value = oldValue >> 1;
+    m_mem->MemW(address, oldValue);
+    m_mem->MemW(address, value);
 	m_reg->SetFlagC(bit0);
 	m_reg->SetFlagZ(value == 0 ? 1 : 0);
 	m_reg->SetFlagN(BIT7(value) >> 7);
@@ -542,9 +550,11 @@ void Instructions::ROL() {
 }
 
 void Instructions::ROL(u16 address, u8 length) {
-	u8 bit7  = (m_mem->MemR(address) & 0x80) >> 7;
-	u8 value = (m_mem->MemR(address) << 1) | (m_reg->GetFlagC());
-	m_mem->MemW(address, value);
+    u8 oldValue = m_mem->MemR(address);
+    u8 bit7  = (oldValue & 0x80) >> 7;
+    u8 value = (oldValue << 1) | (m_reg->GetFlagC());
+    m_mem->MemW(address, oldValue);
+    m_mem->MemW(address, value);
 	m_reg->SetFlagC(bit7);
 	m_reg->SetFlagZ(value == 0 ? 1 : 0);
 	m_reg->SetFlagN(BIT7(value) >> 7);
@@ -562,9 +572,11 @@ void Instructions::ROR() {
 }
 
 void Instructions::ROR(u16 address, u8 length) {
-	u8 bit0 = m_mem->MemR(address) & 0x01;
-	u8 value = (m_reg->GetFlagC() << 7) | (m_mem->MemR(address) >> 1);
-	m_mem->MemW(address, value);
+    u8 oldValue = m_mem->MemR(address);
+    u8 bit0 = oldValue & 0x01;
+    u8 value = (m_reg->GetFlagC() << 7) | (oldValue >> 1);
+    m_mem->MemW(address, oldValue);
+    m_mem->MemW(address, value);
 	m_reg->SetFlagC(bit0);
 	m_reg->SetFlagZ(value == 0 ? 1 : 0);
 	m_reg->SetFlagN(BIT7(value) >> 7);
@@ -582,9 +594,11 @@ void Instructions::ASL() {
 }
 
 void Instructions::ASL(u16 address, u8 length) {
-	u8 bit7  = (m_mem->MemR(address) & 0x80) >> 7;
-	u8 value = (m_mem->MemR(address) << 1);
-	m_mem->MemW(address, value);
+    u8 oldValue = m_mem->MemR(address);
+    u8 bit7  = (oldValue & 0x80) >> 7;
+    u8 value = (oldValue << 1);
+    m_mem->MemW(address, oldValue);
+    m_mem->MemW(address, value);
 	m_reg->SetFlagC(bit7);
 	m_reg->SetFlagZ(value == 0 ? 1 : 0);
 	m_reg->SetFlagN(BIT7(value) >> 7);
@@ -600,5 +614,7 @@ void Instructions::BIT(u8 value, u8 length) {
 }
 
 void Instructions::NOP(u8 length) {
+	if (m_mem->GetPageCrossed())
+		m_cyclesExtra = 1;
 	m_reg->AddPC(length);
 }
