@@ -44,31 +44,44 @@ namespace Nes {
         void ResetMem();
         void SetCartridge(Cartridge* c);
         void MemW(u16 direction, u8 value);
+        u8   GetOpenBus() const;
+        void SetOpenBus(u8 value);
         inline u8 MemR(u16 address, bool debug=false)
         {
+            u8 value = 0;
+            bool updateBus = true;
+
             if (address < 0x0800)
-                return memory[address];
+                value = memory[address];
             else if (address < 0x1000)
-                return memory[address - 0x0800];
+                value = memory[address - 0x0800];
             else if (address < 0x1800)
-                return memory[address - 0x1000];
+                value = memory[address - 0x1000];
             else if (address < 0x2000)
-                return memory[address - 0x1800];
+                value = memory[address - 0x1800];
             else if (address < 0x4000)
-                return m_video->ReadReg(address, debug);
-            else if (address < 0x4014)
-                return m_s->MemR(address);
+                value = m_video->ReadReg(address, debug);
+            else if (address < 0x4014) {
+                value = m_openBus;
+                updateBus = false;
+            }
             else if (address == 0x4014) // OAM DMA
                 throw(Exception("MemR OAM DMA"));
-            else if (address == 0x4015)
-                return m_s->MemR(address);
+            else if (address == 0x4015) {
+                value = m_s->MemR(address) | (m_openBus & 0x20);
+                updateBus = false;
+            }
             else if (address < 0x4018)
-                return m_pad->MemR(address);
-            else if (address < 0x4020)
-                throw(Exception("MemR test registers"));
+                value = m_pad->MemR(address) | (m_openBus & 0xE0);
+            else if (address < 0x6000)
+                value = m_openBus;
             else
-                return m_c->ReadPRG(address);
-            return 0;
+                value = m_c->ReadPRG(address);
+
+            if (updateBus)
+                m_openBus = value;
+
+            return value;
         }
         void SaveMemory(std::ostream* stream) const;
         void LoadMemory(std::istream* stream);
@@ -82,6 +95,7 @@ namespace Nes {
         
     private:
         u8 memory[SIZE_MEM];
+        u8 m_openBus;
         bool m_pageCrossed;
     };
 }

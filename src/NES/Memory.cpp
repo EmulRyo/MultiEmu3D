@@ -63,12 +63,28 @@ void Memory::SetCartridge(Cartridge *c)
 
 void Memory::ResetMem() {
     memset(&memory, 0x00, SIZE_MEM);
+    m_openBus = 0x00;
     if (m_c)
         m_c->Reset();
 }
 
+// Cuando se lee de ciertas direcciones, el valor leído no es el que se obtiene
+// de la memoria, sino el valor del bus abierto (open bus), que es el último
+// valor leído o escrito en la memoria. Esto se debe a que en la arquitectura
+// de la NES, algunas direcciones no corresponden a una memoria física, sino que
+// están conectadas al bus de datos sin una memoria detrás.
+u8 Memory::GetOpenBus() const {
+    return m_openBus;
+}
+
+void Memory::SetOpenBus(u8 value) {
+    m_openBus = value;
+}
+
 void Memory::MemW(u16 address, u8 value)
 {
+    m_openBus = value;
+
     if (address < 0x0800)
         memory[address] = value;
     else if (address < 0x1000)
@@ -87,8 +103,8 @@ void Memory::MemW(u16 address, u8 value)
         m_s->MemW(address, value, m_cpu->GetElapsedCycles());
     else if (address < 0x4018)
         m_pad->MemW(address, value);
-    else if (address < 0x4020)
-        assert(false && "MemW test registers");
+    else if (address < 0x6000)
+        return;
     else
         m_c->WritePRG(address, value);
 }
