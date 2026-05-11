@@ -71,6 +71,8 @@ namespace Nes {
         inline u16 AddressIndirectIndexedWrite();
         inline u16 AddressIndirectIndexedRMW();
         inline u16 AddressAbsoluteIndexedWrite(u8 regValue);
+        inline u16 AddressIndirectIndexedSH(u8 &mask);
+        inline u16 AddressAbsoluteIndexedSH(u8 regValue, u8 &mask);
 
         inline u8  Get8BitsInmValue();
         inline u16 Address16BitsInmValue();
@@ -80,6 +82,7 @@ namespace Nes {
         inline u8 GetIndexedIndirect();
         inline u8 GetIndirectIndexed();
         inline u8 GetAbsoluteIndexed(u8 regValue);
+        inline u16 UnofficialCorruptHighByteWithAOrX(u16 address, u8 highByte);
     };
 }
 #endif

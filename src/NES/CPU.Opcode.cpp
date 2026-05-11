@@ -124,6 +124,36 @@ u8 CPU::GetAbsoluteIndexed(u8 regValue) {
     return MemR(AddressAbsoluteIndexed(regValue));
 }
 
+u16 CPU::UnofficialCorruptHighByteWithAOrX(u16 address, u8 highByte) {
+    if (!GetPageCrossed())
+        return address;
+
+    return ((highByte & (GetA() | GetX())) << 8) | (address & 0x00FF);
+}
+
+u16 CPU::AddressIndirectIndexedSH(u8 &mask) {
+    u8 operand = Get8BitsInmValue();
+    u8 low = MemR(operand);
+    u8 high = MemR((operand + 1) % 256);
+    u16 address1 = low + high * 256;
+    u16 address2 = address1 + GetY();
+    mask = high + 1;
+    PageCrossed(address1, address2);
+    MemR((address1 & 0xFF00) | (address2 & 0x00FF));
+    return address2;
+}
+
+u16 CPU::AddressAbsoluteIndexedSH(u8 regValue, u8 &mask) {
+    u8 low = MemR(GetPC() + 1);
+    u8 high = MemR(GetPC() + 2);
+    u16 address1 = low + high * 256;
+    u16 address2 = address1 + regValue;
+    mask = high + 1;
+    PageCrossed(address1, address2);
+    MemR((address1 & 0xFF00) | (address2 & 0x00FF));
+    return address2;
+}
+
 u8 CPU::ExecuteOpcode(u8 opcode, Instructions &inst) {
 
     SetPageCrossed(false);
@@ -141,6 +171,7 @@ u8 CPU::ExecuteOpcode(u8 opcode, Instructions &inst) {
         case (0x08): inst.PHP(); break;
         case (0x09): inst.ORA(Get8BitsInmValue(), 2); break;
         case (0x0A): inst.ASL(); break;
+        case (0x0B): inst.ANC(Get8BitsInmValue(), 2); break;
         case (0x0C): MemR(Address16BitsInmValue()); inst.NOP(3); break;
         case (0x0D): inst.ORA(Get16BitsInmValue(), 3); break;
         case (0x0E): inst.ASL(Address16BitsInmValue(), 3); break;
@@ -164,173 +195,231 @@ u8 CPU::ExecuteOpcode(u8 opcode, Instructions &inst) {
 
         case (0x20): inst.JSR(); break;
         case (0x21): inst.AND(GetIndexedIndirect(), 2); break;
+        case (0x23): inst.RLA(AddressIndexedIndirect(), 2); break;
         case (0x24): inst.BIT(GetZeroPage(), 2); break;
         case (0x25): inst.AND(GetZeroPage(), 2); break;
         case (0x26): inst.ROL(AddressZeroPage(), 2); break;
+        case (0x27): inst.RLA(AddressZeroPage(), 2); break;
         case (0x28): inst.PLP(); break;
         case (0x29): inst.AND(Get8BitsInmValue(), 2); break;
         case (0x2A): inst.ROL(); break;
+        case (0x2B): inst.ANC(Get8BitsInmValue(), 2); break;
         case (0x2C): inst.BIT(Get16BitsInmValue(), 3); break;
         case (0x2D): inst.AND(Get16BitsInmValue(), 3); break;
         case (0x2E): inst.ROL(Address16BitsInmValue(), 3); break;
+        case (0x2F): inst.RLA(Address16BitsInmValue(), 3); break;
 
         case (0x30): inst.BMI(); break;
         case (0x31): inst.AND(GetIndirectIndexed(), 2); break;
+        case (0x33): inst.RLA(AddressIndirectIndexedRMW(), 2); break;
         case (0x34): MemR(AddressZeroPageIndexed(GetX())); inst.NOP(2); break;
         case (0x35): inst.AND(GetZeroPageIndexed(GetX()), 2); break;
         case (0x36): inst.ROL(AddressZeroPageIndexed(GetX()), 2); break;
+        case (0x37): inst.RLA(AddressZeroPageIndexed(GetX()), 2); break;
         case (0x38): inst.SEC(); break;
         case (0x39): inst.AND(GetAbsoluteIndexed(GetY()), 3); break;
         case (0x3A): inst.NOP(1); break;
+        case (0x3B): inst.RLA(AddressAbsoluteIndexedWrite(GetY()), 3); break;
         case (0x3C): MemR(AddressAbsoluteIndexed(GetX())); inst.NOP(3); break;
         case (0x3D): inst.AND(GetAbsoluteIndexed(GetX()), 3); break;
         case (0x3E): inst.ROL(AddressAbsoluteIndexedWrite(GetX()), 3); break;
+        case (0x3F): inst.RLA(AddressAbsoluteIndexedWrite(GetX()), 3); break;
 
         case (0x40): inst.RTI(); break;
         case (0x41): inst.EOR(GetIndexedIndirect(), 2); break;
+        case (0x43): inst.SRE(AddressIndexedIndirect(), 2); break;
         case (0x44): MemR(AddressZeroPage()); inst.NOP(2); break;
         case (0x45): inst.EOR(GetZeroPage(), 2); break;
         case (0x46): inst.LSR(AddressZeroPage(), 2); break;
+        case (0x47): inst.SRE(AddressZeroPage(), 2); break;
         case (0x49): inst.EOR(Get8BitsInmValue(), 2); break;
+        case (0x4B): inst.ASR(Get8BitsInmValue(), 2); break;
         case (0x48): inst.PHA(); break;
         case (0x4A): inst.LSR(); break;
         case (0x4C): inst.JMP(); break;
         case (0x4D): inst.EOR(Get16BitsInmValue(), 3); break;
         case (0x4E): inst.LSR(Address16BitsInmValue(), 3); break;
+        case (0x4F): inst.SRE(Address16BitsInmValue(), 3); break;
 
         case (0x50): inst.BVC(); break;
         case (0x51): inst.EOR(GetIndirectIndexed(), 2); break;
+        case (0x53): inst.SRE(AddressIndirectIndexedRMW(), 2); break;
         case (0x54): MemR(AddressZeroPageIndexed(GetX())); inst.NOP(2); break;
         case (0x55): inst.EOR(GetZeroPageIndexed(GetX()), 2); break;
         case (0x56): inst.LSR(AddressZeroPageIndexed(GetX()), 2); break;
+        case (0x57): inst.SRE(AddressZeroPageIndexed(GetX()), 2); break;
         case (0x58): inst.CLI(); break;
         case (0x59): inst.EOR(GetAbsoluteIndexed(GetY()), 3); break;
         case (0x5A): inst.NOP(1); break;
+        case (0x5B): inst.SRE(AddressAbsoluteIndexedWrite(GetY()), 3); break;
         case (0x5C): MemR(AddressAbsoluteIndexed(GetX())); inst.NOP(3); break;
         case (0x5D): inst.EOR(GetAbsoluteIndexed(GetX()), 3); break;
         case (0x5E): inst.LSR(AddressAbsoluteIndexedWrite(GetX()), 3); break;
+        case (0x5F): inst.SRE(AddressAbsoluteIndexedWrite(GetX()), 3); break;
 
         case (0x60): inst.RTS(); break;
         case (0x61): inst.ADC(GetIndexedIndirect(), 2); break;
+        case (0x63): inst.RRA(AddressIndexedIndirect(), 2); break;
         case (0x64): MemR(AddressZeroPage()); inst.NOP(2); break;
         case (0x65): inst.ADC(GetZeroPage(), 2); break;
         case (0x66): inst.ROR(AddressZeroPage(), 2); break;
+        case (0x67): inst.RRA(AddressZeroPage(), 2); break;
         case (0x68): inst.PLA(); break;
         case (0x69): inst.ADC(Get8BitsInmValue(), 2); break;
         case (0x6A): inst.ROR(); break;
+        case (0x6B): inst.ARR(Get8BitsInmValue(), 2); break;
         case (0x6C): inst.JMPIndirect(); break;
         case (0x6D): inst.ADC(Get16BitsInmValue(), 3); break;
         case (0x6E): inst.ROR(Address16BitsInmValue(), 3); break;
+        case (0x6F): inst.RRA(Address16BitsInmValue(), 3); break;
 
         case (0x70): inst.BVS(); break;
         case (0x71): inst.ADC(GetIndirectIndexed(), 2); break;
+        case (0x73): inst.RRA(AddressIndirectIndexedRMW(), 2); break;
         case (0x74): MemR(AddressZeroPageIndexed(GetX())); inst.NOP(2); break;
         case (0x75): inst.ADC(GetZeroPageIndexed(GetX()), 2); break;
         case (0x76): inst.ROR(AddressZeroPageIndexed(GetX()), 2); break;
+        case (0x77): inst.RRA(AddressZeroPageIndexed(GetX()), 2); break;
         case (0x78): inst.SEI(); break;
         case (0x79): inst.ADC(GetAbsoluteIndexed(GetY()), 3); break;
         case (0x7A): inst.NOP(1); break;
+        case (0x7B): inst.RRA(AddressAbsoluteIndexedWrite(GetY()), 3); break;
         case (0x7C): MemR(AddressAbsoluteIndexed(GetX())); inst.NOP(3); break;
         case (0x7D): inst.ADC(GetAbsoluteIndexed(GetX()), 3); break;
         case (0x7E): inst.ROR(AddressAbsoluteIndexedWrite(GetX()), 3); break;
+        case (0x7F): inst.RRA(AddressAbsoluteIndexedWrite(GetX()), 3); break;
 
         case (0x80): inst.NOP(2); break;
         case (0x81): inst.STA(AddressIndexedIndirect(), 2); break;
         case (0x82): inst.NOP(2); break;
+        case (0x83): inst.SAX(AddressIndexedIndirect(), 2); break;
         case (0x84): inst.STY(AddressZeroPage(), 2); break;
         case (0x85): inst.STA(AddressZeroPage(), 2); break;
         case (0x86): inst.STX(AddressZeroPage(), 2); break;
+        case (0x87): inst.SAX(AddressZeroPage(), 2); break;
         case (0x88): inst.DEY(); break;
         case (0x89): inst.NOP(2); break;
         case (0x8A): inst.TXA(); break;
+        case (0x8B): inst.ANE(Get8BitsInmValue(), 2); break;
         case (0x8C): inst.STY(Address16BitsInmValue(), 3); break;
         case (0x8D): inst.STA(Address16BitsInmValue(), 3); break;
         case (0x8E): inst.STX(Address16BitsInmValue(), 3); break;
+        case (0x8F): inst.SAX(Address16BitsInmValue(), 3); break;
 
         case (0x90): inst.BCC(); break;
         case (0x91): inst.STA(AddressIndirectIndexedWrite(), 2); break;
+        case (0x93): { u8 mask; u16 address = AddressIndirectIndexedSH(mask); inst.SHA(address, mask, 2); break; }
         case (0x94): inst.STY(AddressZeroPageIndexed(GetX()), 2); break;
         case (0x95): inst.STA(AddressZeroPageIndexed(GetX()), 2); break;
         case (0x96): inst.STX(AddressZeroPageIndexed(GetY()), 2); break;
+        case (0x97): inst.SAX(AddressZeroPageIndexed(GetY()), 2); break;
         case (0x98): inst.TYA(); break;
         case (0x99): inst.STA(AddressAbsoluteIndexedWrite(GetY()), 3); break;
+        case (0x9B): { u8 mask; u16 address = AddressAbsoluteIndexedSH(GetY(), mask); inst.SHS(address, mask, 3); break; }
+        case (0x9C): { u8 mask; u16 address = AddressAbsoluteIndexedSH(GetX(), mask); inst.SHY(address, mask, 3); break; }
         case (0x9D): inst.STA(AddressAbsoluteIndexedWrite(GetX()), 3); break;
+        case (0x9E): { u8 mask; u16 address = AddressAbsoluteIndexedSH(GetY(), mask); inst.SHX(address, mask, 3); break; }
+        case (0x9F): { u8 mask; u16 address = AddressAbsoluteIndexedSH(GetY(), mask); inst.SHA(address, mask, 3); break; }
         case (0x9A): inst.TXS(); break;
 
         case (0xA0): inst.LDY(Get8BitsInmValue(), 2); break;
         case (0xA1): inst.LDA(GetIndexedIndirect(), 2); break;
         case (0xA2): inst.LDX(Get8BitsInmValue(), 2); break;
+        case (0xA3): inst.LAX(GetIndexedIndirect(), 2); break;
         case (0xA4): inst.LDY(GetZeroPage(), 2); break;
         case (0xA5): inst.LDA(GetZeroPage(), 2); break;
         case (0xA6): inst.LDX(GetZeroPage(), 2); break;
+        case (0xA7): inst.LAX(GetZeroPage(), 2); break;
         case (0xA8): inst.TAY(); break;
         case (0xA9): inst.LDA(Get8BitsInmValue(), 2); break;
         case (0xAA): inst.TAX(); break;
+        case (0xAB): inst.LXA(Get8BitsInmValue(), 2); break;
         case (0xAC): inst.LDY(Get16BitsInmValue(), 3); break;
         case (0xAD): inst.LDA(Get16BitsInmValue(), 3); break;
         case (0xAE): inst.LDX(Get16BitsInmValue(), 3); break;
+        case (0xAF): inst.LAX(Get16BitsInmValue(), 3); break;
 
         case (0xB0): inst.BCS(); break;
         case (0xB1): inst.LDA(GetIndirectIndexed(), 2); break;
+        case (0xB3): inst.LAX(GetIndirectIndexed(), 2); break;
         case (0xB4): inst.LDY(GetZeroPageIndexed(GetX()), 2); break;
         case (0xB5): inst.LDA(GetZeroPageIndexed(GetX()), 2); break;
         case (0xB6): inst.LDX(GetZeroPageIndexed(GetY()), 2); break;
+        case (0xB7): inst.LAX(GetZeroPageIndexed(GetY()), 2); break;
         case (0xB8): inst.CLV(); break;
         case (0xB9): inst.LDA(GetAbsoluteIndexed(GetY()), 3); break;
+        case (0xBB): inst.LAE(GetAbsoluteIndexed(GetY()), 3); break;
         case (0xBC): inst.LDY(GetAbsoluteIndexed(GetX()), 3); break;
         case (0xBD): inst.LDA(GetAbsoluteIndexed(GetX()), 3); break;
         case (0xBE): inst.LDX(GetAbsoluteIndexed(GetY()), 3); break;
+        case (0xBF): inst.LAX(GetAbsoluteIndexed(GetY()), 3); break;
         case (0xBA): inst.TSX(); break;
 
         case (0xC0): inst.CPY(Get8BitsInmValue(), 2); break;
         case (0xC1): inst.CMP(GetIndexedIndirect(), 2); break;
         case (0xC2): inst.NOP(2); break;
+        case (0xC3): inst.DCP(AddressIndexedIndirect(), 2); break;
         case (0xC4): inst.CPY(GetZeroPage(), 2); break;
         case (0xC5): inst.CMP(GetZeroPage(), 2); break;
         case (0xC6): inst.DEC(AddressZeroPage(), 2); break;
+        case (0xC7): inst.DCP(AddressZeroPage(), 2); break;
         case (0xC8): inst.INY(); break;
         case (0xC9): inst.CMP(Get8BitsInmValue(), 2); break;
         case (0xCC): inst.CPY(Get16BitsInmValue(), 3); break;
         case (0xCD): inst.CMP(Get16BitsInmValue(), 3); break;
         case (0xCA): inst.DEX(); break;
+        case (0xCB): inst.AXS(Get8BitsInmValue(), 2); break;
         case (0xCE): inst.DEC(Address16BitsInmValue(), 3); break;
+        case (0xCF): inst.DCP(Address16BitsInmValue(), 3); break;
 
         case (0xD0): inst.BNE(); break;
         case (0xD1): inst.CMP(GetIndirectIndexed(), 2); break;
+        case (0xD3): inst.DCP(AddressIndirectIndexedRMW(), 2); break;
         case (0xD4): MemR(AddressZeroPageIndexed(GetX())); inst.NOP(2); break;
         case (0xD5): inst.CMP(GetZeroPageIndexed(GetX()), 2); break;
         case (0xD6): inst.DEC(AddressZeroPageIndexed(GetX()), 2); break;
+        case (0xD7): inst.DCP(AddressZeroPageIndexed(GetX()), 2); break;
         case (0xD8): inst.CLD(); break;
         case (0xD9): inst.CMP(GetAbsoluteIndexed(GetY()), 3); break;
         case (0xDA): inst.NOP(1); break;
+        case (0xDB): inst.DCP(AddressAbsoluteIndexedWrite(GetY()), 3); break;
         case (0xDC): MemR(AddressAbsoluteIndexed(GetX())); inst.NOP(3); break;
         case (0xDD): inst.CMP(GetAbsoluteIndexed(GetX()), 3); break;
         case (0xDE): inst.DEC(AddressAbsoluteIndexedWrite(GetX()), 3); break;
+        case (0xDF): inst.DCP(AddressAbsoluteIndexedWrite(GetX()), 3); break;
 
         case (0xE0): inst.CPX(Get8BitsInmValue(), 2); break;
         case (0xE1): inst.SBC(GetIndexedIndirect(), 2); break;
         case (0xE2): inst.NOP(2); break;
+        case (0xE3): inst.ISC(AddressIndexedIndirect(), 2); break;
         case (0xE4): inst.CPX(GetZeroPage(), 2); break;
         case (0xE5): inst.SBC(GetZeroPage(), 2); break;
         case (0xE6): inst.INC(AddressZeroPage(), 2); break;
+        case (0xE7): inst.ISC(AddressZeroPage(), 2); break;
         case (0xE8): inst.INX(); break;
         case (0xE9): inst.SBC(Get8BitsInmValue(), 2); break;
         case (0xEA): inst.NOP(1); break;
+        case (0xEB): inst.SBC(Get8BitsInmValue(), 2); break;
         case (0xEC): inst.CPX(Get16BitsInmValue(), 3); break;
         case (0xED): inst.SBC(Get16BitsInmValue(), 3); break;
         case (0xEE): inst.INC(Address16BitsInmValue(), 3); break;
+        case (0xEF): inst.ISC(Address16BitsInmValue(), 3); break;
 
         case (0xF0): inst.BEQ(); break;
         case (0xF1): inst.SBC(GetIndirectIndexed(), 2); break;
+        case (0xF3): inst.ISC(AddressIndirectIndexedRMW(), 2); break;
         case (0xF4): MemR(AddressZeroPageIndexed(GetX())); inst.NOP(2); break;
         case (0xF5): inst.SBC(GetZeroPageIndexed(GetX()), 2); break;
         case (0xF6): inst.INC(AddressZeroPageIndexed(GetX()), 2); break;
+        case (0xF7): inst.ISC(AddressZeroPageIndexed(GetX()), 2); break;
         case (0xF8): inst.SED(); break;
         case (0xF9): inst.SBC(GetAbsoluteIndexed(GetY()), 3); break;
         case (0xFA): inst.NOP(1); break;
+        case (0xFB): inst.ISC(AddressAbsoluteIndexedWrite(GetY()), 3); break;
         case (0xFC): MemR(AddressAbsoluteIndexed(GetX())); inst.NOP(3); break;
         case (0xFD): inst.SBC(GetAbsoluteIndexed(GetX()), 3); break;
         case (0xFE): inst.INC(AddressAbsoluteIndexedWrite(GetX()), 3); break;
+        case (0xFF): inst.ISC(AddressAbsoluteIndexedWrite(GetX()), 3); break;
         
         default:
             stringstream out;

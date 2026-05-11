@@ -37,8 +37,13 @@ namespace Nes {
 
         void ADC(u8 value, u8 length);
         void AND(u8 value, u8 length);
+        void ANC(u8 value, u8 length);
+        void ANE(u8 value, u8 length);
+        void ARR(u8 value, u8 length);
         void ASL();
         void ASL(u16 address, u8 length);
+        void ASR(u8 value, u8 length);
+        void AXS(u8 value, u8 length);
 
         void BIT(u8 value, u8 length);
         void BMI();
@@ -56,6 +61,7 @@ namespace Nes {
         void CLI();
         void CLV();
 
+        void DCP(u16 address, u8 length);
         void DEC(u16 address, u8 length);
         void DEX();
         void DEY();
@@ -70,16 +76,20 @@ namespace Nes {
         void INX();
         void INY();
         void IRQ(u16 addressToStore, u8 stackBits45, u16 indAddressToJump);
+        void ISC(u16 address, u8 length);
 
         void JMP();
         void JMPIndirect();
         void JSR();
 
+        void LAE(u8 value, u8 length);
+        void LAX(u8 value, u8 length);
         void LDA(u8 value, u8 length);
         void LDX(u8 value, u8 length);
         void LDY(u8 value, u8 length);
         void LSR();
         void LSR(u16 address, u8 length);
+        void LXA(u8 value, u8 length);
 
         void NMI();
         void NOP(u8 length);
@@ -91,18 +101,26 @@ namespace Nes {
         void PLP();
         void PLA();
 
+        void RLA(u16 address, u8 length);
         void ROL();
         void ROL(u16 address, u8 length);
         void ROR();
         void ROR(u16 address, u8 length);
+        void RRA(u16 address, u8 length);
         void RTI();
         void RTS();
 
+        void SAX(u16 address, u8 length);
         void SBC(u8 value, u8 length);
         void SEC();
         void SED();
         void SEI();
+        void SHA(u16 address, u8 mask, u8 length);
+        void SHS(u16 address, u8 mask, u8 length);
+        void SHX(u16 address, u8 mask, u8 length);
+        void SHY(u16 address, u8 mask, u8 length);
         void SLO(u16 address, u8 length);
+        void SRE(u16 address, u8 length);
         void STA(u16 address, u8 length);
         void STX(u16 address, u8 length);
         void STY(u16 address, u8 length);
