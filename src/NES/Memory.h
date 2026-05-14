@@ -62,13 +62,27 @@ namespace Nes {
             else if (address < 0x4000)
                 value = m_video->ReadReg(address, debug);
             else if (address < 0x4014) {
+                if (m_dmcDMAActive && (++m_dmcDMAReadCounter % 8) == 0) {
+                    u16 sampleAddress = 0xC000 + (m_dmcSampleAddressReg * 64);
+                    value = m_c ? m_c->ReadPRG(sampleAddress) : 0x00;
+                    m_openBus = value;
+                }
+                else
+                    value = m_openBus;
+                updateBus = false;
+            }
+            else if (address == 0x4014) {
                 value = m_openBus;
                 updateBus = false;
             }
-            else if (address == 0x4014) // OAM DMA
-                throw(Exception("MemR OAM DMA"));
             else if (address == 0x4015) {
                 value = m_s->MemR(address) | (m_openBus & 0x20);
+                if (m_dmcStatusReads > 0) {
+                    value |= 0x10;
+                    m_dmcStatusReads--;
+                }
+                else
+                    m_dmcDMAActive = false;
                 updateBus = false;
             }
             else if (address < 0x4018)
@@ -97,6 +111,10 @@ namespace Nes {
         u8 memory[SIZE_MEM];
         u8 m_openBus;
         bool m_pageCrossed;
+        u8 m_dmcSampleAddressReg;
+        u8 m_dmcDMAReadCounter;
+        u8 m_dmcStatusReads;
+        bool m_dmcDMAActive;
     };
 }
 

@@ -119,6 +119,10 @@ void CPU::OAMDMARequest(u8 value) {
 }
 
 u16 CPU::OAMDMA() {
+	// Multiple writes in a single RMW instruction collapse into one DMA using the last page.
+	if (!OAMDMAPending)
+		return 0;
+
 	u16 address = OAMDMAAddress << 8;
 	for (int i = 0; i < 256; i++) {
 		m_v->WriteReg(0x2004, MemR(address + i));

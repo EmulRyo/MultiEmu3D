@@ -64,15 +64,19 @@ void Memory::SetCartridge(Cartridge *c)
 void Memory::ResetMem() {
     memset(&memory, 0x00, SIZE_MEM);
     m_openBus = 0x00;
+    m_dmcSampleAddressReg = 0x00;
+    m_dmcDMAReadCounter = 0;
+    m_dmcStatusReads = 0;
+    m_dmcDMAActive = false;
     if (m_c)
         m_c->Reset();
 }
 
-// Cuando se lee de ciertas direcciones, el valor leído no es el que se obtiene
-// de la memoria, sino el valor del bus abierto (open bus), que es el último
-// valor leído o escrito en la memoria. Esto se debe a que en la arquitectura
-// de la NES, algunas direcciones no corresponden a una memoria física, sino que
-// están conectadas al bus de datos sin una memoria detrás.
+// Cuando se lee de ciertas direcciones, el valor leï¿½do no es el que se obtiene
+// de la memoria, sino el valor del bus abierto (open bus), que es el ï¿½ltimo
+// valor leï¿½do o escrito en la memoria. Esto se debe a que en la arquitectura
+// de la NES, algunas direcciones no corresponden a una memoria fï¿½sica, sino que
+// estï¿½n conectadas al bus de datos sin una memoria detrï¿½s.
 u8 Memory::GetOpenBus() const {
     return m_openBus;
 }
@@ -95,12 +99,25 @@ void Memory::MemW(u16 address, u8 value)
         memory[address - 0x1800] = value;
     else if (address < 0x4000)
         m_video->WriteReg(address, value);
-    else if (address < 0x4014)
+    else if (address < 0x4014) {
+        if (address == 0x4012)
+            m_dmcSampleAddressReg = value;
         m_s->MemW(address, value, m_cpu->GetElapsedCycles());
+    }
     else if (address == 0x4014)
         m_cpu->OAMDMARequest(value);
-    else if (address == 0x4015)
+    else if (address == 0x4015) {
+        if (value & 0x10) {
+            m_dmcDMAActive = true;
+            m_dmcDMAReadCounter = 0;
+            m_dmcStatusReads = 32;
+        }
+        else {
+            m_dmcDMAActive = false;
+            m_dmcStatusReads = 0;
+        }
         m_s->MemW(address, value, m_cpu->GetElapsedCycles());
+    }
     else if (address < 0x4018)
         m_pad->MemW(address, value);
     else if (address < 0x6000)
