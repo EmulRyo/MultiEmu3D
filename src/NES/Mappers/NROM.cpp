@@ -58,7 +58,8 @@ u8 NROM::ReadCHR(u16 address) const {
 }
 
 void NROM::WriteCHR(u16 address, u8 value) {
-    m_chrBuffer[address] = value;
+    if (m_chrBanks == 0)
+        m_chrBuffer[address] = value;
 }
 
 u8 NROM::GetMapperNum() const {

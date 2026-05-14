@@ -105,6 +105,7 @@ namespace Nes {
         u32 m_numFrames;
         IScreenDrawable *m_screen;
         u8  m_genLatch;
+        u32 m_genLatchDecayCycles;
         bool m_NMI;
 
         // PPU internal registers

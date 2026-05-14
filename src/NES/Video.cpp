@@ -93,6 +93,7 @@ void Video::Reset() {
         m_palette[i] = 0;
     m_OAMAddress = 0;
     m_NMI = false;
+    m_genLatchDecayCycles = 0;
 
     memset(m_OAM, 0xFF, 256);
     m_secondaryOAMLength = 0;
@@ -120,11 +121,13 @@ u8 Video::ReadReg(u16 address, bool debug) {
         m_regs[regID] = m_regs[regID] & 0x7F; // Al leer este registro se desactiva el bit 7 (V-Blank)
         m_w = 0; // Reset write toggle
         m_genLatch = value;
+        m_genLatchDecayCycles = 0;
         return value;
     }
     else if (address == OAMDATA) {
         u8 value = m_OAM[m_OAMAddress];
         m_genLatch = value;
+        m_genLatchDecayCycles = 0;
         return value;
     }
     else if (address == PPUDATA) {
@@ -133,6 +136,7 @@ u8 Video::ReadReg(u16 address, bool debug) {
         m_v = (m_v + increment) & 0x3FFF;
 
         m_genLatch = value;
+        m_genLatchDecayCycles = 0;
         return value;
     }
     else
@@ -141,6 +145,7 @@ u8 Video::ReadReg(u16 address, bool debug) {
 
 void Video::WriteReg(u16 address, u8 value) {
     m_genLatch = value;
+    m_genLatchDecayCycles = 0;
     address = ((address - 0x2000) % 8) + 0x2000;
     if (address == PPUCTRL) {
         m_t = (m_t & 0xF3FF) | ((value & 0x03) << 10);
@@ -189,6 +194,9 @@ void Video::Update(u16 cpuCycles) {
     m_NMI = false;
 
     u16 ppuCycles = cpuCycles * 3;
+	m_genLatchDecayCycles += ppuCycles;
+	if (m_genLatchDecayCycles > (NES_FRAME_PPU_CYCLES * 5))
+		m_genLatch = 0;
 
     while (ppuCycles > 0) {
         u16 prevDot = m_cycles % NES_SCANLINE_PPU_CYCLES;
@@ -541,11 +549,20 @@ u8 Video::MemR(u16 address) {
         // Estas direcciones son mirrors
         if ((address == 0x3F10) || (address == 0x3F14) || (address == 0x3F18) || (address == 0x3F1C))
             address -= 0x10;
-        return m_palette[address - 0x3F00];
+        u8 value = m_palette[address - 0x3F00] & 0x3F;
+        if (m_regs[PPUMASK & 0x07] & 0x01)
+            value &= 0x30;
+        return value | (m_genLatch & 0xC0);
     }
     else if (address < 0x4000) { // Mirror
+        address = 0x3F00 | (address & 0x001F);
         m_readBuffer = MemRInternal(address - 0x1000);  // El buffer se rellena con el mirror del nametable si no existiera la paleta
-        return m_palette[(address - 0x3F20) % 0x0020];
+        if ((address == 0x3F10) || (address == 0x3F14) || (address == 0x3F18) || (address == 0x3F1C))
+            address -= 0x10;
+        u8 value = m_palette[address - 0x3F00] & 0x3F;
+        if (m_regs[PPUMASK & 0x07] & 0x01)
+            value &= 0x30;
+        return value | (m_genLatch & 0xC0);
     }
     else
         return 0;
@@ -568,10 +585,13 @@ u8 Video::MemRInternal(u16 address) {
         // Estas direcciones son mirrors
         if ((address == 0x3F10) || (address == 0x3F14) || (address == 0x3F18) || (address == 0x3F1C))
             address -= 0x10;
-        return m_palette[address - 0x3F00];
+        return m_palette[address - 0x3F00] & 0x3F;
     }
     else if (address < 0x4000) { // Mirror
-        return m_palette[(address - 0x3F20) % 0x0020];
+        address = 0x3F00 | (address & 0x001F);
+        if ((address == 0x3F10) || (address == 0x3F14) || (address == 0x3F18) || (address == 0x3F1C))
+            address -= 0x10;
+        return m_palette[address - 0x3F00] & 0x3F;
     }
     else
         return 0;
@@ -621,10 +641,15 @@ void Video::MemW(u16 address, u8 value) {
     else if (address < 0x3F20) { // Palette
         if ((address == 0x3F10) || (address == 0x3F14) || (address == 0x3F18) || (address == 0x3F1C))
             address -= 0x10;
-        m_palette[address - 0x3F00] = value;
+        m_palette[address - 0x3F00] = value & 0x3F;
     }
     else if (address < 0x4000) // Mirror
-        m_palette[(address - 0x3F20) % 0x0020] = value;
+    {
+        address = 0x3F00 | (address & 0x001F);
+        if ((address == 0x3F10) || (address == 0x3F14) || (address == 0x3F18) || (address == 0x3F1C))
+            address -= 0x10;
+        m_palette[address - 0x3F00] = value & 0x3F;
+    }
     else
         return;
 }
