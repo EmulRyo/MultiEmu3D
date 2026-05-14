@@ -107,6 +107,7 @@ namespace Nes {
         u8  m_genLatch;
         u32 m_genLatchDecayCycles;
         bool m_NMI;
+        u8 m_NMIDelay;
 
         // PPU internal registers
         // https://wiki.nesdev.com/w/index.php?title=PPU_scrolling

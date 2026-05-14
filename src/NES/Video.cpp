@@ -93,6 +93,7 @@ void Video::Reset() {
         m_palette[i] = 0;
     m_OAMAddress = 0;
     m_NMI = false;
+    m_NMIDelay = 0;
     m_genLatchDecayCycles = 0;
 
     memset(m_OAM, 0xFF, 256);
@@ -119,13 +120,27 @@ u8 Video::ReadReg(u16 address, bool debug) {
     if (address == PPUSTATUS) {
         u8 value = (m_regs[regID] & 0xE0) | (m_genLatch & 0x1F); // Los bits 0-4 se cogen del valor del latch
         m_regs[regID] = m_regs[regID] & 0x7F; // Al leer este registro se desactiva el bit 7 (V-Blank)
+        m_NMI = false;
+        m_NMIDelay = 0;
         m_w = 0; // Reset write toggle
         m_genLatch = value;
         m_genLatchDecayCycles = 0;
         return value;
     }
     else if (address == OAMDATA) {
+        u16 line = GetY();
+        u16 dot = GetX();
+        bool renderingEnabled = (m_regs[PPUMASK & 0x07] & 0x18) != 0;
+        bool renderingLine = (line < 240) || (line == 261);
         u8 value = m_OAM[m_OAMAddress];
+        if (renderingEnabled && renderingLine) {
+            if ((dot >= 1 && dot <= 64) || (dot >= 257 && dot <= 320))
+                value = 0xFF;
+            else if (dot >= 65 && dot <= 256)
+                value = m_OAM[((dot - 65) / 2) & 0xFF];
+        }
+        else if ((m_OAMAddress & 0x03) == 0x02)
+            value &= 0xE3;
         m_genLatch = value;
         m_genLatchDecayCycles = 0;
         return value;
@@ -148,6 +163,17 @@ void Video::WriteReg(u16 address, u8 value) {
     m_genLatchDecayCycles = 0;
     address = ((address - 0x2000) % 8) + 0x2000;
     if (address == PPUCTRL) {
+        bool nmiWasEnabled = (m_regs[PPUCTRL & 0x07] & 0x80) != 0;
+        bool nmiEnabled = (value & 0x80) != 0;
+        if (!nmiWasEnabled && nmiEnabled && (m_regs[PPUSTATUS & 0x07] & 0x80)) {
+            m_NMI = true;
+            m_NMIDelay = 1;
+        }
+        else if (!nmiEnabled) {
+            m_NMI = false;
+            m_NMIDelay = 0;
+        }
+
         m_t = (m_t & 0xF3FF) | ((value & 0x03) << 10);
     }
     else if (address == OAMADDR) {
@@ -155,8 +181,14 @@ void Video::WriteReg(u16 address, u8 value) {
         m_regs[OAMDATA & 0x07] = m_OAM[m_OAMAddress];
     }
     else if (address == OAMDATA) {
-        m_OAM[m_OAMAddress] = value;
-        m_OAMAddress++;
+        bool renderingEnabled = (m_regs[PPUMASK & 0x07] & 0x18) != 0;
+        u16 line = GetY();
+        if (renderingEnabled && (line < 240 || line == 261))
+            m_OAMAddress = (m_OAMAddress + 4) & 0xFC;
+        else {
+            m_OAM[m_OAMAddress] = value;
+            m_OAMAddress++;
+        }
     }
     else if (address == PPUSCROLL) {
         if (m_w == 0) { // X
@@ -191,8 +223,6 @@ void Video::WriteReg(u16 address, u8 value) {
 }
 
 void Video::Update(u16 cpuCycles) {
-    m_NMI = false;
-
     u16 ppuCycles = cpuCycles * 3;
 	m_genLatchDecayCycles += ppuCycles;
 	if (m_genLatchDecayCycles > (NES_FRAME_PPU_CYCLES * 5))
@@ -249,6 +279,7 @@ void Video::ScanlineEvents(u16 prevDot, u16 dot, u16 line) {
         }
         if ((prevDot < 257) && (dot >= 257)) {
             m_v = (m_v & 0x7BE0) | (m_t & 0x041F);
+            m_OAMAddress = 0;
         }
         if ((line == 261) && (prevDot >= 280) && (dot <= 304)) { // end of vblank
             m_v = (m_v & 0x041F) | (m_t & 0x7BE0);
@@ -290,6 +321,10 @@ void Video::ScanlineEvents(u16 prevDot, u16 dot, u16 line) {
 
 bool Video::NMI() {
     if (m_NMI) {
+        if (m_NMIDelay > 0) {
+            m_NMIDelay--;
+            return false;
+        }
         m_NMI = false;
         return true;
     } else
