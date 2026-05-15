@@ -89,6 +89,11 @@ namespace Nes {
             u8 colorId;
             u8 r, g, b;
         };
+        struct BGTileCache {
+            u8 bitPlane0;
+            u8 bitPlane1;
+            u8 numPalette;
+        };
 
         u8 m_regs[8];
         u8 m_VRAM[0x1000];
@@ -108,6 +113,11 @@ namespace Nes {
         u32 m_genLatchDecayCycles;
         bool m_NMI;
         u8 m_NMIDelay;
+        BGTileCache m_bgTileCache[33];
+        u16 m_bgTileCacheLine;
+        u16 m_bgTileCacheT;
+        u8  m_bgTileCacheX;
+        u16 m_bgTileCachePatternTable;
 
         // PPU internal registers
         // https://wiki.nesdev.com/w/index.php?title=PPU_scrolling
@@ -127,10 +137,12 @@ namespace Nes {
         u16  GetBGPaletteAddress(u16 x, u16 y, u16 attrTableAddress);
         void SpriteEvaluation(u16 line);
         void DrawPixels();
+        void BuildBGLineCache(u16 line, u16 patternTableAddress);
         void PixelBG(BGPixel& bgPix);
         void PixelSprite(SpritePixel& sprPix);
-        void YIncrement();
-        void CoarseXIncrement();
+        void CoarseXIncrement(u16& v);
+        void CoarseYIncrement(u16& v);
+        void FineYIncrement(u16& v);
         void ScanlineEvents(u16 prevDot, u16 dot, u16 line);
     };
 }

@@ -65,7 +65,7 @@ namespace Nes {
                 if (m_dmcDMAActive && (++m_dmcDMAReadCounter % 8) == 0) {
                     u16 sampleAddress = 0xC000 + (m_dmcSampleAddressReg * 64);
                     value = m_c ? m_c->ReadPRG(sampleAddress) : 0x00;
-                    m_openBus = value;
+                    m_internalBus = value;
                 }
                 else
                     value = m_openBus;
@@ -76,7 +76,7 @@ namespace Nes {
                 updateBus = false;
             }
             else if (address == 0x4015) {
-                value = m_s->MemR(address) | (m_openBus & 0x20);
+                value = m_s->MemR(address) | (m_internalBus & 0x20);
                 if (m_dmcStatusReads > 0) {
                     value |= 0x10;
                     m_dmcStatusReads--;
@@ -92,8 +92,10 @@ namespace Nes {
             else
                 value = m_c->ReadPRG(address);
 
-            if (updateBus)
+            if (updateBus) {
                 m_openBus = value;
+                m_internalBus = value;
+            }
 
             return value;
         }
@@ -110,6 +112,7 @@ namespace Nes {
     private:
         u8 memory[SIZE_MEM];
         u8 m_openBus;
+        u8 m_internalBus;
         bool m_pageCrossed;
         u8 m_dmcSampleAddressReg;
         u8 m_dmcDMAReadCounter;

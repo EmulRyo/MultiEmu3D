@@ -64,6 +64,7 @@ void Memory::SetCartridge(Cartridge *c)
 void Memory::ResetMem() {
     memset(&memory, 0x00, SIZE_MEM);
     m_openBus = 0x00;
+    m_internalBus = 0x00;
     m_dmcSampleAddressReg = 0x00;
     m_dmcDMAReadCounter = 0;
     m_dmcStatusReads = 0;
@@ -83,11 +84,13 @@ u8 Memory::GetOpenBus() const {
 
 void Memory::SetOpenBus(u8 value) {
     m_openBus = value;
+    m_internalBus = value;
 }
 
 void Memory::MemW(u16 address, u8 value)
 {
     m_openBus = value;
+    m_internalBus = value;
 
     if (address < 0x0800)
         memory[address] = value;

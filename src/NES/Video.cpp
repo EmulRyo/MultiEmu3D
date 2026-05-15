@@ -95,6 +95,10 @@ void Video::Reset() {
     m_NMI = false;
     m_NMIDelay = 0;
     m_genLatchDecayCycles = 0;
+    m_bgTileCacheLine = 0xFFFF;
+    m_bgTileCacheT = 0xFFFF;
+    m_bgTileCacheX = 0xFF;
+    m_bgTileCachePatternTable = 0xFFFF;
 
     memset(m_OAM, 0xFF, 256);
     m_secondaryOAMLength = 0;
@@ -271,11 +275,11 @@ void Video::ScanlineEvents(u16 prevDot, u16 dot, u16 line) {
     if (renderingEnabled && scanlineWithEvents) {
         for (int i = prevDot + 1; i <= dot; i++) {
             if (((i <= 256) || (i >= 328)) && (i % 8 == 0)) {
-                CoarseXIncrement();
+                CoarseXIncrement(m_v);
             }
         }
         if ((prevDot < 256) && (dot >= 256)) {
-            YIncrement();
+            FineYIncrement(m_v);
         }
         if ((prevDot < 257) && (dot >= 257)) {
             m_v = (m_v & 0x7BE0) | (m_t & 0x041F);
@@ -381,6 +385,9 @@ void Video::DrawPixels() {
     if (m_secondaryOAMLine != line)
         SpriteEvaluation(line);
 
+    if (BIT3(ppuMask))
+        BuildBGLineCache(line, bgPix.patternTableAddress);
+
     u16 dot = m_cycles % NES_SCANLINE_PPU_CYCLES;
     u16 maxX = dot - 1;
     if (maxX > NES_SCREEN_W)
@@ -417,66 +424,59 @@ void Video::DrawPixels() {
     m_nextDot = maxX;
 }
 
+void Video::BuildBGLineCache(u16 line, u16 patternTableAddress) {
+    if (m_bgTileCacheLine == line && m_bgTileCacheT == m_t && m_bgTileCacheX == m_x && m_bgTileCachePatternTable == patternTableAddress)
+        return;
+
+    m_bgTileCacheLine = line;
+    m_bgTileCacheT = m_t;
+    m_bgTileCacheX = m_x;
+    m_bgTileCachePatternTable = patternTableAddress;
+
+    u16 fetchAddress = m_t;
+    u16 fineY = (fetchAddress >> 12) & 0x07;
+    u16 coarseYSteps = (fineY + line) / 8;
+    fetchAddress = (fetchAddress & ~0x7000) | (((fineY + line) & 0x07) << 12);
+    for (u16 i = 0; i < coarseYSteps; i++)
+        CoarseYIncrement(fetchAddress);
+
+    u16 fineXOffset = m_x;
+    for (u16 i = 0; i < (fineXOffset / 8); i++)
+        CoarseXIncrement(fetchAddress);
+
+    u8 tileY = (fetchAddress >> 12) & 0x07;
+    for (u8 i = 0; i < 33; i++) {
+        u16 nameTableAddress = 0x2000 | (fetchAddress & 0x0FFF);
+        u8 tileID = VRAMR(nameTableAddress);
+        u16 tilePatternAddr = patternTableAddress + (tileID * 16);
+
+        u16 attrAddress = 0x23C0 | (fetchAddress & 0x0C00) | ((fetchAddress >> 4) & 0x38) | ((fetchAddress >> 2) & 0x07);
+        u8 attrData = MemRInternal(attrAddress);
+        u8 attrMaskShift = ((fetchAddress & 0x0002) ? 2 : 0) | ((fetchAddress & 0x0040) ? 4 : 0);
+
+        m_bgTileCache[i].bitPlane0 = MemRInternal(tilePatternAddr + tileY);
+        m_bgTileCache[i].bitPlane1 = MemRInternal(tilePatternAddr + tileY + 8);
+        m_bgTileCache[i].numPalette = (attrData >> attrMaskShift) & 0x03;
+
+        CoarseXIncrement(fetchAddress);
+    }
+}
+
 void Video::PixelBG(BGPixel& bgPix) {
     if ((bgPix.x < 8) && (!bgPix.show8Left))
         return;
 
-    u16 line = m_cycles / NES_SCANLINE_PPU_CYCLES;
-
-    // Get scroll position from m_t (temp register) and m_x (fine X)
-    u8 coarseX_scroll = m_t & 0x001F;         // bits 0-4: coarse X
-    u8 coarseY_scroll = (m_t & 0x03E0) >> 5; // bits 5-9: coarse Y
-    u8 fineY_scroll = (m_t & 0x7000) >> 12;  // bits 12-14: fine Y
-    u8 fineX_scroll = m_x;                     // fine X scroll (separate register)
-    u8 nametable_scroll = (m_t & 0x0C00) >> 10; // bits 10-11: nametable select
-
-    // Calculate source position in pixels
-    u16 srcX = coarseX_scroll * 8 + fineX_scroll + bgPix.x;
-    u16 srcY = coarseY_scroll * 8 + fineY_scroll + line;
-
-    // Handle wrapping within the nametable space
-    // Each nametable is 256x240 pixels (32x30 tiles)
-    u16 x_in_nametable = srcX % 256;
-    u16 y_in_nametable = srcY % 240;
-
-    // Determine which nametable we're in (may have crossed boundary)
-    u8 nametableX = (srcX / 256) % 2;
-    u8 nametableY = (srcY / 240) % 2;
-    u8 nametable_idx = nametableY * 2 + nametableX;
-
-    // Adjust for the starting nametable from m_t
-    nametable_idx = (nametable_scroll + nametable_idx) % 4;
-
-    // Calculate nametable base address
-    u16 nameTableBase = 0x2000 + nametable_idx * 0x400;
-    u16 attrTableBase = nameTableBase + 0x03C0;
-
-    // Calculate tile position within nametable
-    u8 tileCol = x_in_nametable / 8;
-    u8 tileRow = y_in_nametable / 8;
-    u16 tileOffset = tileRow * 32 + tileCol;
-
-    // Get tile ID from nametable (VRAMR handles mirroring)
-    u8 tileID = VRAMR(nameTableBase + tileOffset);
-
-    // Pattern table address for this tile
-    u16 tilePatternAddr = bgPix.patternTableAddress + (tileID * 16);
-
-    // Pixel within tile
-    u8 tileX = x_in_nametable % 8;
-    u8 tileY = y_in_nametable % 8;
-
-    // Get bit planes
-    u8 bitPlane0 = MemRInternal(tilePatternAddr + tileY);
-    u8 bitPlane1 = MemRInternal(tilePatternAddr + tileY + 8);
+    u16 fineXOffset = m_x + bgPix.x;
+    u16 tileIndex = fineXOffset / 8;
+    u8 tileX = fineXOffset & 0x07;
+    BGTileCache& tile = m_bgTileCache[tileIndex];
 
     // Extract pixel (bit 7 = leftmost pixel)
     u8 bitPos = 7 - tileX;
     u8 mask = (0x01 << bitPos);
-    u8 colorId = (((bitPlane1 & mask) << 1) | (bitPlane0 & mask)) >> bitPos;
+    u8 colorId = (((tile.bitPlane1 & mask) << 1) | (tile.bitPlane0 & mask)) >> bitPos;
 
-    // Get palette address
-    u16 paletteAddr = GetBGPaletteAddress(x_in_nametable, y_in_nametable, attrTableBase);
+    u16 paletteAddr = 0x3F01 + (tile.numPalette * 4);
     u16 colorAddress = (colorId == 0) ? 0x3F00 : (paletteAddr + (colorId - 1));
     u8 colorData = MemRInternal(colorAddress) & 0x3F;
 
@@ -545,23 +545,6 @@ void Video::PixelSprite(SpritePixel& sprPix) {
             }
         }
     }
-}
-
-u16  Video::GetBGPaletteAddress(u16 x, u16 y, u16 attrTableAddress) {
-    // Attribute Table
-    u8 attrCol = x / 32;
-    u8 attrRow = y / 32;
-    u8 attrOffset = attrRow * 8 + attrCol;
-    u8 attrData = MemRInternal(attrTableAddress + attrOffset);
-    bool attrRight  = ((x / 16) % 2) == 1;
-    bool attrBottom = ((y / 16) % 2) == 1;
-    u8 attrMaskShift = 0;
-    if (attrRight)  attrMaskShift += 2;
-    if (attrBottom) attrMaskShift += 4;
-    u8 numPalette = (attrData & (0x03 << attrMaskShift)) >> attrMaskShift;
-    u16 paletteAddress = 0x3F01 + (numPalette * 4);
-
-    return paletteAddress;
 }
 
 u8 Video::MemR(u16 address) {
@@ -714,31 +697,44 @@ void Video::GetTile(u8* buffer, int widthSize, int tile) {
     }
 }
 
-void Video::YIncrement() {
-    if ((m_v & 0x7000) != 0x7000)           // if fine Y < 7
-        m_v += 0x1000;                      // increment fine Y
+void Video::FineYIncrement(u16& v) {
+    if ((v & 0x7000) != 0x7000)             // if fine Y < 7
+        v += 0x1000;                        // increment fine Y
     else {
-        m_v &= ~0x7000;                     // fine Y = 0
-        int y = (m_v & 0x03E0) >> 5;        // let y = coarse Y
+        v &= ~0x7000;                       // fine Y = 0
+        int y = (v & 0x03E0) >> 5;          // let y = coarse Y
         if (y == 29) {
             y = 0;                          // coarse Y = 0
-            m_v ^= 0x0800;                  // switch vertical nametable
+            v ^= 0x0800;                    // switch vertical nametable
         }
         else if (y == 31)
             y = 0;                          // coarse Y = 0, nametable not switched
         else
             y += 1;                         // increment coarse Y
-        m_v = (m_v & ~0x03E0) | (y << 5);   // put coarse Y back into v
+        v = (v & ~0x03E0) | (y << 5);       // put coarse Y back into v
     }
 }
 
-void Video::CoarseXIncrement() {
-    if ((m_v & 0x001F) == 31) {    // if coarse X == 31
-        m_v &= ~0x001F;          // coarse X = 0
-        m_v ^= 0x0400;           // switch horizontal nametable
+void Video::CoarseYIncrement(u16& v) {
+    int y = (v & 0x03E0) >> 5;
+    if (y == 29) {
+        y = 0;
+        v ^= 0x0800;
+    }
+    else if (y == 31)
+        y = 0;
+    else
+        y += 1;
+    v = (v & ~0x03E0) | (y << 5);
+}
+
+void Video::CoarseXIncrement(u16& v) {
+    if ((v & 0x001F) == 31) {   // if coarse X == 31
+        v &= ~0x001F;           // coarse X = 0
+        v ^= 0x0400;            // switch horizontal nametable
     }
     else
-        m_v += 1;                // increment coarse X
+        v += 1;                 // increment coarse X
 }
 
 u32 Video::GetNumFrames() const {

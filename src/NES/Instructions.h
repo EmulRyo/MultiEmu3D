@@ -133,6 +133,9 @@ namespace Nes {
         void TYA();
         
     private:
+        void Branch(bool condition);
+        void DummyReadNextOpcodeByte();
+
         Registers   *m_reg;
         Memory      *m_mem;
         u8           m_cyclesExtra;

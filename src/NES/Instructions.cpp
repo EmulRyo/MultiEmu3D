@@ -52,6 +52,10 @@ void Instructions::ResetCyclesExtra() {
 	m_cyclesExtra = 0;
 }
 
+void Instructions::DummyReadNextOpcodeByte() {
+    m_mem->MemR(m_reg->GetPC() + 1);
+}
+
 void Instructions::ADC(u8 value, u8 length) {
 	u8 result = m_reg->GetA() + value + m_reg->GetFlagC();
 	u16 result16 = (u16)m_reg->GetA() + value + m_reg->GetFlagC();
@@ -74,101 +78,31 @@ void Instructions::SBC(u8 value, u8 length) {
 	ADC(~value, length); // ~value = -value - 1
 }
 
-void Instructions::BMI() {
-	if (m_reg->GetFlagN() == 1) {
-		u16 oldAddress = m_reg->GetPC();
-		s8 rel = (s8)Get8BitsInmValue();
-		m_reg->AddPC(rel + 2);
-		m_mem->PageCrossed(oldAddress, m_reg->GetPC());
-		m_cyclesExtra = m_mem->GetPageCrossed() ? 2 : 1;
-	}
-	else
-		m_reg->AddPC(2);
+void Instructions::Branch(bool condition) {
+    u16 oldAddress = m_reg->GetPC();
+    s8 rel = (s8)Get8BitsInmValue();
+    u16 nextAddress = oldAddress + 2;
+    u16 newAddress = nextAddress + rel;
+
+    if (condition) {
+        m_mem->MemR(nextAddress);
+        if ((nextAddress & 0xFF00) != (newAddress & 0xFF00))
+            m_mem->MemR((nextAddress & 0xFF00) | (newAddress & 0x00FF));
+        m_reg->SetPC(newAddress);
+        m_cyclesExtra = ((nextAddress & 0xFF00) != (newAddress & 0xFF00)) ? 2 : 1;
+    }
+    else
+        m_reg->SetPC(nextAddress);
 }
 
-void Instructions::BPL() {
-	if (m_reg->GetFlagN() == 0) {
-		u16 oldAddress = m_reg->GetPC();
-		s8 rel = (s8)Get8BitsInmValue();
-		m_reg->AddPC(rel + 2);
-		m_mem->PageCrossed(oldAddress, m_reg->GetPC());
-		m_cyclesExtra = m_mem->GetPageCrossed() ? 2 : 1;
-	}
-	else
-		m_reg->AddPC(2);
-}
-
-void Instructions::BCC() {
-	if (m_reg->GetFlagC() == 0) {
-		u16 oldAddress = m_reg->GetPC();
-		s8 rel = (s8)Get8BitsInmValue();
-		m_reg->AddPC(rel + 2);
-		m_mem->PageCrossed(oldAddress, m_reg->GetPC());
-		m_cyclesExtra = m_mem->GetPageCrossed() ? 2 : 1;
-	}
-	else
-		m_reg->AddPC(2);
-}
-
-void Instructions::BCS() {
-	if (m_reg->GetFlagC() == 1) {
-		u16 oldAddress = m_reg->GetPC();
-		s8 rel = (s8)Get8BitsInmValue();
-		m_reg->AddPC(rel + 2);
-		m_mem->PageCrossed(oldAddress, m_reg->GetPC());
-		m_cyclesExtra = m_mem->GetPageCrossed() ? 2 : 1;
-	}
-	else
-		m_reg->AddPC(2);
-}
-;
-void Instructions::BEQ() {
-	if (m_reg->GetFlagZ() == 1) {
-		u16 oldAddress = m_reg->GetPC();
-		s8 rel = (s8)Get8BitsInmValue();
-		m_reg->AddPC(rel + 2);
-		m_mem->PageCrossed(oldAddress, m_reg->GetPC());
-		m_cyclesExtra = m_mem->GetPageCrossed() ? 2 : 1;
-	}
-	else
-		m_reg->AddPC(2);
-}
-
-void Instructions::BNE() {
-	if (m_reg->GetFlagZ() == 0) {
-		u16 oldAddress = m_reg->GetPC();
-		s8 rel = (s8)Get8BitsInmValue();
-		m_reg->AddPC(rel + 2);
-		m_mem->PageCrossed(oldAddress, m_reg->GetPC());
-		m_cyclesExtra = m_mem->GetPageCrossed() ? 2 : 1;
-	}
-	else
-		m_reg->AddPC(2);
-}
-
-void Instructions::BVS() {
-	if (m_reg->GetFlagV() == 1) {
-		u16 oldAddress = m_reg->GetPC();
-		s8 rel = (s8)Get8BitsInmValue();
-		m_reg->AddPC(rel + 2);
-		m_mem->PageCrossed(oldAddress, m_reg->GetPC());
-		m_cyclesExtra = m_mem->GetPageCrossed() ? 2 : 1;
-	}
-	else
-		m_reg->AddPC(2);
-}
-
-void Instructions::BVC() {
-	if (m_reg->GetFlagV() == 0) {
-		u16 oldAddress = m_reg->GetPC();
-		s8 rel = (s8)Get8BitsInmValue();
-		m_reg->AddPC(rel + 2);
-		m_mem->PageCrossed(oldAddress, m_reg->GetPC());
-		m_cyclesExtra = m_mem->GetPageCrossed() ? 2 : 1;
-	}
-	else
-		m_reg->AddPC(2);
-}
+void Instructions::BMI() { Branch(m_reg->GetFlagN() == 1); }
+void Instructions::BPL() { Branch(m_reg->GetFlagN() == 0); }
+void Instructions::BCC() { Branch(m_reg->GetFlagC() == 0); }
+void Instructions::BCS() { Branch(m_reg->GetFlagC() == 1); }
+void Instructions::BEQ() { Branch(m_reg->GetFlagZ() == 1); }
+void Instructions::BNE() { Branch(m_reg->GetFlagZ() == 0); }
+void Instructions::BVS() { Branch(m_reg->GetFlagV() == 1); }
+void Instructions::BVC() { Branch(m_reg->GetFlagV() == 0); }
 
 void Instructions::CMP(u8 value, u8 length) {
 	u8 result = m_reg->GetA() - value;
@@ -216,6 +150,8 @@ void Instructions::JMPIndirect() {
 }
 
 void Instructions::JSR() {
+	u8 low = m_mem->MemR(m_reg->GetPC() + 1);
+	m_mem->MemR(0x100 | m_reg->GetS());
 	u16 address = m_reg->GetPC() + 2;
 	u8 pch = address >> 8;
 	u8 pcl = address & 0xFF;
@@ -225,7 +161,8 @@ void Instructions::JSR() {
 	m_mem->MemW(0x100 | ((m_reg->GetS() - 1) & 0xFF), pcl);
 	m_reg->SetS(m_reg->GetS() - 2);
 
-	m_reg->SetPC(Get16BitsInmValue());
+	u8 high = m_mem->MemR(m_reg->GetPC() + 2);
+	m_reg->SetPC((high << 8) | low);
 }
 
 void Instructions::IRQ(u16 addressToStore, u8 stackBits45, u16 indAddressToJump) {
@@ -251,11 +188,14 @@ void Instructions::NMI() {
 }
 
 void Instructions::BRK() {
+	DummyReadNextOpcodeByte();
 	IRQ(m_reg->GetPC()+2, 0x30, 0xFFFE);
 }
 
 void Instructions::RTI() {
+	DummyReadNextOpcodeByte();
 	u8 s = m_reg->GetS();
+	m_mem->MemR(0x100 | s);
 	m_reg->SetP(m_mem->MemR(0x100 | ((s + 1) & 0xFF)));
 	u8 pcl = m_mem->MemR(0x100 | ((s + 2) & 0xFF));
 	u8 pch = m_mem->MemR(0x100 | ((s + 3) & 0xFF));
@@ -299,6 +239,7 @@ void Instructions::EOR(u8 value, u8 length) {
 }
 
 void Instructions::PHA() {
+	DummyReadNextOpcodeByte();
 	u16 address = 0x100 | m_reg->GetS();
 	m_mem->MemW(address, m_reg->GetA());
 	m_reg->SetS(m_reg->GetS() - 1);
@@ -306,6 +247,7 @@ void Instructions::PHA() {
 }
 
 void Instructions::PHP() {
+	DummyReadNextOpcodeByte();
 	u16 address = 0x100 | m_reg->GetS();
 	u8 value = (m_reg->GetP() & 0xCF) | 0x30; // Al guardarlo en el stack los bits 4 y 5 se ponen a 11
 	m_mem->MemW(address, value);
@@ -314,6 +256,8 @@ void Instructions::PHP() {
 }
 
 void Instructions::PLA() {
+	DummyReadNextOpcodeByte();
+	m_mem->MemR(0x100 | m_reg->GetS());
 	u16 address = 0x100 | ((m_reg->GetS() + 1) & 0xFF);
 	u8 value = m_mem->MemR(address);
 	m_reg->SetA(value);
@@ -324,6 +268,8 @@ void Instructions::PLA() {
 }
 
 void Instructions::PLP() {
+	DummyReadNextOpcodeByte();
+	m_mem->MemR(0x100 | m_reg->GetS());
 	u16 address = 0x100 | ((m_reg->GetS() + 1) & 0xFF);
 	m_reg->SetP(m_mem->MemR(address));
 	m_reg->SetS(address & 0xFF);
@@ -331,7 +277,9 @@ void Instructions::PLP() {
 }
 
 void Instructions::RTS() {
+	DummyReadNextOpcodeByte();
 	u8 s = m_reg->GetS();
+	m_mem->MemR(0x100 | s);
 	u8 pcl = m_mem->MemR(0x100 | ((s + 1) & 0xFF));
 	u8 pch = m_mem->MemR(0x100 | ((s + 2) & 0xFF));
 	m_reg->SetS(m_reg->GetS() + 2);
@@ -341,36 +289,43 @@ void Instructions::RTS() {
 }
 
 void Instructions::SEI() {
+	DummyReadNextOpcodeByte();
 	m_reg->SetFlagI(1);
 	m_reg->AddPC(1);
 }
 
 void Instructions::CLI() {
+	DummyReadNextOpcodeByte();
 	m_reg->SetFlagI(0);
 	m_reg->AddPC(1);
 }
 
 void Instructions::SEC() {
+	DummyReadNextOpcodeByte();
 	m_reg->SetFlagC(1);
 	m_reg->AddPC(1);
 }
 
 void Instructions::SED() {
+	DummyReadNextOpcodeByte();
 	m_reg->SetFlagD(1);
 	m_reg->AddPC(1);
 }
 
 void Instructions::CLD() {
+	DummyReadNextOpcodeByte();
 	m_reg->SetFlagD(0);
 	m_reg->AddPC(1);
 }
 
 void Instructions::CLC() {
+	DummyReadNextOpcodeByte();
 	m_reg->SetFlagC(0);
 	m_reg->AddPC(1);
 }
 
 void Instructions::CLV() {
+	DummyReadNextOpcodeByte();
 	m_reg->SetFlagV(0);
 	m_reg->AddPC(1);
 }
@@ -557,6 +512,7 @@ void Instructions::SHY(u16 address, u8 mask, u8 length) {
 }
 
 void Instructions::TSX() {
+	DummyReadNextOpcodeByte();
 	u8 value = m_reg->GetS();
 	m_reg->SetX(value);
 	m_reg->SetFlagZ(value == 0 ? 1 : 0);
@@ -565,6 +521,7 @@ void Instructions::TSX() {
 }
 
 void Instructions::TAX() {
+	DummyReadNextOpcodeByte();
 	u8 value = m_reg->GetA();
 	m_reg->SetX(value);
 	m_reg->SetFlagZ(value == 0 ? 1 : 0);
@@ -573,6 +530,7 @@ void Instructions::TAX() {
 }
 
 void Instructions::TAY() {
+	DummyReadNextOpcodeByte();
 	u8 value = m_reg->GetA();
 	m_reg->SetY(value);
 	m_reg->SetFlagZ(value == 0 ? 1 : 0);
@@ -581,6 +539,7 @@ void Instructions::TAY() {
 }
 
 void Instructions::TXA() {
+	DummyReadNextOpcodeByte();
 	u8 value = m_reg->GetX();
 	m_reg->SetA(value);
 	m_reg->SetFlagZ(value == 0 ? 1 : 0);
@@ -589,6 +548,7 @@ void Instructions::TXA() {
 }
 
 void Instructions::TYA() {
+	DummyReadNextOpcodeByte();
 	u8 value = m_reg->GetY();
 	m_reg->SetA(value);
 	m_reg->SetFlagZ(value == 0 ? 1 : 0);
@@ -597,6 +557,7 @@ void Instructions::TYA() {
 }
 
 void Instructions::TXS() {
+	DummyReadNextOpcodeByte();
 	m_reg->SetS(m_reg->GetX());
 	m_reg->AddPC(1);
 }
@@ -625,6 +586,7 @@ void Instructions::DCP(u16 address, u8 length) {
 }
 
 void Instructions::DEX() {
+	DummyReadNextOpcodeByte();
 	u8 value = m_reg->GetX() - 1;
 	m_reg->SetX(value);
 	m_reg->SetFlagZ(value == 0 ? 1 : 0);
@@ -633,6 +595,7 @@ void Instructions::DEX() {
 }
 
 void Instructions::DEY() {
+	DummyReadNextOpcodeByte();
 	u8 value = m_reg->GetY() - 1;
 	m_reg->SetY(value);
 	m_reg->SetFlagZ(value == 0 ? 1 : 0);
@@ -671,6 +634,7 @@ void Instructions::ISC(u16 address, u8 length) {
 }
 
 void Instructions::INX() {
+	DummyReadNextOpcodeByte();
 	u8 value = m_reg->GetX() + 1;
 	m_reg->SetX(value);
 	m_reg->SetFlagZ(value == 0 ? 1 : 0);
@@ -679,6 +643,7 @@ void Instructions::INX() {
 }
 
 void Instructions::INY() {
+	DummyReadNextOpcodeByte();
 	u8 value = m_reg->GetY() + 1;
 	m_reg->SetY(value);
 	m_reg->SetFlagZ(value == 0 ? 1 : 0);
@@ -687,6 +652,7 @@ void Instructions::INY() {
 }
 
 void Instructions::LSR() {
+	DummyReadNextOpcodeByte();
 	u8 bit0 = m_reg->GetA() & 0x01;
 	u8 value = m_reg->GetA() >> 1;
 	m_reg->SetA(value);
@@ -723,6 +689,7 @@ void Instructions::SRE(u16 address, u8 length) {
 }
 
 void Instructions::ROL() {
+	DummyReadNextOpcodeByte();
 	u8 bit7  = (m_reg->GetA() & 0x80) >> 7;
 	u8 value = (m_reg->GetA() << 1) | (m_reg->GetFlagC());
 	m_reg->SetA(value);
@@ -759,6 +726,7 @@ void Instructions::RLA(u16 address, u8 length) {
 }
 
 void Instructions::ROR() {
+	DummyReadNextOpcodeByte();
 	u8 bit0 = m_reg->GetA() & 0x01;
 	u8 value = (m_reg->GetFlagC() << 7) | (m_reg->GetA() >> 1);
 	m_reg->SetA(value);
@@ -801,6 +769,7 @@ void Instructions::RRA(u16 address, u8 length) {
 }
 
 void Instructions::ASL() {
+	DummyReadNextOpcodeByte();
 	u8 bit7  = (m_reg->GetA() & 0x80) >> 7;
 	u8 value = (m_reg->GetA() << 1);
 	m_reg->SetA(value);
@@ -845,6 +814,8 @@ void Instructions::BIT(u8 value, u8 length) {
 }
 
 void Instructions::NOP(u8 length) {
+	if (length == 1)
+		DummyReadNextOpcodeByte();
 	if (m_mem->GetPageCrossed())
 		m_cyclesExtra = 1;
 	m_reg->AddPC(length);
