@@ -35,8 +35,17 @@ namespace Nes {
         
     private:
         bool m_buttonsStatePad[2][8];
-        u8   m_parallelControl;
-        u8   m_serialNumber[2];
+
+        // $4016 bit 0 controls the NES controller strobe line.
+        // When high, reads keep returning the A button. When low, reads shift
+        // out the latched button state one bit at a time.
+        u8   m_strobe;
+
+        // Latched serial state for both controllers, in hardware read order:
+        // A, B, Select, Start, Up, Down, Left, Right.
+        u8   m_shiftRegister[2];
+
+        u8   BuildShiftRegister(u8 padID) const;
     };
 }
 

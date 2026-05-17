@@ -22,13 +22,28 @@
 using namespace Nes;
 
 Pad::Pad() {
-    m_parallelControl = 1;
-    m_serialNumber[0] = 0;
-    m_serialNumber[1] = 0;
+    m_strobe = 1;
+    m_shiftRegister[0] = 0;
+    m_shiftRegister[1] = 0;
     for (int i=0; i<8; i++) {
         m_buttonsStatePad[0][i] = false;
         m_buttonsStatePad[1][i] = false;
     }
+}
+
+u8 Pad::BuildShiftRegister(u8 padID) const {
+    // Convert the UI button array into the byte latched by the controller when
+    // the CPU raises the strobe line through $4016.
+    u8 value = 0;
+    value |= m_buttonsStatePad[padID][(int)PadButtons::A]      ? 0x01 : 0x00;
+    value |= m_buttonsStatePad[padID][(int)PadButtons::B]      ? 0x02 : 0x00;
+    value |= m_buttonsStatePad[padID][(int)PadButtons::SELECT] ? 0x04 : 0x00;
+    value |= m_buttonsStatePad[padID][(int)PadButtons::START]  ? 0x08 : 0x00;
+    value |= m_buttonsStatePad[padID][(int)PadButtons::UP]     ? 0x10 : 0x00;
+    value |= m_buttonsStatePad[padID][(int)PadButtons::DOWN]   ? 0x20 : 0x00;
+    value |= m_buttonsStatePad[padID][(int)PadButtons::LEFT]   ? 0x40 : 0x00;
+    value |= m_buttonsStatePad[padID][(int)PadButtons::RIGHT]  ? 0x80 : 0x00;
+    return value;
 }
 
 void Pad::SetButtonsStatePad1(bool buttonsState[8]) {
@@ -42,7 +57,6 @@ void Pad::SetButtonsStatePad2(bool buttonsState[8]) {
 }
 
 u8 Pad::MemR(u16 address) {
-    u8 value = 0;
     u8 padID = 0;
 
     if (address == 0x4016)
@@ -50,31 +64,27 @@ u8 Pad::MemR(u16 address) {
     else if (address == 0x4017)
         padID = 1;
 
-    switch (m_serialNumber[padID]) {
-        case 0: value = m_buttonsStatePad[padID][(int)PadButtons::A] == true ? 1 : 0; break;
-        case 1: value = m_buttonsStatePad[padID][(int)PadButtons::B] == true ? 1 : 0; break;
-        case 2: value = m_buttonsStatePad[padID][(int)PadButtons::SELECT] == true ? 1 : 0; break;
-        case 3: value = m_buttonsStatePad[padID][(int)PadButtons::START] == true ? 1 : 0; break;
-        case 4: value = m_buttonsStatePad[padID][(int)PadButtons::UP] == true ? 1 : 0; break;
-        case 5: value = m_buttonsStatePad[padID][(int)PadButtons::DOWN] == true ? 1 : 0; break;
-        case 6: value = m_buttonsStatePad[padID][(int)PadButtons::LEFT] == true ? 1 : 0; break;
-        case 7: value = m_buttonsStatePad[padID][(int)PadButtons::RIGHT] == true ? 1 : 0; break;
-        case 8: value = 1; break;
-        default: value = 0; break;
-    }
+    if (m_strobe)
+        // While strobe is high, the controller continually reloads internally,
+        // so every read observes the current A button state.
+        return BuildShiftRegister(padID) & 0x01;
 
-    if (m_parallelControl == 0) {
-        if (m_serialNumber[padID] < 8)
-            m_serialNumber[padID]++;
-    }
+    // With strobe low, the controller behaves as a serial shift register. After
+    // the 8 real buttons are consumed, official pads keep returning 1.
+    u8 value = m_shiftRegister[padID] & 0x01;
+    m_shiftRegister[padID] = (m_shiftRegister[padID] >> 1) | 0x80;
 
     return value;
 }
 
 void Pad::MemW(u16 address, u8 value) {
     if (address == 0x4016) {
-        m_parallelControl = value & 0x01;
-        m_serialNumber[0] = 0;
-        m_serialNumber[1] = 0;
+        m_strobe = value & 0x01;
+        if (m_strobe) {
+            // Latch both controllers on strobe high. The following strobe-low
+            // reads shift out this stable snapshot instead of live button state.
+            m_shiftRegister[0] = BuildShiftRegister(0);
+            m_shiftRegister[1] = BuildShiftRegister(1);
+        }
     }
 }
