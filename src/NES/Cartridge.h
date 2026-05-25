@@ -23,7 +23,7 @@
 
 namespace Nes {
     
-    enum class NametableMirroring { HORIZONTAL, VERTICAL, SINGLE_SCREEN, FOUR_SCREEN };
+    enum class NametableMirroring { HORIZONTAL, VERTICAL, SINGLE_SCREEN_LOWER, SINGLE_SCREEN_UPPER, FOUR_SCREEN };
 
     class Mapper;
 

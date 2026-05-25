@@ -151,8 +151,10 @@ void MMC1::Extract() {}
 
 void MMC1::UpdateMirroring() {
     u8 mirrorID = m_regs[REG_CONTROL] & 0x03;
-    if (mirrorID < 2)
-        m_mapperMirroring = NametableMirroring::SINGLE_SCREEN;
+    if (mirrorID == 0)
+        m_mapperMirroring = NametableMirroring::SINGLE_SCREEN_LOWER;
+    else if (mirrorID == 1)
+        m_mapperMirroring = NametableMirroring::SINGLE_SCREEN_UPPER;
     else if (mirrorID == 2)
         m_mapperMirroring = NametableMirroring::VERTICAL;
     else
