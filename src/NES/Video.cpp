@@ -285,7 +285,7 @@ void Video::ScanlineEvents(u16 prevDot, u16 dot, u16 line) {
             m_v = (m_v & 0x7BE0) | (m_t & 0x041F);
             m_OAMAddress = 0;
         }
-        if ((line == 261) && (prevDot >= 280) && (dot <= 304)) { // end of vblank
+        if ((line == 261) && (prevDot < 304) && (dot >= 280)) { // end of vblank
             m_v = (m_v & 0x041F) | (m_t & 0x7BE0);
         }
 
@@ -389,7 +389,7 @@ void Video::DrawPixels() {
         BuildBGLineCache(line, bgPix.patternTableAddress);
 
     u16 dot = m_cycles % NES_SCANLINE_PPU_CYCLES;
-    u16 maxX = dot - 1;
+    u16 maxX = (dot > 0) ? dot - 1 : 0;
     if (maxX > NES_SCREEN_W)
         maxX = NES_SCREEN_W;
 
