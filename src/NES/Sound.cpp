@@ -168,6 +168,9 @@ void Sound::MemW(u16 address, u8 value, u32 cyclesElapsed) {
 }
 
 bool Sound::IRQ(u32 cyclesElapsed) {
+	if ((!m_initialized) || (!m_enabled))
+		return false;
+
 	Sync(cyclesElapsed);
 
 	if (!m_frameFiveStepMode && !m_frameIRQInhibit && (m_totalCycles - m_frameCounterResetCycle) >= 29828)
