@@ -625,9 +625,9 @@ u8 Video::VRAMR(u16 address) const {
         else if (address < 0x2800)
             return m_VRAM[address - 0x2400];
         else if (address < 0x2C00)
-            return m_VRAM[address - 0x2000];
-        else
             return m_VRAM[address - 0x2400];
+        else
+            return m_VRAM[address - 0x2800];
     }
     else if (m_cartridge->GetNametableMirroring() == NametableMirroring::SINGLE_SCREEN_LOWER) {
         return m_VRAM[(address - 0x2000) & 0x03FF];
@@ -653,9 +653,9 @@ void Video::MemW(u16 address, u8 value) {
             else if (address < 0x2800)
                 m_VRAM[address - 0x2400] = value;
             else if (address < 0x2C00)
-                m_VRAM[address - 0x2000] = value;
-            else
                 m_VRAM[address - 0x2400] = value;
+            else
+                m_VRAM[address - 0x2800] = value;
         }
         else if (m_cartridge->GetNametableMirroring() == NametableMirroring::SINGLE_SCREEN_LOWER) {
             m_VRAM[(address - 0x2000) & 0x03FF] = value;

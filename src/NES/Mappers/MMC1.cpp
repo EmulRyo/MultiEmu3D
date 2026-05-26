@@ -182,14 +182,13 @@ void MMC1::UpdatePRGBanks() {
 }
 
 void MMC1::UpdateCHRBanks() {
-    if (m_chrBanks > (m_regs[REG_CHRBANK0] & 0x1F))
-        m_chrBank0 = m_regs[REG_CHRBANK0] & 0x1F;
-    if (m_chrBanks > (m_regs[REG_CHRBANK0] & 0x1F))
-        m_chrBank1 = m_regs[REG_CHRBANK1] & 0x1F;
+    u16 chr4KBankCount = (m_chrBanks == 0) ? 2 : (m_chrBanks * 2);
+    m_chrBank0 = (m_regs[REG_CHRBANK0] & 0x1F) % chr4KBankCount;
+    m_chrBank1 = (m_regs[REG_CHRBANK1] & 0x1F) % chr4KBankCount;
 
     u8 mode = m_regs[REG_CONTROL] >> 4;
     if (mode == 0) { // 8KB mode
         m_chrBank0 &= 0x1E;
-        m_chrBank1 = m_chrBank0+1;
+        m_chrBank1 = (m_chrBank0 + 1) % chr4KBankCount;
     }
 }
