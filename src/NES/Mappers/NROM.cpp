@@ -49,7 +49,7 @@ u8 NROM::ReadPRG(u16 address) const {
     }
 }
 
-void NROM::WritePRG(u16 address, u8 value) {
+void NROM::WritePRG(u16 address, u8 value, u32 cpuCycle) {
 
 }
 

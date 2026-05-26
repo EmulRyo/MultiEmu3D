@@ -49,7 +49,7 @@ u8 CNROM::ReadPRG(u16 address) const {
         return m_prgData[(GetPRGBank(1) * 0x4000) + address - 0xC000];
 }
 
-void CNROM::WritePRG(u16 address, u8 value) {
+void CNROM::WritePRG(u16 address, u8 value, u32 cpuCycle) {
     if ((address >= 0x8000) && (address <= 0xFFFF)) {
         m_chrBank = value & (m_chrBanks-1);
     }

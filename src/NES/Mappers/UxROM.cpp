@@ -49,7 +49,7 @@ u8 UxROM::ReadPRG(u16 address) const {
         return m_prgData[(GetPRGBank(1) * 0x4000) + address - 0xC000];
 }
 
-void UxROM::WritePRG(u16 address, u8 value) {
+void UxROM::WritePRG(u16 address, u8 value, u32 cpuCycle) {
     if ((address >= 0x8000) && (address <= 0xFFFF)) {
         m_prgBank = value & 0x0F;
     }

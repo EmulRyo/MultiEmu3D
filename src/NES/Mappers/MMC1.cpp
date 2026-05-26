@@ -45,6 +45,7 @@ void MMC1::Reset() {
     m_regs[REG_CHRBANK0] = 0x00;
     m_regs[REG_CHRBANK1] = 0x01;
     m_regs[REG_PRGBANK]  = 0x00;
+    m_lastRegisterWriteCycle = 0xFFFFFFFF;
     m_chrBuffer = (m_chrBanks == 0) ? m_chrRam : m_chrData;
     m_chrBank0 = 0x00;
     m_chrBank1 = 0x01;
@@ -66,11 +67,15 @@ u8 MMC1::ReadPRG(u16 address) const {
         return m_prgData[(GetPRGBank(1) * 0x4000) + address - 0xC000];
 }
 
-void MMC1::WritePRG(u16 address, u8 value) {
+void MMC1::WritePRG(u16 address, u8 value, u32 cpuCycle) {
     if (address < 0x8000) {
         m_prgRam[address - 0x6000] = value;
     }
     else if ((address >= 0x8000) && (address <= 0xFFFF)) {
+        if (cpuCycle == m_lastRegisterWriteCycle)
+            return;
+        m_lastRegisterWriteCycle = cpuCycle;
+
         m_numWrites = (m_numWrites + 1) % 5;
         if (BIT7(value) == 0) {
             m_shiftRegister = m_shiftRegister >> 1;
@@ -166,6 +171,9 @@ void MMC1::UpdatePRGBanks() {
     u8 bank = m_regs[REG_PRGBANK] & 0x0F;
     if (m_prgBanks >= 0x1F)
         bank = (m_regs[REG_CHRBANK0] & 0x10) | bank;
+
+    if (m_prgBanks > 0)
+        bank %= m_prgBanks;
 
     if (mode < 2) { // Modo 32 KB
         m_prgBank0 = bank & 0x0E;

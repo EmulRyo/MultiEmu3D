@@ -126,7 +126,7 @@ void Memory::MemW(u16 address, u8 value)
     else if (address < 0x6000)
         return;
     else
-        m_c->WritePRG(address, value);
+        m_c->WritePRG(address, value, m_cpu->GetElapsedCycles());
 }
 
 void Memory::SaveMemory(ostream *stream) const

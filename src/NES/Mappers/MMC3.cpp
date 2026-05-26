@@ -88,7 +88,7 @@ u8 MMC3::ReadPRG(u16 address) const {
     }
 }
 
-void MMC3::WritePRG(u16 address, u8 value) {
+void MMC3::WritePRG(u16 address, u8 value, u32 cpuCycle) {
     if (address < 0x8000) {
         m_prgRam[address - 0x6000] = value;
     }

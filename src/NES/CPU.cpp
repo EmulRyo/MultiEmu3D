@@ -53,10 +53,10 @@ void CPU::ResetGlobalVariables() {
 void CPU::Reset() {
     ResetGlobalVariables();
 	ResetRegs();
+	ResetMem();
 	u8 pch = MemR(0xFFFD);
 	u8 pcl = MemR(0xFFFC);
 	SetPC(pch << 8 | pcl);
-	ResetMem();
     m_v->Reset();
 	m_v->ClearScreen();
 	if (m_s && (m_s->GetEnabled()))

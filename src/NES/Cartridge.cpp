@@ -159,8 +159,8 @@ u8 Cartridge::ReadPRG(u16 address) const {
     return m_mapper->ReadPRG(address);
 };
 
-void Cartridge::WritePRG(u16 address, u8 value) {
-    m_mapper->WritePRG(address, value);
+void Cartridge::WritePRG(u16 address, u8 value, u32 cpuCycle) {
+    m_mapper->WritePRG(address, value, cpuCycle);
 };
 
 u8 Cartridge::ReadCHR(u16 address) const {

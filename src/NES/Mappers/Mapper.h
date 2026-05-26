@@ -33,7 +33,7 @@ namespace Nes {
         virtual NametableMirroring GetNametableMirroring() const = 0;
 
         virtual u8   ReadPRG(u16 address) const      = 0;
-        virtual void WritePRG(u16 address, u8 value) = 0;
+        virtual void WritePRG(u16 address, u8 value, u32 cpuCycle) = 0;
         virtual u8   ReadCHR(u16 address) const      = 0;
         virtual void WriteCHR(u16 address, u8 value) = 0;
 
