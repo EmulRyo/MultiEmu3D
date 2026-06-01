@@ -38,7 +38,7 @@ NametableMirroring NROM::GetNametableMirroring() const { return m_hardWireMirror
 
 u8 NROM::ReadPRG(u16 address) const {
     if (address < 0x8000)
-        return m_prgData[address - 0x8000];
+        return 0x00;
     else if (address < 0xC000)
         return m_prgData[address - 0x8000];
     else {

@@ -43,7 +43,9 @@ NametableMirroring UxROM::GetNametableMirroring() const {
 }
 
 u8 UxROM::ReadPRG(u16 address) const {
-    if (address < 0xC000)
+    if (address < 0x8000)
+        return 0x00;
+    else if (address < 0xC000)
         return m_prgData[(GetPRGBank(0) * 0x4000) + address - 0x8000];
     else
         return m_prgData[(GetPRGBank(1) * 0x4000) + address - 0xC000];
