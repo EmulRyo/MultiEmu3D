@@ -118,6 +118,8 @@ namespace Nes {
         u16 m_bgTileCacheT;
         u8  m_bgTileCacheX;
         u16 m_bgTileCachePatternTable;
+        u16 m_bgTileCacheBaseLine;
+        u16 m_scrollBaseLine;
 
         // PPU internal registers
         // https://wiki.nesdev.com/w/index.php?title=PPU_scrolling
@@ -140,6 +142,7 @@ namespace Nes {
         void BuildBGLineCache(u16 line, u16 patternTableAddress);
         void PixelBG(BGPixel& bgPix);
         void PixelSprite(SpritePixel& sprPix);
+        bool SpriteZeroHit(u16 x, u16 line, const SpritePixel& sprPix);
         void CoarseXIncrement(u16& v);
         void CoarseYIncrement(u16& v);
         void FineYIncrement(u16& v);

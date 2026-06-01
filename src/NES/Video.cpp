@@ -99,6 +99,8 @@ void Video::Reset() {
     m_bgTileCacheT = 0xFFFF;
     m_bgTileCacheX = 0xFF;
     m_bgTileCachePatternTable = 0xFFFF;
+    m_bgTileCacheBaseLine = 0xFFFF;
+    m_scrollBaseLine = 0;
 
     memset(m_OAM, 0xFF, 256);
     m_secondaryOAMLength = 0;
@@ -211,6 +213,10 @@ void Video::WriteReg(u16 address, u8 value) {
         else { // Segunda escritura, lower byte
             m_t = (m_t & 0xFF00) | value;
             m_v = m_t;
+            u16 line = GetY();
+            bool renderingEnabled = (m_regs[PPUMASK & 0x07] & 0x18) != 0;
+            if (renderingEnabled && line < NES_SCREEN_H)
+                m_scrollBaseLine = line + 1;
         }
         m_w = (m_w + 1) % 2;
     }
@@ -261,6 +267,7 @@ void Video::Update(u16 cpuCycles) {
             else if (line == 261) { // Pre-render line
                 // Clear Sprite Overflow, Sprite 0 Hit and VBlank
                 m_regs[PPUSTATUS & 0x07] = (m_regs[PPUSTATUS & 0x07] & 0x1F);
+                m_scrollBaseLine = 0;
             }
             else if (line == 262)
                 OnEndFrame();
@@ -385,13 +392,15 @@ void Video::DrawPixels() {
     if (m_secondaryOAMLine != line)
         SpriteEvaluation(line);
 
-    if (BIT3(ppuMask))
-        BuildBGLineCache(line, bgPix.patternTableAddress);
-
     u16 dot = m_cycles % NES_SCANLINE_PPU_CYCLES;
     u16 maxX = (dot > 0) ? dot - 1 : 0;
     if (maxX > NES_SCREEN_W)
         maxX = NES_SCREEN_W;
+    if (m_nextDot >= maxX)
+        return;
+
+    if (BIT3(ppuMask))
+        BuildBGLineCache(line, bgPix.patternTableAddress);
 
     for (u16 x = m_nextDot; x < maxX; x++) {
         bgPix.x = sprPix.xScreen = x;
@@ -404,12 +413,13 @@ void Video::DrawPixels() {
             PixelSprite(sprPix);
 
         // Sprite 0 hit
-        if ((bgPix.valid) && (bgPix.colorId > 0) && (sprPix.valid) && (sprPix.colorId > 0) && (sprPix.id == 0) && (x < 255)) {
+        if ((bgPix.valid) && (bgPix.colorId > 0) && (x < 255) && SpriteZeroHit(x, line, sprPix)) {
             u8 ppuMask = m_regs[PPUMASK & 0x07];
             bool bgEnabled = BIT3(ppuMask);
             bool sprEnabled = BIT4(ppuMask);
-            bool show8Left = BIT2(ppuMask);
-            if (bgEnabled && sprEnabled && (show8Left || (x >= 8)))
+            bool showBgLeft = BIT1(ppuMask);
+            bool showSprLeft = BIT2(ppuMask);
+            if (bgEnabled && sprEnabled && ((x >= 8) || (showBgLeft && showSprLeft)))
                 m_regs[PPUSTATUS & 0x07] |= 0x40;
         }
 
@@ -425,18 +435,20 @@ void Video::DrawPixels() {
 }
 
 void Video::BuildBGLineCache(u16 line, u16 patternTableAddress) {
-    if (m_bgTileCacheLine == line && m_bgTileCacheT == m_t && m_bgTileCacheX == m_x && m_bgTileCachePatternTable == patternTableAddress)
+    if (m_bgTileCacheLine == line && m_bgTileCacheT == m_t && m_bgTileCacheX == m_x && m_bgTileCachePatternTable == patternTableAddress && m_bgTileCacheBaseLine == m_scrollBaseLine)
         return;
 
     m_bgTileCacheLine = line;
     m_bgTileCacheT = m_t;
     m_bgTileCacheX = m_x;
     m_bgTileCachePatternTable = patternTableAddress;
+    m_bgTileCacheBaseLine = m_scrollBaseLine;
 
     u16 fetchAddress = m_t;
+    u16 lineOffset = (line >= m_scrollBaseLine) ? line - m_scrollBaseLine : line;
     u16 fineY = (fetchAddress >> 12) & 0x07;
-    u16 coarseYSteps = (fineY + line) / 8;
-    fetchAddress = (fetchAddress & ~0x7000) | (((fineY + line) & 0x07) << 12);
+    u16 coarseYSteps = (fineY + lineOffset) / 8;
+    fetchAddress = (fetchAddress & ~0x7000) | (((fineY + lineOffset) & 0x07) << 12);
     for (u16 i = 0; i < coarseYSteps; i++)
         CoarseYIncrement(fetchAddress);
 
@@ -545,6 +557,45 @@ void Video::PixelSprite(SpritePixel& sprPix) {
             }
         }
     }
+}
+
+bool Video::SpriteZeroHit(u16 x, u16 line, const SpritePixel& sprPix) {
+    if ((x < 8) && (!sprPix.show8Left))
+        return false;
+
+    u16 yStart = m_OAM[0] + 1; // Los sprites se pintan en y+1
+    u16 spriteHeight = sprPix.size16 ? 16 : 8;
+    if ((line < yStart) || (line >= (yStart + spriteHeight)))
+        return false;
+
+    u16 xStart = m_OAM[3];
+    if ((x < xStart) || (x >= (xStart + 8)))
+        return false;
+
+    u8 tileID = m_OAM[1];
+    u8 attr = m_OAM[2];
+    u8 row = line - yStart;
+    u8 fineX = x - xStart;
+    u16 patternTableAddress = sprPix.patternTableAddress;
+
+    if (BIT7(attr))
+        row = spriteHeight - 1 - row;
+
+    if (sprPix.size16) {
+        patternTableAddress = (tileID & 1) ? 0x1000 : 0x0000;
+        tileID = (tileID & 0xFE) + (row / 8);
+    }
+
+    u8 fineY = row % 8;
+    u16 tilePatternAddress = patternTableAddress + (tileID * 16);
+    u8 bitPlane0 = MemRInternal(tilePatternAddress + fineY);
+    u8 bitPlane1 = MemRInternal(tilePatternAddress + fineY + 8);
+    if (BIT6(attr) == 0)
+        fineX = ABS(fineX - 7);
+
+    u8 mask = (0x01 << fineX);
+    u8 colorId = (((bitPlane1 & mask) << 1) | (bitPlane0 & mask)) >> fineX;
+    return colorId > 0;
 }
 
 u8 Video::MemR(u16 address) {
@@ -829,6 +880,7 @@ void Video::LoadState(istream *stream) {
     m_secondaryOAMLine = 0xFFFF;
     m_v &= 0x3FFF;
     m_t &= 0x7FFF;
+    m_scrollBaseLine = 0;
     m_x &= 0x07;
     m_w &= 0x01;
 }
