@@ -66,7 +66,7 @@ function EmulationPlatform()
    filter { }
 end
 
-workspace "MultiEmu3D"
+workspace "MARS"
    -- We set the location of the files Premake will generate
    location "%{_ACTION}"
 
@@ -91,7 +91,7 @@ workspace "MultiEmu3D"
     
    -- Here we use some "tokens" (the things between %{ ... }). They will be replaced by Premake
 	-- automatically when configuring the projects.
-	-- * %{prj.name} will be replaced by "MultiEmu3D"
+	-- * %{prj.name} will be replaced by "MARS"
 	--  * %{cfg.longname} will be replaced by "Debug" or "Release" depending on the configuration
    -- The path is relative to *this* folder
    targetdir "%{wks.location}/bin/%{cfg.buildcfg}"
@@ -192,9 +192,9 @@ project "nativefiledialog-extended"
    filter { }
 
 --------------------------
--- MultiEmu3D wxWidgets --
+-- MARS wxWidgets --
 --------------------------
-project "MultiEmu3D_wx"
+project "MARS_wx"
 
    dependson { "GB", "SMS", "NES" }
    
@@ -207,7 +207,7 @@ project "MultiEmu3D_wx"
       "../src/Common/**.cpp",
       "../src/GUI/**.h",
       "../src/GUI/**.cpp",
-      "../src/GUI/Windows/MultiEmu3D.rc",
+      "../src/GUI/Windows/MARS.rc",
       "../libraries/glew-1.10.0/src/glew.c",
     }
 
@@ -274,9 +274,9 @@ project "MultiEmu3D_wx"
    filter { }
 
 -----------------------
--- MultiEmu3D raylib --
+-- MARS raylib --
 -----------------------
-project "MultiEmu3D_raylib"
+project "MARS_raylib"
 
    dependson { "GB", "SMS", "NES", "raylib", "nativefiledialog-extended" }
    
