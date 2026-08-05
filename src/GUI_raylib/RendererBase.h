@@ -1,18 +1,18 @@
 /*
- This file is part of MultiEmu3D.
+ This file is part of MARS.
  
- MultiEmu3D is free software: you can redistribute it and/or modify
+ MARS is free software: you can redistribute it and/or modify
  it under the terms of the GNU General Public License as published by
  the Free Software Foundation, either version 3 of the License, or
  (at your option) any later version.
  
- MultiEmu3D is distributed in the hope that it will be useful,
+ MARS is distributed in the hope that it will be useful,
  but WITHOUT ANY WARRANTY; without even the implied warranty of
  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  GNU General Public License for more details.
  
  You should have received a copy of the GNU General Public License
- along with MultiEmu3D.  If not, see <http://www.gnu.org/licenses/>.
+ along with MARS.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 #ifndef __BASERENDERER_H__
@@ -56,11 +56,27 @@ protected:
     u8 *m_imgBuf2;
     u8 *m_frontBuffer;
     u8 *m_backBuffer;
-    int m_bufferWidth, m_bufferHeight; // Tamaño de los buffers. (Se crean al principio y no cambian)
+    int m_bufferWidth, m_bufferHeight; // Tamaï¿½o de los buffers. (Se crean al principio y no cambian)
     int m_x, m_y, m_width, m_height;   // Posicion x, y, ancho y alto que usa el emulador dentro del buffer ya creado
     float m_rewindValue;
     int m_iconFrames;
     Renderer::Icon m_icon;
+
+    Texture2D m_texture;
+
+    void UpdateTextureSize();
+    void UpdateScreenTexture();
+    void DrawOverlay(Rectangle dst);
+    void DrawIcon(Rectangle dst);
+    void DrawRewind(Rectangle dst);
+
+    void DrawIconRewindL(Rectangle dst);
+    void DrawIconRewindR(Rectangle dst);
+    void DrawIconPlay(Rectangle dst);
+    void DrawIconPause(Rectangle dst);
+    void DrawIconStop(Rectangle dst);
+    void DrawIconSpeed(Rectangle dst);
+    void DrawIconArrow(Rectangle dst);
     
 private:
     int m_gbPalette;
