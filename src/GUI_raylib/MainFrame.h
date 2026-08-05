@@ -26,6 +26,7 @@
 #define MAX_RECENT_FILES 10
 
 class RendererBase;
+class Renderer3D;
 class VideoGameDevice;
 class Dialog;
 class MessageBoxDialog;

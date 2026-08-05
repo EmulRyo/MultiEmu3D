@@ -7,3 +7,4 @@ build/premake5.exe
 build/vs2022/
 libraries/raylib-master
 .vscode/
+*.blend1

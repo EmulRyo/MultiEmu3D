@@ -24,6 +24,7 @@
 #include "../NES/NES.h"
 #include "../GB-GBC/GB.h"
 #include "RendererSW.h"
+#include "Renderer3D.h"
 #include "EmulationThread.h"
 #include "MessageBoxDialog.h"
 #include "DebuggerDialog.h"
@@ -50,7 +51,7 @@ MainFrame::MainFrame(const std::string& fileName)
     Localization::SetLanguage(Settings::GetLanguage());
     NFD_Init();
 
-    m_renderer = new RendererSW();
+    m_renderer = new Renderer3D();
 
     // create the emulation
     m_emulation = new EmulationThread();
@@ -420,7 +421,7 @@ void MainFrame::DrawToolBar(Rectangle dst) {
     x += width*2;
     GuiSetTooltip(_("Switch between 2D and 3D"));
     if (GuiButton(Rectangle{ x, dst.y, width, dst.height }, GuiIconText(ICON_MODE_3D, ""))) {
-
+        m_renderer->OnChangeView();
     }
     GuiDisableTooltip();
 }
