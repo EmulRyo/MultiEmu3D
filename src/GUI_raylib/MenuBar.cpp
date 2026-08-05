@@ -1,18 +1,18 @@
 /*
- This file is part of MultiEmu3D.
+ This file is part of MARS.
 
- MultiEmu3D is free software: you can redistribute it and/or modify
+ MARS is free software: you can redistribute it and/or modify
  it under the terms of the GNU General Public License as published by
  the Free Software Foundation, either version 3 of the License, or
  (at your option) any later version.
 
- MultiEmu3D is distributed in the hope that it will be useful,
+ MARS is distributed in the hope that it will be useful,
  but WITHOUT ANY WARRANTY; without even the implied warranty of
  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  GNU General Public License for more details.
 
  You should have received a copy of the GNU General Public License
- along with MultiEmu3D.  If not, see <http://www.gnu.org/licenses/>.
+ along with MARS.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 #include "raygui.h"
@@ -273,7 +273,7 @@ void MenuBar::Draw(Rectangle bounds) {
 
     bool shouldStillBeOpen = false;
     if (m_menuActive >= 0) {
-        // El submenú puede solicitar que no se cierre
+        // El submenï¿½ puede solicitar que no se cierre
         shouldStillBeOpen = m_subMenus[m_menuActive].Draw(m_menuX, bounds.y + 24);
 
         // Si se hace click, se cierra el menu
@@ -286,8 +286,8 @@ void MenuBar::Draw(Rectangle bounds) {
             }
         }
     }
-    // A cualquiera modulo externo que pregunte si el menú está abierto solo se le informará de manera negativa cuando
-    // el usuario halla levantado el botón. Esto evita que el click se transmita a otros botones que esten debajo
+    // A cualquiera modulo externo que pregunte si el menï¿½ estï¿½ abierto solo se le informarï¿½ de manera negativa cuando
+    // el usuario halla levantado el botï¿½n. Esto evita que el click se transmita a otros botones que esten debajo
     if (pendingToClose) {
         if (IsMouseButtonUp(MOUSE_BUTTON_LEFT) && IsMouseButtonUp(MOUSE_BUTTON_RIGHT)) {
             pendingToClose = false;

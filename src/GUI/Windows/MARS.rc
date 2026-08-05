@@ -1,4 +1,4 @@
-MultiEmu3D ICON "MultiEmu3D.ico"
+MARS ICON "MARS.ico"
 PNG_FolderOpen_1x		RCDATA		"round_folder_open_black_18dp_1x.png"
 PNG_FolderOpen_2x		RCDATA		"round_folder_open_black_18dp_2x.png"
 PNG_DropDown_1x			RCDATA		"round_arrow_drop_down_black_18dp_1x.png"
