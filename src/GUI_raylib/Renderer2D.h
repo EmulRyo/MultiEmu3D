@@ -31,8 +31,8 @@ public:
 	Renderer2D();
     ~Renderer2D();
 
-	void Draw(Rectangle dst);
-    void OnChangeView() {};
+	void Draw(const Rectangle& dst) override;
+    void OnChangeView() override {};
     
 private:
     

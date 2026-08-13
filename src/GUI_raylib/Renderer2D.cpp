@@ -27,7 +27,7 @@ Renderer2D::~Renderer2D() {
     
 }
 
-void Renderer2D::Draw(Rectangle dst) {
+void Renderer2D::Draw(const Rectangle& dst) {
     float deviceAspectRatio = (float)m_width / m_height;
     float windowAspectRatio = dst.width / dst.height;
     Rectangle d{ 0 };

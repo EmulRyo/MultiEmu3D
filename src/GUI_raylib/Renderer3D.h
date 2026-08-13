@@ -27,10 +27,18 @@ public:
     Renderer3D();
     ~Renderer3D();
 
-    void Draw(Rectangle dst) override;
+    void Update(float deltaTime) override;
+    void Draw(const Rectangle& dst) override;
     void OnChangeView() override;
 
 private:
+    struct CameraAnim{
+        Vector3    position;
+        Quaternion rotation;
+        float      distance;
+        float      fovy;
+    };
+    Rectangle m_drawArea;
     Model m_cube;
     Model m_gb;
     Camera3D m_camera2D;
@@ -38,8 +46,19 @@ private:
     Camera3D m_currentCamera;
     bool m_is3DMode;
     bool m_modelLoaded;
+    
+    bool m_transitioning;
+	CameraAnim m_startAnim;
+	CameraAnim m_targetAnim;
+    float m_transitionTime;
 
 	void DrawAxis(const Vector3& origin, float length);
+	void UpdateCamera2D(const Rectangle& dst);
+	bool AreaChanged(const Rectangle& dst) const;
+	void OnAreaChanged(const Rectangle& dst);
+	void CameraStartAnimation();
+    void CameraAnimate(float deltaTime);
+    void CameraControl(float deltaTime);
 };
 
 #endif

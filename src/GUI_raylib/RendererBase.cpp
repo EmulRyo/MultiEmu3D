@@ -16,6 +16,7 @@
  */
 
 #include <string.h>
+#include <math.h>
 #include "RendererBase.h"
 #include "../NES/Def.h"
 
@@ -309,21 +310,20 @@ void RendererBase::DrawIconStop(Rectangle dst) {
 }
 
 void RendererBase::DrawRewind(Rectangle dst) {
-    int gap = 12;
-    int barHeight = 10;
-    int cursorWidth = 6;
-    int cursorHeightAdd = 3;
+    float gap = 12.0f;
+    float barHeight = 10.0f;
+    float cursorWidth = 6.0f;
+    float cursorHeightAdd = 3.0f;
 
     float x0 = gap;
     float x1 = dst.width - gap;
     float y0 = dst.height - gap - barHeight;
     float y1 = dst.height - gap;
-    float x2 = (int)(x0 + (x1 - x0) * m_rewindValue);
-    float x3 = (int)(x2 - cursorWidth / 2.0f);
-    float x4 = (int)(x2 + cursorWidth / 2.0f);
-    float y3 = (int)(y0 - cursorHeightAdd);
-    float y4 = (int)(y1 + cursorHeightAdd);
-
+    float x2 = floorf(x0 + (x1 - x0) * m_rewindValue);
+    float x3 = floorf(x2 - cursorWidth / 2.0f);
+    float x4 = floorf(x2 + cursorWidth / 2.0f);
+    float y3 = floorf(y0 - cursorHeightAdd);
+    float y4 = floorf(y1 + cursorHeightAdd);
     DrawRectangleLinesEx({ x0 + 1, y0 + 1, x1 - x0 - 2, y1 - y0 - 2 }, 1, BLACK);
     DrawRectangleLinesEx({ x0, y0, x1 - x0, y1 - y0 }, 1, WHITE);
 

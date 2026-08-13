@@ -44,6 +44,10 @@
 
 #include "nfd.h"
 
+#define MENUBAR_HEIGHT   24
+#define TOOLBAR_HEIGHT   24
+#define STATUSBAR_HEIGHT 24
+
 MainFrame::MainFrame(const std::string& fileName)
 {
     Settings::SetFile("config.json");
@@ -80,12 +84,13 @@ MainFrame::~MainFrame()
 }
 
 void MainFrame::Update(float deltaTime) {
-    m_emulation->UpdatePad();
     if (IsFileDropped()) {
         FilePathList files = LoadDroppedFiles();
         ChangeFile(files.paths[0]);
         UnloadDroppedFiles(files);
     }
+    m_emulation->UpdatePad();
+    m_renderer->Update(deltaTime);
 }
 
 void MainFrame::Draw(Rectangle r) {
@@ -94,19 +99,19 @@ void MainFrame::Draw(Rectangle r) {
         (m_settingsDlg != nullptr && m_settingsDlg->IsEnabled()))
         GuiDisable();
 
-    m_renderer->Draw(Rectangle{ 0, 48, r.width, r.height - 72 });
+    m_renderer->Draw(Rectangle{ 0, MENUBAR_HEIGHT + TOOLBAR_HEIGHT, r.width, r.height - (MENUBAR_HEIGHT + TOOLBAR_HEIGHT + STATUSBAR_HEIGHT) });
 
     if (m_menuBar.IsOpened())
         GuiLock();
-    DrawToolBar(Rectangle{ 0, 24, r.width, 24 });
+    DrawToolBar(Rectangle{ 0, MENUBAR_HEIGHT, r.width, TOOLBAR_HEIGHT });
     if (m_menuBar.IsOpened())
         GuiUnlock();
-    m_menuBar.Draw(Rectangle{ 0, 0, r.width, 24 });
+    m_menuBar.Draw(Rectangle{ 0, 0, r.width, MENUBAR_HEIGHT });
     if (m_recentMenuOpened) {
         SubMenu& recentMenu = m_menuBar.GetSubMenu(0).GetItem(1).GetSubMenu();
-        recentMenu.Draw(24, 48);
+        recentMenu.Draw(MENUBAR_HEIGHT, MENUBAR_HEIGHT * 2);
     }
-    DrawStatusBar(Rectangle{ 0, r.height-24, r.width, 24 });
+    DrawStatusBar(Rectangle{ 0, r.height-STATUSBAR_HEIGHT, r.width, STATUSBAR_HEIGHT });
 
     if (m_settingsDlg != nullptr && m_settingsDlg->IsEnabled()) {
         GuiEnable();
@@ -231,11 +236,10 @@ void MainFrame::ChangeFile(const std::string &fileName)
 
         VideoGameDevice* device = m_emulation->GetVideoGameDevice();
         if ((device->GetType() == DeviceType::MASTERSYSTEM) || (device->GetType() == DeviceType::GAMEGEAR))
-            return;//m_debuggerDlg = new DebuggerSMSDialog(device);
+			printf("Debugger not implemented for this device type yet.\n");
         else if ((device->GetType() == DeviceType::GAMEBOY) || (device->GetType() == DeviceType::GAMEBOYCOLOR))
-            return;//m_debuggerDlg = new DebuggerGBDialog(device);
+            printf("Debugger not implemented for this device type yet.\n");
         else if (device->GetType() == DeviceType::NES)
-            //m_debuggerDlg = new DebuggerNESDialog(device);
             NewDialog<DebuggerNESDialog>((DebuggerNESDialog**)&m_debuggerDlg, device);
     }
     else {

@@ -49,7 +49,8 @@ public:
     u8*  GetBufferPtr() const;
     virtual void OnSizeChanged(int x, int y, int width, int height);
     virtual void OnChangeView() = 0;
-    virtual void Draw(Rectangle dst) = 0;
+    virtual void Update(float deltaTime) {};
+    virtual void Draw(const Rectangle& dst) = 0;
     
 protected:
 	u8 *m_imgBuf1;
