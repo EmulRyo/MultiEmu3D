@@ -1,11 +1,11 @@
 /**********************************************************************************************
 *
-*   raylib-physfs 4.5.0 - Integrate PhysFS with raylib, allowing to load images, audio and fonts from data archives.
+*   raylib-physfs 6.0.0 - Integrate PhysFS with raylib, allowing to load images, audio and fonts from data archives.
 *
-*   Copyright 2021 Rob Loach (@RobLoach)
+*   Copyright 2026 Rob Loach (@RobLoach)
 *
 *   DEPENDENCIES:
-*       raylib 4.5+ https://www.raylib.com/
+*       raylib 6.0+ https://www.raylib.com/
 *       physfs https://github.com/icculus/physfs
 *
 *   LICENSE: zlib/libpng
@@ -33,22 +33,18 @@
 #ifndef INCLUDE_RAYLIB_PHYSFS_H_
 #define INCLUDE_RAYLIB_PHYSFS_H_
 
+#ifndef RAYLIB_PHYSFS_DEF
+#define RAYLIB_PHYSFS_DEF
+#endif
+
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-#ifndef RAYLIB_PHYSFS_DEF
-#ifdef RAYLIB_PHYSFS_STATIC
-#define RAYLIB_PHYSFS_DEF static
-#else
-#define RAYLIB_PHYSFS_DEF extern
-#endif
-#endif
-
-RAYLIB_PHYSFS_DEF bool InitPhysFS();                                              // Initialize the PhysFS file system
+RAYLIB_PHYSFS_DEF bool InitPhysFS(void);                                              // Initialize the PhysFS file system
 RAYLIB_PHYSFS_DEF bool InitPhysFSEx(const char* newDir, const char* mountPoint);  // Initialize the PhysFS file system with a mount point.
-RAYLIB_PHYSFS_DEF bool ClosePhysFS();                                             // Close the PhysFS file system
-RAYLIB_PHYSFS_DEF bool IsPhysFSReady();                                           // Check if PhysFS has been initialized successfully
+RAYLIB_PHYSFS_DEF bool ClosePhysFS(void);                                             // Close the PhysFS file system
+RAYLIB_PHYSFS_DEF bool IsPhysFSReady(void);                                           // Check if PhysFS has been initialized successfully
 RAYLIB_PHYSFS_DEF bool MountPhysFS(const char* newDir, const char* mountPoint);   // Mount the given directory or archive as a mount point
 RAYLIB_PHYSFS_DEF bool MountPhysFSFromMemory(const unsigned char *fileData, int dataSize, const char* newDir, const char* mountPoint);  // Mount the given file data as a mount point
 RAYLIB_PHYSFS_DEF bool UnmountPhysFS(const char* oldDir);                         // Unmounts the given directory
@@ -58,8 +54,9 @@ RAYLIB_PHYSFS_DEF unsigned char* LoadFileDataFromPhysFS(const char* fileName, in
 RAYLIB_PHYSFS_DEF char* LoadFileTextFromPhysFS(const char* fileName);             // Load text from a file (memory should be freed)
 RAYLIB_PHYSFS_DEF bool SetPhysFSWriteDirectory(const char* newDir);               // Set the base directory where PhysFS should write files to (defaults to the current working directory)
 RAYLIB_PHYSFS_DEF bool SaveFileDataToPhysFS(const char* fileName, void* data, int bytesToWrite);  // Save the given file data in PhysFS
-RAYLIB_PHYSFS_DEF bool SaveFileTextToPhysFS(const char* fileName, char* text);    // Save the given file text in PhysFS
+RAYLIB_PHYSFS_DEF bool SaveFileTextToPhysFS(const char* fileName, const char* text);    // Save the given file text in PhysFS
 RAYLIB_PHYSFS_DEF FilePathList LoadDirectoryFilesFromPhysFS(const char* dirPath);  // Get filenames in a directory path (memory should be freed)
+RAYLIB_PHYSFS_DEF FilePathList LoadDirectoryFilesFromPhysFSEx(const char *basePath, const char *filter, bool scanSubdirs); // Get directory filepaths with filtering and optional recursive scan (memory should be freed)
 RAYLIB_PHYSFS_DEF long GetFileModTimeFromPhysFS(const char* fileName);            // Get file modification time (last write time) from PhysFS
 RAYLIB_PHYSFS_DEF Image LoadImageFromPhysFS(const char* fileName);                // Load an image from PhysFS
 RAYLIB_PHYSFS_DEF Texture2D LoadTextureFromPhysFS(const char* fileName);          // Load a texture from PhysFS
@@ -67,8 +64,8 @@ RAYLIB_PHYSFS_DEF Wave LoadWaveFromPhysFS(const char* fileName);                
 RAYLIB_PHYSFS_DEF Music LoadMusicStreamFromPhysFS(const char* fileName);          // Load music data from PhysFS
 RAYLIB_PHYSFS_DEF Font LoadFontFromPhysFS(const char* fileName, int fontSize, int *fontChars, int charsCount);  // Load a font from PhysFS
 RAYLIB_PHYSFS_DEF Shader LoadShaderFromPhysFS(const char* vsFileName, const char* fsFileName);  // Load shader from PhysFS
-RAYLIB_PHYSFS_DEF void SetPhysFSCallbacks();                                      // Set the raylib file loader/saver callbacks to use PhysFS
-RAYLIB_PHYSFS_DEF const char* GetPerfDirectory(const char *organization, const char *application); // Get the user's current config directory for the application.
+RAYLIB_PHYSFS_DEF void SetPhysFSCallbacks(void);                                      // Set the raylib file loader/saver callbacks to use PhysFS
+RAYLIB_PHYSFS_DEF const char* GetPrefDirectory(const char *organization, const char *application); // Get the user's current config directory for the application.
 
 #ifdef __cplusplus
 }
@@ -80,7 +77,13 @@ RAYLIB_PHYSFS_DEF const char* GetPerfDirectory(const char *organization, const c
 #ifndef RAYLIB_PHYSFS_IMPLEMENTATION_ONCE
 #define RAYLIB_PHYSFS_IMPLEMENTATION_ONCE
 
-// MiniPhysFS
+#ifndef RAYLIB_PHYSFS_MEMCPY
+#include <stddef.h>
+#include <string.h>
+#define RAYLIB_PHYSFS_MEMCPY memcpy
+#endif
+
+// PhysFS
 #define PHYSFS_IMPL
 #define PHYSFS_PLATFORM_IMPL
 #define PHYSFS_DECL RAYLIB_PHYSFS_DEF
@@ -113,7 +116,7 @@ void TracePhysFSError(const char* detail) {
  * Loads the given file as a byte array from PhysFS (read).
  *
  * @param fileName The file to load.
- * @param bytesRead An unsigned integer to save the bytes that were read.
+ * @param bytesRead An integer to save the bytes that were read.
  *
  * @return The file data as a pointer. Make sure to use UnloadFileData() when finished using the file data.
  *
@@ -121,49 +124,49 @@ void TracePhysFSError(const char* detail) {
  */
 unsigned char* LoadFileDataFromPhysFS(const char* fileName, int* bytesRead) {
     if (!FileExistsInPhysFS(fileName)) {
-        TraceLog(LOG_WARNING, TextFormat("PHYSFS: Tried to load unexisting file '%s'", fileName));
+        TraceLog(LOG_WARNING, TextFormat("PHYSFS: Tried to load non-existent file '%s'", fileName));
         *bytesRead = 0;
-        return 0;
+        return NULL;
     }
 
     // Open up the file.
     PHYSFS_File* handle = PHYSFS_openRead(fileName);
-    if (handle == 0) {
+    if (handle == NULL) {
         TracePhysFSError(fileName);
         *bytesRead = 0;
-        return 0;
+        return NULL;
     }
 
     // Check to see how large the file is.
-    int size = PHYSFS_fileLength(handle);
+    PHYSFS_sint64 size = PHYSFS_fileLength(handle);
     if (size == -1) {
         *bytesRead = 0;
         PHYSFS_close(handle);
         TraceLog(LOG_WARNING, TextFormat("PHYSFS: Cannot determine size of file '%s'", fileName));
-        return 0;
+        return NULL;
     }
 
     // Close safely when it's empty.
     if (size == 0) {
         PHYSFS_close(handle);
         *bytesRead = 0;
-        return 0;
+        return NULL;
     }
 
     // Read the file, return if it's empty.
-    void* buffer = MemAlloc(size);
-    int read = PHYSFS_readBytes(handle, buffer, size);
-    if (read < 0) {
+    void* buffer = MemAlloc((unsigned int)size);
+    PHYSFS_sint64 read = PHYSFS_readBytes(handle, buffer, (PHYSFS_uint64)size);
+    if (read != size) {
         *bytesRead = 0;
         MemFree(buffer);
         PHYSFS_close(handle);
         TracePhysFSError(fileName);
-        return 0;
+        return NULL;
     }
 
     // Close the file handle, and return the bytes read and the buffer.
     PHYSFS_close(handle);
-    *bytesRead = read;
+    *bytesRead = (int)read;
     return (unsigned char*) buffer;
 }
 
@@ -174,9 +177,9 @@ unsigned char* LoadFileDataFromPhysFS(const char* fileName, int* bytesRead) {
  *
  * @see ClosePhysFS()
  */
-bool InitPhysFS() {
+bool InitPhysFS(void) {
     // Initialize PhysFS.
-    if (PHYSFS_init(0) == 0) {
+    if (PHYSFS_init(NULL) == 0) {
         TracePhysFSError("InitPhysFS() failed");
         return false;
     }
@@ -208,7 +211,7 @@ bool InitPhysFSEx(const char* newDir, const char* mountPoint) {
  *
  * @see InitPhysFS()
  */
-bool IsPhysFSReady() {
+bool IsPhysFSReady(void) {
     return PHYSFS_isInit() != 0;
 }
 
@@ -250,7 +253,7 @@ bool MountPhysFSFromMemory(const unsigned char *fileData, int dataSize, const ch
         return false;
     }
 
-    if (PHYSFS_mountMemory(fileData, dataSize, 0, newDir, mountPoint, 1) == 0) {
+    if (PHYSFS_mountMemory(fileData, (PHYSFS_uint64)dataSize, NULL, newDir, mountPoint, 1) == 0) {
         TracePhysFSError(TextFormat("Failed to mount '%s' at '%s'", newDir, mountPoint));
         return false;
     }
@@ -323,10 +326,7 @@ Image LoadImageFromPhysFS(const char* fileName) {
     int bytesRead;
     unsigned char* fileData = LoadFileDataFromPhysFS(fileName, &bytesRead);
     if (bytesRead == 0) {
-        struct Image output;
-        output.data = 0;
-        output.width = 0;
-        output.height = 0;
+        Image output = { 0 };
         return output;
     }
 
@@ -348,12 +348,8 @@ Image LoadImageFromPhysFS(const char* fileName) {
  */
 Texture2D LoadTextureFromPhysFS(const char* fileName) {
     Image image = LoadImageFromPhysFS(fileName);
-    if (image.data == 0) {
+    if (image.data == NULL) {
         Texture2D output = { 0 };
-        output.id = 0;
-        output.format = 0;
-        output.width = 0;
-        output.height = 0;
         return output;
     }
     Texture2D texture = LoadTextureFromImage(image);
@@ -372,7 +368,20 @@ Texture2D LoadTextureFromPhysFS(const char* fileName) {
  */
 char* LoadFileTextFromPhysFS(const char *fileName) {
     int bytesRead;
-    return (char*)LoadFileDataFromPhysFS(fileName, &bytesRead);
+    unsigned char* data = LoadFileDataFromPhysFS(fileName, &bytesRead);
+    if (bytesRead == 0) {
+        return NULL;
+    }
+
+    // Copy the data, and append a null terminator.
+    char* text = (char*)MemAlloc(bytesRead + 1);
+    RAYLIB_PHYSFS_MEMCPY(text, data, bytesRead);
+    text[bytesRead] = '\0';
+
+    // Free the original data, and return the string.
+    MemFree(data);
+
+    return text;
 }
 
 /**
@@ -388,8 +397,7 @@ Wave LoadWaveFromPhysFS(const char* fileName) {
     int bytesRead;
     unsigned char* fileData = LoadFileDataFromPhysFS(fileName, &bytesRead);
     if (bytesRead == 0) {
-        struct Wave output;
-        output.data = 0;
+        Wave output = { 0 };
         return output;
     }
 
@@ -413,9 +421,7 @@ Music LoadMusicStreamFromPhysFS(const char* fileName) {
     int bytesRead;
     unsigned char* fileData = LoadFileDataFromPhysFS(fileName, &bytesRead);
     if (bytesRead == 0) {
-        struct Music output;
-        output.ctxData = 0;
-        output.stream.buffer = 0;
+        Music output = { 0 };
         return output;
     }
 
@@ -424,7 +430,7 @@ Music LoadMusicStreamFromPhysFS(const char* fileName) {
     Music music = LoadMusicStreamFromMemory(extension, fileData, bytesRead);
 
     // Unload the file data if the music failed to load.
-    if (music.ctxData == (void*)0) {
+    if (music.ctxData == NULL) {
         UnloadFileData(fileData);
     }
 
@@ -444,12 +450,7 @@ Font LoadFontFromPhysFS(const char* fileName, int fontSize, int *fontChars, int 
     int bytesRead;
     unsigned char* fileData = LoadFileDataFromPhysFS(fileName, &bytesRead);
     if (bytesRead == 0) {
-        struct Font output;
-        output.baseSize = 0;
-        output.glyphCount = 0;
-        output.glyphPadding = 0;
-        output.glyphs = 0;
-        output.recs = 0;
+        Font output = { 0 };
         return output;
     }
 
@@ -473,15 +474,15 @@ Font LoadFontFromPhysFS(const char* fileName, int fontSize, int *fontChars, int 
 Shader LoadShaderFromPhysFS(const char *vsFileName, const char *fsFileName) {
     char* vsFile = LoadFileTextFromPhysFS(vsFileName);
     char* fsFile = LoadFileTextFromPhysFS(fsFileName);
-    if (vsFile == 0 && fsFile == 0) {
+    if (vsFile == NULL && fsFile == NULL) {
         Shader output = { 0 };
         return output;
     }
     Shader output = LoadShaderFromMemory(vsFile, fsFile);
-    if (vsFile != 0) {
+    if (vsFile != NULL) {
         UnloadFileText(vsFile);
     }
-    if (fsFile != 0) {
+    if (fsFile != NULL) {
         UnloadFileText(fsFile);
     }
     return output;
@@ -520,13 +521,13 @@ bool SaveFileDataToPhysFS(const char* fileName, void* data, int bytesToWrite) {
 
     // Open the file.
     PHYSFS_File* handle = PHYSFS_openWrite(fileName);
-    if (handle == 0) {
+    if (handle == NULL) {
         TracePhysFSError(fileName);
         return false;
     }
 
     // Write the data to the file handle.
-    if (PHYSFS_writeBytes(handle, data, bytesToWrite) < 0) {
+    if (PHYSFS_writeBytes(handle, data, (PHYSFS_uint64)bytesToWrite) < (PHYSFS_sint64)bytesToWrite) {
         PHYSFS_close(handle);
         TracePhysFSError(fileName);
         return false;
@@ -544,8 +545,142 @@ bool SaveFileDataToPhysFS(const char* fileName, void* data, int bytesToWrite) {
  *
  * @return True on success, false on failure.
  */
-bool SaveFileTextToPhysFS(const char* fileName, char* text) {
-    return SaveFileDataToPhysFS(fileName, text, TextLength(text));
+bool SaveFileTextToPhysFS(const char* fileName, const char* text) {
+    return SaveFileDataToPhysFS(fileName, (void*)text, TextLength(text) + 1); // +1 for the Null Terminator
+}
+
+static bool LoadDirectoryFilesFromPhysFSAppend(FilePathList *files, unsigned int *capacity, const char *path) {
+    unsigned int currentCapacity = *capacity;
+
+    if (files->count >= currentCapacity) {
+        unsigned int newCapacity = (currentCapacity == 0) ? 16 : currentCapacity*2;
+        char **newPaths = (char **)MemRealloc(files->paths, sizeof(char *)*newCapacity);
+        if (newPaths == NULL) {
+            TraceLog(LOG_WARNING, "PHYSFS: Failed to allocate file path list for '%s'", path);
+            return false;
+        }
+
+        for (unsigned int i = currentCapacity; i < newCapacity; i++) {
+            newPaths[i] = NULL;
+        }
+
+        files->paths = newPaths;
+        *capacity = newCapacity;
+#if defined(RAYLIB_VERSION_MAJOR) && (RAYLIB_VERSION_MAJOR == 5)
+        files->capacity = newCapacity;
+#endif
+    }
+
+    int pathLength = TextLength(path) + 1;
+    files->paths[files->count] = (char *)MemAlloc(pathLength);
+    if (files->paths[files->count] == NULL) {
+        TraceLog(LOG_WARNING, "PHYSFS: Failed to copy file path '%s'", path);
+        return false;
+    }
+
+    TextCopy(files->paths[files->count], path);
+
+    files->count++;
+    return true;
+}
+
+static bool LoadDirectoryFilesFromPhysFSShouldInclude(const char *path, PHYSFS_FileType fileType, const char *filter) {
+    if (filter == NULL) {
+        return true;
+    }
+
+    if (fileType == PHYSFS_FILETYPE_DIRECTORY) {
+        return TextFindIndex(filter, "DIR") >= 0;
+    }
+
+    if (fileType == PHYSFS_FILETYPE_REGULAR || fileType == PHYSFS_FILETYPE_SYMLINK) {
+        return IsFileExtension(path, filter);
+    }
+
+    return false;
+}
+
+static bool LoadDirectoryFilesFromPhysFSExScan(const char *basePath, FilePathList *files, unsigned int *capacity, const char *filter, bool scanSubdirs) {
+    char **entries = PHYSFS_enumerateFiles(basePath);
+    if (entries == NULL) {
+        TracePhysFSError(basePath);
+        return false;
+    }
+
+    bool success = true;
+
+    for (char **entry = entries; *entry != NULL; entry++) {
+        int fullPathLength = 0;
+        if ((basePath != NULL) && (basePath[0] != '\0') && !TextIsEqual(basePath, "/")) {
+            fullPathLength = TextLength(basePath) + 1 + TextLength(*entry) + 1;
+        } else {
+            fullPathLength = TextLength(*entry) + 1;
+        }
+
+        char *fullPath = (char *)MemAlloc(fullPathLength);
+        if (fullPath == NULL) {
+            TraceLog(LOG_WARNING, "PHYSFS: Failed to allocate path while scanning '%s'", basePath);
+            success = false;
+            break;
+        }
+
+        if ((basePath != NULL) && (basePath[0] != '\0') && !TextIsEqual(basePath, "/")) {
+            int position = TextCopy(fullPath, basePath);
+            TextAppend(fullPath, "/", &position);
+            TextAppend(fullPath, *entry, &position);
+        } else {
+            TextCopy(fullPath, *entry);
+        }
+
+        PHYSFS_Stat stat;
+        if (PHYSFS_stat(fullPath, &stat) == 0) {
+            TracePhysFSError(fullPath);
+            MemFree(fullPath);
+            continue;
+        }
+
+        if (LoadDirectoryFilesFromPhysFSShouldInclude(fullPath, stat.filetype, filter)) {
+            if (!LoadDirectoryFilesFromPhysFSAppend(files, capacity, fullPath)) {
+                MemFree(fullPath);
+                success = false;
+                break;
+            }
+        }
+
+        if (scanSubdirs && (stat.filetype == PHYSFS_FILETYPE_DIRECTORY)) {
+            if (!LoadDirectoryFilesFromPhysFSExScan(fullPath, files, capacity, filter, scanSubdirs)) {
+                MemFree(fullPath);
+                success = false;
+                break;
+            }
+        }
+
+        MemFree(fullPath);
+    }
+
+    PHYSFS_freeList(entries);
+    return success;
+}
+
+FilePathList LoadDirectoryFilesFromPhysFSEx(const char *basePath, const char *filter, bool scanSubdirs) {
+    FilePathList files = { 0 };
+    if ((basePath == NULL) || (basePath[0] == '\0')) {
+        TraceLog(LOG_WARNING, "PHYSFS: Can't get files from an empty directory path");
+        return files;
+    }
+
+    if (!TextIsEqual(basePath, "/") && !DirectoryExistsInPhysFS(basePath)) {
+        TraceLog(LOG_WARNING, "PHYSFS: Can't get files from non-existent directory (%s)", basePath);
+        return files;
+    }
+
+    unsigned int capacity = 0;
+    if (!LoadDirectoryFilesFromPhysFSExScan(basePath, &files, &capacity, filter, scanSubdirs)) {
+        UnloadDirectoryFiles(files);
+        return FilePathList { 0 };
+    }
+
+    return files;
 }
 
 /**
@@ -556,31 +691,7 @@ bool SaveFileTextToPhysFS(const char* fileName, char* text) {
  * @see UnloadDirectoryFiles()
  */
 FilePathList LoadDirectoryFilesFromPhysFS(const char* dirPath) {
-    // Make sure the directory exists.
-    if (!DirectoryExistsInPhysFS(dirPath)) {
-        TraceLog(LOG_WARNING, "PHYSFS: Can't get files from non-existant directory (%s)", dirPath);
-        FilePathList out;
-        out.capacity = 0;
-        out.count = 0;
-        out.paths = 0;
-        return out;
-    }
-
-    // Prepare the output.
-    FilePathList output;
-
-    // Load the list of files from PhysFS.
-    output.paths = PHYSFS_enumerateFiles(dirPath);
-
-    // Find out how many files there were.
-    output.count = 0;
-    for (char** i = output.paths; *i != 0; i++) {
-        output.count++;
-    }
-    output.capacity = output.count;
-
-    // Output the count and the list.
-    return output;
+    return LoadDirectoryFilesFromPhysFSEx(dirPath, NULL, false);
 }
 
 /**
@@ -607,7 +718,7 @@ long GetFileModTimeFromPhysFS(const char* fileName) {
  *
  * @return True on success, false on failure.
  */
-bool ClosePhysFS() {
+bool ClosePhysFS(void) {
     if (PHYSFS_deinit() == 0) {
         TracePhysFSError("ClosePhysFS() unsuccessful");
         return false;
@@ -624,7 +735,7 @@ bool ClosePhysFS() {
  * @see SetLoadFileTextCallback()
  * @see SetSaveFileTextCallback()
  */
-void SetPhysFSCallbacks() {
+void SetPhysFSCallbacks(void) {
     SetLoadFileDataCallback(LoadFileDataFromPhysFS);
     SetSaveFileDataCallback(SaveFileDataToPhysFS);
     SetLoadFileTextCallback(LoadFileTextFromPhysFS);
@@ -640,13 +751,13 @@ void SetPhysFSCallbacks() {
  * @return string of user directory in platform-dependent notation.
  *         NULL if there's a problem (creating directory failed, etc)
  */
-const char* GetPerfDirectory(const char *organization, const char *application) {
+const char* GetPrefDirectory(const char *organization, const char *application) {
     const char* output = PHYSFS_getPrefDir(organization, application);
-    if (output == 0) {
-        TracePhysFSError("Failed to get perf directory");
-        return 0;
+    if (output == NULL) {
+        TracePhysFSError("Failed to get pref directory");
+        return NULL;
     }
-    TraceLog(LOG_DEBUG, "PHYSFS: Perf Directory: %s", output);
+    TraceLog(LOG_DEBUG, "PHYSFS: Pref Directory: %s", output);
     return output;
 }
 
