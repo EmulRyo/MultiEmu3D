@@ -569,9 +569,9 @@ void DebuggerNESDialog::DrawBreakpoints(Rectangle dst) {
 		offset += snprintf(brkPts+offset, 512-offset, "%s%s", brkPtString.c_str(), i == m_debugger->GetNumBreakpoints() ? "" : ",");
 	}
 	int count = 0;
-	const char** text = TextSplit(brkPts, ',', &count);
+	char** text = TextSplit(brkPts, ',', &count);
 	Rectangle listViewRec = { dst.x + 10, dst.y + 24, dst.width - 20, 190 };
-	GuiListViewEx(listViewRec, text, m_debugger->GetNumBreakpoints(), &m_breakpointsListViewScrollIndex, &m_breakpointsListViewActive, &m_breakpointsListViewFocus);
+	GuiListViewEx(listViewRec, (const char**)text, m_debugger->GetNumBreakpoints(), &m_breakpointsListViewScrollIndex, &m_breakpointsListViewActive, &m_breakpointsListViewFocus);
 
 	if (m_breakpointsListViewActive >= 0) {
 		for (int i=0; i<4; i++)
