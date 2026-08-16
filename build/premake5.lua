@@ -6,28 +6,6 @@ local wxWidgetsFileFilter = ""
 local sdlVersion = "2.0.14"
 local sdlArchFolder = ""
 
-function download_progress(total, current)
-   local ratio = current / total;
-   ratio = math.min(math.max(ratio, 0), 1);
-   local percent = math.floor(ratio * 100);
-   print("Download progress (" .. percent .. "%/100%)")
-end
-
-function check_raylib()
-   if(os.isdir("../libraries/raylib") == false and os.isdir("../libraries/raylib-master") == false) then
-       if(not os.isfile("../libraries/raylib-master.zip")) then
-           print("Raylib not found, downloading from github")
-           local result_str, response_code = http.download("https://github.com/raysan5/raylib/archive/refs/heads/master.zip", "../libraries/raylib-master.zip", {
-               progress = download_progress,
-               headers = { "From: Premake", "Referer: Premake" }
-           })
-       end
-       print("Unzipping to " ..  "../libraries/")
-       zip.extract("../libraries/raylib-master.zip", "../libraries/")
-       os.remove("../libraries/raylib-master.zip")
-   end
-end
-
 function EmulationPlatform()
    kind "SharedLib"
 
@@ -97,7 +75,6 @@ workspace "MARS"
    targetdir "%{wks.location}/bin/%{cfg.buildcfg}"
 	objdir "%{wks.location}/obj/%{cfg.buildcfg}"
 
-check_raylib();
 include ("raylib_premake5.lua")
 
 --------

@@ -1,3 +1,4 @@
+local raylib_dir = "../libraries/raylib"
 
 function platform_defines()
     defines{"PLATFORM_DESKTOP"}
@@ -31,23 +32,12 @@ function platform_defines()
     filter{}
 end
 
-function get_raylib_dir()
-    if (os.isdir("raylib-master")) then
-        return "raylib-master"
-    end
-    if (os.isdir("../libraries/raylib-master")) then
-        return "raylib-master"
-    end
-    return "raylib"
-end
-
 function link_raylib()
     links {"raylib"}
 
-    raylib_dir = get_raylib_dir();
-    includedirs {"../libraries/" .. raylib_dir .. "/src" }
-    includedirs {"../libraries/" .. raylib_dir .. "/src/external" }
-    includedirs {"../libraries/" .. raylib_dir .. "/src/external/glfw/include" }
+    includedirs {raylib_dir .. "/src" }
+    includedirs {raylib_dir .. "/src/external" }
+    includedirs {raylib_dir .. "/src/external/glfw/include" }
     platform_defines()
 
     filter "action:vs*"
@@ -60,7 +50,7 @@ function link_raylib()
     filter "system:windows"
         defines{"_WIN32"}
         links {"winmm", "kernel32", "opengl32", "gdi32"}
-        libdirs {"../libraries/" .. raylib_dir .. "/lib/%{cfg.buildcfg}"}
+        libdirs {raylib_dir .. "/lib/%{cfg.buildcfg}"}
 
     filter "system:linux"
         links {"pthread", "GL", "m", "dl", "rt", "X11"}
@@ -72,10 +62,9 @@ function link_raylib()
 end
 
 function include_raylib()
-    raylib_dir = get_raylib_dir();
-    includedirs {"../libraries/" .. raylib_dir .."/src" }
-    includedirs {"../libraries/" .. raylib_dir .."/src/external" }
-    includedirs {"../libraries/" .. raylib_dir .."/src/external/glfw/include" }
+    includedirs {raylib_dir .. "/src" }
+    includedirs {raylib_dir .. "/src/external" }
+    includedirs {raylib_dir .. "/src/external/glfw/include" }
     platform_defines()
 
     filter "action:vs*"
@@ -89,12 +78,11 @@ project "raylib"
 
     platform_defines()
 
-    raylib_dir = get_raylib_dir();
     print ("Using raylib dir " .. raylib_dir);
 
-    location ("../libraries/" .. raylib_dir .. "/build")
+    location (raylib_dir .. "/build")
     language "C"
-    targetdir ("../libraries/" .. raylib_dir .. "/lib/%{cfg.buildcfg}")
+    targetdir (raylib_dir .. "/lib/%{cfg.buildcfg}")
 
     filter "action:vs*"
         defines{"_WINSOCK_DEPRECATED_NO_WARNINGS", "_CRT_SECURE_NO_WARNINGS"}
@@ -102,17 +90,17 @@ project "raylib"
         buildoptions { "/Zc:__cplusplus" }
     filter{}
 
-    includedirs {"../libraries/" .. raylib_dir .. "/src", "../libraries/" .. raylib_dir .. "/src/external/glfw/include" }
+    includedirs {raylib_dir .. "/src", raylib_dir .. "/src/external/glfw/include" }
     vpaths
     {
-        ["Header Files"] = { "../libraries/" .. raylib_dir .. "/src/**.h"},
-        ["Source Files/*"] = { "../libraries/" .. raylib_dir .. "/src/**.c"},
+        ["Header Files"] = { raylib_dir .. "/src/**.h"},
+        ["Source Files/*"] = { raylib_dir .. "/src/**.c"},
     }
-    files {"../libraries/" .. raylib_dir .. "/src/*.h", "../libraries/" .. raylib_dir .. "/src/*.c"}
+    files {raylib_dir .. "/src/*.h", raylib_dir .. "/src/*.c"}
 
-    removefiles {"../libraries/" .. raylib_dir .. "/src/rcore_*.c"}
+    removefiles {raylib_dir .. "/src/rcore_*.c"}
 
-    filter { "system:macosx", "files:../libraries/" .. raylib_dir .. "/src/rglfw.c" }
+    filter { "system:macosx", "files:" .. raylib_dir .. "/src/rglfw.c" }
         compileas "Objective-C"
 
     filter{}
