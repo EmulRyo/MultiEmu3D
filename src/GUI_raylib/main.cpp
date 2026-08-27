@@ -47,16 +47,18 @@ int main(int argc, char **argv) {
     SetWindowMinSize(340, 370);
     SetExitKey(-1);
 
-    MainFrame mainFrame(fileName);
+    {
+        MainFrame mainFrame(fileName);
 
-    while (!WindowShouldClose()) {
-        float dt = GetFrameTime();
-        mainFrame.Update(dt);
+        while (!WindowShouldClose()) {
+            float dt = GetFrameTime();
+            mainFrame.Update(dt);
 
-        BeginDrawing();
-        ClearBackground(BLACK);
-        mainFrame.Draw(Rectangle {0, 0, (float)GetScreenWidth(), (float)GetScreenHeight()});
-        EndDrawing();
+            BeginDrawing();
+            ClearBackground(BLACK);
+            mainFrame.Draw(Rectangle {0, 0, (float)GetScreenWidth(), (float)GetScreenHeight()});
+            EndDrawing();
+        }
     }
 
     CloseWindow();

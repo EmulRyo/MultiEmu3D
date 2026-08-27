@@ -23,13 +23,48 @@
 #include "raymath.h"
 #include "rlgl.h"
 
+namespace {
+constexpr int SHADOWMAP_RESOLUTION = 1024;
+
+RenderTexture2D LoadShadowmapRenderTexture(int width, int height) {
+    RenderTexture2D target = { 0 };
+    target.id = rlLoadFramebuffer();
+    target.texture.width = width;
+    target.texture.height = height;
+
+    if (target.id > 0) {
+        rlEnableFramebuffer(target.id);
+        target.depth.id = rlLoadTextureDepth(width, height, false);
+        target.depth.width = width;
+        target.depth.height = height;
+        target.depth.format = PIXELFORMAT_UNCOMPRESSED_GRAYSCALE;
+        target.depth.mipmaps = 1;
+        rlFramebufferAttach(target.id, target.depth.id, RL_ATTACHMENT_DEPTH, RL_ATTACHMENT_TEXTURE2D, 0);
+        rlDisableFramebuffer();
+    }
+
+    return target;
+}
+
+void UnloadShadowmapRenderTexture(RenderTexture2D target) {
+    if (target.id > 0)
+        rlUnloadFramebuffer(target.id);
+}
+
+}
+
 Renderer3D::Renderer3D():
 	m_camera2D({ 0 }),
     m_drawArea({0, 0, 0, 0}),
     m_is3DMode(false),
     m_modelLoaded(false),
+    m_showShadowMap(false),
     m_transitioning(false),
     m_transitionTime(0.0f),
+	m_screenMaterial(-1),
+	m_lightVPLoc(-1),
+	m_shadowMapLoc(-1),
+	m_shadowTexelSizeLoc(-1),
 	m_startAnim({ {0,0,0}, {0,0,0,1}, 1.0f, 60.0f }),
 	m_targetAnim({ {0,0,0}, {0,0,0,1}, 1.0f, 60.0f })
 {
@@ -42,9 +77,6 @@ Renderer3D::Renderer3D():
     m_camera3D.position = { 0.025f, 0.075f, 0.2f };
     m_camera3D.target = { 0.0f, 0.075f, 0.0f };
 
-    Mesh cubeMesh = GenMeshCube(1.0f, 1.0f, 1.0f);
-    m_cube = LoadModelFromMesh(cubeMesh);
-
     m_currentCamera = m_camera2D;
 
     // Create screen texture
@@ -54,15 +86,89 @@ Renderer3D::Renderer3D():
     UnloadImage(img);
 
 	m_gb = LoadModel("Models/gb.glb");
+    //m_gb = LoadModel("Models/old_car_new.glb");
 
-	Material* screenMat = &m_gb.materials[m_gb.materialCount - 1];
-	screenMat->maps[MATERIAL_MAP_ALBEDO].color = WHITE;
-    screenMat->maps[MATERIAL_MAP_ALBEDO].texture = m_texture;
+    m_pbrShader = LoadShader("Shaders/pbr_shadow.vs", "Shaders/pbr_shadow.fs");
+    m_screenShader = LoadShader("", "Shaders/screen.fs");
+    m_depthShader = LoadShader("", "Shaders/depth.fs");
+	m_grayscaleTextureShader = LoadShader("", "Shaders/grayscale_texture.fs");
+
+    m_pbrShader.locs[SHADER_LOC_MAP_ALBEDO] = GetShaderLocation(m_pbrShader, "texture0");
+    m_pbrShader.locs[SHADER_LOC_COLOR_DIFFUSE] = GetShaderLocation(m_pbrShader, "colDiffuse");
+    m_pbrShader.locs[SHADER_LOC_VECTOR_VIEW] = GetShaderLocation(m_pbrShader, "viewPos");
+    m_pbrShader.locs[SHADER_LOC_MATRIX_NORMAL] = GetShaderLocation(m_pbrShader, "matNormal");
+    m_screenShader.locs[SHADER_LOC_MAP_ALBEDO] = GetShaderLocation(m_screenShader, "texture0");
+    m_screenShader.locs[SHADER_LOC_COLOR_DIFFUSE] = GetShaderLocation(m_screenShader, "colDiffuse");
+
+    m_lightVPLoc = GetShaderLocation(m_pbrShader, "lightVP");
+    m_shadowMapLoc = GetShaderLocation(m_pbrShader, "shadowMap");
+    // Let raylib bind the shadow map with each PBR material instead of relying
+    // on an external texture slot that DrawMesh() may change.
+    m_pbrShader.locs[SHADER_LOC_MAP_HEIGHT] = m_shadowMapLoc;
+    m_shadowTexelSizeLoc = GetShaderLocation(m_pbrShader, "shadowTexelSize");
+    const float shadowTexelSize = 1.0f/SHADOWMAP_RESOLUTION;
+    SetShaderValue(m_pbrShader, m_shadowTexelSizeLoc, &shadowTexelSize, SHADER_UNIFORM_FLOAT);
+
+    const Vector3 lightDirection = Vector3Normalize({ 0.35f, -1.0f, -0.35f });
+    const Vector3 lightColor = { 3.0f, 2.85f, 2.6f };
+    const Vector3 ambientColor = { 0.08f, 0.09f, 0.12f };
+    const float metallic = 0.05f;
+    const float roughness = 0.62f;
+    SetShaderValue(m_pbrShader, GetShaderLocation(m_pbrShader, "lightDir"), &lightDirection, SHADER_UNIFORM_VEC3);
+    SetShaderValue(m_pbrShader, GetShaderLocation(m_pbrShader, "lightColor"), &lightColor, SHADER_UNIFORM_VEC3);
+    SetShaderValue(m_pbrShader, GetShaderLocation(m_pbrShader, "ambientColor"), &ambientColor, SHADER_UNIFORM_VEC3);
+    SetShaderValue(m_pbrShader, GetShaderLocation(m_pbrShader, "metallic"), &metallic, SHADER_UNIFORM_FLOAT);
+    SetShaderValue(m_pbrShader, GetShaderLocation(m_pbrShader, "roughness"), &roughness, SHADER_UNIFORM_FLOAT);
+
+    for (int i = 0; i < m_gb.materialCount; i++)
+        m_gb.materials[i].shader = m_pbrShader;
+
+    if (m_gb.materialCount > 0) {
+        m_screenMaterial = m_gb.materialCount - 1;
+        Material* screenMat = &m_gb.materials[m_screenMaterial];
+        screenMat->shader = m_screenShader;
+        screenMat->maps[MATERIAL_MAP_ALBEDO].color = WHITE;
+        screenMat->maps[MATERIAL_MAP_ALBEDO].texture = m_texture;
+    }
+
+    m_ground = LoadModelFromMesh(GenMeshPlane(100.f, 100.f, 1, 1));
+    m_ground.materials[0].shader = m_pbrShader;
+    m_ground.materials[0].maps[MATERIAL_MAP_ALBEDO].color = { 42, 47, 56, 255 };
+    m_shadowMap = LoadShadowmapRenderTexture(SHADOWMAP_RESOLUTION, SHADOWMAP_RESOLUTION);
+
+    for (int i = 0; i < m_gb.materialCount; i++) {
+        if (i != m_screenMaterial)
+            m_gb.materials[i].maps[MATERIAL_MAP_HEIGHT].texture = m_shadowMap.depth;
+    }
+    m_ground.materials[0].maps[MATERIAL_MAP_HEIGHT].texture = m_shadowMap.depth;
+
+    rlSetClipPlanes(0.01, 100.0);
 }
 
 Renderer3D::~Renderer3D() {
-    if (m_texture.id > 0)
-        UnloadTexture(m_texture);
+    // Models own their material shaders and textures, so detach shared resources first.
+    Shader defaultShader = { 0 };
+    defaultShader.id = rlGetShaderIdDefault();
+    Texture2D defaultTexture = { 0 };
+    defaultTexture.id = rlGetTextureIdDefault();
+    for (int i = 0; i < m_gb.materialCount; i++) {
+        m_gb.materials[i].shader = defaultShader;
+        m_gb.materials[i].maps[MATERIAL_MAP_HEIGHT].texture = defaultTexture;
+        if (i == m_screenMaterial)
+            m_gb.materials[i].maps[MATERIAL_MAP_ALBEDO].texture = defaultTexture;
+    }
+    if (m_ground.materialCount > 0) {
+        m_ground.materials[0].shader = defaultShader;
+        m_ground.materials[0].maps[MATERIAL_MAP_HEIGHT].texture = defaultTexture;
+    }
+
+    UnloadModel(m_ground);
+    UnloadModel(m_gb);
+    UnloadShadowmapRenderTexture(m_shadowMap);
+    UnloadShader(m_depthShader);
+    UnloadShader(m_screenShader);
+    UnloadShader(m_pbrShader);
+    if (m_texture.id > 0) UnloadTexture(m_texture);
 }
 
 static Quaternion GetCameraRotation(Camera3D& camera) {
@@ -70,6 +176,9 @@ static Quaternion GetCameraRotation(Camera3D& camera) {
 }
 
 void Renderer3D::Update(float deltaTime) {
+    if (IsKeyPressed(KEY_F3))
+        m_showShadowMap = !m_showShadowMap;
+
     if (m_transitioning)
 		CameraAnimate(deltaTime);
     else
@@ -118,10 +227,10 @@ void Renderer3D::CameraControl(float deltaTime) {
     }
 
     float distance = Vector3Distance(m_currentCamera.position, m_currentCamera.target);
-    if (distance < 0.05f)
-        CameraMoveToTarget(&m_currentCamera, 0.05f - distance);
-    else if (distance > 20.0f)
-        CameraMoveToTarget(&m_currentCamera, 20.0f - distance);
+    if (distance < 0.07f)
+        CameraMoveToTarget(&m_currentCamera, 0.07f - distance);
+    else if (distance > 10.0f)
+        CameraMoveToTarget(&m_currentCamera, 10.0f - distance);
 }
 
 void Renderer3D::Draw(const Rectangle& dst) {
@@ -132,20 +241,76 @@ void Renderer3D::Draw(const Rectangle& dst) {
 		OnAreaChanged(dst);
 	}
 
+    DrawShadowPass();
+
     BeginScissorMode((int)dst.x, (int)dst.y, (int)dst.width, (int)dst.height);
 
+    SetShaderValue(m_pbrShader, m_pbrShader.locs[SHADER_LOC_VECTOR_VIEW], &m_currentCamera.position, SHADER_UNIFORM_VEC3);
     BeginMode3D(m_currentCamera);
 
-	DrawGrid(10, 1.0f);
-	//DrawAxis({ 0, 0, 0 }, 1.0f);
-
-	DrawModel(m_gb, { 0.0f, 0.0f, 0.0f }, 1.0f, WHITE);
+    DrawScene();
 
     EndMode3D();
 
     EndScissorMode();
 
+    if (m_showShadowMap) {
+        BeginShaderMode(m_grayscaleTextureShader);
+        DrawTexturePro(m_shadowMap.depth,
+            { 0.0f, 0.0f, (float)m_shadowMap.depth.width, (float)m_shadowMap.depth.height },
+            { 12.0f, 92.0f, 192.0f, 192.0f }, { 0.0f, 0.0f }, 0.0f, WHITE);
+		EndShaderMode();
+        DrawText("Shadow depth (F3)", 12, 72, 14, RAYWHITE);
+    }
+
     DrawOverlay(dst);
+}
+
+void Renderer3D::DrawScene() {
+    DrawModel(m_ground, { 0.0f, 0.0f, 0.0f }, 1.0f, WHITE);
+    DrawModel(m_gb, { 0.0f, 0.0f, 0.0f }, 1.0f, WHITE);
+}
+
+void Renderer3D::DrawShadowPass() {
+    const Vector3 lightDirection = Vector3Normalize({ 0.35f, -1.0f, -0.35f });
+    Camera3D lightCamera = { 0 };
+    lightCamera.position = lightDirection * -1.5f;
+    lightCamera.target = { 0.0f, 0.06f, 0.0f };
+    lightCamera.up = { 0.0f, 1.0f, 0.0f };
+    lightCamera.projection = CAMERA_ORTHOGRAPHIC;
+    lightCamera.fovy = 0.2f;
+
+    SetSceneShader(m_depthShader);
+    const double previousNearPlane = rlGetCullDistanceNear();
+    const double previousFarPlane = rlGetCullDistanceFar();
+    // The default far plane is intended for the whole scene. Restricting it
+    // here preserves enough depth precision for a model measured in centimetres.
+    rlSetClipPlanes(1.0, 3.0);
+    BeginTextureMode(m_shadowMap);
+        ClearBackground(WHITE);
+        BeginMode3D(lightCamera);
+            Matrix lightView = rlGetMatrixModelview();
+            Matrix lightProjection = rlGetMatrixProjection();
+            DrawScene();
+            SetShaderValueMatrix(m_pbrShader, m_lightVPLoc, MatrixMultiply(lightView, lightProjection));
+        EndMode3D();
+    EndTextureMode();
+    rlSetClipPlanes(previousNearPlane, previousFarPlane);
+    RestoreSceneShaders();
+}
+
+void Renderer3D::SetSceneShader(Shader shader) {
+    for (int i = 0; i < m_gb.materialCount; i++)
+        m_gb.materials[i].shader = shader;
+    if (m_ground.materialCount > 0)
+        m_ground.materials[0].shader = shader;
+}
+
+void Renderer3D::RestoreSceneShaders() {
+    for (int i = 0; i < m_gb.materialCount; i++)
+        m_gb.materials[i].shader = (i == m_screenMaterial)? m_screenShader : m_pbrShader;
+    if (m_ground.materialCount > 0)
+        m_ground.materials[0].shader = m_pbrShader;
 }
 
 void Renderer3D::DrawAxis(const Vector3& origin, float length) {
@@ -223,8 +388,8 @@ void Renderer3D::UpdateCamera2D(const Rectangle& dst) {
     const float framebufferCenter = framebufferHeight * 0.5f;
     const float fitScale = framebufferHeight / dst.height;
 
-    Vector3 view = Vector3Subtract(m_camera2D.position, m_camera2D.target);
-    m_camera2D.position = Vector3Add(m_camera2D.target, Vector3Scale(view, fitScale));
+    Vector3 view = m_camera2D.position - m_camera2D.target;
+    m_camera2D.position = m_camera2D.target + (view * fitScale);
 
     const float visibleHeight = 2.0f * Vector3Distance(m_camera2D.position, m_camera2D.target) * tanf(m_camera2D.fovy * DEG2RAD * 0.5f);
     const float centerOffset = (viewportCenter - framebufferCenter) / framebufferHeight * visibleHeight;

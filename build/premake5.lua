@@ -255,6 +255,10 @@ project "MARS_wx"
 -----------------------
 project "MARS_raylib"
 
+   -- Run the post-build asset copy whenever Debug/Release is launched from
+   -- Visual Studio, even when the executable itself is already up to date.
+   fastuptodate "Off"
+
    dependson { "GB", "SMS", "NES", "raylib", "nativefiledialog-extended" }
    
    kind "ConsoleApp"
@@ -271,6 +275,8 @@ project "MARS_raylib"
       "../src/GUI_raylib/**.rc",
       "../libraries/physfs/src/**.h",
       "../libraries/physfs/src/**.c",
+      "../src/GUI_raylib/**.fs",
+      "../src/GUI_raylib/**.vs"
    }
 
    removefiles {
@@ -296,8 +302,10 @@ project "MARS_raylib"
 
    -- copy fonts to the target directory
    postbuildcommands {
-      "{COPY} %{wks.location}\\..\\Fonts\\*.ttf %{wks.location}\\bin\\%{cfg.buildcfg}\\Fonts",
-      "{COPY} %{wks.location}\\..\\Fonts\\*.ttf %{wks.location}\\Fonts"
+       "{COPY} %{wks.location}\\..\\Fonts\\*.ttf %{wks.location}\\bin\\%{cfg.buildcfg}\\Fonts",
+       "{COPY} %{wks.location}\\..\\Fonts\\*.ttf %{wks.location}\\Fonts",
+       "{COPY} %{wks.location}\\..\\..\\src\\GUI_raylib\\Shaders\\* %{wks.location}\\bin\\%{cfg.buildcfg}\\Shaders",
+       "{COPY} %{wks.location}\\..\\..\\src\\GUI_raylib\\Shaders\\* %{wks.location}\\Shaders"
    }
 
    filter "configurations:Debug"

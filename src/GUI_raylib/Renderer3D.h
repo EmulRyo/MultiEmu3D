@@ -39,20 +39,34 @@ private:
         float      fovy;
     };
     Rectangle m_drawArea;
-    Model m_cube;
     Model m_gb;
+    Model m_ground;
+    Shader m_pbrShader;
+    Shader m_screenShader;
+    Shader m_depthShader;
+	Shader m_grayscaleTextureShader;
+    RenderTexture2D m_shadowMap;
     Camera3D m_camera2D;
     Camera3D m_camera3D;
     Camera3D m_currentCamera;
     bool m_is3DMode;
     bool m_modelLoaded;
+    bool m_showShadowMap;
     
     bool m_transitioning;
 	CameraAnim m_startAnim;
 	CameraAnim m_targetAnim;
     float m_transitionTime;
+    int m_screenMaterial;
+    int m_lightVPLoc;
+    int m_shadowMapLoc;
+    int m_shadowTexelSizeLoc;
 
 	void DrawAxis(const Vector3& origin, float length);
+	void DrawScene();
+	void DrawShadowPass();
+	void SetSceneShader(Shader shader);
+	void RestoreSceneShaders();
 	void UpdateCamera2D(const Rectangle& dst);
 	bool AreaChanged(const Rectangle& dst) const;
 	void OnAreaChanged(const Rectangle& dst);
